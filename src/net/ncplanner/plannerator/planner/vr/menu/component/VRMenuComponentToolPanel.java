@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
@@ -56,12 +56,12 @@ public class VRMenuComponentToolPanel extends VRMenuComponent{
             EditorTool tool = tools.get(i);
             add(new VRMenuComponentEditorTool(editor, 0, height-size*(i+1), depth/2-size/2, size, tool));
         }
-        ArrayList<Block> blocks = new ArrayList<>();
+        ArrayList<AbstractBlock> blocks = new ArrayList<>();
         editor.getMultiblock().getAvailableBlocks(blocks);
         int blocksWide = Math.max((int)Math.sqrt(blocks.size())+1,(int)((width-size)/depth));
         float blockSize = Math.min((width-size)/blocksWide,depth);
         for(int i = 0; i<blocks.size(); i++){
-            Block availableBlock = blocks.get(i);
+            AbstractBlock availableBlock = blocks.get(i);
             int X = i%blocksWide;
             int Y = i/blocksWide;
             add(new VRMenuComponentEditorListBlock(editor, activeTool, size+blockSize*X,height-blockSize*(Y+1),depth/2-blockSize/2,blockSize,availableBlock, i));

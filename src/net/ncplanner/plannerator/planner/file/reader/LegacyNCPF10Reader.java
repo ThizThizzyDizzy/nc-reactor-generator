@@ -58,15 +58,16 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
         }
     }
     @Override
-    protected <Rule extends NCPFPlacementRule> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg){
+    protected <Rule extends NCPFPlacementRule> void readRuleBlock(HashMap<Rule, Integer> postMap, Rule rule, Config ruleCfg, String blockName){
         postMap.put(rule, (int)ruleCfg.getByte("block"));
+        postNames.put(rule, blockName);
     }
 
     protected <Rule extends NCPFPlacementRule> void readRuleBlockType(Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {
         rule.target = new NCPFModuleReference(blockTypes[ruleCfg.getByte("block")]);;
     }
     @Override
-    protected <Rule extends NCPFPlacementRule> Rule readGenericRule(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg){
+    protected <Rule extends NCPFPlacementRule> Rule readGenericRule(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg, String blockName){
         Rule rule = newRule.get();
         byte type = ruleCfg.get("type");
         LegacyRuleType ruleType = mapRuleTypeNcpf10(rule, type);
@@ -74,13 +75,13 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
         switch(ruleType){
             case BETWEEN:
             case AXIAL:
-                readRuleBlock(postMap, rule, ruleCfg);
+                readRuleBlock(postMap, rule, ruleCfg, blockName);
                 rule.min = ruleCfg.getByte("min");
                 rule.max = ruleCfg.getByte("max");
                 break;
             case VERTEX:
             case EDGE:
-                readRuleBlock(postMap, rule, ruleCfg);
+                readRuleBlock(postMap, rule, ruleCfg, blockName);
                 break;
             case BETWEEN_GROUP:
             case AXIAL_GROUP:
@@ -95,13 +96,13 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
             case OR:
                 ConfigList rules = ruleCfg.get("rules");
                 for(int i = 0; i<rules.size(); i++){
-                    rule.rules.add(readGenericRule(postMap, newRule, blockTypes, rules.getConfig(i)));
+                    rule.rules.add(readGenericRule(postMap, newRule, blockTypes, rules.getConfig(i), blockName));
                 }
                 break;
             case AND:
                 rules = ruleCfg.get("rules");
                 for(int i = 0; i<rules.size(); i++){
-                    rule.rules.add(readGenericRule(postMap, newRule, blockTypes, rules.getConfig(i)));
+                    rule.rules.add(readGenericRule(postMap, newRule, blockTypes, rules.getConfig(i), blockName));
                 }
                 break;
         }

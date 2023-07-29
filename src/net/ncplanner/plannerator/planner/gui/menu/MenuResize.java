@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentVisibleBlock;
 public class MenuResize extends Menu{
-    private final CuboidalMultiblock<Block> multiblock;
+    private final CuboidalMultiblock<AbstractBlock> multiblock;
     private final Scrollable multibwauk = add(new Scrollable(0, 0, 0, 0, 32, 32));
     private final Button done = add(new Button("Done", true).setTooltip("Finish resizing and return to the editor screen"));
     private int CELL_SIZE = 48;

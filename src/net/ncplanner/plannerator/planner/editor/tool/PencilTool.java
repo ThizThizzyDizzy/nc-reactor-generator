@@ -4,7 +4,7 @@ import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
@@ -34,7 +34,7 @@ public class PencilTool extends EditorTool{
     }
     @Override
     public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        Block selected = editor.getSelectedBlock(id);
+        AbstractBlock selected = editor.getSelectedBlock(id);
         if(button==0){
             synchronized(leftSelectedBlocks){
                 if(editorSpace.isSpaceValid(selected, x, y, z))leftSelectedBlocks.add(new int[]{x,y,z});

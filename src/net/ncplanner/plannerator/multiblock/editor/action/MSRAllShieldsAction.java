@@ -26,7 +26,7 @@ public class MSRAllShieldsAction extends Action<OverhaulMSR>{
         }
     }
     @Override
-    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
         for(Block block : multiblock.getBlocks()){
             if(block.template.shield)blocks.add(block);
         }

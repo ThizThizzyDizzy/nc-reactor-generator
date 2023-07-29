@@ -1,15 +1,15 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 public class SetblockAction extends Action{
     public final int x;
     public final int y;
     public final int z;
-    public final Block block;
-    private Block was = null;
-    public SetblockAction(int x, int y, int z, Block block){
+    public final AbstractBlock block;
+    private AbstractBlock was = null;
+    public SetblockAction(int x, int y, int z, AbstractBlock block){
         this.x = x;
         this.y = y;
         this.z = z;
@@ -26,7 +26,7 @@ public class SetblockAction extends Action{
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
-        Block b = multiblock.getBlock(x, y, z);
+        AbstractBlock b = multiblock.getBlock(x, y, z);
         if(b!=null)blocks.add(b);
     }
     @Override

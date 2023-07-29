@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -10,10 +10,10 @@ import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
 public class VRMenuComponentEditorListBlock extends VRMenuComponent implements Pinnable{
     private final VRMenuEdit editor;
-    private final Block block;
+    private final AbstractBlock block;
     private final int id;
     private final int blockID;
-    public VRMenuComponentEditorListBlock(VRMenuEdit editor, int id, float x, float y, float z, float size, Block block, int blockID){
+    public VRMenuComponentEditorListBlock(VRMenuEdit editor, int id, float x, float y, float z, float size, AbstractBlock block, int blockID){
         super(x, y, z, size, size, size, 0, 0, 0);
         this.editor = editor;
         this.block = block;

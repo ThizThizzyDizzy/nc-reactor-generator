@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResize;
-public abstract class CuboidalMultiblock<T extends Block> extends Multiblock<T>{
+public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multiblock<T>{
     protected int x;
     protected int y;
     protected int z;

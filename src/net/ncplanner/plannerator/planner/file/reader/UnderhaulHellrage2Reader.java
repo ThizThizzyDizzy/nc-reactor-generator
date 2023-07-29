@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 public class UnderhaulHellrage2Reader implements FormatReader{
     @Override
@@ -26,7 +26,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         sfr.fuel = recovery.recoverUnderhaulSFRFuel(fuelName, usedFuel.getFloat("BaseHeat"), usedFuel.getFloat("BasePower"));
         JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
         for(String name : compressedReactor.keySet()){
-            Block block = recovery.recoverUnderhaulSFRBlock(name);
+            BlockElement block = recovery.recoverUnderhaulSFRBlock(name);
             JSON.JSONArray blocks = compressedReactor.getJSONArray(name);
             for(Object blok : blocks){
                 JSON.JSONObject blokLoc = (JSON.JSONObject) blok;

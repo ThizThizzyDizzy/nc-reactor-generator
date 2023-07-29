@@ -38,7 +38,6 @@ public abstract class DefinedNCPFObject{
         return copyList(from, new ArrayList<>(), newCopy);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> List<T> copyList(List<V> from, List<T> to, Supplier<T> newCopy){
-        to.clear();//prevents duplicating active cooler recipes
         for(V v : from)to.add(v.copyTo(newCopy));
         return to;
     }
@@ -63,7 +62,7 @@ public abstract class DefinedNCPFObject{
         T[][][] to = (T[][][])new DefinedNCPFObject[from.length][from[0].length][from[0][0].length];
         for(int x = 0; x<from.length; x++){
             for(int y = 0; y<from[x].length; y++){
-                for(int z = 0; z<=from[x][y].length; z++){
+                for(int z = 0; z<from[x][y].length; z++){
                     if(conditions[x][y][z].hasModule(conditionalModule))to[x][y][z] = copy(from[x][y][z], newCopy);
                 }
             }
@@ -72,17 +71,19 @@ public abstract class DefinedNCPFObject{
     }
     public <T extends DefinedNCPFObject> T[][][] combine3DArrays(T[][][]... arrays){
         T[][][] finalArray = (T[][][])new DefinedNCPFObject[arrays[0].length][arrays[0][0].length][arrays[0][0][0].length];
+        return combine3DArraysInto(finalArray, arrays);
+    }
+    public <T extends DefinedNCPFObject> T[][][] combine3DArraysInto(T[][][] finalArray, T[][][]... arrays){
         for(T[][][] array : arrays){
             for(int x = 0; x<array.length; x++){
                 for(int y = 0; y<array[x].length; y++){
-                    for(int z = 0; z<=array[x][y].length; z++){
+                    for(int z = 0; z<array[x][y].length; z++){
                         if(array[x][y][z]!=null)finalArray[x][y][z] = array[x][y][z];
                     }
                 }
             }
         }
         return finalArray;
-        
     }
     public void setReferences(List<NCPFElement> lst){}
 }

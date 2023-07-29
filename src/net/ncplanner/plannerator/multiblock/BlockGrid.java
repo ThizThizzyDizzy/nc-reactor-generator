@@ -1,16 +1,16 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
-public class BlockGrid<T extends Block>{
+public class BlockGrid<T extends AbstractBlock>{
     public final int x;
     public final int y;
     public final int z;
-    private final Block[][][] blocks;
+    private final AbstractBlock[][][] blocks;
     public BlockGrid(int x1, int y1, int z1, int x2, int y2, int z2){
         if(x2<x1||y2<y1||z2<z1)throw new IllegalArgumentException("BlockGrid can not have negative dimensions!");
         x = x1;
         y = y1;
         z = z1;
-        blocks = new Block[x2-x1+1][y2-y1+1][z2-z1+1];
+        blocks = new AbstractBlock[x2-x1+1][y2-y1+1][z2-z1+1];
     }
     public int getWidth(){
         return blocks.length;

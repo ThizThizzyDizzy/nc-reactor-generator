@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Edge;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -201,7 +201,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
     private boolean isAirMatch() {
         return target!=null&&target.definition.matches(new NCPFModuleReference(AirModule::new).definition);
     }
-    private <T extends Block> boolean blockMatches(Block block, Multiblock<T> reactor) {
+    private <T extends AbstractBlock> boolean blockMatches(AbstractBlock block, Multiblock<T> reactor) {
         if(target.definition instanceof NCPFModuleElement){
             NCPFModuleReference moduleReference = target.copyTo(NCPFModuleReference::new);
             moduleReference.setReferences(null);
@@ -211,7 +211,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             return block!=null&&block.getTemplate().definition.matches(target.definition);
         }
     }
-    public <T extends Block> boolean isValid(Block block, Multiblock<T> reactor) {
+    public <T extends AbstractBlock> boolean isValid(AbstractBlock block, Multiblock<T> reactor) {
         int num = 0;
         boolean isAirMatch = isAirMatch();
         switch (rule) {
@@ -219,7 +219,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
                 if (isAirMatch) {
                     num = 6 - block.getAdjacent(reactor).size();
                 } else {
-                    for (Block b : block.getActiveAdjacent(reactor)) {
+                    for (AbstractBlock b : block.getActiveAdjacent(reactor)) {
                         if (blockMatches(b, reactor)) num++;
                     }
                 }
@@ -228,8 +228,8 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
                 for(Axis axis : Axis.axes){
                     if(!reactor.contains(block.x - axis.x, block.y - axis.y, block.z - axis.z))continue;
                     if(!reactor.contains(block.x + axis.x, block.y + axis.y, block.z + axis.z))continue;
-                    Block b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
-                    Block b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
+                    AbstractBlock b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
+                    AbstractBlock b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
                     if (isAirMatch) {
                         if (b1 == null && b2 == null) num++;
                     } else {
@@ -244,7 +244,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
                 boolean[] dirs = new boolean[Direction.values().length];
                 for (Direction d : Direction.values()) {
                     if(!reactor.contains(block.x + d.x, block.y + d.y, block.z + d.z))continue;
-                    Block b = reactor.getBlock(block.x + d.x, block.y + d.y, block.z + d.z);
+                    AbstractBlock b = reactor.getBlock(block.x + d.x, block.y + d.y, block.z + d.z);
                     if (isAirMatch) {
                         if (b == null) dirs[d.ordinal()] = true;
                     } else {

@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 public class PasteAction extends Action<Multiblock>{
-    private final ArrayList<Block> was = new ArrayList<>();
+    private final ArrayList<AbstractBlock> was = new ArrayList<>();
     private final ArrayList<int[]> wasAir = new ArrayList<>();
     private final int x;
     private final int y;
@@ -26,7 +26,7 @@ public class PasteAction extends Action<Multiblock>{
             int bz = entry.z+z;
             if(!multiblock.contains(bx, by, bz))continue;
             if(allowUndo){
-                Block bl = multiblock.getBlock(bx, by, bz);
+                AbstractBlock bl = multiblock.getBlock(bx, by, bz);
                 if(bl!=null)was.add(bl);
                 else wasAir.add(new int[]{bx,by,bz});
             }
@@ -35,7 +35,7 @@ public class PasteAction extends Action<Multiblock>{
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        for(Block b : was){
+        for(AbstractBlock b : was){
             multiblock.setBlockExact(b.x, b.y, b.z, b);
         }
         for(int[] loc : wasAir){
@@ -43,10 +43,10 @@ public class PasteAction extends Action<Multiblock>{
         }
     }
     @Override
-    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         for(ClipboardEntry entry : this.blocks){
             if(multiblock.contains(entry.x+x, entry.y+y, entry.z+z)){
-                Block block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
+                AbstractBlock block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
                 if(block==null)continue;
                 if(!blocks.contains(block)){
                     blocks.add(block);

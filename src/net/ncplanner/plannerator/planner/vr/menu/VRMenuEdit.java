@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -259,7 +259,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                 }
                 if(x==-1||y==-1||z==-1)return;
                 for(int[] is : selection.get(id)){
-                    Block b = multiblock.getBlock(is[0], is[1], is[2]);
+                    AbstractBlock b = multiblock.getBlock(is[0], is[1], is[2]);
                     clipboard.get(id).add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
                 }
             }
@@ -294,9 +294,9 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         clearSelection(id);
     }
     @Override
-    public Block getSelectedBlock(int id){
+    public AbstractBlock getSelectedBlock(int id){
         if(!selectedBlock.containsKey(id))return null;
-        ArrayList<Block> blocks = new ArrayList<>();
+        ArrayList<AbstractBlock> blocks = new ArrayList<>();
         multiblock.getAvailableBlocks(blocks);
         return blocks.get(selectedBlock.get(id));
     }
@@ -341,26 +341,26 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     }
     @Override
     public void selectGroup(int id, int x, int y, int z){
-        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
             selectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
-        for(Block b : g){
+        for(AbstractBlock b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
         select(id, is);
     }
     @Override
     public void deselectGroup(int id, int x, int y, int z){
-        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
             deselectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
-        for(Block b : g){
+        for(AbstractBlock b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
         deselect(id, is);
@@ -372,7 +372,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -382,7 +382,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -392,7 +392,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -405,7 +405,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);
@@ -415,7 +415,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);
@@ -425,7 +425,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
             OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);

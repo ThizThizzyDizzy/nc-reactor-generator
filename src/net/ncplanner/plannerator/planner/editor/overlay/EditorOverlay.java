@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.editor.overlay;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Queue;
-public class EditorOverlay<T extends Block>{
+public class EditorOverlay<T extends AbstractBlock>{
     private boolean active;
     public int mode;
     public final String name;

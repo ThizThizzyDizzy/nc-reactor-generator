@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -55,7 +55,7 @@ public class CompiledUnderhaulSFRConfiguration{
         for(Fuel fuel : config.fuels){
             compiled.addFuel(fuel);
         }
-        for(Block block : config.blocks){
+        for(BlockElement block : config.blocks){
             compiled.addBlock(block);
         }
         compiled.compile();
@@ -72,7 +72,7 @@ public class CompiledUnderhaulSFRConfiguration{
     public void addFuel(Fuel fuel){
         rawFuels.add(fuel);
     }
-    private void addBlock(Block block){
+    private void addBlock(BlockElement block){
         if(block.casing!=null||block.controller!=null)return;
         if(block.activeCooler!=null){
             for(ActiveCoolerRecipe recipe : block.activeCoolerRecipes)rawBlocksWithRecipes.add(new BlockAndRecipe(block, recipe));
@@ -115,7 +115,7 @@ public class CompiledUnderhaulSFRConfiguration{
         int numCoolers = 0, numCells = 0, numModerators = 0, numCasings = 0, numControllers = 0;
         for(int i = 0; i<rawBlocksWithRecipes.size(); i++){
             BlockAndRecipe raw = rawBlocksWithRecipes.get(i);
-            Block block = raw.block;
+            BlockElement block = raw.block;
             ActiveCoolerRecipe recipe = raw.recipe;
             if(block.cooler!=null||recipe!=null)numCoolers++;
             if(block.fuelCell!=null)numCells++;
@@ -238,9 +238,9 @@ public class CompiledUnderhaulSFRConfiguration{
         return true;
     }
     private static class BlockAndRecipe{
-        private final Block block;
+        private final BlockElement block;
         private final ActiveCoolerRecipe recipe;
-        public BlockAndRecipe(Block block, ActiveCoolerRecipe recipe){
+        public BlockAndRecipe(BlockElement block, ActiveCoolerRecipe recipe){
             this.block = block;
             this.recipe = recipe;
         }

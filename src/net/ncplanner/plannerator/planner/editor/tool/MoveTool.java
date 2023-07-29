@@ -4,7 +4,7 @@ import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
@@ -69,7 +69,7 @@ public class MoveTool extends EditorTool{
                     if(sz!=layer)continue;
                     if(sx<0||sx>x2)continue;
                     if(sy<0||sy>y2)continue;
-                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
+                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     if(!editorSpace.isSpaceValid(b, bx, by, bz))continue;
                     if(b!=null)renderer.setWhite(.5f);
                     else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
@@ -102,7 +102,7 @@ public class MoveTool extends EditorTool{
                     if(bx<bbox.x1||bx>bbox.x2)continue;
                     if(by<bbox.y1||by>bbox.y2)continue;
                     if(bz<bbox.z1||bz>bbox.z2)continue;
-                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
+                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     if(b==null&&editor.getMultiblock().getBlock(bx, by, bz)==null)continue;//already air, don't need to higlight air again
                     if(b!=null)renderer.setWhite(.5f);
                     else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
@@ -128,7 +128,7 @@ public class MoveTool extends EditorTool{
                 ArrayList<int[]> selection = new ArrayList<>(editor.getSelection(id));
                 for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
                     int[] i = it.next();
-                    Block b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
+                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
                     int bx = i[0]+dx;
                     int by = i[1]+dy;
                     int bz = i[2]+dz;

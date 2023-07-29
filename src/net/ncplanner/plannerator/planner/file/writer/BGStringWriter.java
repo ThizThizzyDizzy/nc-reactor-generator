@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -33,7 +33,7 @@ public class BGStringWriter extends StringFormatWriter{
                         int Y = y-bbox.y1;
                         int Z = z-bbox.z1;
                         if(multi.contains(x, y, z)){
-                            Block block = multi.getBlock(x, y, z);
+                            AbstractBlock block = multi.getBlock(x, y, z);
                             if(block==null)continue;
                             String blockName = block.getBaseName();
                             String[] split = blockName.split("\\:");

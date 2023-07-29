@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor.suggestion;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
@@ -9,7 +9,7 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
     private final ArrayList<Action<T>> suggestedActions;
     private final ArrayList<Priority<T>> priorities;
     public T result;
-    private ArrayList<Block> affectedBlocks = new ArrayList<>();
+    private ArrayList<AbstractBlock> affectedBlocks = new ArrayList<>();
     private static <T extends Multiblock> ArrayList<Action<T>> box(Action<T> action){
         ArrayList<Action<T>> list = new ArrayList<>();
         list.add(action);
@@ -42,7 +42,7 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
         return other.result.compareTo(result, priorities);
     }
     public boolean affects(int x, int y, int z){
-        for(Block b : affectedBlocks){
+        for(AbstractBlock b : affectedBlocks){
             if(b.x==x&&b.y==y&&b.z==z)return true;
         }
         return false;

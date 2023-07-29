@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
 import net.ncplanner.plannerator.multiblock.editor.action.GenerateAction;
@@ -19,7 +19,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuCompon
 import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentMultiblockGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentToggleBlock;
 public class MenuOldGenerator extends Menu{
-    private final Multiblock<Block> multiblock;
+    private final Multiblock<AbstractBlock> multiblock;
     private final Button settings = add(new Button(0, 0, 0, 64, "Settings", false).setTooltip("Modify generator settings\nThis does not stop the generator\nSettings are not applied until you click Generate"));
     private final Button output = add(new Button(0, 0, 0, 64, "Generate", true).setTooltip("Starts generating reactors or applies new settings"));
     private final MulticolumnList blocks = add(new MulticolumnList(0, 0, 0, 0, 64, 64, 32));
@@ -41,7 +41,7 @@ public class MenuOldGenerator extends Menu{
     private int threads = 0;
     private int crashedThreadTicks = 200;//ns
     private int crashedThreadThreshold = 10;
-    public MenuOldGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
+    public MenuOldGenerator(GUI gui, MenuEdit editor, Multiblock<AbstractBlock> multiblock){
         super(gui, editor);
         this.multiblock = multiblock;
         settings.addAction(() -> {
@@ -53,7 +53,7 @@ public class MenuOldGenerator extends Menu{
             settings.enabled = true;
             output.enabled = false;
             tab = Tab.GENERATE;
-            ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
+            ArrayList<Range<AbstractBlock>> allowedBlocks = new ArrayList<>();
             for(Component c : blocks.components){
                 MenuComponentToggleBlock t = (MenuComponentToggleBlock)c;
                 if(t.enabled)allowedBlocks.add(new Range<>(t.block,t.min,t.max==0?Integer.MAX_VALUE:t.max));
@@ -142,7 +142,7 @@ public class MenuOldGenerator extends Menu{
             Core.error("No generators available for "+multiblock.getDefinitionName()+"!", null);
         }
         blocks.components.clear();
-        for(Block b : multiblock.getAvailableBlocks()){
+        for(AbstractBlock b : multiblock.getAvailableBlocks()){
             blocks.add(new MenuComponentToggleBlock(b));
         }
         generatorSettings.components.clear();

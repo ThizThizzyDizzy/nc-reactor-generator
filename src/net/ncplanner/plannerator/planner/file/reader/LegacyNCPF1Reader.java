@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 public class LegacyNCPF1Reader extends LegacyNCPF2Reader {
     @Override
     protected byte getTargetVersion() {
@@ -38,7 +38,7 @@ public class LegacyNCPF1Reader extends LegacyNCPF2Reader {
         return design;
     }
     @Override
-    protected void loadOverhaulMSRBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<Block> additionalBlocks){
+    protected void loadOverhaulMSRBlocks(NCPFConfigurationContainer parent, NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<BlockElement> additionalBlocks){
         // MSR reactors did not exist in NCPF 1
     }
 }

@@ -17,7 +17,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElec
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
-public class Block extends NCPFElement implements BlockRecipesElement{
+public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -31,8 +31,8 @@ public class Block extends NCPFElement implements BlockRecipesElement{
     public ReflectorModule reflector;
     public HeatsinkModule heatsink;
     public List<BreedingBlanketRecipe> breedingBlanketRecipes = new ArrayList<>();
-    public Block(){}
-    public Block(NCPFElementDefinition definition){
+    public BlockElement(){}
+    public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
     @Override

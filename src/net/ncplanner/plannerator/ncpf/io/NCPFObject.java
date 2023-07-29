@@ -113,10 +113,10 @@ public class NCPFObject extends HashMap<String, Object>{
     public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
         NCPFList list = getNCPFList(name);
         int r = -1;
-        for(int x = 0; x<=design.length; x++){
-            for(int y = 0; y<=design[x].length; y++){
-                for(int z = 0; z<=design[z].length; z++){
-                    if(design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
+        for(int x = 0; x<design.length; x++){
+            for(int y = 0; y<design[x].length; y++){
+                for(int z = 0; z<design[z].length; z++){
+                    if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         int idx = list.getInteger(++r);
                         array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
                     }
@@ -125,11 +125,11 @@ public class NCPFObject extends HashMap<String, Object>{
         }
     }
     public <T extends DefinedNCPFModularObject> void setRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
-        NCPFList list = getNCPFList(name);
-        for(int x = 0; x<=design.length; x++){
-            for(int y = 0; y<=design[x].length; y++){
-                for(int z = 0; z<=design[z].length; z++){
-                    if(design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
+        NCPFList list = new NCPFList();
+        for(int x = 0; x<design.length; x++){
+            for(int y = 0; y<design[x].length; y++){
+                for(int z = 0; z<design[z].length; z++){
+                    if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         list.add(indexof(array[x][y][z], design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes));
                     }
                 }

@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.multiblock.editor;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
-public abstract class EditorSpace<T extends Block>{
+public abstract class EditorSpace<T extends AbstractBlock>{
     public final int x1;
     public final int y1;
     public final int z1;

@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.multiblock.generator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
@@ -112,10 +112,10 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                     for(int y = 1; y<=currentMultiblock.getInternalHeight(); y++){
                         for(int z = 0; z<2; z++){
                             if(z==1)z = currentMultiblock.getExternalDepth()-1;
-                            Block b = currentMultiblock.getBlock(x, y, z);
+                            AbstractBlock b = currentMultiblock.getBlock(x, y, z);
                             if(lockCore.getValue()&&b!=null&&b.isCore())continue;
                             if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
-                                Block randBlock = randCoil(currentMultiblock, getAllowedBlocks());
+                                AbstractBlock randBlock = randCoil(currentMultiblock, getAllowedBlocks());
                                 if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                                 currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                             }
@@ -127,10 +127,10 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                 int x = ((CuboidalMultiblock)multiblock).getExternalWidth()/2;
                 int y = 0;
                 for(int z = 1; z<currentMultiblock.getExternalDepth()-1; z++){
-                    Block b = currentMultiblock.getBlock(x, y, z);
+                    AbstractBlock b = currentMultiblock.getBlock(x, y, z);
                     if(lockCore.getValue()&&b!=null&&b.isCore())continue;
                     if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
-                        Block randBlock = randBlade(currentMultiblock, getAllowedBlocks());
+                        AbstractBlock randBlock = randBlade(currentMultiblock, getAllowedBlocks());
                         if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                         currentMultiblock.queueAction(new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, z, (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                     }
@@ -144,7 +144,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
                     for(int z = 0; z<2; z++){
                         if(z==1)z = currentMultiblock.getExternalDepth()-1;
                         if(fillAir.getValue()&&currentMultiblock.getBlock(x, y, z)==null){
-                            Block randBlock = randCoil(currentMultiblock, getAllowedBlocks());
+                            AbstractBlock randBlock = randCoil(currentMultiblock, getAllowedBlocks());
                             if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                             currentMultiblock.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                             continue;
@@ -157,7 +157,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
             int y = 0;
             for(int z = 1; z<currentMultiblock.getExternalDepth()-1; z++){
                 if(fillAir.getValue()&&currentMultiblock.getBlock(x, y, z)==null){
-                    Block randBlock = randBlade(currentMultiblock, getAllowedBlocks());
+                    AbstractBlock randBlock = randBlade(currentMultiblock, getAllowedBlocks());
                     if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                     currentMultiblock.queueAction(new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, z, (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(x, y, z))));
                     continue;
@@ -167,9 +167,9 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
             for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                 if(pool.isEmpty())break;
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
-                Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
+                AbstractBlock b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
                 if(lockCore.getValue()&&b!=null&&b.isCore())continue;
-                Block randBlock = (pos[2]==0||pos[2]==currentMultiblock.getExternalDepth()-1)?randCoil(currentMultiblock, getAllowedBlocks()):randBlade(currentMultiblock, getAllowedBlocks());
+                AbstractBlock randBlock = (pos[2]==0||pos[2]==currentMultiblock.getExternalDepth()-1)?randCoil(currentMultiblock, getAllowedBlocks()):randBlade(currentMultiblock, getAllowedBlocks());
                 if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                 currentMultiblock.queueAction(((net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)randBlock).template.blade?new SetBladeAction(((OverhaulTurbine)currentMultiblock).bearingDiameter, pos[2], (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(0, 0, 0))):new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
@@ -204,7 +204,7 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         }
         countIteration();
     }
-    private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
+    private AbstractBlock applyMultiblockSpecificSettings(Multiblock currentMultiblock, AbstractBlock randBlock){
         if(multiblock instanceof OverhaulTurbine)return randBlock;//also no block-specifics!
         throw new IllegalArgumentException("Unknown multiblock: "+multiblock.getDefinitionName());
     }
@@ -241,13 +241,13 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
     public void importMultiblock(Multiblock multiblock) throws MissingConfigurationEntryException{
         if(!multiblock.isShapeEqual(this.multiblock))return;
         multiblock.convertTo(this.multiblock.getConfiguration());
-        for(Range<Block> range : getAllowedBlocks()){
-            for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
+        for(Range<AbstractBlock> range : getAllowedBlocks()){
+            for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
             }
         }
-        ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-            for(Range<Block> range : getAllowedBlocks()){
+        ALLOWED:for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
+            for(Range<AbstractBlock> range : getAllowedBlocks()){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
             multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
@@ -255,35 +255,35 @@ public class OverhaulTurbineStandardGenerator extends MultiblockGenerator{
         finalize(multiblock);
         workingMultiblocks.add(multiblock.copy());
     }
-    private Block randBlade(Multiblock multiblock, List<Range<Block>> ranges){
+    private AbstractBlock randBlade(Multiblock multiblock, List<Range<AbstractBlock>> ranges){
         if(ranges.isEmpty())return null;
         ranges = new ArrayList<>(ranges);
-        for(Iterator<Range<Block>> it = ranges.iterator(); it.hasNext();){
-            Range<Block> next = it.next();
+        for(Iterator<Range<AbstractBlock>> it = ranges.iterator(); it.hasNext();){
+            Range<AbstractBlock> next = it.next();
             if(!((net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)next.obj).template.blade)it.remove();
         }
-        for(Range<Block> range : ranges){
+        for(Range<AbstractBlock> range : ranges){
             if(range.min==0&&range.max==Integer.MAX_VALUE)continue;
             if(multiblock.count(range.obj)<range.min)return range.obj;
         }
-        Range<Block> randRange = ranges.get(rand.nextInt(ranges.size()));
+        Range<AbstractBlock> randRange = ranges.get(rand.nextInt(ranges.size()));
         if((randRange.min!=0||randRange.max!=Integer.MAX_VALUE)&&randRange.max!=0&&multiblock.count(randRange.obj)>=randRange.max){
             return null;
         }
         return randRange.obj;
     }
-    private Block randCoil(Multiblock multiblock, List<Range<Block>> ranges){
+    private AbstractBlock randCoil(Multiblock multiblock, List<Range<AbstractBlock>> ranges){
         if(ranges.isEmpty())return null;
         ranges = new ArrayList<>(ranges);
-        for(Iterator<Range<Block>> it = ranges.iterator(); it.hasNext();){
-            Range<Block> next = it.next();
+        for(Iterator<Range<AbstractBlock>> it = ranges.iterator(); it.hasNext();){
+            Range<AbstractBlock> next = it.next();
             if(!((net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)next.obj).template.coil&&!((net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)next.obj).template.connector)it.remove();
         }
-        for(Range<Block> range : ranges){
+        for(Range<AbstractBlock> range : ranges){
             if(range.min==0&&range.max==Integer.MAX_VALUE)continue;
             if(multiblock.count(range.obj)<range.min)return range.obj;
         }
-        Range<Block> randRange = ranges.get(rand.nextInt(ranges.size()));
+        Range<AbstractBlock> randRange = ranges.get(rand.nextInt(ranges.size()));
         if((randRange.min!=0||randRange.max!=Integer.MAX_VALUE)&&randRange.max!=0&&multiblock.count(randRange.obj)>=randRange.max){
             return null;
         }

@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModu
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class Block extends NCPFElement implements BlockRecipesElement{
+public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public CoolerModule cooler;
@@ -23,8 +23,8 @@ public class Block extends NCPFElement implements BlockRecipesElement{
     public CasingModule casing;
     public ControllerModule controller;
     public List<ActiveCoolerRecipe> activeCoolerRecipes = new ArrayList<>();
-    public Block(){}
-    public Block(NCPFElementDefinition definition){
+    public BlockElement(){}
+    public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
     @Override

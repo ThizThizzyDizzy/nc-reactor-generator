@@ -22,7 +22,7 @@ public class QuantumTraversedEfficiencyModule extends Module<Float>{
             float effeat = 0;
             for(Block b : sfr.getBlocks(true)){
                 if(b.isFuelCellActive()){
-                    effeat+=b.recipe.fuelCellEfficiency*b.recipe.fuelCellHeat;
+                    effeat+=b.fuel.stats.efficiency*b.fuel.stats.heat;
                 }
             }
             return (sfr.rawOutput*sfr.sparsityMult)/effeat;

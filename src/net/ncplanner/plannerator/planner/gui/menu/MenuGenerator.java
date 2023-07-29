@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.action.GenerateAction;
 import net.ncplanner.plannerator.multiblock.generator.lite.GenerationThread;
@@ -82,7 +82,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private HashMap<T, StoreAnimation> storeAnims = new HashMap<>();
     private final int internalGens;
     private int maxSpeed;
-    public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<Block> multiblock){
+    public MenuGenerator(GUI gui, MenuEdit editor, Multiblock<AbstractBlock> multiblock){
         super(gui, editor);
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();

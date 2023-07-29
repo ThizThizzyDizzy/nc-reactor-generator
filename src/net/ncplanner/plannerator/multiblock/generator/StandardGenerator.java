@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.multiblock.generator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
@@ -107,10 +107,10 @@ public class StandardGenerator extends MultiblockGenerator{
         if(variableRate.getValue()){
             final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
             cm.forEachInternalPosition((x, y, z) -> {
-                Block b = cm.getBlock(x, y, z);
+                AbstractBlock b = cm.getBlock(x, y, z);
                 if(lockCore.getValue()&&b!=null&&b.isCore())return;
                 if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
-                    Block randBlock = rand(cm, getAllowedBlocks());
+                    AbstractBlock randBlock = rand(cm, getAllowedBlocks());
                     if(randBlock==null||lockCore.getValue()&&randBlock.isCore()||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                     cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                 }
@@ -122,7 +122,7 @@ public class StandardGenerator extends MultiblockGenerator{
             final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
             cm.forEachInternalPosition((x, y, z) -> {
                 if(fillAir.getValue()&&cm.getBlock(x, y, z)==null){
-                    Block randBlock = rand(cm, getAllowedBlocks());
+                    AbstractBlock randBlock = rand(cm, getAllowedBlocks());
                     if(randBlock==null||lockCore.getValue()&&randBlock.isCore()||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                     cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                     return;
@@ -133,9 +133,9 @@ public class StandardGenerator extends MultiblockGenerator{
             for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                 if(pool.isEmpty())break;
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
-                Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
+                AbstractBlock b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
                 if(lockCore.getValue()&&b!=null&&b.isCore())continue;
-                Block randBlock = rand(currentMultiblock, getAllowedBlocks());
+                AbstractBlock randBlock = rand(currentMultiblock, getAllowedBlocks());
                 if(randBlock==null||lockCore.getValue()&&randBlock.isCore())continue;//nope
                 currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
@@ -164,7 +164,7 @@ public class StandardGenerator extends MultiblockGenerator{
         }
         countIteration();
     }
-    private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
+    private AbstractBlock applyMultiblockSpecificSettings(Multiblock currentMultiblock, AbstractBlock randBlock){
         if(multiblock instanceof OverhaulSFR){
             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)randBlock;
             if(!block.template.allRecipes.isEmpty()){
@@ -229,13 +229,13 @@ public class StandardGenerator extends MultiblockGenerator{
             ((UnderhaulSFR)multiblock).fuel = ((UnderhaulSFR)this.multiblock).fuel;
             multiblock.recalculate();
         }
-        for(Range<Block> range : getAllowedBlocks()){
-            for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
+        for(Range<AbstractBlock> range : getAllowedBlocks()){
+            for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
             }
         }
-        ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-            for(Range<Block> range : getAllowedBlocks()){
+        ALLOWED:for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
+            for(Range<AbstractBlock> range : getAllowedBlocks()){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
             multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);

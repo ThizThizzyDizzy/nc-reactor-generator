@@ -1,16 +1,16 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.generator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentToggleBlock extends Component{
-    public final Block block;
+    public final AbstractBlock block;
     public boolean enabled = true;
     public int min = 0;
     public int max = 0;
-    public MenuComponentToggleBlock(Block block){
+    public MenuComponentToggleBlock(AbstractBlock block){
         super(0, 0, 0, 0);
         this.block = block;
         enabled = block.defaultEnabled();

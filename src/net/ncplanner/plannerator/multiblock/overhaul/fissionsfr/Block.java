@@ -2,27 +2,29 @@ package net.ncplanner.plannerator.multiblock.overhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.PlacementRule;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block> {
-    /**
-     * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
-     */
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block template;
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
+public class Block extends AbstractBlock{
+    public BlockElement template;
+    public Fuel fuel;
+    public IrradiatorRecipe irradiatorRecipe;
     public boolean hasPropogated = false;
     public int moderatorLines;
     public int neutronFlux;
@@ -33,53 +35,24 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     public boolean reflectorActive;
     public boolean shieldActive;
     public float efficiency;
-    public boolean isToggled = false;//if true, shields are closed and ports/vents are in output mode
     public boolean wasActive;
     public int hadFlux;
     public OverhaulSFR.Cluster cluster;
     public Block source;
     public boolean casingValid;
-    public Block(Configuration configuration, int x, int y, int z, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block template){
+    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
         super(configuration, x, y, z);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block newInstance(int x, int y, int z){
+    public AbstractBlock newInstance(int x, int y, int z){
         return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.Block other){
-        ((Block)other).recipe = recipe;
-        ((Block)other).isToggled = isToggled;
-    }
-    @Override
-    public Image getBaseTexture(){
-        if(isToggled){
-            if(template.shield)return template.shieldClosedTexture;
-            if(template.coolantVent)return template.coolantVentOutputTexture;
-            if(template.parent!=null)return template.portOutputTexture;
-        }
-        return template.texture;
-    }
-    @Override
-    public Image getTexture(){
-        if(isToggled){
-            if(template.shield)return template.shieldClosedDisplayTexture;
-            if(template.coolantVent)return template.coolantVentOutputDisplayTexture;
-            if(template.parent!=null)return template.portOutputDisplayTexture;
-        }
-        return template.displayTexture;
-    }
-    @Override
-    public String getBaseName(){
-        return template.name;
-    }
-    @Override
-    public String getName(){
-        if(isToggled&&template.coolantVent)return template.getCoolantVentOutputDisplayName();
-        if(isToggled&&template.parent!=null)return template.getPortOutputDisplayName();
-        return template.getDisplayName();
+    public void copyProperties(AbstractBlock other){
+        ((Block)other).fuel = fuel;
+        ((Block)other).irradiatorRecipe = irradiatorRecipe;
     }
     @Override
     public void clearData(){
@@ -92,27 +65,25 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
-        if(recipe!=null){
-            tip+="\n"+recipe.getInputDisplayName();
+        if(fuel!=null){
+            tip+="\n"+fuel.getDisplayName();
         }
         if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
-            if(recipe==null&&!template.fuelCellHasBaseStats)tip+="\nNo Fuel";
+            if(fuel==null)tip+="\nNo Fuel";
             tip+="\nFuel Cell "+(isFuelCellActive()?"Active":"Inactive");
             if(isFuelCellActive()){
                 tip+="\nAdjacent moderator lines: "+moderatorLines+"\n"
                         + "Heat Multiplier: "+MathUtil.percent(moderatorLines, 0)+"\n"
-                        + "Heat Produced: "+moderatorLines*(recipe==null?template.fuelCellHeat:recipe.fuelCellHeat)+"H/t\n"
+                        + "Heat Produced: "+moderatorLines*fuel.stats.heat+"H/t\n"
                         + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
                         + "Positional Efficiency: "+MathUtil.percent(positionalEfficiency, 0)+"\n"
                         + "Total Neutron Flux: "+neutronFlux+"\n"
-                        + "Criticality Factor: "+(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
+                        + "Criticality Factor: "+fuel.stats.criticality;
             }else{
                 tip+="\nTotal Neutron Flux: "+neutronFlux;
-                if(template.fuelCellHasBaseStats||recipe!=null){
-                    tip+="\nCriticality Factor: "+(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
-                }
+                if(fuel!=null)tip+="\nCriticality Factor: "+fuel.stats.criticality;
             }
             if(isPrimed()){
                 tip+="\nPrimed"
@@ -120,45 +91,32 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
         }
         if(isModerator()){
-            if(recipe==null&&!template.moderatorHasBaseStats)tip+="\nNo Recipe";
             tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"));
-            if(template.moderatorHasBaseStats||recipe!=null){
-                tip+="\nFlux Factor: "+(recipe==null?template.moderatorFlux:recipe.moderatorFlux)
-                        + "\nEfficiency Factor: "+(recipe==null?template.moderatorEfficiency:recipe.moderatorEfficiency);
-            }
+            tip+="\nFlux Factor: "+template.moderator.flux
+               + "\nEfficiency Factor: "+template.moderator.efficiency;
         }
         if(isReflector()){
-            if(recipe==null&&!template.reflectorHasBaseStats)tip+="\nNo Recipe";
             tip+="\nReflector "+(reflectorActive?"Active":"Inactive");
-            if(template.reflectorHasBaseStats||recipe!=null){
-                tip+="\nReflectivity: "+(recipe==null?template.reflectorReflectivity:recipe.reflectorReflectivity)
-                        + "\nEfficiency multiplier: "+(recipe==null?template.reflectorEfficiency:recipe.reflectorEfficiency);
-            }
+            tip+="\nReflectivity: "+template.reflector.reflectivity
+               + "\nEfficiency multiplier: "+template.reflector.efficiency;
         }
         if(isShield()){
-            if(recipe==null&&!template.shieldHasBaseStats)tip+="\nNo Recipe";
             tip+="\nShield "+(shieldActive?"Valid":"Invalid");
-            if(template.shieldHasBaseStats||recipe!=null){
                 tip+="\nTotal flux: "+neutronFlux
-                        + "\nHeat per flux: "+(recipe==null?template.shieldHeat:recipe.shieldHeat)
-                        + "\nTotal heat: "+(neutronFlux*(recipe==null?template.shieldHeat:recipe.shieldHeat))+" H/t"
-                        + "\nEfficiency factor: "+(recipe==null?template.shieldEfficiency:recipe.shieldEfficiency);
-            }
-            if(isToggled){
-                tip+="\nClosed";
-            }
+                        + "\nHeat per flux: "+template.neutronShield.heatPerFlux
+                        + "\nTotal heat: "+neutronFlux*template.neutronShield.heatPerFlux+" H/t"
+                        + "\nEfficiency factor: "+template.neutronShield.efficiency;
         }
         if(isIrradiator()){
-            if(recipe==null&&!template.irradiatorHasBaseStats)tip+="\nNo Recipe";
+            if(irradiatorRecipe==null)tip+="\nNo Recipe";
             tip+="\nIrradiator flux: "+neutronFlux;
-            if(template.irradiatorHasBaseStats||recipe!=null){
-                tip+="\nEfficiency bonus: "+MathUtil.percent(recipe==null?template.irradiatorEfficiency:recipe.irradiatorEfficiency,0)
-                        + "\nHeat per flux: "+(recipe==null?template.irradiatorHeat:recipe.irradiatorHeat)
-                        + "\nTotal heat: "+(recipe==null?template.irradiatorHeat:recipe.irradiatorHeat)*neutronFlux+"H/t";
+            if(irradiatorRecipe!=null){
+                tip+="\nEfficiency bonus: "+MathUtil.percent(irradiatorRecipe.stats.efficiency,0)
+                        + "\nHeat per flux: "+irradiatorRecipe.stats.heat
+                        + "\nTotal heat: "+irradiatorRecipe.stats.heat*neutronFlux+"H/t";
             }
         }
         if(isHeatsink()){
-            if(recipe==null&&!template.heatsinkHasBaseStats)tip+="\nNo Recipe";
             tip+="\nHeatsink "+(heatsinkValid?"Valid":"Invalid");
             //TODO show heatsink validity check errors
         }
@@ -179,85 +137,9 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         return tip;
     }
-    @Override
-    public String getListTooltip(){
-        String tip = getName();
-        if(isFuelCell()){
-            tip+="\nFuel Cell";
-            if(template.fuelCellHasBaseStats){
-                tip+="\nEfficiency: "+template.fuelCellEfficiency
-                        + "\nBase Heat: "+template.fuelCellHeat
-                        + "\nCriticality: "+template.fuelCellCriticality;
-                if(template.fuelCellSelfPriming)tip+="\nSelf-Priming";
-            }else if(template.allRecipes.size()==1){
-                tip+="\nEfficiency: "+template.allRecipes.get(0).fuelCellEfficiency
-                        + "\nBase Heat: "+template.allRecipes.get(0).fuelCellHeat
-                        + "\nCriticality: "+template.allRecipes.get(0).fuelCellCriticality;
-                if(template.allRecipes.get(0).fuelCellSelfPriming)tip+="\nSelf-Priming";
-            }
-        }
-        if(isModerator()){
-            tip+="\nModerator";
-            if(template.moderatorHasBaseStats){
-                tip+="\nFlux: "+template.moderatorFlux
-                        + "\nEfficiency: "+template.moderatorEfficiency;
-            }else if(template.allRecipes.size()==1){
-                tip+="\nFlux: "+template.allRecipes.get(0).moderatorFlux
-                        + "\nEfficiency: "+template.allRecipes.get(0).moderatorEfficiency;
-            }
-        }
-        if(isReflector()){
-            tip+="\nReflector";
-            if(template.reflectorHasBaseStats){
-                tip+="\nReflectivity: "+template.reflectorReflectivity
-                        + "\nEfficiency: "+template.reflectorEfficiency;
-            }else if(template.allRecipes.size()==1){
-                tip+="\nReflectivity: "+template.allRecipes.get(0).reflectorReflectivity
-                        + "\nEfficiency: "+template.allRecipes.get(0).reflectorEfficiency;
-            }
-        }
-        if(isShield()){
-            tip+="\nNeutron Shield";
-            if(template.shieldHasBaseStats){
-                tip+="\nHeat per flux: "+template.shieldHeat
-                        + "\nEfficiency: "+template.shieldEfficiency;
-            }else if(template.allRecipes.size()==1){
-                tip+="\nHeat per flux: "+template.allRecipes.get(0).shieldHeat
-                        + "\nEfficiency: "+template.allRecipes.get(0).shieldEfficiency;
-            }
-        }
-        if(isIrradiator()){
-            tip+="\nIrradiator";
-            if(template.irradiatorHasBaseStats){
-                tip+="\nEfficiency: "+template.irradiatorEfficiency
-                        +"\nHeat: "+template.irradiatorHeat;
-            }else if(template.allRecipes.size()==1){
-                tip+="\nEfficiency: "+template.allRecipes.get(0).irradiatorEfficiency
-                        +"\nHeat: "+template.allRecipes.get(0).irradiatorHeat;
-            }
-        }
-        if(isHeatsink()){
-            tip+="\nHeatsink";
-            if(template.heatsinkHasBaseStats){
-                tip+="\nCooling: "+template.heatsinkCooling+"H/t";
-            }else if(template.allRecipes.size()==1){
-                tip+="\nCooling: "+template.allRecipes.get(0).heatsinkCooling+"H/t";
-            }
-        }
-        if(isNeutronSource()){
-            tip+="\nNeutron Source";
-            tip+="\nEfficiency: "+template.sourceEfficiency;
-        }
-        for(AbstractPlacementRule<?, ?> rule : template.rules){
-            tip+="\nRequires "+rule.toString();
-        }
-        return tip;
-    }
     public boolean isPrimed(){
         if(!isFuelCell())return false;
-        if(template.fuelCellHasBaseStats||recipe!=null){
-            if(recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming)return true;//self-priming
-        }
+        if(fuel!=null&&fuel.stats.selfPriming)return true;
         return source!=null;
     }
     @Override
@@ -270,60 +152,55 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
     }
     @Override
     public boolean isValid(){
-        return isInert()||isActive()||moderatorValid;
+        return isConductor()||isActive()||moderatorValid;
     }
     public boolean isModeratorActive(){
-        if(!template.moderatorHasBaseStats&&recipe==null)return false;
-        return isModerator()&&moderatorActive&&(recipe==null?template.moderatorActive:recipe.moderatorActive);
+        return isModerator()&&moderatorActive;
     }
     public boolean isFuelCellActive(){
-        if(!template.fuelCellHasBaseStats&&recipe==null)return false;
-        return isFuelCell()&&neutronFlux>=(recipe==null?template.fuelCellCriticality:recipe.fuelCellCriticality);
+        if(fuel==null)return false;
+        return isFuelCell()&&neutronFlux>=fuel.stats.criticality;
     }
     public boolean isFuelCell(){
-        return template.fuelCell;
+        return template.fuelCell!=null;
     }
     public boolean isModerator(){
-        if(isToggled)return false;
-        return template.moderator;
+        return template.moderator!=null;
     }
     public boolean isReflector(){
-        return template.reflector;
+        return template.reflector!=null;
     }
     public boolean isIrradiator(){
-        return template.irradiator;
+        return template.irradiator!=null;
     }
     public boolean isIrradiatorActive(){
-        if(!template.irradiatorHasBaseStats&&recipe==null)return false;
+        if(irradiatorRecipe==null)return false;
         return isIrradiator()&&neutronFlux>0;
     }
     public boolean isShield(){
-        if(isToggled)return false;
-        return template.shield;
+        return template.neutronShield!=null;
     }
     public boolean isShieldActive(){
-        if(!template.shieldHasBaseStats&&recipe==null)return false;
         return isShield()&&shieldActive&&moderatorValid;
     }
     public boolean isHeatsink(){
-        return template.heatsink;
+        return template.heatsink!=null;
     }
     public boolean isHeatsinkActive(){
-        if(!template.heatsinkHasBaseStats&&recipe==null)return false;
         return isHeatsink()&&heatsinkValid;
     }
     public boolean isConductor(){
-        return template.conductor;
+        return template.conductor!=null;
     }
     public boolean isNeutronSource(){
-        return template.source;
+        return template.neutronSource!=null;
     }
     public boolean isFunctional(){
         if(canCluster()&&(cluster==null||!cluster.isCreated()))return false;
-        return template.functional&&(isActive()||moderatorValid);
+        return (isFuelCell()||isModerator()||isReflector()||isIrradiator()||isHeatsink()||isShield())&&(isActive()||moderatorValid);
     }
     public boolean canCluster(){
-        return (isActive()||isInert())&&template.cluster;
+        return isConductor()||(isActive()&&(isFuelCell()||isIrradiator()||isHeatsink()||isShield()));
     }
     @Override
     public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
@@ -333,10 +210,10 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         if(isModeratorActive()){
             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
         }
-        if(template.fuelCell&&(template.fuelCellHasBaseStats||recipe!=null)){
-            boolean self = recipe==null?template.fuelCellSelfPriming:recipe.fuelCellSelfPriming;
+        if(template.fuelCell!=null&&fuel!=null){
+            boolean self = fuel.stats.selfPriming;
             if(source!=null||self){
-                drawCircle(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorSourceCircle(source==null?1:source.template.sourceEfficiency, self), faceRenderFunc);
+                drawCircle(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorSourceCircle(source==null?1:source.template.neutronSource.efficiency, self), faceRenderFunc);
             }
         }
         OverhaulSFR.Cluster cluster = this.cluster;
@@ -380,79 +257,41 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
             }
         }
     }
-    public boolean isInert(){
-        return template.cluster&&!template.functional;
+    @Override
+    public List<? extends NCPFPlacementRule> getRules(){
+        if(template.heatsink!=null)return template.heatsink.rules;
+        return new ArrayList<>();
     }
     @Override
-    public boolean hasRules(){
-        return !template.rules.isEmpty();
-    }
-    @Override
-    public boolean calculateRules(Multiblock multiblock){
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> rule : template.rules){
-            if(!rule.isValid(this, (OverhaulSFR) multiblock)){
-                return false;
-            }
-        }
-        return true;
-    }
-    @Override
-    public boolean matches(net.ncplanner.plannerator.multiblock.Block template){
-        if(template==null)return false;
-        if(template instanceof Block){
-            return ((Block) template).template==this.template;
-        }
-        return false;
-    }
-    @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.Block oth){
-        if(template.heatsink)return requires(oth, null);
+    public boolean canRequire(AbstractBlock oth){
+        if(template.heatsink!=null)return requires(oth, null);
         Block other = (Block) oth;
-        if(template.fuelCell||template.reflector||template.irradiator||template.moderator)return other.template.moderator;
-        if(template.conductor)return other.template.cluster;
-        return false;
-    }
-    @Override
-    public boolean requires(net.ncplanner.plannerator.multiblock.Block oth, Multiblock mb){
-        if(!template.heatsink)return false;
-        Block other = (Block) oth;
-        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
-        if(totalDist>1)return false;//too far away
-        if(hasRules()){
-            for(AbstractPlacementRule<?, ?> rule : template.rules){
-                if(ruleHas((PlacementRule) rule, other))return true;
-            }
-        }
-        return false;
-    }
-    private boolean ruleHas(AbstractPlacementRule<?, ?> rule, Block b){
-        if(rule.block ==b.template)return true;
-        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
-        for(AbstractPlacementRule<?, ?> rul : rule.rules){
-            if(ruleHas(rul, b))return true;
-        }
+        if(template.fuelCell!=null||template.reflector!=null||template.irradiator!=null||template.moderator!=null)return other.template.moderator!=null;
+        if(template.conductor!=null)return (other.isFuelCell()||other.isHeatsink()||other.isIrradiator()||other.isShield()||other.isConductor());
         return false;
     }
     @Override
     public boolean canGroup(){
-        if(template.moderator)return false;
-        return template.heatsink;
+        if(template.moderator!=null)return false;
+        return template.heatsink!=null;
     }
     public net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block convertToMSR() throws MissingConfigurationEntryException{
-        if(template.coolantVent)return null;//remove vents
-        net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionMSR.convertToMSR(template));
-        b.recipe = b.template.convertToMSR(recipe);
+        if(template.coolantVent!=null)return null;//remove vents
+        net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, getConfiguration().getConfiguration(OverhaulMSRConfiguration::new).convertToMSR(template));
+        b.fuel = b.template.convertToMSR(fuel);
+        b.irradiatorRecipe = b.template.convertToMSR(irradiatorRecipe);
         if(b.template.heater&&b.recipe==null&&!b.template.allRecipes.isEmpty())b.recipe = b.template.allRecipes.get(0);
         return b;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.heatsink;
+        return template.heatsink!=null;
     }
     @Override
     public Block copy(){
         Block copy = new Block(getConfiguration(), x, y, z, template);
-        copy.recipe = recipe;
+        copy.fuel = fuel;
+        copy.irradiatorRecipe = irradiatorRecipe;
         copy.source = source;
         copy.hasPropogated = hasPropogated;
         copy.moderatorLines = moderatorLines;
@@ -465,24 +304,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         copy.shieldActive = shieldActive;
         copy.efficiency = efficiency;
         copy.cluster = cluster;//TODO probably shouldn't do that
-        copy.isToggled = isToggled;
         return copy;
     }
-    @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.Block other){
-        return other instanceof Block&&((Block)other).template==template;
-    }
-    @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
-        template = to.overhaul.fissionSFR.convert(template);
-        recipe = template.convert(recipe);
-        configuration = to;
-    }
     public boolean isCasing(){
-        return template.casing||template.parent!=null;//is explicitly casing or if it's a port
+        return template.casing!=null||template.port!=null;//is explicitly casing or if it's a port
     }
     public boolean isController(){
-        return template.controller;
+        return template.controller!=null;
     }
     /**
      * Adds a neutron source to this block
@@ -490,7 +318,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
      * @param source the source to add
      * @return If no block was replaced, the new source. Otherwise, the replaced block.
      */
-    public Block addNeutronSource(OverhaulSFR sfr, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block source){
+    public Block addNeutronSource(OverhaulSFR sfr, BlockElement source){
         HashMap<int[], Integer> possible = new HashMap<>();
         for(Direction d : Direction.values()){
             int i = 0;
@@ -502,7 +330,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
                 }
                 Block b = sfr.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
                 if(b==null)continue;//air
-                if(b.template.blocksLOS)break;
+                if(b.isFuelCell()||b.isIrradiator()||b.isReflector())break;
             }
         }
         ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
@@ -515,17 +343,11 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         }
         return null;
     }
-    private boolean tryAddNeutronSource(OverhaulSFR sfr, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block source, int X, int Y, int Z){
+    private boolean tryAddNeutronSource(OverhaulSFR sfr, BlockElement source, int X, int Y, int Z){
         Block b = sfr.getBlock(X, Y, Z);
-        if(b!=null&&(b.isController()||b.template.coolantVent||b.template.parent!=null||b.template.source))return false;
+        if(b!=null&&(b.isController()||b.template.coolantVent!=null||b.template.port!=null||b.template.neutronSource!=null))return false;
         sfr.setBlock(X, Y, Z, new Block(sfr.getConfiguration(), X, Y, Z, source));
         return true;
-    }
-    @Override
-    public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.Block against){
-        if(super.shouldRenderFace(against))return true;
-        if(template==((Block)against).template)return false;
-        return Core.hasAlpha(against.getBaseTexture());
     }
     @Override
     public ArrayList<String> getSearchableNames(){
@@ -538,19 +360,41 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return template.getSimpleSearchableNames();
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block getTemplate() {
+    public NCPFElement getTemplate(){
         return template;
     }
     @Override
-    public String getPinnedName(){
-        return template.getPinnedName();
-    }
-    @Override
     public boolean hasRecipes(){
-        return !template.allRecipes.isEmpty();
+        if(template.parent!=null)return template.parent.fuelCell!=null||template.parent.irradiator!=null;
+        return template.fuelCell!=null||template.irradiator!=null;
     }
     @Override
-    public ArrayList<BlockRecipe> getRecipes(){
-        return template.allRecipes;
+    public List<? extends IBlockRecipe> getRecipes(){
+        if(template.parent!=null)return template.parent.fuelCell!=null?template.parent.fuels:template.parent.irradiatorRecipes;
+        return isFuelCell()?template.fuels:template.irradiatorRecipes;
+    }
+    @Override
+    public NCPFElement getRecipe(){
+        if(template.parent!=null)return template.parent.fuelCell!=null?fuel:irradiatorRecipe;
+        return isFuelCell()?fuel:irradiatorRecipe;
+    }
+    @Override
+    public void setRecipe(NCPFElement recipe){
+        if(template.fuelCell!=null||template.parent!=null&&template.parent.fuelCell!=null)fuel = (Fuel)recipe;
+        else if(template.irradiator!=null||template.parent!=null&&template.parent.irradiator!=null)irradiatorRecipe = (IrradiatorRecipe)recipe;
+        else throw new IllegalArgumentException("Tried to set block recipe to "+template.definition.toString()+", but it can't have recipes!");
+    }
+    @Override
+    public boolean isToggled(){
+        return template.unToggled!=null;
+    }
+    @Override
+    public void setToggled(boolean toggled){
+        if(toggled==isToggled())return;
+        BlockElement newTemplate;
+        if(toggled)newTemplate = template.toggled;
+        else newTemplate = template.unToggled;
+        if(newTemplate==null)throw new IllegalArgumentException("Tried to "+(toggled?"":"un")+"toggle non-toggleable block: "+template.definition.toString());
+        template = newTemplate;
     }
 }

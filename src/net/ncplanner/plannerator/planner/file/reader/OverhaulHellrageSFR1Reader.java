@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 public class OverhaulHellrageSFR1Reader implements FormatReader{
@@ -34,7 +34,7 @@ public class OverhaulHellrageSFR1Reader implements FormatReader{
         sfr.coolantRecipe = Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes.get(0);
         JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
-            Block block = recovery.recoverOverhaulSFRBlock(name);
+            BlockElement block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = heatSinks.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
@@ -47,7 +47,7 @@ public class OverhaulHellrageSFR1Reader implements FormatReader{
         }
         JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
         for(String name : moderators.keySet()){
-            Block block = recovery.recoverOverhaulSFRBlock(name);
+            BlockElement block = recovery.recoverOverhaulSFRBlock(name);
             JSON.JSONArray array = moderators.getJSONArray(name);
             for(Object blok : array){
                 String blokLoc = (String) blok;
@@ -60,8 +60,8 @@ public class OverhaulHellrageSFR1Reader implements FormatReader{
         }
         JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
         if(conductors!=null){
-            Block conductor = null;
-            for(Block blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            BlockElement conductor = null;
+            for(BlockElement blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
                 if(blok.conductor!=null)conductor = blok;
             }
             if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
@@ -74,21 +74,21 @@ public class OverhaulHellrageSFR1Reader implements FormatReader{
                 sfr.design[x][y][z] = conductor;
             }
         }
-        Block cell = null;
-        for(Block blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+        BlockElement cell = null;
+        for(BlockElement blok : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
             if(blok.fuelCell!=null)cell = blok;
         }
         if(cell==null)throw new IllegalArgumentException("Configuration has no fuel cells!");
         JSON.JSONObject fuelCells = hellrage.getJSONObject("FuelCells");
-        HashMap<int[], Block> sources = new HashMap<>();
+        HashMap<int[], BlockElement> sources = new HashMap<>();
         for(String name : fuelCells.keySet()){
             String[] fuelSettings = StringUtil.split(name, ";");
             String fuelName = fuelSettings[0];
             boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
             Fuel fuel = recovery.recoverOverhaulSFRFuel(cell, fuelName);
-            Block src = null;
+            BlockElement src = null;
             float highest = 0;
-            for(Block scr : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            for(BlockElement scr : Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
                 if(scr.neutronSource!=null&&scr.neutronSource.efficiency>highest){
                     src = scr;
                     highest = src.neutronSource.efficiency;

@@ -19,7 +19,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule;
-public class Block extends NCPFElement implements BlockRecipesElement{
+public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -38,11 +38,11 @@ public class Block extends NCPFElement implements BlockRecipesElement{
     public List<HeaterRecipe> heaterRecipes = new ArrayList<>();
     public List<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
     
-    public Block parent;//not saved, the parent block for this port
-    public Block unToggled;//not saved, the untoggled version of this block
-    public Block toggled;//not saved, the toggled version of this block
-    public Block(){}
-    public Block(NCPFElementDefinition definition){
+    public BlockElement parent;//not saved, the parent block for this port
+    public BlockElement unToggled;//not saved, the untoggled version of this block
+    public BlockElement toggled;//not saved, the toggled version of this block
+    public BlockElement(){}
+    public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
     @Override

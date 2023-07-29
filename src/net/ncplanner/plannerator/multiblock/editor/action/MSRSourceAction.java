@@ -35,7 +35,7 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
         if(pWas!=null)multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
     }
     @Override
-    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
         blocks.add(multiblock.getBlock(vessel.x, vessel.y, vessel.z));
     }
 }

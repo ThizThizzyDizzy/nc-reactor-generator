@@ -23,8 +23,11 @@ public class NCPFItemElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFItemElement other = (NCPFItemElement) definition;
-        return name.equals(other.name)&&Objects.equals(nbt, other.nbt);
+        if(definition instanceof NCPFItemElement){
+            NCPFItemElement other = (NCPFItemElement) definition;
+            return name.equals(other.name)&&Objects.equals(nbt, other.nbt);
+        }
+        return false;
     }
     @Override
     public String getName(){

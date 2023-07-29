@@ -24,7 +24,7 @@ public class NCPFElementReference extends DefinedNCPFObject{
     public void setReferences(List<NCPFElement> elements){
         for(NCPFElement elem : elements){
             if(elem.definition.matches(definition)){
-                if(target!=null)throw new IllegalArgumentException("Element Reference matches more than one element!");
+                if(target!=null)throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
                 target = elem;
             }
         }

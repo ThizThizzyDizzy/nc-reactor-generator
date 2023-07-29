@@ -30,6 +30,6 @@ public class PlacementRule extends NCPFPlacementRule{
             if(target.definition.typeMatches(NCPFModuleElement::new)){
                 target = blockType = target.copyTo(NCPFModuleReference::new);
             }else target = block = target.copyTo(BlockReference::new);
-        }else if(target!=null)target.setReferences(lst);
+        }else if(!rule.hasSubRules)target.setReferences(lst);
     }
 }

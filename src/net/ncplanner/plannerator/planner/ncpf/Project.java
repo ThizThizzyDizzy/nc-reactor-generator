@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.planner.ncpf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFAddon;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -28,12 +30,23 @@ public class Project extends NCPFFile{
         setModule(metadata);
         super.addons = copyList(addons, NCPFAddon::new);
         super.convertToObject(ncpf);
-        copyList(designs, super.designs, ()->new NCPFDesign(this));
+        super.designs = copyList(designs, ()->new NCPFDesign(this));
         super.convertToObject(ncpf);
     }
     @Override
+    public void conglomerate(){
+        conglomeration = new NCPFConfigurationContainer();
+        conglomeration.conglomerate(configuration);
+        for(Addon addon : addons){
+            conglomeration.conglomerate(addon.configuration);
+        }
+        conglomeration.setReferences();
+    }
     public <T extends NCPFConfiguration> T getConfiguration(Supplier<T> config){
         return conglomeration.getConfiguration(config);
+    }
+    public <T extends NCPFConfiguration> void withConfiguration(Supplier<T> config, Consumer<T> func){
+        conglomeration.withConfiguration(config, func);
     }
     public String getCrashReportData(){
         String s = "Configurations: "+configuration.configurations.size()+"\n";

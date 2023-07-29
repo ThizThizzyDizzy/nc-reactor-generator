@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -25,5 +25,5 @@ public class SetFusionRecipeAction extends Action<OverhaulFusionReactor>{
         editor.setFusionRecipe(multiblock.getConfiguration().overhaul.fusion.allRecipes.indexOf(((OverhaulFusionReactor)multiblock).recipe));
     }
     @Override
-    public void getAffectedBlocks(OverhaulFusionReactor multiblock, ArrayList<Block> blocks){}
+    public void getAffectedBlocks(OverhaulFusionReactor multiblock, ArrayList<AbstractBlock> blocks){}
 }

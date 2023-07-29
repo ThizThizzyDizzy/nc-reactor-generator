@@ -6,6 +6,10 @@ public class PortModule extends BlockFunctionModule{
     public PortModule(){
         super("nuclearcraft:overhaul_msr:port");
     }
+    public PortModule(boolean output){
+        this();
+        this.output = output;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         output = ncpf.getBoolean("output");

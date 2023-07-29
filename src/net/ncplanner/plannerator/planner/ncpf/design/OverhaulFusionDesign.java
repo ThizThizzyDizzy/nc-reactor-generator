@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
@@ -12,7 +12,7 @@ public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
     public int innerRadius, coreSize, toroidWidth, liningThickness;
     public Recipe recipe;
     public CoolantRecipe coolantRecipe;
-    public Block[][][] design;
+    public BlockElement[][][] design;
     public BreedingBlanketRecipe[][][] breedingBlanketRecipes;
     public OverhaulFusionDesign(NCPFFile file){
         super(file);
@@ -23,7 +23,7 @@ public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
         this.coreSize = coreSize;
         this.toroidWidth = toroidWidth;
         this.liningThickness = liningThickness;
-        design = new Block[width()][height()][width()];
+        design = new BlockElement[width()][height()][width()];
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -34,7 +34,7 @@ public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
         toroidWidth = dims.getInteger(2);
         liningThickness = dims.getInteger(3);
         OverhaulFusionConfiguration config = definition.getConfiguration();
-        design = new Block[width()][height()][width()];
+        design = new BlockElement[width()][height()][width()];
         recipe = config.recipes.get(ncpf.getInteger("recipe"));
         coolantRecipe = config.coolantRecipes.get(ncpf.getInteger("coolant_recipe"));
         ncpf.getDefined3DArray("design", design, config.blocks);

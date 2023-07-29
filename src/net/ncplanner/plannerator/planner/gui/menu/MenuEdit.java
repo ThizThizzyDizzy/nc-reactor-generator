@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
@@ -22,13 +22,8 @@ import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.ClearSelectionAction;
 import net.ncplanner.plannerator.multiblock.editor.action.DeselectAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SelectAction;
-import net.ncplanner.plannerator.multiblock.editor.action.SetCoolantRecipeAction;
-import net.ncplanner.plannerator.multiblock.editor.action.SetFuelAction;
-import net.ncplanner.plannerator.multiblock.editor.action.SetFusionCoolantRecipeAction;
-import net.ncplanner.plannerator.multiblock.editor.action.SetFusionRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetMultiblockRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetSelectionAction;
-import net.ncplanner.plannerator.multiblock.editor.action.SetTurbineRecipeAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -85,7 +80,6 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
@@ -101,7 +95,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private float scrollMagnitude = 1;
     private double zoomScrollMagnitude = 0.5;
     private double scaleFac = 1.5;
-    private Block lastSelectedBlock;
+    private AbstractBlock lastSelectedBlock;
     private boolean autoRecalc = true;
     {
         editorTools.add(new MoveTool(this, 0));
@@ -497,13 +491,13 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         super.drawForeground(deltaTime);
     }
     @Override
-    public Block getSelectedBlock(int id){
+    public AbstractBlock getSelectedBlock(int id){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        if(parts.components.isEmpty())return ((Multiblock<Block>)multiblock).getAvailableBlocks().get(0);
+        if(parts.components.isEmpty())return ((Multiblock<AbstractBlock>)multiblock).getAvailableBlocks().get(0);
         if(parts.getSelectedIndex()==-1)return null;
         return ((MenuComponentEditorListBlock) parts.components.get(parts.getSelectedIndex())).block;
     }
-    public void setSelectedBlock(Block block){//and recipe too
+    public void setSelectedBlock(AbstractBlock block){//and recipe too
         if(block==null)return;
         boolean hasPart = false;
         for(Component c : parts.components){
@@ -761,7 +755,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -771,7 +765,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -781,7 +775,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             select(id, is);
@@ -795,7 +789,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);
@@ -805,7 +799,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);
@@ -815,7 +809,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
             if(c==null)return;
             ArrayList<int[]> is = new ArrayList<>();
-            for(Block b : c.blocks){
+            for(AbstractBlock b : c.blocks){
                 is.add(new int[]{b.x,b.y,b.z});
             }
             deselect(id, is);
@@ -824,13 +818,13 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     @Override
     public void selectGroup(int id, int x, int y, int z){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
             selectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
-        for(Block b : g){
+        for(AbstractBlock b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
         select(id, is);
@@ -838,13 +832,13 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     @Override
     public void deselectGroup(int id, int x, int y, int z){
         if(id!=0)throw new IllegalArgumentException("Standard editor only supports one cursor!");
-        ArrayList<Block> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
         if(g==null){
             deselectAll(id);
             return;
         }
         ArrayList<int[]> is = new ArrayList<>();
-        for(Block b : g){
+        for(AbstractBlock b : g){
             is.add(new int[]{b.x,b.y,b.z});
         }
         deselect(id, is);
@@ -885,7 +879,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 }
                 if(x==-1||y==-1||z==-1)return;
                 for(int[] is : selection){
-                    Block b = multiblock.getBlock(is[0], is[1], is[2]);
+                    AbstractBlock b = multiblock.getBlock(is[0], is[1], is[2]);
                     clipboard.add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
                 }
             }
@@ -1127,21 +1121,23 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         NCPFElement currentBlock = getSelectedBlock(0).getTemplate();
         if(currentBlock instanceof BlockRecipesElement){
             List<? extends NCPFElement> recipes = ((BlockRecipesElement)currentBlock).getBlockRecipes();
-            for(NCPFElement recipe : recipes){
-                blockRecipe.add(new MenuComponentElement(recipe));
+            if(recipes!=null){
+                for(NCPFElement recipe : recipes){
+                    blockRecipe.add(new MenuComponentElement(recipe));
+                }
             }
         }
         if(!blockRecipe.list.components.isEmpty())blockRecipe.setSelectedIndex(blockRecipe.allComponents.indexOf(blockRecipe.list.components.get(0)));
         for(int i = 0; i<blockRecipe.allComponents.size(); i++)if(was==((MenuComponentElement)blockRecipe.allComponents.get(i)).element)blockRecipe.setSelectedIndex(i);
     }
     public synchronized void refreshPartsList(){
-        List<Block> availableBlocks = ((Multiblock<Block>)multiblock).getAvailableBlocks();
-        ArrayList<Block> searchedAvailable = Pinnable.searchAndSort(availableBlocks, partsSearch.text);
-        Block selectedBlock = getSelectedBlock(0);
+        List<AbstractBlock> availableBlocks = ((Multiblock<AbstractBlock>)multiblock).getAvailableBlocks();
+        ArrayList<AbstractBlock> searchedAvailable = Pinnable.searchAndSort(availableBlocks, partsSearch.text);
+        AbstractBlock selectedBlock = getSelectedBlock(0);
         int i = 0;
         int idx = 0;
         parts.components.clear();
-        for(Block availableBlock : searchedAvailable){
+        for(AbstractBlock availableBlock : searchedAvailable){
             parts.add(new MenuComponentEditorListBlock(this, availableBlock));
             if(selectedBlock.isEqual(availableBlock))idx = i;
             i++;
@@ -1156,7 +1152,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
         renderer.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,bbox.getWidth()+blockSize/32,bbox.getHeight()+blockSize/32,bbox.getDepth()+blockSize/32,blockSize/24);
         multiblock.forEachPosition((x, y, z) -> {//solid stuff
-            Block block = multiblock.getBlock(x, y, z);
+            AbstractBlock block = multiblock.getBlock(x, y, z);
             int xx = x;
             int yy = y;
             int zz = z;
@@ -1167,7 +1163,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             if(block!=null){
                 block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
-                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return block.shouldRenderFace(b);
                 });
             }
@@ -1188,7 +1184,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 for(Suggestion s : getSuggestions()){
                     if(s.affects(x, y, z)){
                         if(s.selected&&s.result!=null){
-                            Block b = s.result.getBlock(x, y, z);
+                            AbstractBlock b = s.result.getBlock(x, y, z);
                             renderer.setWhite(resonatingAlpha+.5f);
                             float brdr = blockSize/64;
                             if(b==null){
@@ -1251,7 +1247,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             }
         }
         multiblock.forEachPosition((x, y, z) -> {//transparent stuff
-            Block block = multiblock.getBlock(x, y, z);
+            AbstractBlock block = multiblock.getBlock(x, y, z);
             int xx = x;
             int yy = y;
             int zz = z;
@@ -1263,14 +1259,14 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 renderer.setWhite();
                 renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImage("overhaul/fusion/plasma"), (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
-                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     if(((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA)return true;
                     return b==null||Core.hasAlpha(b.getBaseTexture());
                 });
             }
             if(isControlPressed(0)){
                 if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
-                    for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
+                    for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
                         if(space.isSpaceValid(getSelectedBlock(0), x, y, z)&&multiblock.isValid(getSelectedBlock(0), x, y, z)){
                             getSelectedBlock(0).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, multiblock, (t) -> {
                                 return true;
@@ -1289,12 +1285,12 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 renderer.setColor(convertToolColor(Core.theme.getSelectionColor(), 0), .5f);
                 renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
-                    Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    AbstractBlock o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return !isSelected(0, xx+t.x, yy+t.y, zz+t.z)&&o==null;
                 });
             }
         });
-        for(EditorSpace space : ((Multiblock<Block>)multiblock).getEditorSpaces()){
+        for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
             getSelectedTool(0).drawVRGhosts(renderer, space, 0, 0, 0, 1, 1, 1, blockSize, getSelectedBlock(0)==null?null:getSelectedBlock(0).getTexture());
         }
     }

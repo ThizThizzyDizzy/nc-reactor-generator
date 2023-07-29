@@ -65,7 +65,7 @@ import net.ncplanner.plannerator.discord.play.smivilization.HutType;
 import net.ncplanner.plannerator.discord.play.smivilization.Placement;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
@@ -285,7 +285,7 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 multiblock = template.newInstance(configuration);
-                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
+                ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
                 if(multiblock instanceof CuboidalMultiblock){
                     CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
                     if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
@@ -297,10 +297,10 @@ public class Bot extends ListenerAdapter{
                         return;
                     }
                 }
-                ArrayList<Block> availableBlocks = new ArrayList<>();
+                ArrayList<AbstractBlock> availableBlocks = new ArrayList<>();
                 multiblock.getAvailableBlocks(availableBlocks);
                 FOR:for(Range<String> range : stringRanges){
-                    for(Block block : availableBlocks){
+                    for(AbstractBlock block : availableBlocks){
                         if(block.roughMatch(range.obj)){
                             blockRanges.add(new Range(block, range.min, range.max));
                             continue FOR;
@@ -335,11 +335,11 @@ public class Bot extends ListenerAdapter{
                 if(multiblock instanceof OverhaulSFR){
                     ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
                     net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe defaultRecipe = null;
-                    for(Block b : availableBlocks){
+                    for(AbstractBlock b : availableBlocks){
                         if(((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.fuelCell&&defaultRecipe==null)defaultRecipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.get(0);
                     }
                     FUEL:for(String str : fuelStrings){
-                        for(Block b : availableBlocks){
+                        for(AbstractBlock b : availableBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
                                 if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
                                     sfrRecipes.add(recipe);
@@ -362,11 +362,11 @@ public class Bot extends ListenerAdapter{
                 if(multiblock instanceof OverhaulMSR){
                     ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
                     net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe defaultRecipe = null;
-                    for(Block b : availableBlocks){
+                    for(AbstractBlock b : availableBlocks){
                         if(((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.fuelVessel&&defaultRecipe==null)defaultRecipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.get(0);
                     }
                     FUEL:for(String str : fuelStrings){
-                        for(Block b : availableBlocks){
+                        for(AbstractBlock b : availableBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
                                 if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
                                     msrRecipes.add(recipe);
@@ -538,13 +538,13 @@ public class Bot extends ListenerAdapter{
                 }else{
                     throw new IllegalArgumentException("I don't know how to use this generator: "+generator.getClass().getName());
                 }
-                ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
-                for(Range<Block> range : blockRanges){
+                ArrayList<Range<AbstractBlock>> allowedBlocks = new ArrayList<>();
+                for(Range<AbstractBlock> range : blockRanges){
                     if(range.min==0&&range.max==0)continue;
                     allowedBlocks.add(range);
                 }
-                FOR:for(Block b : availableBlocks){
-                    for(Range<Block> range : blockRanges){
+                FOR:for(AbstractBlock b : availableBlocks){
+                    for(Range<AbstractBlock> range : blockRanges){
                         if(range.obj==b)continue FOR;
                     }
                     if(b.defaultEnabled())allowedBlocks.add(new Range(b, 0));
@@ -734,7 +734,7 @@ public class Bot extends ListenerAdapter{
                     return;
                 }
                 multiblock = template.newInstance(configuration);
-                ArrayList<Range<Block>> blockRanges = new ArrayList<>();
+                ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
                 if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
                 if(x==0&&y==0&&z==0){
                     //this is fine.
@@ -751,10 +751,10 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                 }
-                ArrayList<Block> availableBlocks = new ArrayList<>();
+                ArrayList<AbstractBlock> availableBlocks = new ArrayList<>();
                 multiblock.getAvailableBlocks(availableBlocks);
                 FOR:for(Range<String> range : stringRanges){
-                    for(Block block : availableBlocks){
+                    for(AbstractBlock block : availableBlocks){
                         if(block.roughMatch(range.obj)){
                             blockRanges.add(new Range(block, range.min, range.max));
                             continue FOR;
@@ -784,7 +784,7 @@ public class Bot extends ListenerAdapter{
                 if(multiblock instanceof OverhaulSFR){
                     ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
-                        for(Block b : availableBlocks){
+                        for(AbstractBlock b : availableBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
                                 if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
                                     sfrRecipes.add(recipe);
@@ -806,7 +806,7 @@ public class Bot extends ListenerAdapter{
                 if(multiblock instanceof OverhaulMSR){
                     ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
                     FUEL:for(String str : fuelStrings){
-                        for(Block b : availableBlocks){
+                        for(AbstractBlock b : availableBlocks){
                             for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
                                 if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
                                     msrRecipes.add(recipe);
@@ -945,7 +945,7 @@ public class Bot extends ListenerAdapter{
                                         }
                                     }
                                 }
-                                for(Range<Block> range : blockRanges){
+                                for(Range<AbstractBlock> range : blockRanges){
                                     int count = m.count(range.obj);
                                     if(count<range.min)continue MULTIBLOCK;
                                     if(count>range.max)continue MULTIBLOCK;

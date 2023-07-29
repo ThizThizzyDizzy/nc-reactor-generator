@@ -2,8 +2,6 @@ package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -19,11 +17,6 @@ import net.ncplanner.plannerator.multiblock.editor.decal.BlockInvalidDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.BlockValidDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.MissingCasingDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.UnderhaulModeratorLineDecal;
-import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
-import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
-import net.ncplanner.plannerator.multiblock.editor.ppe.SmartFillUnderhaulSFR;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
@@ -37,11 +30,9 @@ import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 public class UnderhaulSFR extends CuboidalMultiblock<Block> {
@@ -66,7 +57,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     }
     public UnderhaulSFR(NCPFConfigurationContainer configuration, int x, int y, int z, Fuel fuel){
         super(configuration, x, y, z);
-        this.fuel = fuel==null?(exists()?getConfiguration().getConfiguration(UnderhaulSFRConfiguration::new).fuels.get(0):null):fuel;
+        this.fuel = fuel==null?(exists()?getSpecificConfiguration().fuels.get(0):null):fuel;
     }
     @Override
     public UnderhaulSFRConfiguration getSpecificConfiguration(){
@@ -89,7 +80,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     @Override
     public void getAvailableBlocks(List<Block> blocks){
         if(getSpecificConfiguration()==null)return;
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block : getSpecificConfiguration().blocks){
+        for(BlockElement block : getSpecificConfiguration().blocks){
             blocks.add(new Block(getConfiguration(),-1,-1,-1,block));
         }
     }
@@ -294,75 +285,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public boolean validate(){
         return false;
     }
-    @Override
-    public boolean exists(){
-        return super.exists()&&getSpecificConfiguration()!=null;
-    }
-    @Override
-    public void addGeneratorSettings(SingleColumnList multiblockSettings){}
     private boolean isValid(){
         return power>0;
-    }
-    @Override
-    public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<UnderhaulSFR>("Valid (>0 output)", true, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                if(main.isValid()&&!other.isValid())return 1;
-                if(!main.isValid()&&other.isValid())return -1;
-                return 0;
-            }
-        });
-        priorities.add(new Priority<UnderhaulSFR>("Stability", false, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
-            }
-        });
-        priorities.add(new Priority<UnderhaulSFR>("Efficiency", true, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return main.efficiency-other.efficiency;
-            }
-        });
-        priorities.add(new Priority<UnderhaulSFR>("Output", true, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return main.power-other.power;
-            }
-        });
-        priorities.add(new Priority<UnderhaulSFR>("Minimize Heat", false, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return other.heat-main.heat;
-            }
-        });
-        priorities.add(new Priority<UnderhaulSFR>("Fuel usage", true, true){
-            @Override
-            protected double doCompare(UnderhaulSFR main, UnderhaulSFR other){
-                return main.cells-other.cells;
-            }
-        });
-        for(Module m : Core.modules){
-            if(m.isActive())m.getGenerationPriorities(this, priorities);
-        }
-    }
-    @Override
-    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
-        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3), priorities.get(4)).addAlternative("Efficient"));
-        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2), priorities.get(4)).addAlternative("Power"));
-        presets.add(new Priority.Preset("Fuel Usage (Burner)", priorities.get(0), priorities.get(1), priorities.get(5), priorities.get(4), priorities.get(3), priorities.get(2)).addAlternative("Fuel Usage").addAlternative("Speed").addAlternative("Cell Count").addAlternative("Breeder").addAlternative("Burner").addAlternative("Fast"));
-    }
-    @Override
-    public void getSymmetries(ArrayList<Symmetry> symmetries){
-        symmetries.add(AxialSymmetry.X);
-        symmetries.add(AxialSymmetry.Y);
-        symmetries.add(AxialSymmetry.Z);
-    }
-    @Override
-    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        postProcessingEffects.add(new ClearInvalid());
-        postProcessingEffects.add(new SmartFillUnderhaulSFR());
     }
     @Override
     public UnderhaulSFR blankCopy(){
@@ -384,10 +308,6 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         return copy;
     }
     @Override
-    protected int doCount(Object o){
-        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
-    }
-    @Override
     public String getGeneralName(){
         return "Reactor";
     }
@@ -395,8 +315,6 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public boolean isCompatible(Multiblock<Block> other){
         return ((UnderhaulSFR)other).fuel==fuel;
     }
-    @Override
-    protected void getFluidOutputs(ArrayList<FluidStack> outputs){}
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}
     @Override
@@ -682,11 +600,11 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
     public void buildDefaultCasing(){
         Block casing = null;
         Block controller = null;
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template : getSpecificConfiguration().blocks){
+        for(BlockElement template : getSpecificConfiguration().blocks){
             if(template.casing!=null)casing = new Block(getConfiguration(), 0, 0, 0, template);
             if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
         }
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
+        for(BlockElement template : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
             if(casing==null&&template.casing!=null)casing = new Block(getConfiguration(), 0, 0, 0, template);
             if(controller==null&&template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
         }

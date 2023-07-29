@@ -631,9 +631,8 @@ public class Core{
         vsync = vs;
     }
     public static void setConfiguration(NCPFConfigurationContainer configuration){
-        configuration.configurations.remove(new OverhaulSFRConfiguration().name);//TODO don do dat
         configuration.configurations.remove(new OverhaulMSRConfiguration().name);
-        configuration.configurations.remove(new OverhaulTurbineConfiguration().name);
+        configuration.configurations.remove(new OverhaulTurbineConfiguration().name);//TODO don do dat
         project.conglomeration = project.configuration = configuration;
 //        project.conglomerate();//TODO this duplicates references!
     }

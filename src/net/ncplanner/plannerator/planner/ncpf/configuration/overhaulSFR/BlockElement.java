@@ -20,7 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
-public class Block extends NCPFElement implements BlockRecipesElement{
+public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
@@ -39,11 +39,11 @@ public class Block extends NCPFElement implements BlockRecipesElement{
     public List<Fuel> fuels = new ArrayList<>();
     public List<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
     
-    public Block parent;//not saved, the parent block for this port
-    public Block unToggled;//not saved, the untoggled version of this block
-    public Block toggled;//not saved, the toggled version of this block
-    public Block(){}
-    public Block(NCPFElementDefinition definition){
+    public BlockElement parent;//not saved, the parent block for this port
+    public BlockElement unToggled;//not saved, the untoggled version of this block
+    public BlockElement toggled;//not saved, the toggled version of this block
+    public BlockElement(){}
+    public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
     @Override
@@ -75,6 +75,15 @@ public class Block extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public List<? extends NCPFElement> getBlockRecipes(){
-        return pickNotEmpty(fuels, irradiatorRecipes);
+        if(fuelCell!=null)return fuels;
+        if(irradiator!=null)return irradiatorRecipes;
+        if(parent!=null)return parent.getBlockRecipes();
+        return null;
+    }
+    public boolean blocksLOS(){
+        return fuelCell!=null||irradiator!=null||reflector!=null;
+    }
+    public boolean createsCluster(){
+        return fuelCell!=null||irradiator!=null||neutronShield!=null;
     }
 }

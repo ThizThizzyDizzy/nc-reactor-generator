@@ -36,7 +36,7 @@ public class MenuComponentMultiblock extends Component{
     @Override
     public void draw(double deltaTime){
         Renderer renderer = new Renderer();
-        ArrayList<FluidStack> outs = multiblock.getFluidOutputs();
+        ArrayList<FluidStack> outs = new ArrayList<>();//TODO global recipe stuff
         boolean has = false;
         if(main.settingInputs!=null){
             for(FluidStack s : outs)if(s.name.equals(main.settingInputs.recipe.inputName))has = true;

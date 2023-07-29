@@ -14,7 +14,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.InletModule
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.OutletModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ShaftModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
-public class Block extends NCPFElement{
+public class BlockElement extends NCPFElement{
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
     public BladeModule blade;
@@ -27,8 +27,8 @@ public class Block extends NCPFElement{
     public CasingModule casing;
     public InletModule inlet;
     public OutletModule outlet;
-    public Block(){}
-    public Block(NCPFElementDefinition definition){
+    public BlockElement(){}
+    public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
     @Override

@@ -44,7 +44,7 @@ import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-public abstract class Multiblock<T extends Block>{
+public abstract class Multiblock<T extends AbstractBlock>{
     public long lastChangeTime;
     public Stack<Action> history = new Stack<>();
     public Stack<Action> future = new Stack<>();
@@ -239,7 +239,7 @@ public abstract class Multiblock<T extends Block>{
     public void draw3D(){
         ArrayList<T> blocks = getBlocks(true);
         Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
-        Block last = null;
+        AbstractBlock last = null;
         Renderer renderer = new Renderer();
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
@@ -263,7 +263,7 @@ public abstract class Multiblock<T extends Block>{
             int d2 = o2.z-o2.x;
             return d1-d2;
         });
-        Block last = null;
+        AbstractBlock last = null;
         Renderer renderer = new Renderer();
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
@@ -386,7 +386,7 @@ public abstract class Multiblock<T extends Block>{
     public boolean exists(){
         for(Multiblock m : Core.multiblockTypes){
             if(m.getDefinitionName().equals(getDefinitionName())){
-                return true;
+                return getSpecificConfiguration()!=null;
             }
         }
         return false;
@@ -417,11 +417,13 @@ public abstract class Multiblock<T extends Block>{
         if(allowUndo)history.push(action);
     }
     public void recalculate(){
+        forceRescan = true;
         while(calculationPaused)recalcStep();
         List<T> blox = getBlocks();
         clearData(blox);
         validate();
         calculate(blox);
+        forceRescan = false;
     }
     private void recalculate(ActionResult result){
         forceRescan = true;
@@ -484,34 +486,6 @@ public abstract class Multiblock<T extends Block>{
         }
         return group;
     }
-    public abstract void addGeneratorSettings(SingleColumnList multiblockSettings);
-    public ArrayList<Priority> getGenerationPriorities(){
-        ArrayList<Priority> priorities = new ArrayList<>();
-        getGenerationPriorities(priorities);
-        return priorities;
-    }
-    public abstract void getGenerationPriorities(ArrayList<Priority> priorities);
-    public ArrayList<Priority.Preset> getGenerationPriorityPresets(){
-        return getGenerationPriorityPresets(getGenerationPriorities());
-    }
-    public ArrayList<Priority.Preset> getGenerationPriorityPresets(ArrayList<Priority> priorities){
-        ArrayList<Priority.Preset> presets = new ArrayList<>();
-        getGenerationPriorityPresets(priorities, presets);
-        return presets;
-    }
-    public abstract void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets);
-    public ArrayList<Symmetry> getSymmetries(){
-        ArrayList<Symmetry> symmetries = new ArrayList<>();
-        getSymmetries(symmetries);
-        return symmetries;
-    }
-    public abstract void getSymmetries(ArrayList<Symmetry> symmetries);
-    public ArrayList<PostProcessingEffect> getPostProcessingEffects(){
-        ArrayList<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
-        getPostProcessingEffects(postProcessingEffects);
-        return postProcessingEffects;
-    }
-    public abstract void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects);
     public void queueAction(Action action){
         queue.enqueue(action);
     }
@@ -577,7 +551,7 @@ public abstract class Multiblock<T extends Block>{
         if(o==null){
             int[] total = new int[1];
             forEachPosition((x,y,z) -> {
-                Block block = getBlock(x,y,z);
+                AbstractBlock block = getBlock(x,y,z);
                 for(Action a : queue){
                     if(a instanceof SetblockAction){
                         SetblockAction set = (SetblockAction)a;
@@ -588,16 +562,25 @@ public abstract class Multiblock<T extends Block>{
             });
             return total[0];
         }
-        if(o instanceof Block){
+        if(o instanceof AbstractBlock){
             return getBlocks((T)o);
         }
-        return doCount(o);
+        if(o instanceof NCPFElement){
+            int[] count = new int[1];
+            NCPFElement r = (NCPFElement)o;
+            forEachPosition((x, y, z) -> {
+                T b = getBlock(x, y, z);
+                if(b==null)return;
+                if(b.getRecipe()==r)count[0]++;
+            });
+            return count[0];
+        }
+        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
     }
-    protected abstract int doCount(Object o);
     public int getBlocks(T type){
         int[] total = new int[1];
         forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
+            AbstractBlock block = getBlock(x, y, z);
             for(Action a : queue){
                 if(a instanceof SetblockAction){
                     SetblockAction set = (SetblockAction)a;
@@ -630,12 +613,6 @@ public abstract class Multiblock<T extends Block>{
         return configuration;
     }
     public abstract NCPFConfiguration getSpecificConfiguration();
-    public final ArrayList<FluidStack> getFluidOutputs(){
-        ArrayList<FluidStack> outputs = new ArrayList<>();
-        getFluidOutputs(outputs);
-        return outputs;
-    }
-    protected abstract void getFluidOutputs(ArrayList<FluidStack> outputs);
     public final ArrayList<PartCount> getPartsList(){
         ArrayList<PartCount> parts = new ArrayList<>();
         getMainParts(parts);
@@ -659,8 +636,8 @@ public abstract class Multiblock<T extends Block>{
         }
     }
     protected abstract void getExtraParts(ArrayList<PartCount> parts);
-    public boolean isValid(Block block, int x, int y, int z){
-        Block b = block.newInstance(x, y, z);
+    public boolean isValid(AbstractBlock block, int x, int y, int z){
+        AbstractBlock b = block.newInstance(x, y, z);
         for(NCPFPlacementRule rule : b.getRules()){
             if(!rule.isValid(b, this)){
                 return false;
@@ -668,7 +645,7 @@ public abstract class Multiblock<T extends Block>{
         }
         return true;
     }
-    public boolean isValid(Block block, int x, int y, int z, T assumingBlock, int assumingX, int assumingY, int assumingZ){
+    public boolean isValid(AbstractBlock block, int x, int y, int z, T assumingBlock, int assumingX, int assumingY, int assumingZ){
         T was = getBlock(assumingX, assumingY, assumingZ);
         setBlockExact(assumingX, assumingY, assumingZ, assumingBlock);
         boolean ret = isValid(block, x, y, z);
@@ -689,8 +666,8 @@ public abstract class Multiblock<T extends Block>{
         isEqual[0] = true;
         forEachPosition((x, y, z) -> {
             if(!isEqual[0])return;
-            Block a = getBlock(x, y, z);
-            Block b = other.getBlock(x, y, z);
+            AbstractBlock a = getBlock(x, y, z);
+            AbstractBlock b = other.getBlock(x, y, z);
             if(a==b)return;//all good
             if(a==null||b==null)isEqual[0] = false;//if they were both null, a==b already caught it
             if(!a.isEqual(b))isEqual[0] = false;
@@ -770,10 +747,10 @@ public abstract class Multiblock<T extends Block>{
         return bbox.getWidth()*bbox.getHeight()*bbox.getDepth();
     }
     private ArrayList<GraphLink> links = new ArrayList<>();
-    private HashMap<Block, String> graphBlocks = new HashMap<>();
+    private HashMap<AbstractBlock, String> graphBlocks = new HashMap<>();
     private HashMap<String, String> labels = new HashMap<>();
     public void generateCrazyGraph(){
-        for(Block b1 : getBlocks(true)){
+        for(AbstractBlock b1 : getBlocks(true)){
             if(b1.getName().contains("Casing"))continue;
             if(b1.getName().contains("Glass"))continue;
             if(b1.getName().contains("Source"))continue;
@@ -781,7 +758,7 @@ public abstract class Multiblock<T extends Block>{
             if(b1.getName().contains("Vent"))continue;
             for(Direction d : Direction.values()){
                 if(contains(b1.x+d.x, b1.y+d.y, b1.z+d.z)){
-                    Block b2 = getBlock(b1.x+d.x, b1.y+d.y, b1.z+d.z);
+                    AbstractBlock b2 = getBlock(b1.x+d.x, b1.y+d.y, b1.z+d.z);
                     if(b2==null)continue;
                     if(b2.getName().contains("Casing"))continue;
                     if(b2.getName().contains("Glass"))continue;
@@ -803,7 +780,7 @@ public abstract class Multiblock<T extends Block>{
             System.out.println(graphBlocks.get(link.b1)+" -- "+graphBlocks.get(link.b2));
         }
     }
-    private String genNewGraphName(Block b){
+    private String genNewGraphName(AbstractBlock b){
         int i = 1;
         String nam = StringUtil.superRemove(b.getName(), "Liquid", "Cooler", "Reactor", "Fuel", "Transparent", " ", "Heat Sink").trim();
         String name;
@@ -814,7 +791,7 @@ public abstract class Multiblock<T extends Block>{
         labels.put(name, nam);
         return name;
     }
-    private GraphLink getGraphLink(Block b1, Block b2){
+    private GraphLink getGraphLink(AbstractBlock b1, AbstractBlock b2){
         for(GraphLink l : links){
             if(l.b1==b1&&l.b2==b2)return l;
             if(l.b2==b1&&l.b1==b2)return l;
@@ -828,9 +805,9 @@ public abstract class Multiblock<T extends Block>{
     }
     public void setMultiblockRecipe(int recipeType, NCPFElement recipe){}
     private static class GraphLink{
-        private final Block b1;
-        private final Block b2;
-        public GraphLink(Block b1, Block b2){
+        private final AbstractBlock b1;
+        private final AbstractBlock b2;
+        public GraphLink(AbstractBlock b1, AbstractBlock b2){
             this.b1 = b1;
             this.b2 = b2;
         }

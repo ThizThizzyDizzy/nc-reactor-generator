@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
@@ -22,6 +22,8 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentEditorGrid extends Component{
     private final Object synchronizer = new Object();
@@ -130,25 +132,12 @@ public class MenuComponentEditorGrid extends Component{
                 int by = (x+x1)*xAxis.y+(y+y1)*yAxis.y+layer*axis.y;
                 int bz = (x+x1)*xAxis.z+(y+y1)*yAxis.z+layer*axis.z;
                 if(!multiblock.contains(bx, by, bz))continue;
-                Block block = multiblock.getBlock(bx, by, bz);
+                AbstractBlock block = multiblock.getBlock(bx, by, bz);
                 float X = this.x+x*blockSize;
                 float Y = this.y+y*blockSize;
                 if(block!=null){
                     block.render(renderer, X, Y, blockSize, blockSize, editor.overlays, multiblock);
-                    boolean recipeMatches = false;
-                    if(multiblock instanceof OverhaulSFR){
-                        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulSFRBlockRecipe(0))recipeMatches = true;
-                    }
-                    if(multiblock instanceof OverhaulMSR){
-                        net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulMSRBlockRecipe(0))recipeMatches = true;
-                    }
-                    if(multiblock instanceof OverhaulFusionReactor){
-                        net.ncplanner.plannerator.multiblock.overhaul.fusion.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulFusionBlockRecipe(0))recipeMatches = true;
-                    }
-                    if(recipeMatches){
+                    if(block.hasRecipes()&&block.getRecipe()==editor.getSelectedBlockRecipe(0)){
                         renderer.setColor(Core.theme.getSelectionColor(), resonatingAlpha);
                         renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
                     }
@@ -220,7 +209,7 @@ public class MenuComponentEditorGrid extends Component{
                     for(Suggestion s : editor.getSuggestions()){
                         if(affects(s, x, y)){
                             if(s.selected&&s.result!=null){
-                                Block b = s.result.getBlock(bx, by, bz);
+                                AbstractBlock b = s.result.getBlock(bx, by, bz);
                                 renderer.setWhite(resonatingAlpha+.5f);
                                 if(b==null){
                                     renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
@@ -362,25 +351,25 @@ public class MenuComponentEditorGrid extends Component{
         int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
         int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
         if(action==GLFW_PRESS){
-            Block block = multiblock.getBlock(bx, by, bz);
+            AbstractBlock block = multiblock.getBlock(bx, by, bz);
             boolean didSomething = false;
             if(editor.getSelectedTool(0).isEditTool()&&Core.isShiftPressed()&&block!=null){
                 if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-                    if(b.template.shield||b.template.parent!=null||b.template.coolantVent){
-                        if(Core.isControlPressed()&&b.template.shield)editor.action(new SFRAllShieldsAction(!b.isToggled), true);
+                    if(b.template.toggled!=null||b.template.unToggled!=null){
+                        if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new SFRAllShieldsAction(!b.isToggled()), true);
                         else editor.action(new SFRToggleAction(b), true);
                         didSomething = true;
                     }
-                    if(b.template.fuelCell&&(b.template.fuelCellHasBaseStats||b.recipe!=null)){
-                        boolean self = b.recipe==null?b.template.fuelCellSelfPriming:b.recipe.fuelCellSelfPriming;
+                    if(b.template.fuelCell!=null){
+                        boolean self = b.fuel!=null&&b.fuel.stats.selfPriming;
                         if(!self){
-                            ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> sources = new ArrayList<>();
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block possible : multiblock.getConfiguration().overhaul.fissionSFR.allBlocks){
-                                if(possible.source)sources.add(possible);
+                            ArrayList<BlockElement> sources = new ArrayList<>();
+                            for(BlockElement possible : multiblock.getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                                if(possible.neutronSource!=null)sources.add(possible);
                             }
                             sources.sort((o1, o2) -> {
-                                return (int)((o1.sourceEfficiency-o2.sourceEfficiency)*10000);
+                                return (int)((o1.neutronSource.efficiency-o2.neutronSource.efficiency)*10000);
                             });
                             int idx = sources.size()-1;
                             if(b.source!=null)idx = sources.indexOf(b.source.template)-1;
@@ -459,7 +448,7 @@ public class MenuComponentEditorGrid extends Component{
             if(mouseover==null)return null;
             int[] b = toBlockCoords(mouseover[0], mouseover[1]);
             if(!multiblock.contains(b[0], b[1], b[2]))return null;
-            Block block = multiblock.getBlock(b[0],b[1],b[2]);
+            AbstractBlock block = multiblock.getBlock(b[0],b[1],b[2]);
             String tooltip = "";
             for(Object o : multiblock.decals){
                 Decal decal = (Decal)o;

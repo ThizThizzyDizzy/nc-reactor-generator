@@ -32,11 +32,18 @@ public class NCPFBlockElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFBlockElement other = (NCPFBlockElement) definition;
-        return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
+        if(definition instanceof NCPFBlockElement){
+            NCPFBlockElement other = (NCPFBlockElement) definition;
+            return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
+        }
+        return false;
     }
     @Override
     public String getName(){
         return name;
+    }
+    public NCPFBlockElement with(String key, Object value){
+        blockstate.put(key, value);
+        return this;
     }
 }

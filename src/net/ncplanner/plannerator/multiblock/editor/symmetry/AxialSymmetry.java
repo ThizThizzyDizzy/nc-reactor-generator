@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.multiblock.editor.symmetry;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.planner.StringUtil;
 public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
     public static AxialSymmetry X = new AxialSymmetry("X"){
         @Override
         public void apply(CuboidalMultiblock multiblock){
-            ArrayList<Block> bls = multiblock.getBlocks(true);
-            for(Block b : bls){
+            ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
+            for(AbstractBlock b : bls){
                 if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
                 int X = multiblock.getExternalWidth()-b.x-1;
                 multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
@@ -18,8 +18,8 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
     public static AxialSymmetry Y = new AxialSymmetry("Y"){
         @Override
         public void apply(CuboidalMultiblock multiblock){
-            ArrayList<Block> bls = multiblock.getBlocks(true);
-            for(Block b : bls){
+            ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
+            for(AbstractBlock b : bls){
                 if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
                 int Y = multiblock.getExternalHeight()-b.y-1;
                 multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
@@ -29,8 +29,8 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
     public static AxialSymmetry Z = new AxialSymmetry("Z"){
         @Override
         public void apply(CuboidalMultiblock multiblock){
-            ArrayList<Block> bls = multiblock.getBlocks(true);
-            for(Block b : bls){
+            ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
+            for(AbstractBlock b : bls){
                 if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
                 int Z = multiblock.getExternalDepth()-b.z-1;
                 multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));

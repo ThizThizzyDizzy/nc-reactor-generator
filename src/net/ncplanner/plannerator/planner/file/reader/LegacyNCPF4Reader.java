@@ -26,12 +26,12 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
         String underhaulVersion = config.getString("underhaulVersion");
         boolean addon = false;
         loadUnderhaulBlocks(project.configuration, config, true);
-        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block> overhaulSFRAdditionalBlocks = new ArrayList<>();
-        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block> overhaulMSRAdditionalBlocks = new ArrayList<>();
+        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> overhaulSFRAdditionalBlocks = new ArrayList<>();
+        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> overhaulMSRAdditionalBlocks = new ArrayList<>();
         if(config.hasProperty("overhaul")){
             Config overhaul = config.getConfig("overhaul");
-            loadOverhaulSFRBlocks(project.configuration, overhaul, true, false, addon, overhaulSFRAdditionalBlocks);
-            loadOverhaulMSRBlocks(project.configuration, overhaul, true, false, addon, overhaulMSRAdditionalBlocks);
+            loadOverhaulSFRBlocks(null, project.configuration, overhaul, true, false, addon, overhaulSFRAdditionalBlocks);
+            loadOverhaulMSRBlocks(null, project.configuration, overhaul, true, false, addon, overhaulMSRAdditionalBlocks);
             loadOverhaulTurbineBlocks(project.configuration, overhaul, true);
             // fusion did not exist in NCPF 4
         }
@@ -93,9 +93,9 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
             }
         }
         //combine underhaul active coolers into one
-        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block activeCooler = null;
-        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block> it = project.configuration.getConfiguration(UnderhaulSFRConfiguration::new).blocks.iterator(); it.hasNext();){
-            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block = it.next();
+        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement activeCooler = null;
+        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement> it = project.configuration.getConfiguration(UnderhaulSFRConfiguration::new).blocks.iterator(); it.hasNext();){
+            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = it.next();
             if(block.activeCooler!=null){
                 if(activeCooler==null){
                     activeCooler = block;
@@ -107,8 +107,8 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
         }
         //do the same for the conglomeration
         activeCooler = null;
-        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block> it = project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.iterator(); it.hasNext();){
-            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block block = it.next();
+        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement> it = project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.iterator(); it.hasNext();){
+            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = it.next();
             if(block.activeCooler!=null){
                 if(activeCooler==null){
                     activeCooler = block;

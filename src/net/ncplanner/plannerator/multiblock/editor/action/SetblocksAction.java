@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -10,9 +10,9 @@ import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 public class SetblocksAction extends Action<Multiblock>{
     public final HashSet<BlockPos> locations = new HashSet<>();
-    public final Block block;
-    private final HashMap<BlockPos, Block> was = new HashMap<>();
-    public SetblocksAction(Block block){
+    public final AbstractBlock block;
+    private final HashMap<BlockPos, AbstractBlock> was = new HashMap<>();
+    public SetblocksAction(AbstractBlock block){
         this.block = block;
     }
     @Override
@@ -33,9 +33,9 @@ public class SetblocksAction extends Action<Multiblock>{
         return this;
     }
     @Override
-    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         for(BlockPos loc : locations){
-            Block b = multiblock.getBlock(loc.x, loc.y, loc.z);
+            AbstractBlock b = multiblock.getBlock(loc.x, loc.y, loc.z);
             if(b!=null)blocks.add(b);
         }
     }

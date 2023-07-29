@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 public class UnderhaulHellrage1Reader implements FormatReader{
     @Override
@@ -30,7 +30,7 @@ public class UnderhaulHellrage1Reader implements FormatReader{
         for(Object o : compressedReactor){
             JSON.JSONObject ob = (JSON.JSONObject) o;
             for(String name : ob.keySet()){
-                Block block = recovery.recoverUnderhaulSFRBlock(name);
+                BlockElement block = recovery.recoverUnderhaulSFRBlock(name);
                 JSON.JSONArray blocks = ob.getJSONArray(name);
                 for(Object blok : blocks){
                     String blokLoc = (String) blok;

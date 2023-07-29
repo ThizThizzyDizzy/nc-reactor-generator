@@ -11,15 +11,15 @@ public class SFRToggleAction extends Action<OverhaulSFR>{
     }
     @Override
     public void doApply(OverhaulSFR multiblock, boolean allowUndo){
-        if(allowUndo)was = block.isToggled;
-        block.isToggled = !block.isToggled;
+        if(allowUndo)was = block.isToggled();
+        block.setToggled(!block.isToggled());
     }
     @Override
     public void doUndo(OverhaulSFR multiblock){
-        block.isToggled = was;
+        block.setToggled(was);
     }
     @Override
-    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
         blocks.add(multiblock.getBlock(block.x, block.y, block.z));
     }
 }

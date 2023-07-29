@@ -22,7 +22,7 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block recoverUnderhaulSFRBlockLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlockLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("block", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, true);
     }
     @Override
@@ -30,14 +30,14 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block recoverOverhaulSFRBlockLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlockLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, true);
     }
     @Override
-    public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block, int id){
+    public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, int id){
         List<T> list = null;
         List<T> fallbackList = null;
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block fallback = Core.project.getConfiguration(OverhaulSFRConfiguration::new).getElement(block.definition);
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement fallback = Core.project.getConfiguration(OverhaulSFRConfiguration::new).getElement(block.definition);
         if(block.fuelCell!=null){
             list = (List<T>)block.fuels;
             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
@@ -49,14 +49,14 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID(block.fuelCell!=null?"fuel":"recipe", id, list, fallbackList, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block recoverOverhaulMSRBlockLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlockLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulMSRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, true);
     }
     @Override
-    public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block, int id) {
+    public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, int id) {
         List<T> list = null;
         List<T> fallbackList = null;
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block fallback = Core.project.getConfiguration(OverhaulMSRConfiguration::new).getElement(block.definition);
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement fallback = Core.project.getConfiguration(OverhaulMSRConfiguration::new).getElement(block.definition);
         if(block.fuelVessel!=null){
             list = (List<T>)block.fuels;
             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
@@ -76,7 +76,7 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).recipes, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block recoverOverhaulTurbineBlockLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement recoverOverhaulTurbineBlockLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).blocks, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).blocks, true);
     }
     @Override
@@ -84,12 +84,12 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, false);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block recoverOverhaulFusionBlockLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement recoverOverhaulFusionBlockLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).blocks, Core.project.getConfiguration(OverhaulFusionConfiguration::new).blocks, true);
     }
     @Override
-    public <T extends NCPFElement> T recoverOverhaulFusionBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block block, int id) {
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block fallback = Core.project.getConfiguration(OverhaulFusionConfiguration::new).getElement(block.definition);
+    public <T extends NCPFElement> T recoverOverhaulFusionBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block, int id) {
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement fallback = Core.project.getConfiguration(OverhaulFusionConfiguration::new).getElement(block.definition);
         return recoverFallbackID("recipe", id, block.breedingBlanketRecipes, fallback==null?null:fallback.breedingBlanketRecipes, true);
     }
     @Override
@@ -163,7 +163,7 @@ public class RecoveryModeHandler implements RecoveryHandler{
         }, false);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block recoverUnderhaulSFRBlock(String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlock(String name){
         return recoverFallbackName("block", name, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, (nam) -> {
             return StringUtil.superRemove(StringUtil.toLowerCase(nam), "cooler", " ").equalsIgnoreCase(StringUtil.superRemove(name, " "));
         }, null, true);
@@ -173,13 +173,13 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackName("recipe", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, null, null, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block recoverOverhaulSFRBlock(String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlock(String name){
         return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, (nam) -> {
             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "));
         }, null, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel recoverOverhaulSFRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block, String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel recoverOverhaulSFRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name){
         return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Oxide", " "))
@@ -188,26 +188,26 @@ public class RecoveryModeHandler implements RecoveryHandler{
         }, null, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recoverOverhaulSFRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block, String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recoverOverhaulSFRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name){
         return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);
     }
     
     
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block recoverOverhaulMSRBlock(String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlock(String name){
         return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, (nam) -> {
             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "coolant", "heater", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superReplace(StringUtil.toLowerCase(name), "water", "standard", " ", ""));
         }, null, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel recoverOverhaulMSRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block, String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel recoverOverhaulMSRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name){
         return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Fluoride", " "));
         }, null, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recoverOverhaulMSRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block, String name){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recoverOverhaulMSRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name){
         return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);//don't care about heater recipes
     }
 }

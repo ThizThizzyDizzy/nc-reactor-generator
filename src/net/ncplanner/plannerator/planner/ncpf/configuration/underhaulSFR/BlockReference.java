@@ -4,20 +4,20 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class BlockReference extends NCPFElementReference{
-    public Block block;
+    public BlockElement block;
     public BlockReference(){}
-    public BlockReference(Block block){
+    public BlockReference(BlockElement block){
         super(block.definition);
         target = this.block = block;
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        target = block;
+        if(block!=null)target = block;
         super.convertToObject(ncpf);
     }
     @Override
     public void setReferences(List<NCPFElement> elements){
         super.setReferences(elements);
-        block = (Block)target;
+        if(target instanceof BlockElement)block = (BlockElement)target;//it's not convertable when conglomerating
     }
 }

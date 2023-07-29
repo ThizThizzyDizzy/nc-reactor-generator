@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
@@ -27,5 +27,5 @@ public class ClearSelectionAction extends Action<Multiblock>{
         }
     }
     @Override
-    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){}
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){}
 }

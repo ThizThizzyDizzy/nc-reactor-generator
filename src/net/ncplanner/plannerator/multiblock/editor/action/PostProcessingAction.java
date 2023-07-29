@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
 import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
 public class PostProcessingAction extends Action<Multiblock>{
     private final PostProcessingEffect postProcessingEffect;
-    private HashMap<BlockPos, Block> was = new HashMap<>();
+    private HashMap<BlockPos, AbstractBlock> was = new HashMap<>();
     private final MultiblockGenerator generator;
     public PostProcessingAction(PostProcessingEffect postProcessingEffect, MultiblockGenerator generator){
         this.postProcessingEffect = postProcessingEffect;
@@ -31,7 +31,7 @@ public class PostProcessingAction extends Action<Multiblock>{
         }
     }
     @Override
-    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         //TODO only list the actually affected blocks
     }
 }

@@ -41,7 +41,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfigur
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
@@ -142,7 +142,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         config.set("moderatorExtraHeat", sfr.settings.moderatorExtraHeat);
         config.set("activeCoolerRate", sfr.settings.activeCoolerRate);
         ConfigList blocks = new ConfigList();
-        for(Block b : sfr.blocks){
+        for(BlockElement b : sfr.blocks){
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
@@ -200,7 +200,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         config.set("sparsityPenaltyMult", sfr.settings.sparsityPenaltyMultiplier);
         config.set("sparsityPenaltyThreshold", sfr.settings.sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b : sfr.blocks){
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : sfr.blocks){
             if(b.port!=null)continue;//don't save ports, because UGH
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
@@ -320,8 +320,8 @@ public class LegacyNCPFWriter extends FormatWriter{
             LegacyNCPFWriter.saveTexture(block, b.texture.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block in = b.recipePorts.input.block;
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block out = b.recipePorts.output.block;
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement in = b.recipePorts.input.block;
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement out = b.recipePorts.output.block;
                 portCfg.set("name", in.definition.toString());
                 if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
@@ -361,7 +361,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         config.set("sparsityPenaltyMult", msr.settings.sparsityPenaltyMultiplier);
         config.set("sparsityPenaltyThreshold", msr.settings.sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b : msr.blocks){
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : msr.blocks){
             if(b.port!=null)continue;//don't save ports, because UGH
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
@@ -476,8 +476,8 @@ public class LegacyNCPFWriter extends FormatWriter{
             LegacyNCPFWriter.saveTexture(block, b.texture.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block in = b.recipePorts.input.block;
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block out = b.recipePorts.output.block;
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement in = b.recipePorts.input.block;
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement out = b.recipePorts.output.block;
                 portCfg.set("name", in.definition.toString());
                 if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
@@ -501,7 +501,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         config.set("throughputFactor", turbine.settings.throughputFactor);
         config.set("powerBonus", turbine.settings.powerBonus);
         ConfigList blocks = new ConfigList();
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block b : turbine.blocks){
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b : turbine.blocks){
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
@@ -726,7 +726,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             for(int x = 0; x<sfr.design.length; x++){
                 for(int y = 0; y<sfr.design[x].length; y++){
                     for(int z = 0; z<sfr.design[x][y].length; z++){
-                        Block block = sfr.design[x][y][z];
+                        BlockElement block = sfr.design[x][y][z];
                         if(block==null)blox.add(0);
                         else blox.add(cfg.blocks.indexOf(block)+1);
                     }
@@ -745,7 +745,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             for(int x = 0; x<sfr.design.length; x++){
                 for(int y = 0; y<sfr.design[x].length; y++){
                     for(int z = 0; z<sfr.design[x][y].length; z++){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block block = sfr.design[x][y][z];
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = sfr.design[x][y][z];
                         if(block==null)blox.add(0);
                         else{
                             if(block.port!=null||block.coolantVent!=null)ports.add(block.unToggled!=null?1:0);
@@ -775,7 +775,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             for(int x = 0; x<msr.design.length; x++){
                 for(int y = 0; y<msr.design[x].length; y++){
                     for(int z = 0; z<msr.design[x][y].length; z++){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block block = msr.design[x][y][z];
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = msr.design[x][y][z];
                         if(block==null)blox.add(0);
                         else{
                             if(block.port!=null){
@@ -804,7 +804,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             for(int x = 0; x<turbine.design.length; x++){
                 for(int y = 0; y<turbine.design[x].length; y++){
                     for(int z = 0; z<turbine.design[x][y].length; z++){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block block = turbine.design[x][y][z];
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = turbine.design[x][y][z];
                         if(block==null)blocks.add(0);
                         else blocks.add(cfg.blocks.indexOf(block)+1);
                     }

@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 public class OverhaulHellrageMSR5Reader implements FormatReader{
@@ -32,7 +32,7 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
         OverhaulMSRDesign msr = new OverhaulMSRDesign(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
         JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
-            Block block = recovery.recoverOverhaulMSRBlock(name);
+            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
             JSON.JSONArray array = heatSinks.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
@@ -45,7 +45,7 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
         }
         JSON.JSONObject moderators = hellrage.getJSONObject("Moderators");
         for(String name : moderators.keySet()){
-            Block block = recovery.recoverOverhaulMSRBlock(name);
+            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
             JSON.JSONArray array = moderators.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
@@ -57,8 +57,8 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
         }
         JSON.JSONArray conductors = hellrage.getJSONArray("Conductors");
         if(conductors!=null){
-            Block conductor = null;
-            for(Block blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+            BlockElement conductor = null;
+            for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
                 if(blok.conductor!=null)conductor = blok;
             }
             if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
@@ -72,7 +72,7 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
         }
         JSON.JSONObject reflectors = hellrage.getJSONObject("Reflectors");
         for(String name : reflectors.keySet()){
-            Block block = recovery.recoverOverhaulMSRBlock(name);
+            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
             JSON.JSONArray array = reflectors.getJSONArray(name);
             for(Object blok : array){
                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
@@ -82,19 +82,19 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
                 msr.design[x][y][z] = block;
             }
         }
-        Block vessel = null;
-        for(Block blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+        BlockElement vessel = null;
+        for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
             if(blok.fuelVessel!=null)vessel = blok;
         }
         if(vessel==null)throw new IllegalArgumentException("Configuration has no fuel vessels!");
         JSON.JSONObject fuelVessels = hellrage.getJSONObject("FuelCells");
-        HashMap<int[], Block> sources = new HashMap<>();
+        HashMap<int[], BlockElement> sources = new HashMap<>();
         for(String name : fuelVessels.keySet()){
             String[] fuelSettings = StringUtil.split(name, ";");
             String fuelName = fuelSettings[0];
             boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
             Fuel fuel = recovery.recoverOverhaulMSRFuel(vessel, fuelName);
-            Block src = null;
+            BlockElement src = null;
             if(hasSource){
                 String sourceName = fuelSettings[2];
                 src = recovery.recoverOverhaulMSRBlock(sourceName);

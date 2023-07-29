@@ -21,20 +21,20 @@ import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-public abstract class Block implements Pinnable{
+public abstract class AbstractBlock implements Pinnable{
     protected NCPFConfigurationContainer configuration;
     public int x;
     public int y;
     public int z;
     private Image grayscaleTexture = null;
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z){
+    public AbstractBlock(NCPFConfigurationContainer configuration, int x, int y, int z){
         this.configuration = configuration;
         this.x = x;
         this.y = y;
         this.z = z;
     }
-    public abstract Block newInstance(int x, int y, int z);
-    public abstract void copyProperties(Block other);
+    public abstract AbstractBlock newInstance(int x, int y, int z);
+    public abstract void copyProperties(AbstractBlock other);
     public Image getBaseTexture(){
         return getTemplate().getTexture();
     }
@@ -61,8 +61,12 @@ public abstract class Block implements Pinnable{
         return grayscaleTexture = grayscale;
     }
     public abstract NCPFElement getTemplate();
+    @Override
+    public String getPinnedName(){
+        return getTemplate().getPinnedName();
+    }
     public abstract void clearData();
-    public <T extends Block> Queue<T> getAdjacent(Multiblock<T> multiblock){
+    public <T extends AbstractBlock> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : Direction.values()){
             if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
@@ -71,7 +75,7 @@ public abstract class Block implements Pinnable{
         }
         return adjacent;
     }
-    public <T extends Block> Queue<T> getActiveAdjacent(Multiblock<T> multiblock){
+    public <T extends AbstractBlock> Queue<T> getActiveAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : Direction.values()){
             if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
@@ -307,9 +311,10 @@ public abstract class Block implements Pinnable{
         renderer.drawCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2, null, func);//left
         renderer.drawCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2, null, func);//right
     }
-    public Block copy(int x, int y, int z){
-        Block b = newInstance(x, y, z);
-        b.setRecipe(getRecipe());
+    public AbstractBlock copy(int x, int y, int z){
+        AbstractBlock b = newInstance(x, y, z);
+        NCPFElement recipe = getRecipe();
+        if(recipe!=null)b.setRecipe(recipe);
         copyProperties(b);
         return b;
     }
@@ -318,13 +323,13 @@ public abstract class Block implements Pinnable{
     @Deprecated
     public abstract boolean isCore();
     public abstract List<? extends NCPFPlacementRule> getRules();
-    public boolean matches(Block template){
+    public boolean matches(AbstractBlock template){
         if(template==null)return getTemplate()==null;
         if(getTemplate()==null)return false;
         return getTemplate().definition.matches(template.getTemplate().definition);
     }
-    public abstract boolean canRequire(Block other);
-    public boolean requires(Block other, Multiblock mb){
+    public abstract boolean canRequire(AbstractBlock other);
+    public boolean requires(AbstractBlock other, Multiblock mb){
         int totalDist = Math.abs(other.x-x)+Math.abs(other.y-y)+Math.abs(other.z-z);
         if(totalDist>1)return false;//too far away
         for(NCPFPlacementRule rule : getRules()){
@@ -337,8 +342,8 @@ public abstract class Block implements Pinnable{
     public boolean defaultEnabled(){
         return true;
     }
-    public abstract Block copy();
-    public boolean isEqual(Block other){
+    public abstract AbstractBlock copy();
+    public boolean isEqual(AbstractBlock other){//TODO difference between this and matches??
         return matches(other);
     }
     public boolean roughMatch(String blockNam){
@@ -358,11 +363,15 @@ public abstract class Block implements Pinnable{
     public NCPFConfigurationContainer getConfiguration(){
         return configuration;
     }
-    public boolean shouldRenderFace(Block against){
-        return against==null;
+    public boolean shouldRenderFace(AbstractBlock against){
+        if(against==null)return true;
+        if(matches(against))return false;
+        return Core.hasAlpha(against.getBaseTexture());
     }
     public abstract boolean hasRecipes();
     public abstract List<? extends IBlockRecipe> getRecipes();
     public abstract NCPFElement getRecipe();
     public abstract void setRecipe(NCPFElement recipe);
+    public abstract boolean isToggled();
+    public abstract void setToggled(boolean toggled);
 }

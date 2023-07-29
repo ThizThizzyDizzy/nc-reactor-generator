@@ -60,7 +60,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         }
 
         @Override
-        public boolean blockMatches(Multiblock<?> r, net.ncplanner.plannerator.multiblock.Block rb) {
+        public boolean blockMatches(Multiblock<?> r, net.ncplanner.plannerator.multiblock.AbstractBlock rb) {
             OverhaulFusionReactor reactor = (OverhaulFusionReactor) r;
             net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block) rb;
             switch (this) {

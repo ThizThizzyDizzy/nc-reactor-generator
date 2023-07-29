@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.vr.Multitool;
@@ -13,7 +13,7 @@ import org.lwjgl.openvr.TrackedDevicePose;
 public class VRMenuComponentSpecialPanel extends VRMenuComponent{
     public int activeTool = -1;
     private final VRMenuEdit editor;
-    public Block last = null;
+    public AbstractBlock last = null;
     private boolean refreshNeeded;
     public VRMenuComponentSpecialPanel(VRMenuEdit editor, float x, float y, float z, float width, float height, float depth, float rx, float ry, float rz){
         super(x, y, z, width, height, depth, rx, ry, rz);
@@ -22,7 +22,7 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         if(activeTool>0){
-            Block b = editor.getSelectedBlock(activeTool);
+            AbstractBlock b = editor.getSelectedBlock(activeTool);
             if(last==null||!b.matches(last))refreshNeeded = true;//selected block changed
             last = b;
         }else last = null;
@@ -54,7 +54,7 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
     public void refresh(){
         components.clear();
         if(activeTool<0)return;
-        Block b = editor.getSelectedBlock(activeTool);
+        AbstractBlock b = editor.getSelectedBlock(activeTool);
         if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block&&!((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.isEmpty()){
             float size = Math.min(depth, height/((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.size());
             for(int i = 0; i<((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.size(); i++){

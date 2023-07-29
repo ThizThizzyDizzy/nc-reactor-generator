@@ -80,4 +80,12 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     public String toString(){
         return getDisplayName();
     }
+    @Override
+    public void conglomerate(DefinedNCPFModularObject addon){
+        try{
+            super.conglomerate(addon);
+        }catch(ConglomerationError ex){
+            throw new ConglomerationError("Failed to conglomerate "+getDisplayName()+" with "+addon.toString()+"!", ex);
+        }
+    }
 }

@@ -49,19 +49,19 @@ public class LegacyNCPF2Reader extends LegacyNCPF3Reader {
         // turbines did not exist in NCPF 2
     }
 
-    protected <Rule extends NCPFPlacementRule> Rule readGenericRuleNcpf2(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg, Supplier<NCPFModule> casing){
+    protected <Rule extends NCPFPlacementRule> Rule readGenericRuleNcpf2(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg, Supplier<NCPFModule> casing, String blockName){
         Rule rule = newRule.get();
         byte type = ruleCfg.get("type");
         switch(type){
             case 0:
                 rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
-                readRuleBlock(postMap, rule, ruleCfg);
+                readRuleBlock(postMap, rule, ruleCfg, blockName);
                 rule.min = ruleCfg.getByte("min");
                 rule.max = ruleCfg.getByte("max");
                 break;
             case 1:
                 rule.rule = NCPFPlacementRule.RuleType.AXIAL;
-                readRuleBlock(postMap, rule, ruleCfg);
+                readRuleBlock(postMap, rule, ruleCfg, blockName);
                 rule.min = ruleCfg.getByte("min");
                 rule.max = ruleCfg.getByte("max");
                 break;
@@ -93,14 +93,14 @@ public class LegacyNCPF2Reader extends LegacyNCPF3Reader {
                 rule.rule = NCPFPlacementRule.RuleType.OR;
                 ConfigList rules = ruleCfg.get("rules");
                 for(int i = 0; i<rules.size(); i++){
-                    rule.rules.add(readGenericRuleNcpf2(postMap, newRule, blockTypes, rules.getConfig(i), casing));
+                    rule.rules.add(readGenericRuleNcpf2(postMap, newRule, blockTypes, rules.getConfig(i), casing, blockName));
                 }
                 break;
             case 6:
                 rule.rule = NCPFPlacementRule.RuleType.AND;
                 rules = ruleCfg.get("rules");
                 for(int i = 0; i<rules.size(); i++){
-                    rule.rules.add(readGenericRuleNcpf2(postMap, newRule, blockTypes, rules.getConfig(i), casing));
+                    rule.rules.add(readGenericRuleNcpf2(postMap, newRule, blockTypes, rules.getConfig(i), casing, blockName));
                 }
                 break;
         }
@@ -108,18 +108,18 @@ public class LegacyNCPF2Reader extends LegacyNCPF3Reader {
     }
 
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule readUnderRule(Config ruleCfg){
+    protected net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule readUnderRule(Config ruleCfg, String blockName){
         return readGenericRuleNcpf2(underhaulPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule::new,
-                underhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule::new);
+                underhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule::new, blockName);
     }
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule readOverSFRRule(Config ruleCfg){
+    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule readOverSFRRule(Config ruleCfg, String blockName){
         return readGenericRuleNcpf2(overhaulSFRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule::new,
-                overhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new);
+                overhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new, blockName);
     }
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule readOverMSRRule(Config ruleCfg){
+    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule readOverMSRRule(Config ruleCfg, String blockName){
         return readGenericRuleNcpf2(overhaulMSRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule::new,
-                overhaulMSRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new);
+                overhaulMSRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new, blockName);
     }
 }

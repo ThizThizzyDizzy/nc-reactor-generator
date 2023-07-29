@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
@@ -25,5 +25,5 @@ public class SetTurbineRecipeAction extends Action<OverhaulTurbine>{
         editor.setTurbineRecipe(multiblock.getConfiguration().overhaul.turbine.allRecipes.indexOf(((OverhaulTurbine)multiblock).recipe));
     }
     @Override
-    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<Block> blocks){}
+    public void getAffectedBlocks(OverhaulTurbine multiblock, ArrayList<AbstractBlock> blocks){}
 }

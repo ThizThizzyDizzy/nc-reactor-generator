@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
@@ -26,7 +26,7 @@ public interface Editor{
     public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2);
     public void copySelection(int id, int x, int y, int z);
     public void cutSelection(int id, int x, int y, int z);
-    public Block getSelectedBlock(int id);
+    public AbstractBlock getSelectedBlock(int id);
     public void setblocks(int id, SetblocksAction set);
     public ArrayList<ClipboardEntry> getClipboard(int id);
     public void selectGroup(int id, int x, int y, int z);

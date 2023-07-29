@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 public class LegacyNeutronSourceHandler{
-    public static void addNeutronSource(OverhaulSFRDesign sfr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source){
+    public static void addNeutronSource(OverhaulSFRDesign sfr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement source){
         HashMap<int[], Integer> possible = new HashMap<>();
         for(Direction d : Direction.values()){
             int i = 0;
@@ -19,7 +19,7 @@ public class LegacyNeutronSourceHandler{
                     possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
                     break;
                 }
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = sfr.design[X][Y][Z];
                 if(b==null)continue;//air
                 if(b.fuelCell!=null||b.reflector!=null||b.irradiator!=null)break;
             }
@@ -29,17 +29,17 @@ public class LegacyNeutronSourceHandler{
             return possible.get(o1)-possible.get(o2);
         });
         for(int[] key : keys){
-            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block was = sfr.design[key[0]][key[1]][key[2]];
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement was = sfr.design[key[0]][key[1]][key[2]];
             if(tryAddNeutronSource(sfr, source, key[0], key[1], key[2]))break;
         }
     }
-    private static boolean tryAddNeutronSource(OverhaulSFRDesign sfr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block source, int X, int Y, int Z){
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Block b = sfr.design[X][Y][Z];
+    private static boolean tryAddNeutronSource(OverhaulSFRDesign sfr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement source, int X, int Y, int Z){
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = sfr.design[X][Y][Z];
         if(b!=null&&(b.neutronSource!=null))return false;
         sfr.design[X][Y][Z] = source;
         return true;
     }
-    public static void addNeutronSource(OverhaulMSRDesign msr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source){
+    public static void addNeutronSource(OverhaulMSRDesign msr, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement source){
         HashMap<int[], Integer> possible = new HashMap<>();
         for(Direction d : Direction.values()){
             int i = 0;
@@ -52,7 +52,7 @@ public class LegacyNeutronSourceHandler{
                     possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
                     break;
                 }
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = msr.design[X][Y][Z];
                 if(b==null)continue;//air
                 if(b.fuelVessel!=null||b.reflector!=null||b.irradiator!=null)break;
             }
@@ -62,12 +62,12 @@ public class LegacyNeutronSourceHandler{
             return possible.get(o1)-possible.get(o2);
         });
         for(int[] key : keys){
-            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block was = msr.design[key[0]][key[1]][key[2]];
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement was = msr.design[key[0]][key[1]][key[2]];
             if(tryAddNeutronSource(msr, source, key[0], key[1], key[2]))break;
         }
     }
-    private static boolean tryAddNeutronSource(OverhaulMSRDesign msr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block source, int X, int Y, int Z){
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block b = msr.design[X][Y][Z];
+    private static boolean tryAddNeutronSource(OverhaulMSRDesign msr, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement source, int X, int Y, int Z){
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = msr.design[X][Y][Z];
         if(b!=null&&(b.neutronSource!=null))return false;
         msr.design[X][Y][Z] = source;
         return true;

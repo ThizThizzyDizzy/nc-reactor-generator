@@ -3,12 +3,13 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 public class SFRSourceAction extends Action<OverhaulSFR>{
     private final Block cell;
     private int[] pWas;
     private Block was;
-    private final net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block source;
-    public SFRSourceAction(Block cell, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block source){
+    private final BlockElement source;
+    public SFRSourceAction(Block cell, BlockElement source){
         this.cell = cell;
         this.source = source;
     }
@@ -26,7 +27,7 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
             if(bWas==null)return;
             if(allowUndo){
                 pWas = new int[]{bWas.x,bWas.y,bWas.z};
-                was = bWas.template.source?null:bWas;
+                was = bWas.template.neutronSource!=null?null:bWas;
             }
         }
     }
@@ -35,7 +36,7 @@ public class SFRSourceAction extends Action<OverhaulSFR>{
         if(pWas!=null)multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
     }
     @Override
-    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.Block> blocks){
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
         blocks.add(multiblock.getBlock(cell.x, cell.y, cell.z));
     }
 }

@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
@@ -24,7 +24,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModul
 public class UnderhaulSFRConfigurationBuilder{
     private final UnderhaulSFRConfiguration configuration;
     public UnderhaulSFRSettingsModule settings;
-    private Block activeCooler;
+    private BlockElement activeCooler;
     public UnderhaulSFRConfigurationBuilder(String name, String version){
         configuration = new UnderhaulSFRConfiguration();
         configuration.metadata.name = name;
@@ -34,23 +34,23 @@ public class UnderhaulSFRConfigurationBuilder{
     public UnderhaulSFRConfiguration build(){
         return configuration;
     }
-    public Block controller(String name, String displayName, String texture){
-        Block block = block(name, displayName, texture);
+    public BlockElement controller(String name, String displayName, String texture){
+        BlockElement block = block(name, displayName, texture);
         block.controller = new ControllerModule();
         return block;
     }
-    public Block casing(String name, String displayName, String texture){
-        Block block = block(name, displayName, texture);
+    public BlockElement casing(String name, String displayName, String texture){
+        BlockElement block = block(name, displayName, texture);
         block.casing = new CasingModule();
         return block;
     }
-    public Block fuelCell(String name, String displayName, String texture){
-        Block block = block(name, displayName, texture);
+    public BlockElement fuelCell(String name, String displayName, String texture){
+        BlockElement block = block(name, displayName, texture);
         block.fuelCell = new FuelCellModule();
         return block;
     }
-    public Block block(String name, String displayName, String texture){
-        Block block = new Block(new NCPFLegacyBlockElement(name));
+    public BlockElement block(String name, String displayName, String texture){
+        BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
         block.names.displayName = displayName;
         block.names.legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
@@ -67,14 +67,14 @@ public class UnderhaulSFRConfigurationBuilder{
         activeCooler.activeCoolerRecipes.add(recipe);
         return recipe;
     }
-    public Block activeCooler(String name, String displayName, String texture){
-        Block block = block(name, displayName, texture);
+    public BlockElement activeCooler(String name, String displayName, String texture){
+        BlockElement block = block(name, displayName, texture);
         block.activeCooler = new ActiveCoolerModule();
         activeCooler = block;
         return block;
     }
-    public Block cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
-        Block block = block(name, displayName, texture);
+    public BlockElement cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
+        BlockElement block = block(name, displayName, texture);
         block.cooler = new CoolerModule();
         block.cooler.cooling = cooling;
         for(PlacementRule r : rules){
@@ -82,8 +82,8 @@ public class UnderhaulSFRConfigurationBuilder{
         }
         return block;
     }
-    public Block moderator(String name, String displayName, String texture){
-        Block block = block(name, displayName, texture);
+    public BlockElement moderator(String name, String displayName, String texture){
+        BlockElement block = block(name, displayName, texture);
         block.moderator = new ModeratorModule();
         return block;
     }
@@ -96,7 +96,7 @@ public class UnderhaulSFRConfigurationBuilder{
         rule.max = 6;
         return rule;
     }
-    public PlacementRule atLeast(int min, Block block){
+    public PlacementRule atLeast(int min, BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.block = new BlockReference(block);
@@ -111,7 +111,7 @@ public class UnderhaulSFRConfigurationBuilder{
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
-    public PlacementRule exactly(int num, Block block){
+    public PlacementRule exactly(int num, BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.block = new BlockReference(block);
@@ -126,7 +126,7 @@ public class UnderhaulSFRConfigurationBuilder{
         rule.max = 3;
         return rule;
     }
-    public PlacementRule axis(Block block){
+    public PlacementRule axis(BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AXIAL;
         rule.block = new BlockReference(block);

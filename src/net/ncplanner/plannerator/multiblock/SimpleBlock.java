@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public abstract class SimpleBlock extends Block{
+public abstract class SimpleBlock extends AbstractBlock{
     private static final Image UNSET = new Image(2, 2);
     static{
         UNSET.setRGB(0, 0, Color.BLACK.getRGB());
@@ -19,7 +19,7 @@ public abstract class SimpleBlock extends Block{
         super(configuration, x, y, z);
     }
     @Override
-    public void copyProperties(Block other){}
+    public void copyProperties(AbstractBlock other){}
     @Override
     public Image getBaseTexture(){
         return getTexture();
@@ -65,15 +65,15 @@ public abstract class SimpleBlock extends Block{
         return true;
     }
     @Override
-    public boolean matches(Block template){
+    public boolean matches(AbstractBlock template){
         return template.getName().equals(getName());
     }
     @Override
-    public boolean canRequire(Block other){
+    public boolean canRequire(AbstractBlock other){
         return false;
     }
     @Override
-    public boolean requires(Block other, Multiblock mb) {
+    public boolean requires(AbstractBlock other, Multiblock mb) {
         return false;
     }
     @Override
@@ -85,11 +85,11 @@ public abstract class SimpleBlock extends Block{
         return false;
     }
     @Override
-    public Block copy(){
+    public AbstractBlock copy(){
         return newInstance(x, y, z);
     }
     @Override
-    public boolean isEqual(Block other){
+    public boolean isEqual(AbstractBlock other){
         return matches(other);
     }
     @Override

@@ -32,8 +32,11 @@ public class NCPFBlockTagElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFBlockTagElement other = (NCPFBlockTagElement) definition;
-        return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
+        if(definition instanceof NCPFBlockTagElement){
+            NCPFBlockTagElement other = (NCPFBlockTagElement) definition;
+            return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
+        }
+        return false;
     }
     @Override
     public String getName(){

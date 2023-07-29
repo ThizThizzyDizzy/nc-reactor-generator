@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.design;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOverhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
@@ -8,6 +9,10 @@ public class NCPFOverhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
     public NCPFOverhaulSFRDesign(){
         super("nuclearcraft:overhaul_sfr");
     }
+    public NCPFOverhaulSFRDesign(NCPFFile file){
+        this();
+        this.file = file;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -15,7 +20,7 @@ public class NCPFOverhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
         NCPFOverhaulSFRConfiguration config = getConfiguration();
         ncpf.getDefined3DArray("design", design, config.blocks);
         ncpf.getRecipe3DArray("block_recipes", blockRecipes, design);
-        coolantRecipe = config.coolantRecipes.get(ncpf.getInteger("coolant_recipe"));
+        coolantRecipe = ncpf.getIndex("coolant_recipe", config.coolantRecipes);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
@@ -23,6 +28,6 @@ public class NCPFOverhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
         NCPFOverhaulSFRConfiguration config = getConfiguration();
         ncpf.setDefined3DArray("design", design, config.blocks);
         ncpf.setRecipe3DArray("block_recipes", blockRecipes, design);
-        ncpf.setInteger("coolant_recipe", config.coolantRecipes.indexOf(coolantRecipe));
+        ncpf.setIndex("coolant_recipe", coolantRecipe, config.coolantRecipes);
     }
 }

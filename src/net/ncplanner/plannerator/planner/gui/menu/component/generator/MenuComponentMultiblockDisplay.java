@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.generator;
 import java.util.UUID;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
@@ -21,7 +21,7 @@ public class MenuComponentMultiblockDisplay extends Component{
             Renderer renderer = new Renderer();
             BoundingBox bbox = multiblock.getBoundingBox();
             multiblock.forEachPosition((x, y, z) -> {
-                Block block = multiblock.getBlock(x, y, z);
+                AbstractBlock block = multiblock.getBlock(x, y, z);
                 if(block!=null){
                     block.render(renderer, this.x+x*CELL_SIZE, this.y+y*(bbox.getDepth()+1)*CELL_SIZE+z*CELL_SIZE, CELL_SIZE, CELL_SIZE, null, multiblock);//TODO overlays (or delete this whole thing, it's just for the old generator)
                 }

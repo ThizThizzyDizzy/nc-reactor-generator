@@ -15,7 +15,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block> {
+public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement> {
     /**
      * MUST ONLY BE SET WHEN MERGING CONFIGURATIONS!!!
      */
@@ -35,11 +35,11 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         this.template = template;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block newInstance(int x, int y, int z){
+    public net.ncplanner.plannerator.multiblock.AbstractBlock newInstance(int x, int y, int z){
         return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.Block other){
+    public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){
         ((Block)other).recipe = recipe;
     }
     @Override
@@ -266,7 +266,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return true;
     }
     @Override
-    public boolean matches(net.ncplanner.plannerator.multiblock.Block template){
+    public boolean matches(net.ncplanner.plannerator.multiblock.AbstractBlock template){
         if(template==null)return false;
         if(template instanceof Block){
             return ((Block) template).template==this.template;
@@ -274,14 +274,14 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return false;
     }
     @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.Block oth){
+    public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
         if(template.heatsink)return requires(oth, null);
         Block other = (Block) oth;
         if(template.conductor)return other.template.cluster;
         return false;
     }
     @Override
-    public boolean requires(net.ncplanner.plannerator.multiblock.Block oth, Multiblock mb){
+    public boolean requires(net.ncplanner.plannerator.multiblock.AbstractBlock oth, Multiblock mb){
         if(!template.heatsink)return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
@@ -311,7 +311,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return template.heatsink;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block copy(){
+    public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
         Block copy = new Block(getConfiguration(), x, y, z, template);
         copy.recipe = recipe;
         copy.breedingBlanketValid = breedingBlanketValid;
@@ -325,7 +325,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return copy;
     }
     @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.Block other){
+    public boolean isEqual(net.ncplanner.plannerator.multiblock.AbstractBlock other){
         return other instanceof Block&&((Block)other).template==template;
     }
     public boolean canCluster(){

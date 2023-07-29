@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
@@ -13,10 +14,11 @@ import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
-public class Block extends net.ncplanner.plannerator.multiblock.Block{
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template;
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe;
+public class Block extends AbstractBlock{
+    public BlockElement template;
+    public ActiveCoolerRecipe recipe;
     //fuel cell
     public int adjacentCells, adjacentModerators;
     public float energyMult, heatMult;
@@ -26,17 +28,17 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
     //cooler
     public boolean coolerValid;
     boolean casingValid;//also for controllers
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block template){
+    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
         super(configuration,x,y,z);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block newInstance(int x, int y, int z){
+    public AbstractBlock newInstance(int x, int y, int z){
         return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.Block other){}
+    public void copyProperties(AbstractBlock other){}
     @Override
     public boolean isCore(){
         return isFuelCell()||isModerator();
@@ -78,6 +80,9 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
+        if(recipe!=null){
+            tip+="\n"+recipe.getDisplayName();
+        }
         if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
@@ -114,7 +119,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
         return new ArrayList<>();
     }
     @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.Block oth){
+    public boolean canRequire(AbstractBlock oth){
         if(template.cooler!=null||recipe!=null)return requires(oth, null);
         Block other = (Block) oth;
         if(template.fuelCell!=null||template.moderator!=null)return other.template.moderator!=null||other.template.fuelCell!=null;
@@ -145,12 +150,6 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
         return copy;
     }
     @Override
-    public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.Block against){
-        if(super.shouldRenderFace(against))return true;
-        if(template==((Block)against).template)return false;
-        return Core.hasAlpha(against.getBaseTexture());
-    }
-    @Override
     public ArrayList<String> getSearchableNames(){
         ArrayList<String> searchables = template.getSearchableNames();
         for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
@@ -161,12 +160,8 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
         return template.getSimpleSearchableNames();
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block getTemplate(){
+    public BlockElement getTemplate(){
         return template;
-    }
-    @Override
-    public String getPinnedName(){
-        return template.getPinnedName();
     }
     @Override
     public boolean hasRecipes(){
@@ -182,6 +177,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block{
     }
     @Override
     public void setRecipe(NCPFElement recipe){
-        this.recipe = (ActiveCoolerRecipe)recipe;
+        if(template.activeCooler!=null)this.recipe = (ActiveCoolerRecipe)recipe;
+        throw new IllegalArgumentException("Tried to set block recipe, but this block can't have recipes!");
     }
+    @Override
+    public boolean isToggled(){
+        return false;
+    }
+    @Override
+    public void setToggled(boolean toggled){}
 }

@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.discord.play.Game;
 import net.ncplanner.plannerator.discord.play.SmoreBot;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -38,7 +38,7 @@ public class HeatsinkBattle extends Game{
     private ArrayList<Integer> scores = new ArrayList<>();
     private HashMap<BlockPos, Integer> credit = new HashMap<>();
     private int turn;
-    private ArrayList<Block> blocks = new ArrayList<>();
+    private ArrayList<AbstractBlock> blocks = new ArrayList<>();
     private ArrayList<Integer> skips = new ArrayList<>();
     private int entryFee;
     private long smorePool = 0;
@@ -82,16 +82,16 @@ public class HeatsinkBattle extends Game{
         current = basis.copy();
         if(current instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)current).forEachInternalPosition((x, y, z) -> {
-                Block b = current.getBlock(x, y, z);
+                AbstractBlock b = current.getBlock(x, y, z);
                 if(b!=null&&!b.isCore())current.setBlock(x, y, z, null);//remove all non core blocks
             });
         }else{
             current.forEachPosition((x, y, z) -> {
-                Block b = current.getBlock(x, y, z);
+                AbstractBlock b = current.getBlock(x, y, z);
                 if(b!=null&&!b.isCore())current.setBlock(x, y, z, null);//remove all non core blocks
             });
         }
-        for(Block b : ((Multiblock<Block>)current).getAvailableBlocks()){
+        for(AbstractBlock b : ((Multiblock<AbstractBlock>)current).getAvailableBlocks()){
             if(isHeatsink(b))blocks.add(b);
         }
     }
@@ -219,9 +219,9 @@ public class HeatsinkBattle extends Game{
                 int y = Integer.parseInt(strs[1]);
                 int z = Integer.parseInt(strs[2]);
                 String blockName = strs[3];
-                Block block = null;
-                ArrayList<Block> searched = new ArrayList<>();
-                for(Block b : blocks){
+                AbstractBlock block = null;
+                ArrayList<AbstractBlock> searched = new ArrayList<>();
+                for(AbstractBlock b : blocks){
                     if(Searchable.isValidForSimpleSearch(b, blockName))searched.add(b);
                     if(b.roughMatch(blockName.trim().replace(":", ""))){
                         block = b;
@@ -242,7 +242,7 @@ public class HeatsinkBattle extends Game{
                             scores.set(turn, scores.get(turn)-200);
                         }else message.getChannel().sendMessage("Invalid block! You may only use Coolers/Heatsinks/Heaters!").queue();
                     }else{
-                        Block currentBlock = current.getBlock(x, y, z);
+                        AbstractBlock currentBlock = current.getBlock(x, y, z);
                         if(currentBlock==null||!currentBlock.isValid()||isHeatsink(currentBlock)){
                             int oldHeat = getHeat();
                             current.setBlock(x, y, z, block.newInstance(x, y, z));
@@ -316,7 +316,7 @@ public class HeatsinkBattle extends Game{
     private String strip(String name){
         return "`"+name.replace("`", "\\`")+"`";
     }
-    private boolean isHeatsink(Block b){
+    private boolean isHeatsink(AbstractBlock b){
         if(b instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
             if(((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)b).template.active!=null)return false;//no active allowed here
             if(((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)b).isCooler())return true;
@@ -346,7 +346,7 @@ public class HeatsinkBattle extends Game{
         for(BlockPos pos : credit.keySet()){
             if(credit.get(pos)!=i)continue;//that's for a different player
             if(!current.contains(pos.x, pos.y, pos.z))continue;//not in the reactor
-            Block b = current.getBlock(pos.x, pos.y, pos.z);
+            AbstractBlock b = current.getBlock(pos.x, pos.y, pos.z);
             if(b==null)continue;//air
             if(!b.isValid())continue;//not valid
             templates.add(((ITemplateAccess)b).getTemplate());

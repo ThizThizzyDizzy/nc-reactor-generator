@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
@@ -321,7 +321,7 @@ public class RainbowFactorModule extends Module<Float>{
     }
     private final EditorOverlay rainbowOverlay = new EditorOverlay("Rainbow factor", "Highlights blocks that are the only block of their type", true){
         @Override
-        public void render(Renderer renderer, float x, float y, float width, float height, Block block, Multiblock multiblock){
+        public void render(Renderer renderer, float x, float y, float width, float height, AbstractBlock block, Multiblock multiblock){
             boolean isRainbowable = false;
             if(block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
                 net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;

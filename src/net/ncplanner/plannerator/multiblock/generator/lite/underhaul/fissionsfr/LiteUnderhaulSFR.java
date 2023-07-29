@@ -434,7 +434,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             if(blockValid[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
-                for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Block b : config.blocks){
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : config.blocks){
                     if(b.definition.matches(configuration.blockDefinition[block])){
                         bl = new Block(configg, x, y, z, b);
                         NCPFElementDefinition active = configuration.blockActive[block];

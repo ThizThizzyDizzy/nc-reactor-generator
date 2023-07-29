@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.multiblock.generator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
@@ -125,9 +125,9 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         if(variableRate.getValue()){
             final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
             cmc.forEachInternalPosition((x, y, z) -> {
-                Block b = cmc.getBlock(x, y, z);
+                AbstractBlock b = cmc.getBlock(x, y, z);
                 if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
-                    Block randBlock = randCore(cmc, getAllowedBlocks());
+                    AbstractBlock randBlock = randCore(cmc, getAllowedBlocks());
                     if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
                     cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
                 }
@@ -139,7 +139,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             final CuboidalMultiblock cmc = (CuboidalMultiblock)currentMultiblockCore;
             cmc.forEachInternalPosition((x, y, z) -> {
                 if(fillAir.getValue()&&cmc.getBlock(x, y, z)==null){
-                    Block randBlock = randCore(cmc, getAllowedBlocks());
+                    AbstractBlock randBlock = randCore(cmc, getAllowedBlocks());
                     if(randBlock==null||!randBlock.isCore()||!cmc.canBePlacedWithinCasing(randBlock))return;//nope
                     cmc.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cmc, randBlock.newInstance(x, y, z))));
                     return;
@@ -150,8 +150,8 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                 if(pool.isEmpty())break;
                 int[] pos = pool.remove(rand.nextInt(pool.size()));
-                Block b = currentMultiblockCore.getBlock(pos[0], pos[1], pos[2]);
-                Block randBlock = randCore(currentMultiblockCore, getAllowedBlocks());
+                AbstractBlock b = currentMultiblockCore.getBlock(pos[0], pos[1], pos[2]);
+                AbstractBlock randBlock = randCore(currentMultiblockCore, getAllowedBlocks());
                 if(randBlock==null||!randBlock.isCore())continue;//nope
                 currentMultiblockCore.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblockCore, randBlock.newInstance(pos[0], pos[1], pos[2]))));
             }
@@ -232,11 +232,11 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             if(variableRate.getValue()){
                 final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
                 cm.forEachInternalPosition((x, y, z) -> {
-                    Block b = cm.getBlock(x, y, z);
+                    AbstractBlock b = cm.getBlock(x, y, z);
                     boolean morph = rand.nextDouble()<morphChance.getValue();
                     if(b!=null&&(b.isCore()&&!morph))return;
                     if(rand.nextDouble()<changeChance.getValue()||(fillAir.getValue()&&b==null)){
-                        Block randBlock = rand(cm, getAllowedBlocks());
+                        AbstractBlock randBlock = rand(cm, getAllowedBlocks());
                         if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                         cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
                     }
@@ -248,7 +248,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 final CuboidalMultiblock cm = (CuboidalMultiblock)currentMultiblock;
                 cm.forEachInternalPosition((x, y, z) -> {
                     if(fillAir.getValue()&&cm.getBlock(x, y, z)==null){
-                        Block randBlock = rand(cm, getAllowedBlocks());
+                        AbstractBlock randBlock = rand(cm, getAllowedBlocks());
                         boolean morph = rand.nextDouble()<morphChance.getValue();
                         if(randBlock==null||(randBlock.isCore()&&!morph)||!cm.canBePlacedWithinCasing(randBlock))return;//nope
                         cm.queueAction(new SetblockAction(x, y, z, applyMultiblockSpecificSettings(cm, randBlock.newInstance(x, y, z))));
@@ -260,10 +260,10 @@ public class CoreBasedGenerator extends MultiblockGenerator{
                 for(int i = 0; i<changes; i++){//so it can't change the same cell twice
                     if(pool.isEmpty())break;
                     int[] pos = pool.remove(rand.nextInt(pool.size()));
-                    Block b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
+                    AbstractBlock b = currentMultiblock.getBlock(pos[0], pos[1], pos[2]);
                         boolean morph = rand.nextDouble()<morphChance.getValue();
                     if(b!=null&&(b.isCore()&&!morph))continue;
-                    Block randBlock = rand(currentMultiblock, getAllowedBlocks());
+                    AbstractBlock randBlock = rand(currentMultiblock, getAllowedBlocks());
                     if(randBlock==null||randBlock.isCore()&&!morph)continue;//nope
                     currentMultiblock.queueAction(new SetblockAction(pos[0], pos[1], pos[2], applyMultiblockSpecificSettings(currentMultiblock, randBlock.newInstance(pos[0], pos[1], pos[2]))));
                 }
@@ -295,7 +295,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             countIteration();
         }
     }
-    private Block applyMultiblockSpecificSettings(Multiblock currentMultiblock, Block randBlock){
+    private AbstractBlock applyMultiblockSpecificSettings(Multiblock currentMultiblock, AbstractBlock randBlock){
         if(multiblock instanceof UnderhaulSFR)return randBlock;//no block-specifics here!
         if(multiblock instanceof OverhaulSFR){
             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)randBlock;
@@ -389,13 +389,13 @@ public class CoreBasedGenerator extends MultiblockGenerator{
             ((UnderhaulSFR)multiblock).fuel = ((UnderhaulSFR)this.multiblock).fuel;
             multiblock.recalculate();
         }
-        for(Range<Block> range : getAllowedBlocks()){
-            for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
+        for(Range<AbstractBlock> range : getAllowedBlocks()){
+            for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
                 if(multiblock.count(block)>range.max)multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
             }
         }
-        ALLOWED:for(Block block : ((Multiblock<Block>)multiblock).getBlocks()){
-            for(Range<Block> range : getAllowedBlocks()){
+        ALLOWED:for(AbstractBlock block : ((Multiblock<AbstractBlock>)multiblock).getBlocks()){
+            for(Range<AbstractBlock> range : getAllowedBlocks()){
                 if(range.obj.isEqual(block))continue ALLOWED;
             }
             multiblock.action(new SetblockAction(block.x, block.y, block.z, null), true, false);
@@ -414,7 +414,7 @@ public class CoreBasedGenerator extends MultiblockGenerator{
         }
         return randRange.obj;
     }
-    private <T extends Block> T randCore(Multiblock multiblock, List<Range<T>> ranges){
+    private <T extends AbstractBlock> T randCore(Multiblock multiblock, List<Range<T>> ranges){
         ArrayList<Range<T>> coreRanges = new ArrayList<>(ranges);
         for(Iterator<Range<T>> it = coreRanges.iterator(); it.hasNext();){
             Range<T> next = it.next();

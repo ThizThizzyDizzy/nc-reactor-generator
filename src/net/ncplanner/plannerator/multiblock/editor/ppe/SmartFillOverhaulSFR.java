@@ -20,7 +20,7 @@ public class SmartFillOverhaulSFR extends PostProcessingEffect<OverhaulSFR>{
             Block block = multiblock.getBlock(x, y, z);
             if(block==null||block.isConductor()||block.isInert()){
                 ArrayList<Block> available = new ArrayList<>();
-                for(Range<net.ncplanner.plannerator.multiblock.Block> range : generator.getAllowedBlocks()){
+                for(Range<net.ncplanner.plannerator.multiblock.AbstractBlock> range : generator.getAllowedBlocks()){
                     if(range.max!=Integer.MAX_VALUE&&multiblock.count(range.obj)>=range.max)continue;
                     Block blok = (Block)range.obj;
                     if(blok.isHeatsink()&&multiblock.isValid(blok, x, y, z))available.add(blok);

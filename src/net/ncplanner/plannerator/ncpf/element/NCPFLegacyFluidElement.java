@@ -7,6 +7,7 @@ public class NCPFLegacyFluidElement extends NCPFElementDefinition{
     }
     public NCPFLegacyFluidElement(String name){
         this();
+        if(name.contains(":"))throw new IllegalArgumentException("NCPFLegacyFluidElement must not be namespaced!");
         this.name = name;
     }
     @Override
@@ -19,7 +20,10 @@ public class NCPFLegacyFluidElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        return name.equals(((NCPFLegacyFluidElement)definition).name);
+        if(definition instanceof NCPFLegacyFluidElement){
+            return name.equals(((NCPFLegacyFluidElement)definition).name);
+        }
+        return false;
     }
     @Override
     public String getName(){

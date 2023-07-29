@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Place
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.Block implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Block> {
+public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement> {
     public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block template;
     public boolean valid;
     public Block(Configuration configuration, int x, int y, int z, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block){
@@ -22,11 +22,11 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block newInstance(int x, int y, int z){
+    public net.ncplanner.plannerator.multiblock.AbstractBlock newInstance(int x, int y, int z){
         return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.Block other){}
+    public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){}
     @Override
     public Image getBaseTexture(){
         return template.texture;
@@ -119,7 +119,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return true;
     }
     @Override
-    public boolean matches(net.ncplanner.plannerator.multiblock.Block template){
+    public boolean matches(net.ncplanner.plannerator.multiblock.AbstractBlock template){
         if(template==null)return false;
         if(template instanceof Block){
             return ((Block)template).template==this.template;
@@ -127,12 +127,12 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return false;
     }
     @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.Block oth){
+    public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
         if(template.coil||template.connector)return requires(oth, null);
         return false;
     }
     @Override
-    public boolean requires(net.ncplanner.plannerator.multiblock.Block oth, Multiblock mb){
+    public boolean requires(net.ncplanner.plannerator.multiblock.AbstractBlock oth, Multiblock mb){
         if(!isCoil()&&!isConnector())return false;
         Block other = (Block) oth;
         int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
@@ -161,13 +161,13 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         return template.coil||template.connector||(template.casing&&!template.controller&&!template.inlet&&!template.outlet);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.Block copy(){
+    public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
         Block copy = new Block(getConfiguration(),x,y,z,template);
         copy.valid = valid;
         return copy;
     }
     @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.Block other){
+    public boolean isEqual(net.ncplanner.plannerator.multiblock.AbstractBlock other){
         return other instanceof Block&&((Block)other).template==template;
     }
     public boolean isBlade(){
@@ -192,7 +192,7 @@ public class Block extends net.ncplanner.plannerator.multiblock.Block implements
         configuration = to;
     }
     @Override
-    public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.Block against){
+    public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.AbstractBlock against){
         if(super.shouldRenderFace(against))return true;
         if(template.blade||((Block)against).template.blade)return true;
         if(template==((Block)against).template)return false;

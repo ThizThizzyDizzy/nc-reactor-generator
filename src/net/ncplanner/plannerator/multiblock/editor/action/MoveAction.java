@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
@@ -11,7 +11,7 @@ public class MoveAction extends Action<Multiblock>{
     private final int id;
     private final ArrayList<int[]> blocksToMove = new ArrayList<>();
     private final ArrayList<int[]> selection = new ArrayList<>();
-    private final HashMap<int[], Block> was = new HashMap<>();
+    private final HashMap<int[], AbstractBlock> was = new HashMap<>();
     private final int dx;
     private final int dy;
     private final int dz;
@@ -34,7 +34,7 @@ public class MoveAction extends Action<Multiblock>{
         for(int[] loc : blocksToMove){
             int[] movedLoc = new int[]{loc[0]+dx, loc[1]+dy, loc[2]+dz};
             if(multiblock.contains(movedLoc[0], movedLoc[1], movedLoc[2])){
-                Block to = multiblock.getBlock(movedLoc[0], movedLoc[1], movedLoc[2]);
+                AbstractBlock to = multiblock.getBlock(movedLoc[0], movedLoc[1], movedLoc[2]);
                 was.put(new int[]{movedLoc[0], movedLoc[1], movedLoc[2]}, to);
             }
         }
@@ -49,7 +49,7 @@ public class MoveAction extends Action<Multiblock>{
             multiblock.setBlock(loc[0], loc[1], loc[2], null);
         }
         for(int[] loc : blocksToMove){
-            Block bl = null;
+            AbstractBlock bl = null;
             for(int[] i : was.keySet()){
                 if(i[0]==loc[0]&&i[1]==loc[1]&&i[2]==loc[2])bl = was.get(i);
             }
@@ -73,12 +73,12 @@ public class MoveAction extends Action<Multiblock>{
         }
     }
     @Override
-    public void getAffectedBlocks(Multiblock multiblock, ArrayList<Block> blocks){
+    public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         for(int[] loc : blocksToMove){
-            Block from = multiblock.getBlock(loc[0], loc[1], loc[2]);
+            AbstractBlock from = multiblock.getBlock(loc[0], loc[1], loc[2]);
             if(from!=null)blocks.add(from);
             if(multiblock.contains(loc[0]+dx, loc[1]+dy, loc[2]+dz)){
-                Block to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
+                AbstractBlock to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
                 if(to==null)continue;
                 if(!blocks.contains(to)){
                     blocks.add(to);

@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -84,7 +84,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
         }
         multiblock.forEachPosition((x, y, z) -> {//solid stuff
-            Block block = multiblock.getBlock(x, y, z);
+            AbstractBlock block = multiblock.getBlock(x, y, z);
             int xx = x;
             int yy = y;
             int zz = z;
@@ -95,7 +95,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             if(block!=null){
                 block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
                     if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
-                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return b==null;
                 });
             }
@@ -118,7 +118,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 for(Suggestion s : editor.getSuggestions()){
                     if(s.affects(x, y, z)){
                         if(s.selected&&s.result!=null){
-                            Block b = s.result.getBlock(x, y, z);
+                            AbstractBlock b = s.result.getBlock(x, y, z);
                             renderer.setWhite(resonatingAlpha+.5f);
                             float brdr = blockSize/64;
                             if(b==null){
@@ -182,7 +182,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
         }
         multiblock.forEachPosition((x, y, z) -> {//transparent stuff
-            Block block = multiblock.getBlock(x, y, z);
+            AbstractBlock block = multiblock.getBlock(x, y, z);
             int xx = x;
             int yy = y;
             int zz = z;
@@ -214,7 +214,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                 renderer.setWhite();
                 renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImageRaw("/textures/overhaul/fusion/plasma.png"), (t) -> {
-                    Block b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                     return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
                 });
             }
@@ -239,7 +239,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 if(isSelected(id, x, y, z)){
                     renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
                     renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
-                        Block o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                        AbstractBlock o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
                         return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&o==null;
                     });
                 }
@@ -335,7 +335,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     public String getTooltip(int device){
         if(!deviceover.containsKey(device))return null;
         int[] mouseover = deviceover.get(device);
-        Block block = multiblock.getBlock(mouseover[0],mouseover[1],mouseover[2]);
+        AbstractBlock block = multiblock.getBlock(mouseover[0],mouseover[1],mouseover[2]);
         return block==null?null:block.getTooltip(multiblock);
     }
 }

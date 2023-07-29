@@ -52,7 +52,7 @@ public class PlacementRule extends AbstractPlacementRule<PlacementRule.BlockType
         }
 
         @Override
-        public boolean blockMatches(Multiblock<?> generator, net.ncplanner.plannerator.multiblock.Block rb) {
+        public boolean blockMatches(Multiblock<?> generator, net.ncplanner.plannerator.multiblock.AbstractBlock rb) {
             net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block) rb;
             switch(this){
                 case CASING:

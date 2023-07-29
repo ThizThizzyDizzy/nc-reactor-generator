@@ -5,15 +5,15 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulFusionSettingsModule;
 public class OverhaulFusionConfiguration extends NCPFConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();
-    public OverhaulFusionSettingsModule settings = new OverhaulFusionSettingsModule();
-    public List<Block> blocks = new ArrayList<>();
+    public OverhaulFusionSettingsModule settings;
+    public List<BlockElement> blocks = new ArrayList<>();
     public List<CoolantRecipe> coolantRecipes = new ArrayList<>();
     public List<Recipe> recipes = new ArrayList<>();
     public OverhaulFusionConfiguration(){
@@ -24,7 +24,7 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
         super.convertFromObject(ncpf);
         metadata = getModule(ConfigurationMetadataModule::new);
         settings = getModule(OverhaulFusionSettingsModule::new);
-        blocks = ncpf.getDefinedNCPFList("blocks", blocks, Block::new);
+        blocks = ncpf.getDefinedNCPFList("blocks", blocks, BlockElement::new);
         coolantRecipes = ncpf.getDefinedNCPFList("coolant_recipes", coolantRecipes, CoolantRecipe::new);
         recipes = ncpf.getDefinedNCPFList("recipes", recipes, Recipe::new);
     }

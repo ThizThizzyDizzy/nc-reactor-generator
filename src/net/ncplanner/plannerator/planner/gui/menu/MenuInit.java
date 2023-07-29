@@ -64,7 +64,7 @@ import net.ncplanner.plannerator.planner.module.UnderhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.Configurations;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.theme.Theme;
 public class MenuInit extends Menu{
     private final Task init;
@@ -183,23 +183,21 @@ public class MenuInit extends Menu{
                     if(o instanceof String){
                         Core.setTheme(Theme.getByName((String)o));
                     }else Core.setTheme(Theme.getByLegacyID((int)o));
-                    try{
-                        Config modules = settings.get("modules", Config.newConfig());
-                        HashMap<Module, Boolean> moduleStates = new HashMap<>();
-                        for(String key : modules.properties()){
-                            for(Module m : Core.modules){
-                                if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
-                            }
-                        }
+                    Config modules = settings.get("modules", Config.newConfig());
+                    HashMap<Module, Boolean> moduleStates = new HashMap<>();
+                    for(String key : modules.properties()){
                         for(Module m : Core.modules){
-                            if(!moduleStates.containsKey(m))continue;
-                            if(m.isActive()){
-                                if(!moduleStates.get(m))m.deactivate();
-                            }else{
-                                if(moduleStates.get(m))m.activate();
-                            }
+                            if(m.name.equals(key))moduleStates.put(m, modules.getBoolean(key));
                         }
-                    }catch(Exception ex){}
+                    }
+                    for(Module m : Core.modules){
+                        if(!moduleStates.containsKey(m))continue;
+                        if(m.isActive()){
+                            if(!moduleStates.get(m))m.deactivate();
+                        }else{
+                            if(moduleStates.get(m))m.activate();
+                        }
+                    }
                     Core.tutorialShown = settings.get("tutorialShown", false);
                     Core.invertUndoRedo = settings.get("invertUndoRedo", false);
                     Core.autoBuildCasing = settings.get("autoBuildCasing", true);
@@ -233,7 +231,7 @@ public class MenuInit extends Menu{
                 tc1.finish();
                 for(NCPFConfigurationContainer configuration : Configurations.configurations){
                     configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
-                        for(Block b : msr.blocks){
+                        for(BlockElement b : msr.blocks){
                             if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
                                 try{
                                     Image other = TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", ""));
@@ -261,7 +259,7 @@ public class MenuInit extends Menu{
                     });
                 }
                 System.out.println("Set MSR Textures");
-                Core.setConfiguration(Configurations.configurations.get(0));
+                Core.setConfiguration(Configurations.NUCLEARCRAFT);
                 System.out.println("Imposed Configuration");
                 //TODO remember config, but for real this time
                 if(Core.rememberConfig){

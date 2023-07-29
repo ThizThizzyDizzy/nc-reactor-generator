@@ -5,7 +5,7 @@ import java.util.Locale;
 import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
@@ -38,8 +38,8 @@ public class PNGWriter extends ImageFormatWriter{
             final Design design = ncpf.designs.get(0);
             design.recalculate();
             int blSiz = 32;
-            ArrayList<Block> blox = design.getBlocks();
-            for(Block b : blox){
+            ArrayList<AbstractBlock> blox = design.getBlocks();
+            for(AbstractBlock b : blox){
                 if(b.getTexture()==null)continue;
                 blSiz = Math.max(b.getTexture().getWidth(), blSiz);
             }
@@ -133,7 +133,7 @@ public class PNGWriter extends ImageFormatWriter{
                             int Y = y+bbox.y1;
                             int Z = z+bbox.z1;
                             if(!Core.imageExportCasing&&design.shouldHideWithCasing(X,Y,Z))continue;
-                            Block b = design.getBlock(X, Y, Z);
+                            AbstractBlock b = design.getBlock(X, Y, Z);
                             if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, design);
                             if(design instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)design).getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                                 bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);

@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -29,5 +30,9 @@ public class ConnectorModule extends BlockFunctionModule implements ElementStats
             tip+="\nRequires "+rule.toTooltipString();
         }
         return tip;
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        rules.forEach((rule) -> rule.setReferences(lst));
     }
 }

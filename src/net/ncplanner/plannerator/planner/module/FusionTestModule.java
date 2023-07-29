@@ -32,7 +32,7 @@ public class FusionTestModule extends Module{
     @Override
     public void registerNCPF(){
         registerNCPFConfiguration(OverhaulFusionConfiguration::new);
-        registerNCPFDesign(OverhaulFusionDefinition::new, OverhaulFusionDesign::new);
+//        registerNCPFDesign(OverhaulFusionDefinition::new, OverhaulFusionDesign::new);
         
         registerNCPFModule(OverhaulFusionSettingsModule::new);
         registerNCPFModule(BreedingBlanketModule::new);

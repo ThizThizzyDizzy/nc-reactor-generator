@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
 import net.ncplanner.plannerator.multiblock.generator.setting.Setting;
@@ -25,7 +25,7 @@ public abstract class MultiblockGenerator{
     public final Multiblock multiblock;
     private ArrayList<UUID> threads = new ArrayList<>();
     private HashMap<UUID, Long> crashedThreads = new HashMap<>();
-    private ArrayList<Range<Block>> allowedBlocks = new ArrayList<>();
+    private ArrayList<Range<AbstractBlock>> allowedBlocks = new ArrayList<>();
     public MultiblockGenerator(Multiblock multiblock){
         this.multiblock = multiblock;
         if(multiblock!=null){
@@ -119,10 +119,10 @@ public abstract class MultiblockGenerator{
         }
         return crashed;
     }
-    public List<Range<Block>> getAllowedBlocks(){
+    public List<Range<AbstractBlock>> getAllowedBlocks(){
         return allowedBlocks;
     }
-    public void setAllowedBlocks(ArrayList<Range<Block>> allowedBlocks){
+    public void setAllowedBlocks(ArrayList<Range<AbstractBlock>> allowedBlocks){
         this.allowedBlocks.clear();
         this.allowedBlocks.addAll(allowedBlocks);
     }

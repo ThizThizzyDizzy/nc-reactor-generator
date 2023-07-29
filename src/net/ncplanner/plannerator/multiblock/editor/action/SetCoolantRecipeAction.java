@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -25,5 +25,5 @@ public class SetCoolantRecipeAction extends Action<OverhaulSFR>{
         editor.setCoolantRecipe(multiblock.getConfiguration().overhaul.fissionSFR.allCoolantRecipes.indexOf(((OverhaulSFR)multiblock).coolantRecipe));
     }
     @Override
-    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<Block> blocks){}
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<AbstractBlock> blocks){}
 }

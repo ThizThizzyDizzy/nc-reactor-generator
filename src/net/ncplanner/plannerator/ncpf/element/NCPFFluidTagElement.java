@@ -19,8 +19,11 @@ public class NCPFFluidTagElement extends NCPFElementDefinition{
     }
     @Override
     public boolean matches(NCPFElementDefinition definition){
-        NCPFFluidTagElement other = (NCPFFluidTagElement) definition;
-        return name.equals(other.name);
+        if(definition instanceof NCPFFluidTagElement){
+            NCPFFluidTagElement other = (NCPFFluidTagElement) definition;
+            return name.equals(other.name);
+        }
+        return false;
     }
     @Override
     public String getName(){

@@ -34,7 +34,9 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     }
     public <T extends NCPFConfiguration> void withConfiguration(Supplier<T> config, Consumer<T> func){
         T t = getConfiguration(config);
-        if(t!=null)func.accept(t);
+        if(t!=null){
+            func.accept(t);
+        }
     }
     /**
      * Add all parts of another configuration to this one

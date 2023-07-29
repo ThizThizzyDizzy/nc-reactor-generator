@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Block;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
 public class RecipePortsModule extends NCPFModule{
     public BlockReference input;
@@ -32,7 +32,7 @@ public class RecipePortsModule extends NCPFModule{
         if(input.block!=null&&output.block!=null){
             input.block.toggled = output.block;
             output.block.unToggled = input.block;
-            input.block.parent = output.block.parent = (Block)parentObject;
+            input.block.parent = output.block.parent = (BlockElement)parentObject;
         }
     }
     @Override

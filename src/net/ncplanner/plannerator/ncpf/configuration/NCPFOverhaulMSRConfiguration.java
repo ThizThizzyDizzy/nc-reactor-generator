@@ -22,7 +22,7 @@ public class NCPFOverhaulMSRConfiguration extends NCPFConfiguration{
     @Override
     public void conglomerate(DefinedNCPFModularObject obj){
         super.conglomerate(obj);
-        NCPFOverhaulSFRConfiguration addon = (NCPFOverhaulSFRConfiguration) obj;
+        NCPFOverhaulMSRConfiguration addon = (NCPFOverhaulMSRConfiguration) obj;
         conglomerateElementList(blocks, addon.blocks);
     }
     @Override

@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock.tinkers;
-import net.ncplanner.plannerator.multiblock.Block;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.SimpleBlock;
 import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 public class ToolPart extends SimpleBlock{
@@ -15,7 +15,7 @@ public class ToolPart extends SimpleBlock{
         return getName()+material.getTooltips(type);
     }
     @Override
-    public Block newInstance(int x, int y, int z){
+    public AbstractBlock newInstance(int x, int y, int z){
         return new ToolPart(configuration, x, y, z, type, material);
     }
     @Override
