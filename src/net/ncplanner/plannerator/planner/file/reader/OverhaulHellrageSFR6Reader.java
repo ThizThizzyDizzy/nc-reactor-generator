@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.file.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
@@ -15,8 +16,8 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 public class OverhaulHellrageSFR6Reader implements FormatReader{
     @Override
-    public boolean formatMatches(InputStream in){
-        JSON.JSONObject hellrage = JSON.parse(in);
+    public boolean formatMatches(Supplier<InputStream> in){
+        JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
         int major = saveVersion.getInt("Major");
         int minor = saveVersion.getInt("Minor");
@@ -29,8 +30,8 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
         return major==2&&minor==1&&build>=1;//&&build<=7;
     }
     @Override
-    public synchronized Project read(InputStream in, RecoveryHandler recovery){
-        JSON.JSONObject hellrage = JSON.parse(in);
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+        JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject data = hellrage.getJSONObject("Data");
         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
         String coolantRecipeName = data.getString("CoolantRecipeName");

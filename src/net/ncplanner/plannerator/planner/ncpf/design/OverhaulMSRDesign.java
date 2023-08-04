@@ -25,10 +25,10 @@ public class OverhaulMSRDesign extends Design<NCPFOverhaulMSRDesign>{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        design = copy3DArray(definition.design, BlockElement::new);
-        fuels = copy3DArrayConditional(definition.blockRecipes, design, Fuel::new, FuelVesselModule::new);
-        irradiatorRecipes = copy3DArrayConditional(definition.blockRecipes, design, IrradiatorRecipe::new, IrradiatorModule::new);
-        heaterRecipes = copy3DArrayConditional(definition.blockRecipes, design, HeaterRecipe::new, HeaterModule::new);
+        copy3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], BlockElement::new);
+        copy3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, Fuel::new, (vessel)->vessel.hasModule(FuelVesselModule::new)||vessel.parent!=null&&vessel.parent.hasModule(FuelVesselModule::new));
+        copy3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, IrradiatorRecipe::new, (irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
+        copy3DArrayConditional(definition.blockRecipes, heaterRecipes = new HeaterRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, HeaterRecipe::new, (heater)->heater.hasModule(HeaterModule::new)||heater.parent!=null&&heater.parent.hasModule(HeaterModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

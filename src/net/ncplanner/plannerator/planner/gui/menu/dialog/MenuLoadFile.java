@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -19,9 +18,7 @@ public class MenuLoadFile extends MenuDialog{
             try{
                 Core.createFileChooser((file) -> {
                     Thread t = new Thread(() -> {
-                        Project ncpf = NCPFFileReader.read(file);
-                        if(ncpf==null)ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
+                        Project ncpf = FileReader.read(file);
                         onLoad.accept(ncpf);
                         close();
                     });

@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.file.InputStreamProvider;
 public class TutorialFileReader{
     public static final ArrayList<TutorialFormatReader> formats = new ArrayList<>();
     static{
@@ -106,13 +106,13 @@ public class TutorialFileReader{
             }
         });//.ncpt version 1
     }
-    public static Tutorial read(InputStreamProvider provider){
+    public static Tutorial read(Supplier<InputStream> provider){
         for(TutorialFormatReader reader : formats){
             boolean matches = false;
             try{
-                if(reader.formatMatches(provider.getInputStream()))matches = true;
+                if(reader.formatMatches(provider.get()))matches = true;
             }catch(Throwable t){}
-            if(matches)return reader.read(provider.getInputStream());
+            if(matches)return reader.read(provider.get());
         }
         throw new IllegalArgumentException("Unknown file format!");
     }

@@ -31,6 +31,7 @@ import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF6Reader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF7Reader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF8Reader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF9Reader;
+import net.ncplanner.plannerator.planner.file.reader.NCPFReader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR1Reader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR2Reader;
 import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR3Reader;
@@ -73,33 +74,34 @@ public class MenuInit extends Menu{
     HashMap<String, Task> readerTasks = new HashMap<>();
     private final ProgressBar progressBar;
     {
-        addReader("NCPF11Reader", ()->{return new LegacyNCPF11Reader();});// .ncpf version 11
-        addReader("NCPF10Reader", ()->{return new LegacyNCPF10Reader();});// .ncpf version 10
-        addReader("NCPF9Reader", ()->{return new LegacyNCPF9Reader();});// .ncpf version 9
-        addReader("NCPF8Reader", ()->{return new LegacyNCPF8Reader();});// .ncpf version 8
-        addReader("NCPF7Reader", ()->{return new LegacyNCPF7Reader();});// .ncpf version 7
-        addReader("NCPF6Reader", ()->{return new LegacyNCPF6Reader();});// .ncpf version 6
-        addReader("NCPF5Reader", ()->{return new LegacyNCPF5Reader();});// .ncpf version 5
-        addReader("NCPF4Reader", ()->{return new LegacyNCPF4Reader();});// .ncpf version 4
-        addReader("NCPF3Reader", ()->{return new LegacyNCPF3Reader();});// .ncpf version 3
-        addReader("NCPF2Reader", ()->{return new LegacyNCPF2Reader();});// .ncpf version 2
-        addReader("NCPF1Reader", ()->{return new LegacyNCPF1Reader();});// .ncpf version 1
-        addReader("OverhaulHellrageSFR6Reader", ()->{return new OverhaulHellrageSFR6Reader();});// hellrage SFR .json 2.1.1-2.1.7 (present)
-        addReader("OverhaulHellrageSFR5Reader", ()->{return new OverhaulHellrageSFR5Reader();});// hellrage SFR .json 2.0.32-2.0.37
-        addReader("OverhaulHellrageSFR4Reader", ()->{return new OverhaulHellrageSFR4Reader();});// hellrage SFR .json 2.0.31
-        addReader("OverhaulHellrageSFR3Reader", ()->{return new OverhaulHellrageSFR3Reader();});// hellrage SFR .json 2.0.30
-        addReader("OverhaulHellrageSFR2Reader", ()->{return new OverhaulHellrageSFR2Reader();});// hellrage SFR .json 2.0.7-2.0.29
-        addReader("OverhaulHellrageSFR1Reader", ()->{return new OverhaulHellrageSFR1Reader();});// hellrage SFR .json 2.0.1-2.0.6
-        addReader("UnderhaulHellrage2Reader", ()->{return new UnderhaulHellrage2Reader();});// hellrage .json 1.2.23-1.2.25 (present)
-        addReader("UnderhaulHellrage1Reader", ()->{return new UnderhaulHellrage1Reader();});// hellrage .json 1.2.5-1.2.22
-        addReader("OverhaulHellrageMSR6Reader", ()->{return new OverhaulHellrageMSR6Reader();});// hellrage MSR .json 2.1.1-2.1.7 (present)
-        addReader("OverhaulHellrageMSR5Reader", ()->{return new OverhaulHellrageMSR5Reader();});// hellrage MSR .json 2.0.32-2.0.37
-        addReader("OverhaulHellrageMSR4Reader", ()->{return new OverhaulHellrageMSR4Reader();});// hellrage MSR .json 2.0.31
-        addReader("OverhaulHellrageMSR3Reader", ()->{return new OverhaulHellrageMSR3Reader();});// hellrage MSR .json 2.0.30
-        addReader("OverhaulHellrageMSR2Reader", ()->{return new OverhaulHellrageMSR2Reader();});// hellrage MSR .json 2.0.7-2.0.29
-        addReader("OverhaulHellrageMSR1Reader", ()->{return new OverhaulHellrageMSR1Reader();});// hellrage MSR .json 2.0.1-2.0.6
-        addReader("OverhaulNCConfigReader", ()->{return new OverhaulNCConfigReader();});// OVERHAUL nuclearcraft.cfg
-        addReader("UnderhaulNCConfigReader", ()->{return new UnderhaulNCConfigReader();});// UNDERHAUL nuclearcraft.cfg
+        addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// .ncpf version 11
+        addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// .ncpf version 10
+        addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// .ncpf version 9
+        addReader("LegacyNCPF8Reader", LegacyNCPF8Reader::new);// .ncpf version 8
+        addReader("LegacyNCPF7Reader", LegacyNCPF7Reader::new);// .ncpf version 7
+        addReader("LegacyNCPF6Reader", LegacyNCPF6Reader::new);// .ncpf version 6
+        addReader("LegacyNCPF5Reader", LegacyNCPF5Reader::new);// .ncpf version 5
+        addReader("LegacyNCPF4Reader", LegacyNCPF4Reader::new);// .ncpf version 4
+        addReader("LegacyNCPF3Reader", LegacyNCPF3Reader::new);// .ncpf version 3
+        addReader("LegacyNCPF2Reader", LegacyNCPF2Reader::new);// .ncpf version 2
+        addReader("LegacyNCPF1Reader", LegacyNCPF1Reader::new);// .ncpf version 1
+        addReader("OverhaulHellrageSFR6Reader", OverhaulHellrageSFR6Reader::new);// hellrage SFR .json 2.1.1-2.1.7 (present)
+        addReader("OverhaulHellrageSFR5Reader", OverhaulHellrageSFR5Reader::new);// hellrage SFR .json 2.0.32-2.0.37
+        addReader("OverhaulHellrageSFR4Reader", OverhaulHellrageSFR4Reader::new);// hellrage SFR .json 2.0.31
+        addReader("OverhaulHellrageSFR3Reader", OverhaulHellrageSFR3Reader::new);// hellrage SFR .json 2.0.30
+        addReader("OverhaulHellrageSFR2Reader", OverhaulHellrageSFR2Reader::new);// hellrage SFR .json 2.0.7-2.0.29
+        addReader("OverhaulHellrageSFR1Reader", OverhaulHellrageSFR1Reader::new);// hellrage SFR .json 2.0.1-2.0.6
+        addReader("UnderhaulHellrage2Reader", UnderhaulHellrage2Reader::new);// hellrage .json 1.2.23-1.2.25 (present)
+        addReader("UnderhaulHellrage1Reader", UnderhaulHellrage1Reader::new);// hellrage .json 1.2.5-1.2.22
+        addReader("OverhaulHellrageMSR6Reader", OverhaulHellrageMSR6Reader::new);// hellrage MSR .json 2.1.1-2.1.7 (present)
+        addReader("OverhaulHellrageMSR5Reader", OverhaulHellrageMSR5Reader::new);// hellrage MSR .json 2.0.32-2.0.37
+        addReader("OverhaulHellrageMSR4Reader", OverhaulHellrageMSR4Reader::new);// hellrage MSR .json 2.0.31
+        addReader("OverhaulHellrageMSR3Reader", OverhaulHellrageMSR3Reader::new);// hellrage MSR .json 2.0.30
+        addReader("OverhaulHellrageMSR2Reader", OverhaulHellrageMSR2Reader::new);// hellrage MSR .json 2.0.7-2.0.29
+        addReader("OverhaulHellrageMSR1Reader", OverhaulHellrageMSR1Reader::new);// hellrage MSR .json 2.0.1-2.0.6
+        addReader("OverhaulNCConfigReader", OverhaulNCConfigReader::new);// OVERHAUL nuclearcraft.cfg
+        addReader("UnderhaulNCConfigReader", UnderhaulNCConfigReader::new);// UNDERHAUL nuclearcraft.cfg
+        addReader("NCPFReader", NCPFReader::new);//legacy NCPF reader
     }
     private  void addReader(String s, Supplier<FormatReader> reader){
         readerNames.add(s);

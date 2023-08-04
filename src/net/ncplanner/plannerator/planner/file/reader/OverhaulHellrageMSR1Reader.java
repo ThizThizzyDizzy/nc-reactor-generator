@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
@@ -13,8 +14,8 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 public class OverhaulHellrageMSR1Reader implements FormatReader{
     @Override
-    public boolean formatMatches(InputStream in){
-        JSON.JSONObject hellrage = JSON.parse(in);
+    public boolean formatMatches(Supplier<InputStream> in){
+        JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject saveVersion = hellrage.getJSONObject("SaveVersion");
         int major = saveVersion.getInt("Major");
         int minor = saveVersion.getInt("Minor");
@@ -26,8 +27,8 @@ public class OverhaulHellrageMSR1Reader implements FormatReader{
         return major==2&&minor==0&&build>=1&&build<=6;
     }
     @Override
-    public synchronized Project read(InputStream in, RecoveryHandler recovery){
-        JSON.JSONObject hellrage = JSON.parse(in);
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+        JSON.JSONObject hellrage = JSON.parse(in.get());
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");
         OverhaulMSRDesign msr = new OverhaulMSRDesign(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));

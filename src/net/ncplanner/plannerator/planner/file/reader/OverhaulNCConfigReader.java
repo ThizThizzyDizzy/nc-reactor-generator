@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.planner.StringUtil;
@@ -14,12 +15,12 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantR
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 public class OverhaulNCConfigReader implements FormatReader{
     @Override
-    public boolean formatMatches(InputStream in){
-        return ForgeConfig.parse(in).getConfig("fission").hasProperty("fission_sink_cooling_rate");
+    public boolean formatMatches(Supplier<InputStream> in){
+        return ForgeConfig.parse(in.get()).getConfig("fission").hasProperty("fission_sink_cooling_rate");
     }
     @Override
-    public synchronized Project read(InputStream in, RecoveryHandler recovery){
-        Config config = ForgeConfig.parse(in);
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+        Config config = ForgeConfig.parse(in.get());
         Config fission = config.get("fission");
         Config turbine = config.get("turbine");
         Project ncpf = new Project();

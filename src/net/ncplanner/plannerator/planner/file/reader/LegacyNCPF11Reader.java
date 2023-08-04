@@ -48,7 +48,8 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
 public class LegacyNCPF11Reader implements FormatReader {
     @Override
-    public boolean formatMatches(InputStream in){
+    public boolean formatMatches(Supplier<InputStream> provider){
+        InputStream in = provider.get();
         try{
             Config header = Config.newConfig();
             header.load(in);
@@ -72,7 +73,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         return (byte) 11;
     }
     @Override
-    public synchronized Project read(InputStream in, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> provider, RecoveryHandler recovery){
+        InputStream in = provider.get();
         overhaulTurbinePostLoadInputsMap.clear();
         try{
             Project project = new Project();

@@ -15,6 +15,9 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class MenuImport extends MenuDialog{
     public MenuImport(GUI gui, Menu parent){
         super(gui, parent);
@@ -101,22 +104,14 @@ public class MenuImport extends MenuDialog{
         setContent(layout);
     }
     private void importMultiblocks(File file){
-        LegacyNCPFFile ncpf = FileReader.read(file);
-        if(ncpf==null)return;
-        if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-            Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
-        }
-        convertAndImportMultiblocks(ncpf.multiblocks);
-    }
-    private void convertAndImportMultiblocks(ArrayList<Multiblock> multiblocks){
-        for(Multiblock mb : multiblocks){
-            try{
-                mb.convertTo(Core.configuration);
-            }catch(MissingConfigurationEntryException ex){
-                Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
-                continue;
+        Project project = FileReader.read(file);
+        if(project==null)return;
+        //TODO configuration matches?
+        for(Design design : project.designs){
+            Design copy = design.copyTo(()->Design.registeredDesigns.get(design.definition.type).apply(Core.project));//copy to new configuration, should(tm) set all the references properly, right?
+            if(copy instanceof MultiblockDesign){
+                Core.multiblocks.add(((MultiblockDesign)copy).toMultiblock());
             }
-            Core.multiblocks.add(mb);
         }
     }
 }

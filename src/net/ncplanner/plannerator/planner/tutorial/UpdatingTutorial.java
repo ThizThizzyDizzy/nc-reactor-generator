@@ -1,15 +1,16 @@
 package net.ncplanner.plannerator.planner.tutorial;
-import net.ncplanner.plannerator.planner.file.InputStreamProvider;
+import java.io.InputStream;
+import java.util.function.Supplier;
 public class UpdatingTutorial extends Tutorial{
     private Tutorial tutorial;
     private int updateTimer = 20;
-    private InputStreamProvider path;
-    public UpdatingTutorial(InputStreamProvider path){
+    private Supplier<InputStream> path;
+    public UpdatingTutorial(Supplier<InputStream> path){
         super(getName(path));
         this.path = path;
         tutorial = TutorialFileReader.read(path);
     }
-    private static String getName(InputStreamProvider path){
+    private static String getName(Supplier<InputStream> path){
         return TutorialFileReader.read(path).name;
     }
     @Override

@@ -1331,12 +1331,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return counts;
     }
     public OverhaulMSR convertToMSR() throws MissingConfigurationEntryException{
-        OverhaulMSR msr = new OverhaulMSR(configuration, getInternalWidth(), getInternalHeight(), getInternalDepth());
-        for(Block b : getBlocks(true)){
-            msr.setBlockExact(b.x, b.y, b.z, b.convertToMSR());
-        }
-        msr.metadata.putAll(metadata);
-        return msr;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
     private boolean isValid(){
         return totalOutput>0;

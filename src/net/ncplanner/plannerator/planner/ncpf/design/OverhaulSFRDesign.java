@@ -31,9 +31,9 @@ public class OverhaulSFRDesign extends Design<NCPFOverhaulSFRDesign> implements 
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         coolantRecipe = definition.coolantRecipe.copyTo(CoolantRecipe::new);
-        design = copy3DArray(definition.design, BlockElement::new);
-        fuels = copy3DArrayConditional(definition.blockRecipes, design, Fuel::new, FuelCellModule::new);
-        irradiatorRecipes = copy3DArrayConditional(definition.blockRecipes, design, IrradiatorRecipe::new, IrradiatorModule::new);
+        copy3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], BlockElement::new);
+        copy3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, Fuel::new, (cell)->cell.hasModule(FuelCellModule::new)||cell.parent!=null&&cell.parent.hasModule(FuelCellModule::new));
+        copy3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, IrradiatorRecipe::new, (irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
