@@ -12,6 +12,9 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
         super.convertFromObject(ncpf);
         version = ncpf.getInteger("version");
         addons = ncpf.getDefinedNCPFList("addons", NCPFAddon::new);
+        postConvertFromObject(ncpf);
+    }
+    public void postConvertFromObject(NCPFObject ncpf){
         conglomerate();
         designs = ncpf.getDefinedNCPFList("designs", ()->{return new NCPFDesign(this);});
     }

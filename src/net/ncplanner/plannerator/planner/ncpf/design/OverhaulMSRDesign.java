@@ -3,6 +3,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
@@ -25,10 +26,10 @@ public class OverhaulMSRDesign extends Design<NCPFOverhaulMSRDesign>{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        copy3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], BlockElement::new);
-        copy3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, Fuel::new, (vessel)->vessel.hasModule(FuelVesselModule::new)||vessel.parent!=null&&vessel.parent.hasModule(FuelVesselModule::new));
-        copy3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, IrradiatorRecipe::new, (irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
-        copy3DArrayConditional(definition.blockRecipes, heaterRecipes = new HeaterRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, HeaterRecipe::new, (heater)->heater.hasModule(HeaterModule::new)||heater.parent!=null&&heater.parent.hasModule(HeaterModule::new));
+        match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulMSRConfiguration::new).blocks);
+        match3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement vessel)->vessel.fuels, (BlockElement vessel)->vessel.hasModule(FuelVesselModule::new)||vessel.parent!=null&&vessel.parent.hasModule(FuelVesselModule::new));
+        match3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement irradiator)->irradiator.irradiatorRecipes, (BlockElement irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
+        match3DArrayConditional(definition.blockRecipes, heaterRecipes = new HeaterRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement heater)->heater.heaterRecipes, (BlockElement heater)->heater.hasModule(HeaterModule::new)||heater.parent!=null&&heater.parent.hasModule(HeaterModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

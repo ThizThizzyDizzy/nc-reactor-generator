@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 public class UnderhaulSFRDesign extends Design<NCPFUnderhaulSFRDesign> implements MultiblockDesign<UnderhaulSFR>{
@@ -22,7 +23,7 @@ public class UnderhaulSFRDesign extends Design<NCPFUnderhaulSFRDesign> implement
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         fuel = copy(definition.fuel, Fuel::new);
-        copy3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], BlockElement::new);
+        match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(UnderhaulSFRConfiguration::new).blocks);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

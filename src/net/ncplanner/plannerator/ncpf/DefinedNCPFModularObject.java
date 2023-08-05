@@ -56,11 +56,6 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
         });
         return list;
     }
-    @Deprecated
-    public List pickNotEmpty(List... ts){
-        for(List t : ts)if(t!=null&&!t.isEmpty())return t;
-        return null;
-    }
     public void setRecipes(List<? extends DefinedNCPFObject>... recipes){
         boolean empty = true;
         for(List l : recipes)if(!l.isEmpty())empty = false;

@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
+import java.util.List;
+import java.util.function.Function;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -6,6 +8,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
@@ -31,9 +34,9 @@ public class OverhaulSFRDesign extends Design<NCPFOverhaulSFRDesign> implements 
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         coolantRecipe = definition.coolantRecipe.copyTo(CoolantRecipe::new);
-        copy3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], BlockElement::new);
-        copy3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, Fuel::new, (cell)->cell.hasModule(FuelCellModule::new)||cell.parent!=null&&cell.parent.hasModule(FuelCellModule::new));
-        copy3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, IrradiatorRecipe::new, (irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
+        match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulSFRConfiguration::new).blocks);
+        match3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement cell)->cell.fuels, (BlockElement cell)->cell.hasModule(FuelCellModule::new)||cell.parent!=null&&cell.parent.hasModule(FuelCellModule::new));
+        match3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement irradiator)->irradiator.irradiatorRecipes, (BlockElement irradiator)->irradiator.hasModule(IrradiatorModule::new)||irradiator.parent!=null&&irradiator.parent.hasModule(IrradiatorModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

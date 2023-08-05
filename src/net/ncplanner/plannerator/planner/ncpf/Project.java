@@ -16,8 +16,8 @@ public class Project extends NCPFFile{
     public List<Addon> addons = new ArrayList<>();
     public List<Design> designs = new ArrayList<>();
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
+    public void postConvertFromObject(NCPFObject ncpf){
+        super.postConvertFromObject(ncpf);
         addons = copyList(super.addons, Addon::new);
         designs = new ArrayList<>();
         for(NCPFDesign d : super.designs){

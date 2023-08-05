@@ -115,10 +115,10 @@ public class NCPFObject extends HashMap<String, Object>{
         int r = -1;
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){
-                for(int z = 0; z<design[z].length; z++){
+                for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         int idx = list.getInteger(++r);
-                        array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
+                        if(idx>-1)array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
                     }
                 }
             }
@@ -128,7 +128,7 @@ public class NCPFObject extends HashMap<String, Object>{
         NCPFList list = new NCPFList();
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){
-                for(int z = 0; z<design[z].length; z++){
+                for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         list.add(indexof(array[x][y][z], design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes));
                     }

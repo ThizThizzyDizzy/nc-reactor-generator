@@ -67,6 +67,15 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
     }
     @Override
+    public void setReferences(List<NCPFElement> lst){
+        super.setReferences(lst);
+        if(parent!=null){
+            fuels = parent.fuels;
+            irradiatorRecipes = parent.irradiatorRecipes;
+            heaterRecipes = parent.heaterRecipes;
+        }
+    }
+    @Override
     public void convertToObject(NCPFObject ncpf){
         setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
         setRecipes(fuels, heaterRecipes, irradiatorRecipes);
@@ -74,6 +83,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public List<? extends NCPFElement> getBlockRecipes(){
-        return pickNotEmpty(fuels, heaterRecipes, irradiatorRecipes);
+        if(fuelVessel!=null)return fuels;
+        if(irradiator!=null)return irradiatorRecipes;
+        if(heater!=null)return heaterRecipes;
+        if(parent!=null)return parent.getBlockRecipes();
+        return null;
     }
 }

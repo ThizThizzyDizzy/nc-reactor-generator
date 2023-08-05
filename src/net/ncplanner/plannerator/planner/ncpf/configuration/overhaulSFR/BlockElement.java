@@ -68,6 +68,14 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
     }
     @Override
+    public void setReferences(List<NCPFElement> lst){
+        super.setReferences(lst);
+        if(parent!=null){
+            fuels = parent.fuels;
+            irradiatorRecipes = parent.irradiatorRecipes;
+        }
+    }
+    @Override
     public void convertToObject(NCPFObject ncpf){
         setModules(names, texture, conductor, casing, coolantVent, controller, fuelCell, irradiator, reflector, moderator, neutronShield, heatsink, neutronSource, port, recipePorts);
         setRecipes(fuels, irradiatorRecipes);

@@ -16,7 +16,7 @@ public class NCPFOverhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blockRecipes = new NCPFElement[design.length][design[0].length][design[1].length];
+        blockRecipes = new NCPFElement[design.length][design[0].length][design[0][0].length];
         NCPFOverhaulSFRConfiguration config = getConfiguration();
         ncpf.getDefined3DArray("design", design, config.blocks);
         ncpf.getRecipe3DArray("block_recipes", blockRecipes, design);
