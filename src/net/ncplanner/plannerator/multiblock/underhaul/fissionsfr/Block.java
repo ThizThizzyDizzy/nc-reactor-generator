@@ -178,7 +178,7 @@ public class Block extends AbstractBlock{
     @Override
     public void setRecipe(NCPFElement recipe){
         if(template.activeCooler!=null)this.recipe = (ActiveCoolerRecipe)recipe;
-        throw new IllegalArgumentException("Tried to set block recipe, but this block can't have recipes!");
+        else throw new IllegalArgumentException("Tried to set block recipe, but this block can't have recipes!");
     }
     @Override
     public boolean isToggled(){
