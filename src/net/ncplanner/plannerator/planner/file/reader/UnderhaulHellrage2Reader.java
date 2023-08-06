@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 import java.io.InputStream;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
@@ -23,7 +24,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         JSON.JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
         String fuelName = usedFuel.getString("Name");
-        UnderhaulSFRDesign sfr = new UnderhaulSFRDesign(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+        UnderhaulSFRDesign sfr = new UnderhaulSFRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
         sfr.fuel = recovery.recoverUnderhaulSFRFuel(fuelName, usedFuel.getFloat("BaseHeat"), usedFuel.getFloat("BasePower"));
         JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
         for(String name : compressedReactor.keySet()){
@@ -37,7 +38,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
                 sfr.design[x][y][z] = block;
             }
         }
-        Project file = new Project();
+        Project file = new Project(Core.project);
         file.designs.add(sfr);
         return file;
     }

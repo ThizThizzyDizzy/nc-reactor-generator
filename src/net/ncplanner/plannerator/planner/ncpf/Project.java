@@ -15,6 +15,12 @@ public class Project extends NCPFFile{
     public MetadataModule metadata = new MetadataModule();
     public List<Addon> addons = new ArrayList<>();
     public List<Design> designs = new ArrayList<>();
+    public Project(){}
+    public Project(Project parentConfig){//used for hellrage loading
+        configuration = parentConfig.configuration;
+        addons = parentConfig.addons;
+        conglomeration = parentConfig.conglomeration;
+    }
     @Override
     public void postConvertFromObject(NCPFObject ncpf){
         super.postConvertFromObject(ncpf);

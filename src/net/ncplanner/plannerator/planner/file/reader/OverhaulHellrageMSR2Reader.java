@@ -31,7 +31,7 @@ public class OverhaulHellrageMSR2Reader implements FormatReader{
         JSON.JSONObject hellrage = JSON.parse(in.get());
         String dimS = hellrage.getString("InteriorDimensions");
         String[] dims = StringUtil.split(dimS, ",");
-        OverhaulMSRDesign msr = new OverhaulMSRDesign(null, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+        OverhaulMSRDesign msr = new OverhaulMSRDesign(Core.project, Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
         JSON.JSONObject heatSinks = hellrage.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
@@ -129,7 +129,7 @@ public class OverhaulHellrageMSR2Reader implements FormatReader{
         for(int[] key : sources.keySet()){
             LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
         }
-        Project file = new Project();
+        Project file = new Project(Core.project);
         file.designs.add(msr);
         return file;
     }

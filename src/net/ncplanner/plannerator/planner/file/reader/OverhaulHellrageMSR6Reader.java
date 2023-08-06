@@ -34,7 +34,7 @@ public class OverhaulHellrageMSR6Reader implements FormatReader{
         JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject data = hellrage.getJSONObject("Data");
         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
-        OverhaulMSRDesign msr = new OverhaulMSRDesign(null, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+        OverhaulMSRDesign msr = new OverhaulMSRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
         JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
         for(String name : heatSinks.keySet()){
             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
@@ -156,7 +156,7 @@ public class OverhaulHellrageMSR6Reader implements FormatReader{
         for(int[] key : sources.keySet()){
             LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
         }
-        Project file = new Project();
+        Project file = new Project(Core.project);
         file.designs.add(msr);
         return file;
     }

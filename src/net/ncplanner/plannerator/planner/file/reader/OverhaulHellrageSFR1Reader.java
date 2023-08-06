@@ -111,7 +111,7 @@ public class OverhaulHellrageSFR1Reader implements FormatReader{
         for(int[] key : sources.keySet()){
             LegacyNeutronSourceHandler.addNeutronSource(sfr, key[0], key[1], key[2], sources.get(key));
         }
-        Project file = new Project();
+        Project file = new Project(Core.project);
         file.designs.add(sfr);
         return file;
     }
