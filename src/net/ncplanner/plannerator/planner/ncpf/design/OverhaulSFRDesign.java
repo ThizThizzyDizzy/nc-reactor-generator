@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
-import java.util.List;
-import java.util.function.Function;
+import java.util.Arrays;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -60,5 +59,13 @@ public class OverhaulSFRDesign extends Design<NCPFOverhaulSFRDesign> implements 
             }
         }
         return sfr;
+    }
+    @Override
+    public void convertElements(){
+        OverhaulSFRConfiguration config = file.getConfiguration(OverhaulSFRConfiguration::new);
+        convertElements(design, config);
+        convertRecipes(design, fuels, (b)->b.fuels, config);
+        convertRecipes(design, irradiatorRecipes, (b)->b.irradiatorRecipes, config);
+        coolantRecipe = convertElement(coolantRecipe, config);
     }
 }

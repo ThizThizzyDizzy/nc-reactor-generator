@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
@@ -43,5 +44,11 @@ public class UnderhaulSFRDesign extends Design<NCPFUnderhaulSFRDesign> implement
             }
         }
         return sfr;
+    }
+    @Override
+    public void convertElements(){
+        UnderhaulSFRConfiguration config = file.getConfiguration(UnderhaulSFRConfiguration::new);
+        convertElements(design, config);
+        fuel = convertElement(fuel, config);
     }
 }

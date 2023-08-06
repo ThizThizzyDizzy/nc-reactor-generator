@@ -68,6 +68,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
+        setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
         super.setReferences(lst);
         if(parent!=null){
             fuels = parent.fuels;

@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.planner.Core;
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public int version;
     public List<NCPFAddon> addons = new ArrayList<>();
@@ -16,7 +17,7 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     }
     public void postConvertFromObject(NCPFObject ncpf){
         conglomerate();
-        designs = ncpf.getDefinedNCPFList("designs", ()->{return new NCPFDesign(this);});
+        designs = ncpf.getDefinedNCPFList("designs", ()->{return new NCPFDesign(isConfigEmpty()?Core.project:this);});
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
@@ -32,5 +33,8 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
             conglomeration.conglomerate(addon.configuration);
         }
         conglomeration.setReferences();
+    }
+    public boolean isConfigEmpty(){
+        return conglomeration.configurations.isEmpty();
     }
 }

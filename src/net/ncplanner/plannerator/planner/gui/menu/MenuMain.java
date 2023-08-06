@@ -32,7 +32,8 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportFile;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportFiles;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
@@ -304,7 +305,7 @@ public class MenuMain extends Menu{
             new MenuSaveDialog(gui, this).open();
         });
         loadFile.addAction(new MenuLoad(gui, this).onClose(this::onOpened)::open);
-        importFile.addAction(new MenuImport(gui, this).onClose(this::onOpened)::open);
+        importFile.addAction(new MenuImportFile(gui, this, this::onOpened)::open);
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
             exportMultiblock.add(new Button(format.name, true, true).setTooltip(format.description)).addAction(() -> {
@@ -652,29 +653,18 @@ public class MenuMain extends Menu{
     }
     @Override
     public void onFilesDropped(String[] files){
-        Thread t = new Thread(() -> {
-            for(String fil : files){
-                if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
-                    gui.open(new MenuDsslEditor(gui, this));
-                    gui.menu.onFilesDropped(files);
-                    return;
-                }
-                try{
-                    Project ncpf = FileReader.read(new File(fil));
-                    if(ncpf==null)return;
-                    for(Design d : ncpf.designs){
-                        if(d instanceof MultiblockDesign){
-                            Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
-                        }
-                    }
-                }catch(Exception ex){
-                    Core.error("Failed to load file "+fil+"!", ex);
-                }
+        ArrayList<File> toImport = new ArrayList<>();
+        for(String fil : files){
+            if((fil.endsWith(".dssl")||fil.endsWith(".essl"))&&Core.dssl){
+                gui.open(new MenuDsslEditor(gui, this));
+                gui.menu.onFilesDropped(files);
+                return;
             }
-            onOpened();
-        }, "Dropped File Loading Thread");
-        t.setDaemon(true);
-        t.start();
+            toImport.add(new File(fil));
+        }
+        if(!toImport.isEmpty()){
+            new MenuImportFiles(gui, this, toImport, this::onOpened).open();
+        }
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){

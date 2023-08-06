@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
 import net.ncplanner.plannerator.ncpf.design.UnknownNCPFDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFDesign<T extends NCPFDesignDefinition> extends DefinedNCPFModularObject{
-    public final NCPFFile file;
+    public NCPFFile file;
     public NCPFDesign(NCPFFile file){
         this.file = file;
     }

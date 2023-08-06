@@ -182,8 +182,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         if(compact){
             int[] index = new int[1];
             for(int x = 0; x<overhaulSFR.design.length; x++){
-                for(int y = 0; y<overhaulSFR.design.length; y++){
-                    for(int z = 0; z<overhaulSFR.design.length; z++){
+                for(int y = 0; y<overhaulSFR.design[x].length; y++){
+                    for(int z = 0; z<overhaulSFR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
                             net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
@@ -208,17 +208,18 @@ public class LegacyNCPF11Reader implements FormatReader {
         ConfigNumberList ports = data.getConfigNumberList("ports");
         int portIndex = 0;
         for(int x = 0; x<overhaulSFR.design.length; x++){
-            for(int y = 0; y<overhaulSFR.design.length; y++){
-                for(int z = 0; z<overhaulSFR.design.length; z++){
+            for(int y = 0; y<overhaulSFR.design[x].length; y++){
+                for(int z = 0; z<overhaulSFR.design[x][y].length; z++){
                     net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = overhaulSFR.design[x][y][z];
-                    if(!block.fuels.isEmpty()){
+                    if(block==null)continue;
+                    if(!block.fuels.isEmpty()||block.parent!=null&&!block.parent.fuels.isEmpty()){
                         int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulSFR.fuels[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        if(rid!=0)overhaulSFR.fuels[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block.parent==null?block:block.parent, rid-1);
                         recipeIndex++;
                     }
-                    if(!block.irradiatorRecipes.isEmpty()){
+                    if(!block.irradiatorRecipes.isEmpty()||block.parent!=null&&!block.parent.irradiatorRecipes.isEmpty()){
                         int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulSFR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        if(rid!=0)overhaulSFR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block.parent==null?block:block.parent, rid-1);
                         recipeIndex++;
                     }
                     if(block.port!=null||block.coolantVent!=null){
@@ -239,8 +240,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         if(compact){
             int[] index = new int[1];
             for(int x = 0; x<overhaulMSR.design.length; x++){
-                for(int y = 0; y<overhaulMSR.design.length; y++){
-                    for(int z = 0; z<overhaulMSR.design.length; z++){
+                for(int y = 0; y<overhaulMSR.design[x].length; y++){
+                    for(int z = 0; z<overhaulMSR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
                             net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
@@ -265,8 +266,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         ConfigNumberList ports = data.getConfigNumberList("ports");
         int portIndex = 0;
         for(int x = 0; x<overhaulMSR.design.length; x++){
-            for(int y = 0; y<overhaulMSR.design.length; y++){
-                for(int z = 0; z<overhaulMSR.design.length; z++){
+            for(int y = 0; y<overhaulMSR.design[x].length; y++){
+                for(int z = 0; z<overhaulMSR.design[x][y].length; z++){
                     net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = overhaulMSR.design[x][y][z];
                     if(!block.fuels.isEmpty()){
                         int rid = (int)blockRecipes.get(recipeIndex);
@@ -307,8 +308,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         ConfigNumberList blocks = data.getConfigNumberList("blocks");
         int[] index = new int[1];
         for(int x = 0; x<overhaulTurbine.design.length; x++){
-            for(int y = 0; y<overhaulTurbine.design.length; y++){
-                for(int z = 0; z<overhaulTurbine.design.length; z++){
+            for(int y = 0; y<overhaulTurbine.design[x].length; y++){
+                for(int z = 0; z<overhaulTurbine.design[x][y].length; z++){
                     int bid = (int) blocks.get(index[0]);
                     if(bid>0){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b = recovery.recoverOverhaulTurbineBlockLegacyNCPF(ncpf, bid-1);
@@ -328,8 +329,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         ConfigNumberList blocks = data.getConfigNumberList("blocks");
         int[] index = new int[0];
         for(int x = 0; x<overhaulFusion.design.length; x++){
-            for(int y = 0; y<overhaulFusion.design.length; y++){
-                for(int z = 0; z<overhaulFusion.design.length; z++){
+            for(int y = 0; y<overhaulFusion.design[x].length; y++){
+                for(int z = 0; z<overhaulFusion.design[x][y].length; z++){
                     int bid = (int) blocks.get(index[0]);
                     if(bid>0){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement b = recovery.recoverOverhaulFusionBlockLegacyNCPF(ncpf, bid-1);
@@ -342,8 +343,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         ConfigNumberList blockRecipes = data.getConfigNumberList("blockRecipes");
         int recipeIndex = 0;
         for(int x = 0; x<overhaulFusion.design.length; x++){
-            for(int y = 0; y<overhaulFusion.design.length; y++){
-                for(int z = 0; z<overhaulFusion.design.length; z++){
+            for(int y = 0; y<overhaulFusion.design[x].length; y++){
+                for(int z = 0; z<overhaulFusion.design[x][y].length; z++){
                     net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block = overhaulFusion.design[x][y][z];
                     if(!block.breedingBlanketRecipes.isEmpty()){
                         int rid = (int)blockRecipes.get(recipeIndex);

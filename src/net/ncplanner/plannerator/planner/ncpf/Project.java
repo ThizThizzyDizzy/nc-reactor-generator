@@ -9,25 +9,20 @@ import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 public class Project extends NCPFFile{
     public MetadataModule metadata = new MetadataModule();
     public List<Addon> addons = new ArrayList<>();
     public List<Design> designs = new ArrayList<>();
-    public Project(){}
-    public Project(Project parentConfig){//used for hellrage loading
-        configuration = parentConfig.configuration;
-        addons = parentConfig.addons;
-        conglomeration = parentConfig.conglomeration;
-    }
     @Override
     public void postConvertFromObject(NCPFObject ncpf){
         super.postConvertFromObject(ncpf);
         addons = copyList(super.addons, Addon::new);
         designs = new ArrayList<>();
         for(NCPFDesign d : super.designs){
-            designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(this)));
+            designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(isConfigEmpty()?Core.project:this)));
         }
         metadata = getModule(MetadataModule::new);
     }
@@ -36,7 +31,7 @@ public class Project extends NCPFFile{
         setModule(metadata);
         super.addons = copyList(addons, NCPFAddon::new);
         super.convertToObject(ncpf);
-        super.designs = copyList(designs, ()->new NCPFDesign(this));
+        super.designs = copyList(designs, ()->new NCPFDesign(isConfigEmpty()?Core.project:this));
         super.convertToObject(ncpf);
     }
     @Override

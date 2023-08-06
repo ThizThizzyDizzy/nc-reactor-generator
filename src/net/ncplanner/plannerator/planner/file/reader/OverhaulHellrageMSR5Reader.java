@@ -114,7 +114,7 @@ public class OverhaulHellrageMSR5Reader implements FormatReader{
         for(int[] key : sources.keySet()){
             LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
         }
-        Project file = new Project(Core.project);
+        Project file = new Project();
         file.designs.add(msr);
         return file;
     }

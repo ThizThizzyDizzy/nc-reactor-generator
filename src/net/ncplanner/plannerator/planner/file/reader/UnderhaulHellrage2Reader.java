@@ -38,7 +38,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
                 sfr.design[x][y][z] = block;
             }
         }
-        Project file = new Project(Core.project);
+        Project file = new Project();
         file.designs.add(sfr);
         return file;
     }

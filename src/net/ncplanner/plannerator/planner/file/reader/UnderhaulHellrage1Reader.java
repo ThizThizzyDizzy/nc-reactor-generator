@@ -44,7 +44,7 @@ public class UnderhaulHellrage1Reader implements FormatReader{
                 }
             }
         }
-        Project file = new Project(Core.project);
+        Project file = new Project();
         file.designs.add(sfr);
         return file;
     }

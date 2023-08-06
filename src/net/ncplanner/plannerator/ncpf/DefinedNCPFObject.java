@@ -3,8 +3,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
+import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 public abstract class DefinedNCPFObject{
     public abstract void convertFromObject(NCPFObject ncpf);
     public abstract void convertToObject(NCPFObject ncpf);
@@ -106,8 +108,38 @@ public abstract class DefinedNCPFObject{
         }
         return finalArray;
     }
+    public <T extends NCPFElement> void convertElements(T[][][] elems, NCPFConfiguration convertTo){
+        for(int x = 0; x<elems.length; x++){
+            for(int y = 0; y<elems[x].length; y++){
+                for(int z = 0; z<elems[x][y].length; z++){
+                    elems[x][y][z] = convertElement(elems[x][y][z], convertTo);
+                }
+            }
+        }
+    }
+    public <T extends NCPFElement, U extends NCPFElement> void convertRecipes(T[][][] elems, U[][][] recipes, Function<T, List<U>> recipesFunc, NCPFConfiguration convertTo){
+        for(int x = 0; x<recipes.length; x++){
+            for(int y = 0; y<recipes[x].length; y++){
+                for(int z = 0; z<recipes[x][y].length; z++){
+                    if(recipes[x][y][z]==null)continue;
+                    List<U> recips = recipesFunc.apply(convertElement(elems[x][y][z], convertTo));
+                    NCPFElement match = matchElement(recipes[x][y][z], recips);
+                    if(match==null)throw new RuntimeException("Failed to match recipe "+recipes[x][y][z].definition.toString()+" of "+elems[x][y][z].definition.toString()+" in "+convertTo.name+"!");
+                    recipes[x][y][z] = (U)match;
+                }
+            }
+        }
+    }
+    public <T extends NCPFElement> T convertElement(T elem, NCPFConfiguration convertTo){
+        if(elem==null)return null;
+        for(List<NCPFElement> elems : convertTo.getElements()){
+            NCPFElement match = matchElement(elem, elems);
+            if(match!=null)return (T)match;
+        }
+        throw new RuntimeException("Failed to match element "+elem.definition.toString()+" in "+convertTo.name+"!");
+    }
     public void setReferences(List<NCPFElement> lst){}
-    private <T extends NCPFElement, V extends NCPFElement> T matchElement(V element, List<T> list){
+    private <T extends NCPFElement, V extends NCPFElement> T matchElement(V element, Iterable<T> list){
         if(element==null)return null;
         for(T elem : list){
             if(element.definition.matches(elem.definition))return elem;
