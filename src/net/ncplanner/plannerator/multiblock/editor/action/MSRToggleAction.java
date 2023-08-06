@@ -11,12 +11,12 @@ public class MSRToggleAction extends Action<OverhaulMSR>{
     }
     @Override
     public void doApply(OverhaulMSR multiblock, boolean allowUndo){
-        if(allowUndo)was = block.isToggled;
-        block.isToggled = !block.isToggled;
+        if(allowUndo)was = block.isToggled();
+        block.setToggled(!block.isToggled());
     }
     @Override
     public void doUndo(OverhaulMSR multiblock){
-        block.isToggled = was;
+        block.setToggled(was);
     }
     @Override
     public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){

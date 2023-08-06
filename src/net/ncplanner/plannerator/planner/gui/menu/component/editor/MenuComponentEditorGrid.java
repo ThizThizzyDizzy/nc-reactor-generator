@@ -22,8 +22,8 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentEditorGrid extends Component{
     private final Object synchronizer = new Object();
@@ -364,8 +364,8 @@ public class MenuComponentEditorGrid extends Component{
                     if(b.template.fuelCell!=null){
                         boolean self = b.fuel!=null&&b.fuel.stats.selfPriming;
                         if(!self){
-                            ArrayList<BlockElement> sources = new ArrayList<>();
-                            for(BlockElement possible : multiblock.getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                            ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> sources = new ArrayList<>();
+                            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement possible : multiblock.getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).blocks){
                                 if(possible.neutronSource!=null)sources.add(possible);
                             }
                             sources.sort((o1, o2) -> {
@@ -381,20 +381,20 @@ public class MenuComponentEditorGrid extends Component{
                 }
                 if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block) block;
-                    if(b.template.shield||b.template.parent!=null){
-                        if(Core.isControlPressed()&&b.template.shield)editor.action(new MSRAllShieldsAction(!b.isToggled), true);
+                    if(b.template.toggled!=null||b.template.unToggled!=null){
+                        if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new MSRAllShieldsAction(!b.isToggled()), true);
                         else editor.action(new MSRToggleAction(b), true);
                         didSomething = true;
                     }
-                    if(b.template.fuelVessel&&(b.template.fuelVesselHasBaseStats||b.recipe!=null)){
-                        boolean self = b.recipe==null?b.template.fuelVesselSelfPriming:b.recipe.fuelVesselSelfPriming;
+                    if(b.template.fuelVessel!=null){
+                        boolean self = b.fuel!=null&&b.fuel.stats.selfPriming;
                         if(!self){
-                            ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block> sources = new ArrayList<>();
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block possible : multiblock.getConfiguration().overhaul.fissionMSR.allBlocks){
-                                if(possible.source)sources.add(possible);
+                            ArrayList<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> sources = new ArrayList<>();
+                            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement possible : multiblock.getConfiguration().getConfiguration(OverhaulMSRConfiguration::new).blocks){
+                                if(possible.neutronSource!=null)sources.add(possible);
                             }
                             sources.sort((o1, o2) -> {
-                                return (int)((o1.sourceEfficiency-o2.sourceEfficiency)*10000);
+                                return (int)((o1.neutronSource.efficiency-o2.neutronSource.efficiency)*10000);
                             });
                             int idx = sources.size()-1;
                             if(b.source!=null)idx = sources.indexOf(b.source.template)-1;

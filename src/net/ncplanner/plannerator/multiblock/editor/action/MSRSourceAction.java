@@ -3,12 +3,13 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 public class MSRSourceAction extends Action<OverhaulMSR>{
     private final Block vessel;
     private int[] pWas;
     private Block was;
-    private final net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block source;
-    public MSRSourceAction(Block cell, net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block source){
+    private final BlockElement source;
+    public MSRSourceAction(Block cell, BlockElement source){
         this.vessel = cell;
         this.source = source;
     }
@@ -26,7 +27,7 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
             if(bWas==null)return;
             if(allowUndo){
                 pWas = new int[]{bWas.x,bWas.y,bWas.z};
-                was = bWas.template.source?null:bWas;
+                was = bWas.template.neutronSource!=null?null:bWas;
             }
         }
     }

@@ -90,4 +90,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(parent!=null)return parent.getBlockRecipes();
         return null;
     }
+    public boolean blocksLOS(){
+        return fuelVessel!=null||irradiator!=null||reflector!=null;
+    }
+    public boolean createsCluster(){
+        return fuelVessel!=null||irradiator!=null||neutronShield!=null;
+    }
 }

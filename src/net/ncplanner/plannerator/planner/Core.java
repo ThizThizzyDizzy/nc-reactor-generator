@@ -49,8 +49,6 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Configurations;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
@@ -631,7 +629,6 @@ public class Core{
         vsync = vs;
     }
     public static void setConfiguration(NCPFConfigurationContainer configuration){
-        configuration.configurations.remove(new OverhaulMSRConfiguration().name);
         configuration.configurations.remove(new OverhaulTurbineConfiguration().name);//TODO don do dat
         project.conglomeration = project.configuration = configuration;
 //        project.conglomerate();//TODO this duplicates references!

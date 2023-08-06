@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
-import java.util.Arrays;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFElement;

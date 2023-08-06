@@ -285,7 +285,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     propogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : blocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 propogateFlux.finish();
@@ -311,7 +311,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     rePropogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : blocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 int nowActive = 0;
@@ -520,7 +520,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     shutdownPropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 shutdownPropogateFlux.finish();
@@ -546,7 +546,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     shutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x,block.y,block.z,block.neutronFlux,block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 for(Decal d : fluxDecals)shutdownFluxDecals.enqueue(d);
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
@@ -1004,7 +1004,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 }
                 if(block.isIrradiator()){
                     if(length==0)break;
-                    if(block.irradiatorRecipe==null)break;//empty irradiator
+                    if(block.irradiatorRecipe==null)break;
                     that.moderatorLines++;
                     if(flux>0)that.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.stats.efficiency;
                     int f = 0;
@@ -1203,12 +1203,12 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         boolean wasValid = block.heatsinkValid;
         for(NCPFPlacementRule rule : block.getRules()){
             if(!rule.isValid(block, this)){
-                if(block.heatsinkValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x,block.y,block.z));
+                if(block.heatsinkValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
                 block.heatsinkValid = false;
                 return wasValid!=block.heatsinkValid;
             }
         }
-        if(!block.heatsinkValid&&addDecals)decals.enqueue(new BlockValidDecal(block.x,block.y,block.z));
+        if(!block.heatsinkValid&&addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
         block.heatsinkValid = true;
         return wasValid!=block.heatsinkValid;
     }
@@ -1250,6 +1250,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     + "Shutdown Factor: "+MathUtil.percent(shutdownFactor, 2), Core.theme.getTooltipTextColor());
             text.addText(getModuleTooltip()+"\n");
             for(BlockElement b : getSpecificConfiguration().blocks){
+                if(b.port!=null)continue;
                 String txt = "";
                 for(Fuel f : b.fuels){
                     int i = getRecipeCount(f);
@@ -1332,9 +1333,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     public OverhaulMSR convertToMSR() throws MissingConfigurationEntryException{
         throw new UnsupportedOperationException("Not yet implemented");
-    }
-    private boolean isValid(){
-        return totalOutput>0;
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.design;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFOverhaulMSRDesign extends NCPFCuboidalMultiblockDesign{
@@ -8,10 +9,14 @@ public class NCPFOverhaulMSRDesign extends NCPFCuboidalMultiblockDesign{
     public NCPFOverhaulMSRDesign(){
         super("nuclearcraft:overhaul_msr");
     }
+    public NCPFOverhaulMSRDesign(NCPFFile file){
+        this();
+        this.file = file;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        blockRecipes = new NCPFElement[design.length][design[0].length][design[1].length];
+        blockRecipes = new NCPFElement[design.length][design[0].length][design[0][0].length];
         NCPFOverhaulMSRConfiguration config = getConfiguration();
         ncpf.getDefined3DArray("design", design, config.blocks);
         ncpf.getRecipe3DArray("block_recipes", blockRecipes, design);

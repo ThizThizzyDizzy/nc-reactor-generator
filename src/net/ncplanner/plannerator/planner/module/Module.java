@@ -113,7 +113,7 @@ public abstract class Module<T>{
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
     public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){}
-    public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}
+    public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}//TODO replace with NCPF design registry
     public void registerNCPF(){}
     public void setActive(boolean active){
         if(active)activate();

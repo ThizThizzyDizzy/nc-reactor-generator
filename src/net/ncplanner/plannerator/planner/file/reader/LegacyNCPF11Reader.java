@@ -917,7 +917,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                         additionalBlocks.add(closed);
                     }
                     Config heaterCfg = blockCfg.getConfig("heater");
-                    if(heaterCfg!=null)block.heater = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule();
+                    if(heaterCfg!=null){
+                        block.moderator = null;
+                        block.heater = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule();
+                    }
                     Config sourceCfg = blockCfg.getConfig("source");
                     if(sourceCfg!=null){
                         block.neutronSource = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule();

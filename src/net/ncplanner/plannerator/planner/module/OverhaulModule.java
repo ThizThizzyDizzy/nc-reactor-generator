@@ -15,9 +15,7 @@ import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDeca
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
-import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
-import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
@@ -25,6 +23,7 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
@@ -50,7 +49,7 @@ public class OverhaulModule extends Module<Object>{
     @Override
     public void addMultiblockTypes(ArrayList multiblockTypes){
         multiblockTypes.add(new OverhaulSFR());
-//        multiblockTypes.add(new OverhaulMSR());
+        multiblockTypes.add(new OverhaulMSR());
 //        multiblockTypes.add(new OverhaulTurbine());
     }
     @Override
@@ -59,7 +58,7 @@ public class OverhaulModule extends Module<Object>{
         registerNCPFConfiguration(OverhaulMSRConfiguration::new);
         registerNCPFConfiguration(OverhaulTurbineConfiguration::new);
         registerNCPFDesign(NCPFOverhaulSFRDesign::new, OverhaulSFRDesign::new);
-//        registerNCPFDesign(NCPFOverhaulMSRDesign::new, OverhaulMSRDesign::new);
+        registerNCPFDesign(NCPFOverhaulMSRDesign::new, OverhaulMSRDesign::new);
 //        registerNCPFDesign(NCPFOverhaulTurbineDesign::new, OverhaulTurbineDesign::new);
         
         registerNCPFModule(OverhaulSFRSettingsModule::new);
@@ -228,9 +227,13 @@ public class OverhaulModule extends Module<Object>{
         @Override
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-            if(b.recipe!=null&&(b.template.parent==null?b.template.allRecipes:b.template.parent.allRecipes).size()>1){
+            if(b.fuel!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
                 renderer.setWhite(b.template.parent==null?1:.75f);
-                renderer.drawImage(b.recipe.inputDisplayTexture, x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
+                renderer.drawImage(b.fuel.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
+            }
+            if(b.irradiatorRecipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
+                renderer.setWhite(b.template.parent==null?1:.75f);
+                renderer.drawImage(b.irradiatorRecipe.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
             }
         }
     };
@@ -274,11 +277,11 @@ public class OverhaulModule extends Module<Object>{
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
             if(mode==1)return;
             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-            if(b.template.fuelVessel&&(b.template.fuelVesselHasBaseStats||b.recipe!=null)){
-                boolean self = b.recipe==null?b.template.fuelVesselSelfPriming:b.recipe.fuelVesselSelfPriming;
+            if(b.template.fuelVessel!=null&&b.fuel!=null){
+                boolean self = b.fuel.stats.selfPriming;
                 net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block src = b.source;
                 if(src!=null||self){
-                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.sourceEfficiency, self));
+                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
                 }
             }
         }

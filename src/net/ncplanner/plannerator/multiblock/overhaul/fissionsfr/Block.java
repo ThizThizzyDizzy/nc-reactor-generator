@@ -68,6 +68,9 @@ public class Block extends AbstractBlock{
         if(fuel!=null){
             tip+="\n"+fuel.getDisplayName();
         }
+        if(irradiatorRecipe!=null){
+            tip+="\n"+irradiatorRecipe.getDisplayName();
+        }
         if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
         if(isFuelCell()){
@@ -102,10 +105,10 @@ public class Block extends AbstractBlock{
         }
         if(isShield()){
             tip+="\nShield "+(shieldActive?"Valid":"Invalid");
-                tip+="\nTotal flux: "+neutronFlux
-                        + "\nHeat per flux: "+template.neutronShield.heatPerFlux
-                        + "\nTotal heat: "+neutronFlux*template.neutronShield.heatPerFlux+" H/t"
-                        + "\nEfficiency factor: "+template.neutronShield.efficiency;
+            tip+="\nTotal flux: "+neutronFlux
+               + "\nHeat per flux: "+template.neutronShield.heatPerFlux
+               + "\nTotal heat: "+neutronFlux*template.neutronShield.heatPerFlux+" H/t"
+               + "\nEfficiency factor: "+template.neutronShield.efficiency;
         }
         if(isIrradiator()){
             if(irradiatorRecipe==null)tip+="\nNo Recipe";
@@ -239,10 +242,10 @@ public class Block extends AbstractBlock{
             }
             Color secondaryColor = null;
             if(!cluster.isConnectedToWall){
-                secondaryColor = Color.PINK;
+                secondaryColor = Core.theme.getClusterDisconnectedColor();
             }
             if(!cluster.isCreated()){
-                secondaryColor = Color.WHITE;
+                secondaryColor = Core.theme.getClusterInvalidColor();
             }
             if(secondaryColor!=null){
                 renderer.setColor(secondaryColor);
@@ -267,7 +270,7 @@ public class Block extends AbstractBlock{
         if(template.heatsink!=null)return requires(oth, null);
         Block other = (Block) oth;
         if(template.fuelCell!=null||template.reflector!=null||template.irradiator!=null||template.moderator!=null)return other.template.moderator!=null;
-        if(template.conductor!=null)return (other.isFuelCell()||other.isHeatsink()||other.isIrradiator()||other.isShield()||other.isConductor());
+        if(template.conductor!=null)return other.canCluster();
         return false;
     }
     @Override
