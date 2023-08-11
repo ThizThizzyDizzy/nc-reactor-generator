@@ -66,7 +66,7 @@ public class MenuImportFile extends MenuDialog{
                         });
                         imp.addAction(() -> {
                             close();
-                            new MenuImportFiles(gui, MenuImportFile.this.parent, Arrays.asList(file), onImport).open();
+                            new MenuImportFiles(MenuImportFile.this.gui, MenuImportFile.this.parent, Arrays.asList(file), onImport).open();
                         });
                     }
                     @Override
