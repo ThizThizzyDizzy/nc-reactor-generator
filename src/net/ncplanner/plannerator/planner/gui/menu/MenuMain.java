@@ -18,7 +18,6 @@ import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
-import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -32,19 +31,18 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportFile;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportFiles;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportConfirm;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuReadFiles;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.vr.VRCore;
 import org.joml.Matrix4f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -304,8 +302,8 @@ public class MenuMain extends Menu{
         saveFile.addAction(() -> {
             new MenuSaveDialog(gui, this).open();
         });
-        loadFile.addAction(new MenuLoad(gui, this).onClose(this::onOpened)::open);
-        importFile.addAction(new MenuImportFile(gui, this, this::onOpened)::open);
+        loadFile.addAction(new MenuLoad(gui, this, this::onOpened)::open);
+        importFile.addAction(new MenuImport(gui, this, this::onOpened)::open);
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
             exportMultiblock.add(new Button(format.name, true, true).setTooltip(format.description)).addAction(() -> {
@@ -663,7 +661,9 @@ public class MenuMain extends Menu{
             toImport.add(new File(fil));
         }
         if(!toImport.isEmpty()){
-            new MenuImportFiles(gui, this, toImport, this::onOpened).open();
+            new MenuReadFiles(gui, this, toImport, (t) -> {
+                new MenuImportConfirm(gui, MenuMain.this, t, MenuMain.this::onOpened).open();
+            }).open();
         }
     }
     @Override

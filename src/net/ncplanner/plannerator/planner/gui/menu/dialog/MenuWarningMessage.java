@@ -31,7 +31,7 @@ public class MenuWarningMessage extends MenuDialog implements DebugInfoProvider{
             t = t.getCause();
             if(t!=null)details+="\nCaused by ";
         }
-        textBox.setText("Warning: "+message+details);
+        textBox.setText("Warning: "+message+"\n\n"+details);
         addButton(rand.nextDouble()<.01?extraPossibilities[rand.nextInt(extraPossibilities.length)]:"OK", () -> {
             close();
         });

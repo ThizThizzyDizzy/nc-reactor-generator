@@ -700,7 +700,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                             block.names.legacyNames.add(names.get(idx));
                         }
                     }
-                    if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule();
+                    if(blockCfg.hasProperty("cluster")&&!blockCfg.hasProperty("functional")||
+                            blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule();
                     if(blockCfg.getBoolean("casing", false))block.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule(blockCfg.getBoolean("casingEdge", false));
                     if(blockCfg.getBoolean("controller", false))block.controller = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ControllerModule();
                     Config coolantVentCfg = blockCfg.getConfig("coolantVent");

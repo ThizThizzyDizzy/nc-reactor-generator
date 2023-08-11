@@ -576,8 +576,7 @@ public class Core{
             file = new File("autosave"+num+".ncpf.json");
             num++;
         }
-        NCPFFileWriter.write(project, file, NCPFFileWriter.JSON);
-        LegacyNCPFFile ncpf = new LegacyNCPFFile();
+        NCPFFileWriter.write(project, file, NCPFFileWriter.formats.get(0));
         return num;
     }
     public static boolean openURL(String link){
@@ -594,7 +593,7 @@ public class Core{
                     rt.exec("xdg-open "+link);
                     return true;
                 default:
-                    throw new RuntimeException("Failed to open webpage: Unkown OS\n"+link);
+                    throw new RuntimeException("Failed to open webpage: Unknown OS\n"+link);
             }
         }catch(IOException ex){
             throw new RuntimeException("Failed to open webpage\n"+link, ex);
