@@ -28,4 +28,8 @@ public class JSONNCPFWriter implements NCPFFormatWriter{
         }
         return json;
     }
+    @Override
+    public String getExtension(){
+        return "json";
+    }
 }

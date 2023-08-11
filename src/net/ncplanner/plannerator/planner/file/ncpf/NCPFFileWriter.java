@@ -9,9 +9,8 @@ import net.ncplanner.plannerator.planner.ncpf.Project;
 public class NCPFFileWriter{
     public static final ArrayList<NCPFFormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;
-    public static JSONNCPFWriter JSON;
     static{
-        formats.add(JSON = new JSONNCPFWriter());
+        formats.add(new JSONNCPFWriter());
     }
     public static void write(Project project, OutputStream stream, NCPFFormatWriter format){
         NCPFObject ncpf = new NCPFObject();
