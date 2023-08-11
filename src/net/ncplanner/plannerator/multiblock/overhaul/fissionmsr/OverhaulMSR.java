@@ -468,7 +468,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 float out = c.efficiency*sparsityMult;//TODO output rate?
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.getDisplayName())){//TODO output name
+                                    if(s.name.equals(b.heaterRecipe.getName())){//TODO output name
                                         s.amount+=out;
                                         found = true;
                                         break;
@@ -739,7 +739,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 float out = c.efficiency*sparsityMult;//TODO output rate?
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.getDisplayName())){//TODO output name
+                                    if(s.name.equals(b.heaterRecipe.getName())){//TODO output name
                                         s.amount+=out;
                                         found = true;
                                         break;
@@ -1026,7 +1026,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 float out = c.efficiency*sparsityMult;//TODO output rate?
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.getDisplayName())){//TODO output name
+                                    if(s.name.equals(b.heaterRecipe.getName())){//TODO output name
                                         s.amount+=out;
                                         found = true;
                                         break;
