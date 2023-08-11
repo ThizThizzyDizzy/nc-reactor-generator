@@ -16,10 +16,10 @@ public class FileWriter{
     public static HellrageWriter HELLRAGE;
     public static ImageFormatWriter PNG;
     static{
-//        formats.add(HELLRAGE = new HellrageWriter());
-//        formats.add(LEGACY_NCPF = new LegacyNCPFWriter());
-//        formats.add(PNG = new PNGWriter());
-//        formats.add(new BGStringWriter());
+        formats.add(HELLRAGE = new HellrageWriter());
+        formats.add(LEGACY_NCPF = new LegacyNCPFWriter());
+        formats.add(PNG = new PNGWriter());
+        formats.add(new BGStringWriter());
     }
     public static void write(Project ncpf, OutputStream stream, FormatWriter format){
         format.write(ncpf, stream);

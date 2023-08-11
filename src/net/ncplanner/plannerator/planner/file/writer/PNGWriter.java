@@ -19,9 +19,9 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import org.joml.Matrix4f;
 public class PNGWriter extends ImageFormatWriter{
     private final int textHeight = 20;
@@ -36,16 +36,17 @@ public class PNGWriter extends ImageFormatWriter{
         if(!ncpf.designs.isEmpty()){
             if(ncpf.designs.size()>1)throw new IllegalArgumentException("Multiple multiblocks are not supported by PNG!");
             final Design design = ncpf.designs.get(0);
-            design.recalculate();
+            Multiblock mb = ((MultiblockDesign)design).toMultiblock();
+            mb.recalculate();
             int blSiz = 32;
-            ArrayList<AbstractBlock> blox = design.getBlocks();
+            ArrayList<AbstractBlock> blox = mb.getBlocks();
             for(AbstractBlock b : blox){
                 if(b.getTexture()==null)continue;
                 blSiz = Math.max(b.getTexture().getWidth(), blSiz);
             }
             int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
             final int blockSize = blSiz;
-            ArrayList<PartCount> parts = design.getPartsList();
+            ArrayList<PartCount> parts = mb.getPartsList();
             if(!Core.imageExportCasingParts){
                 for (Iterator<PartCount> it = parts.iterator(); it.hasNext();) {
                     PartCount part = it.next();
@@ -58,7 +59,7 @@ public class PNGWriter extends ImageFormatWriter{
                             ||part.name.toLowerCase(Locale.ROOT).contains("outlet"))it.remove();
                 }
             }
-            FormattedText s = design.getSaveTooltip();
+            FormattedText s = mb.getSaveTooltip();
             ArrayList<FormattedText> strs = s.split("\n");
             int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
             float textWidth = 0;
@@ -72,7 +73,7 @@ public class PNGWriter extends ImageFormatWriter{
             }
             final float tW = textWidth+borderSize;
             final float pW = partsWidth+borderSize;
-            BoundingBox bbox = design.getBoundingBox(Core.imageExportCasing);
+            BoundingBox bbox = mb.getBoundingBox(Core.imageExportCasing);
             int width = (int) Math.max(textWidth+partsWidth+(Core.imageExport3DView?totalTextHeight:0),bbox.getWidth()*blockSize+borderSize);
             int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
             int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
@@ -108,7 +109,7 @@ public class PNGWriter extends ImageFormatWriter{
                     }
                 }
                 if(Core.imageExport3DView){
-                    BoundingBox bbox3 = design.getBoundingBox(Core.imageExportCasing3D);
+                    BoundingBox bbox3 = mb.getBoundingBox(Core.imageExportCasing3D);
                     float size = Math.max(bbox3.getWidth(), Math.max(bbox3.getHeight(), bbox3.getDepth()));
                     renderer.model(new Matrix4f()
                             .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
@@ -119,7 +120,7 @@ public class PNGWriter extends ImageFormatWriter{
                             .scale(1/size, 1/size, 1/size)
                             .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
                             .translate(-bbox3.getWidth()/2f, -bbox3.getHeight()/2f, -bbox3.getDepth()/2f));
-                    design.draw3DInOrder(Core.imageExportCasing3D);
+                    mb.draw3DInOrder(Core.imageExportCasing3D);
                     renderer.resetModelMatrix();
                 }
                 for(int y = 0; y<bbox.getHeight(); y++){
@@ -132,10 +133,10 @@ public class PNGWriter extends ImageFormatWriter{
                             int X = x+bbox.x1;
                             int Y = y+bbox.y1;
                             int Z = z+bbox.z1;
-                            if(!Core.imageExportCasing&&design.shouldHideWithCasing(X,Y,Z))continue;
-                            AbstractBlock b = design.getBlock(X, Y, Z);
-                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, design);
-                            if(design instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)design).getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                            if(!Core.imageExportCasing&&mb.shouldHideWithCasing(X,Y,Z))continue;
+                            AbstractBlock b = mb.getBlock(X, Y, Z);
+                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
+                            if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
                                 bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);
                             }
                             for(EditorOverlay o : overlays){

@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import org.lwjgl.glfw.GLFW;
 public abstract class StringFormatWriter extends FormatWriter{
     @Override
@@ -12,16 +13,16 @@ public abstract class StringFormatWriter extends FormatWriter{
         return FileFormat.BG_STRING;
     }
     @Override
-    public void write(LegacyNCPFFile ncpf, OutputStream stream){
+    public void write(Project ncpf, OutputStream stream){
         try(BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream))){
             writer.write(write(ncpf));
         }catch(IOException ex){
             throw new RuntimeException(ex);
         }
     }
-    public abstract String write(LegacyNCPFFile ncpf);
+    public abstract String write(Project ncpf);
     @Override
-    public void openExportSettings(LegacyNCPFFile ncpf, Runnable onExport){
+    public void openExportSettings(Project ncpf, Runnable onExport){
         new MenuMessageDialog(Core.gui, Core.gui.menu, "Export String").addButton("Copy String", () -> {
             GLFW.glfwSetClipboardString(Core.window, write(ncpf));
         }, true).addButton("Export as file", onExport, true).addButton("Cancel", true).open();

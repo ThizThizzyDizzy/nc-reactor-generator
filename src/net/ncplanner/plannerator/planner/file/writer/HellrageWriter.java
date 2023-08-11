@@ -11,24 +11,30 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.JSON;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class HellrageWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
         return FileFormat.HELLRAGE_REACTOR;
     }
     @Override
-    public void write(LegacyNCPFFile ncpf, OutputStream stream){
+    public void write(Project ncpf, OutputStream stream){
         boolean hasOverhaul = false;
-        for(Multiblock m : ncpf.multiblocks){
-            if(m.getDefinitionName().contains("Overhaul"))hasOverhaul = true;
+        for(Design d : ncpf.designs){
+            if(d.definition.type.contains("overhaul"))hasOverhaul = true;
         }
         if(hasOverhaul){
             Core.warning("Hellrage JSON format is deprecated!\nCasings, configurations, and addons will not be saved!\nSome things, such as coolant recipes, may not be saved properly!\n\nPlease use NCPF for full support", null);
         }
-        if(!ncpf.multiblocks.isEmpty()){
-            if(ncpf.multiblocks.size()>1)throw new IllegalArgumentException("Multible multiblocks are not supported by Hellrage JSON!");
-            Multiblock multi = ncpf.multiblocks.get(0);
+        if(!ncpf.designs.isEmpty()){
+            if(ncpf.designs.size()>1)throw new IllegalArgumentException("Multiple designs are not supported by Hellrage JSON!");
+            Design design = ncpf.designs.get(0);
+            if(!(design instanceof MultiblockDesign))throw new IllegalArgumentException("Cannot export non-multiblock design "+design.definition.toString()+" to Hellrage JSON!");
+            Multiblock multi = ((MultiblockDesign)design).toMultiblock();
             if(multi instanceof UnderhaulSFR){
                 UnderhaulSFR reactor = (UnderhaulSFR) multi;
                 JSON.JSONObject hellrage = new JSON.JSONObject();
@@ -42,7 +48,7 @@ public class HellrageWriter extends FormatWriter{
                 hellrage.set("SaveVersion", saveVersion);
                 JSON.JSONObject compressedReactor = new JSON.JSONObject();
                 hellrage.set("CompressedReactor", compressedReactor);
-                for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b : ncpf.configuration.underhaul.fissionSFR.allBlocks){
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : ncpf.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
                     JSON.JSONArray array = new JSON.JSONArray();
                     for(net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
                         if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
@@ -63,9 +69,9 @@ public class HellrageWriter extends FormatWriter{
                 hellrage.set("InteriorDimensions", dims);
                 JSON.JSONObject usedFuel = new JSON.JSONObject();
                 usedFuel.set("Name", reactor.fuel.getDisplayName());
-                usedFuel.set("BasePower", reactor.fuel.power);
-                usedFuel.set("BaseHeat", reactor.fuel.heat);
-                usedFuel.set("FuelTime", reactor.fuel.time);
+                usedFuel.set("BasePower", reactor.fuel.stats.power);
+                usedFuel.set("BaseHeat", reactor.fuel.stats.heat);
+                usedFuel.set("FuelTime", reactor.fuel.stats.time);
                 hellrage.set("UsedFuel", usedFuel);
                 try{
                     hellrage.write(stream);
@@ -90,8 +96,8 @@ public class HellrageWriter extends FormatWriter{
                 JSON.JSONObject fuelCells = new JSON.JSONObject();
                 JSON.JSONObject irradiators = new JSON.JSONObject();
                 JSON.JSONObject shields = new JSON.JSONObject();
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : ncpf.configuration.overhaul.fissionSFR.allBlocks){
-                    if(b.heatsink){
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : ncpf.getConfiguration(OverhaulSFRConfiguration::new).blocks){
+                    if(b.heatsink!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
@@ -105,7 +111,7 @@ public class HellrageWriter extends FormatWriter{
                         }
                         heatSinks.set(StringUtil.superRemove(b.getDisplayName(), " ", "HeatSink", "Sink", "Heatsink", "Liquid"), array);
                     }
-                    if(b.moderator&&!b.shield){
+                    if(b.moderator!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
@@ -119,7 +125,7 @@ public class HellrageWriter extends FormatWriter{
                         }
                         moderators.set(StringUtil.superRemove(b.getDisplayName(), " ", "Moderator"), array);
                     }
-                    if(b.reflector){
+                    if(b.reflector!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
@@ -133,7 +139,7 @@ public class HellrageWriter extends FormatWriter{
                         }
                         reflectors.set(StringUtil.superRemove(b.getDisplayName(), " ", "Reflector"), array);
                     }
-                    if(b.shield){
+                    if(b.neutronShield!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
@@ -147,17 +153,17 @@ public class HellrageWriter extends FormatWriter{
                         }
                         shields.set(StringUtil.superRemove(b.getDisplayName(), " ", "NeutronShield", "Shield"), array);
                     }
-                    if(b.fuelCell){
+                    if(b.fuelCell!=null){
                         HashMap<String, ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>> cells = new HashMap<>();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
-                                String name = block.recipe.getInputDisplayName();
+                                String name = block.getRecipe().getDisplayName();
                                 if(name.endsWith(" Oxide"))name = "[OX]"+StringUtil.superReplace(name, " Oxide", "");
                                 if(name.endsWith(" Nitride"))name = "[NI]"+StringUtil.superReplace(name, " Nitride", "");
                                 if(name.endsWith("-Zirconium Alloy"))name = "[ZA]"+StringUtil.superReplace(name, "-Zirconium Alloy", "");
                                 name+=";"+(block.isPrimed()?"True":"False")+";";
-                                if(block.isPrimed())name+=(block.recipe.fuelCellSelfPriming?"Self":StringUtil.superRemove(block.source.template.getDisplayName(), " Neutron Source"));
+                                if(block.isPrimed())name+=(block.fuel.stats.selfPriming?"Self":StringUtil.superRemove(block.source.template.getDisplayName(), " Neutron Source"));
                                 else name+="None";
                                 if(cells.containsKey(name)){
                                     cells.get(name).add(block);
@@ -180,12 +186,12 @@ public class HellrageWriter extends FormatWriter{
                             fuelCells.set(key, array);
                         }
                     }
-                    if(b.irradiator){
+                    if(b.irradiator!=null){
                         HashMap<String, ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                             if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
-                                String name = "{\\\"HeatPerFlux\\\":"+(block.recipe==null?0:(int)block.recipe.irradiatorHeat)+",\\\"EfficiencyMultiplier\\\":"+(block.recipe==null?0:block.recipe.irradiatorEfficiency)+"}";
+                                String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:(int)block.irradiatorRecipe.stats.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.stats.efficiency)+"}";
                                 if(radiators.containsKey(name)){
                                     radiators.get(name).add(block);
                                 }else{
@@ -217,7 +223,7 @@ public class HellrageWriter extends FormatWriter{
                 JSON.JSONArray conductors = new JSON.JSONArray();
                 for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
                     if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
-                    if(block.isConductor()||block.isInert()){
+                    if(block.isConductor()){
                         JSON.JSONObject bl = new JSON.JSONObject();
                         bl.set("X", block.x);
                         bl.set("Y", block.y);
@@ -231,14 +237,14 @@ public class HellrageWriter extends FormatWriter{
                 dims.set("Y", reactor.getInternalHeight());
                 dims.set("Z", reactor.getInternalDepth());
                 data.set("InteriorDimensions", dims);
-                data.set("CoolantRecipeName", reactor.coolantRecipe.getInputDisplayName()+" to "+reactor.coolantRecipe.getOutputDisplayName());
+                data.set("CoolantRecipeName", reactor.coolantRecipe.getDisplayName()+" to whatever it gets turned into");
                 hellrage.set("Data", data);
                 try{
                     hellrage.write(stream);
                 }catch(IOException ex){
                     throw new RuntimeException(ex);
                 }
-            }else throw new IllegalArgumentException(ncpf.multiblocks.get(0).getDefinitionName()+" is not supported by Hellrage JSON!");
+            }else throw new IllegalArgumentException(multi.getDefinitionName()+" is not supported by Hellrage JSON!");
         }else{
             //TODO config export?
             throw new UnsupportedOperationException("Cannot export NCPF configuration to Hellrage JSON format!");

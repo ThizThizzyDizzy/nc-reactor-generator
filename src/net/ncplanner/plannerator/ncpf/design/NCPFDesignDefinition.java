@@ -15,4 +15,8 @@ public abstract class NCPFDesignDefinition extends DefinedNCPFObject{
     public <T extends NCPFConfiguration> T getConfiguration(){
         return (T) (type==null?null:file.conglomeration.configurations.get(type));
     }
+    @Override
+    public String toString(){
+        return type;
+    }
 }

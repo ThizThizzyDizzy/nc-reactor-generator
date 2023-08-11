@@ -310,11 +310,12 @@ public class MenuMain extends Menu{
                 exportMultiblock.isDown = false;
                 exportMultiblock.isFocused = false;
                 focusedComponent = null;
-                Project ncpf = new Project();//TODO set configuration
+                Project ncpf = new Project();
+                ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
                 Multiblock multi = getSelectedMultiblock();
                 ncpf.designs.add(multi.toDesign());
                 String name = Core.filename;
-//                if(name==null) name = ncpf.metadata.get("name");
+                if(name==null) name = ncpf.metadata.get("name");
                 if(name==null||name.isEmpty()){
                     name = "unnamed";
                     File file = new File(name+"."+format.extensions[0]);

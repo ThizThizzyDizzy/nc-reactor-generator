@@ -27,6 +27,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -103,7 +104,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         }
     }
     private Config saveConfiguration(Config config, NCPFConfigurationContainer configuration){
-        config.set("partial", false);//TODO save partial?
+        config.set("partial", true);//always call it partial
         config.set("addon", false);//never save as an addon
         Config underhaul = Config.newConfig();
         Config overhaul = Config.newConfig();
@@ -202,6 +203,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         ConfigList blocks = new ConfigList();
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : sfr.blocks){
             if(b.port!=null)continue;//don't save ports, because UGH
+            if(b.unToggled!=null)continue;//don't save output vents, because UGGGHHHH
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
@@ -224,7 +226,9 @@ public class LegacyNCPFWriter extends FormatWriter{
             }
             block.set("controller", b.controller!=null);
             if(b.fuelCell!=null){
-                block.set("fuelCell", true);
+                Config fuelCellCfg = Config.newConfig();
+                fuelCellCfg.set("hasBaseStats", false);
+                block.set("fuelCell", fuelCellCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
@@ -238,19 +242,22 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     fuel.set("input", inputCfg);
-                    Config fuelCellCfg = Config.newConfig();
-                    fuelCellCfg.set("efficiency", f.stats.efficiency);
-                    fuelCellCfg.set("heat", f.stats.heat);
-                    fuelCellCfg.set("time", f.stats.time);
-                    fuelCellCfg.set("criticality", f.stats.criticality);
-                    if(f.stats.selfPriming)fuelCellCfg.set("selfPriming", true);
-                    fuel.set("fuelCell", fuelCellCfg);
+                    fuel.set("output", inputCfg);//...don't worry about it, it's fine
+                    Config fuelCfg = Config.newConfig();
+                    fuelCfg.set("efficiency", f.stats.efficiency);
+                    fuelCfg.set("heat", f.stats.heat);
+                    fuelCfg.set("time", f.stats.time);
+                    fuelCfg.set("criticality", f.stats.criticality);
+                    if(f.stats.selfPriming)fuelCfg.set("selfPriming", true);
+                    fuel.set("fuelCell", fuelCfg);
                     recipesCfg.add(fuel);
                 }
                 block.set("recipes", recipesCfg);
             }
             if(b.irradiator!=null){
-                block.set("irradiator", true);
+                Config irradiatorCfg = Config.newConfig();
+                irradiatorCfg.set("hasBaseStats", false);
+                block.set("irradiator", irradiatorCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for( IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
@@ -264,10 +271,11 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
-                    Config irradiatorCfg = Config.newConfig();
-                    irradiatorCfg.set("efficiency", r.stats.efficiency);
-                    irradiatorCfg.set("heat", r.stats.heat);
-                    recipe.set("irradiator", irradiatorCfg);
+                    recipe.set("output", inputCfg);//...don't worry about it, it's fine
+                    Config irrecipeCfg = Config.newConfig();
+                    irrecipeCfg.set("efficiency", r.stats.efficiency);
+                    irrecipeCfg.set("heat", r.stats.heat);
+                    recipe.set("irradiator", irrecipeCfg);
                     recipesCfg.add(recipe);
                 }
                 block.set("recipes", recipesCfg);
@@ -345,6 +353,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             }
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
+            recipe.set("output", inputCfg);//...don't worry about it, it's fine
             recipe.set("heat", r.stats.heat);
             recipe.set("outputRatio", r.stats.outputRatio);
             coolantRecipes.add(recipe);
@@ -379,7 +388,9 @@ public class LegacyNCPFWriter extends FormatWriter{
             if(b.casing!=null)block.set("casingEdge", b.casing.edge);
             block.set("controller", b.controller!=null);
             if(b.fuelVessel!=null){
-                block.set("fuelVessel", true);
+                Config fuelVesselCfg = Config.newConfig();
+                fuelVesselCfg.set("hasBaseStats", false);
+                block.set("fuelVessel", fuelVesselCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
@@ -394,19 +405,22 @@ public class LegacyNCPFWriter extends FormatWriter{
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     inputCfg.set("rate", 1);
                     fuel.set("input", inputCfg);
-                    Config fuelVesselCfg = Config.newConfig();
-                    fuelVesselCfg.set("efficiency", f.stats.efficiency);
-                    fuelVesselCfg.set("heat", f.stats.heat);
-                    fuelVesselCfg.set("time", f.stats.time);
-                    fuelVesselCfg.set("criticality", f.stats.criticality);
-                    if(f.stats.selfPriming)fuelVesselCfg.set("selfPriming", true);
-                    fuel.set("fuelVessel", fuelVesselCfg);
+                    fuel.set("output", inputCfg);//...don't worry about it, it's fine
+                    Config fuelCfg = Config.newConfig();
+                    fuelCfg.set("efficiency", f.stats.efficiency);
+                    fuelCfg.set("heat", f.stats.heat);
+                    fuelCfg.set("time", f.stats.time);
+                    fuelCfg.set("criticality", f.stats.criticality);
+                    if(f.stats.selfPriming)fuelCfg.set("selfPriming", true);
+                    fuel.set("fuelVessel", fuelCfg);
                     recipesCfg.add(fuel);
                 }
                 block.set("recipes", recipesCfg);
             }
             if(b.irradiator!=null){
-                block.set("irradiator", true);
+                Config irradiatorCfg = Config.newConfig();
+                irradiatorCfg.set("hasBaseStats", false);
+                block.set("irradiator", irradiatorCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
@@ -420,10 +434,11 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
-                    Config irradiatorCfg = Config.newConfig();
-                    irradiatorCfg.set("efficiency", r.stats.efficiency);
-                    irradiatorCfg.set("heat", r.stats.heat);
-                    recipe.set("irradiator", irradiatorCfg);
+                    recipe.set("output", inputCfg);//...don't worry about it, it's fine
+                    Config irrecipeCfg = Config.newConfig();
+                    irrecipeCfg.set("efficiency", r.stats.efficiency);
+                    irrecipeCfg.set("heat", r.stats.heat);
+                    recipe.set("irradiator", irrecipeCfg);
                     recipesCfg.add(recipe);
                 }
                 block.set("recipes", recipesCfg);
@@ -568,6 +583,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             }
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
+            recipe.set("output", inputCfg);//...don't worry about it, it's fine
             recipe.set("power", r.stats.power);
             recipe.set("coefficient", r.stats.coefficient);
             recipes.add(recipe);
@@ -638,8 +654,8 @@ public class LegacyNCPFWriter extends FormatWriter{
             case BETWEEN:
             case AXIAL:
                 saveRuleTarget(rule, config, cfg, blockTypes);
-                config.set("min", rule.min);
-                config.set("max", rule.max);
+                config.set("min", (byte)rule.min);
+                config.set("max", (byte)rule.max);
                 break;
             case VERTEX:
             case EDGE:
@@ -698,6 +714,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         NCPFOverhaulTurbineDesign::new
     };
     private Config saveDesign(Design design, NCPFConfigurationContainer configuration){
+        design.convertToObject(new NCPFObject());//set the references and stuff I guess
         NCPFCuboidalMultiblockDesign definition = (NCPFCuboidalMultiblockDesign)design.definition;
         int id = dindexof(design.definition, designIndicies);
         if(id==-1)return null;
@@ -713,9 +730,9 @@ public class LegacyNCPFWriter extends FormatWriter{
             config.set("metadata", meta);
         }
         ConfigNumberList dimensions = new ConfigNumberList();
-        dimensions.add(definition.design.length);
-        dimensions.add(definition.design[0].length);
-        dimensions.add(definition.design[0][0].length);
+        dimensions.add(definition.design.length-2);
+        dimensions.add(definition.design[0].length-2);
+        dimensions.add(definition.design[0][0].length-2);
         config.set("dimensions", dimensions);
         if(design instanceof UnderhaulSFRDesign){
             UnderhaulSFRDesign sfr = (UnderhaulSFRDesign)design;
@@ -738,7 +755,8 @@ public class LegacyNCPFWriter extends FormatWriter{
             OverhaulSFRDesign sfr = (OverhaulSFRDesign)design;
             config.set("compact", true);
             OverhaulSFRConfiguration cfg = configuration.getConfiguration(OverhaulSFRConfiguration::new);
-            config.set("coolantRecipe", cfg.coolantRecipes.indexOf(sfr.coolantRecipe));
+            int cr = cfg.coolantRecipes.indexOf(sfr.coolantRecipe);
+            config.set("coolantRecipe", Math.max(cr, 0));//give a default if it's none
             ConfigNumberList blox = new ConfigNumberList();
             ConfigNumberList blockRecipes = new ConfigNumberList();
             ConfigNumberList ports = new ConfigNumberList();
@@ -750,6 +768,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                         else{
                             if(block.port!=null||block.coolantVent!=null)ports.add(block.unToggled!=null?1:0);
                             if(block.port!=null)block = block.parent;
+                            if(block.coolantVent!=null&&block.unToggled!=null)block = block.unToggled;
                             blox.add(cfg.blocks.indexOf(block)+1);
                             if(block.fuelCell!=null){
                                 blockRecipes.add(block.fuels.indexOf(sfr.fuels[x][y][z])+1);
