@@ -3,6 +3,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public class UnknownNCPFConfiguration extends NCPFConfiguration{
     public NCPFObject ncpf;
     public UnknownNCPFConfiguration(){
@@ -26,4 +27,6 @@ public class UnknownNCPFConfiguration extends NCPFConfiguration{
     public List<NCPFElement>[] getElements(){
         return new List[0];
     }
+    @Override
+    public void makePartial(List<Design> designs){}
 }

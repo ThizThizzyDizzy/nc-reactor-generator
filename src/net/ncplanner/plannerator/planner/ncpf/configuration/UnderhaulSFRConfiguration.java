@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
@@ -43,5 +44,11 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks, fuels};
+    }
+    @Override
+    public void makePartial(List<Design> designs){
+        makePartial(blocks, designs);
+        blocks.forEach((t) -> t.makePartial(designs));
+        makePartial(fuels, designs);
     }
 }

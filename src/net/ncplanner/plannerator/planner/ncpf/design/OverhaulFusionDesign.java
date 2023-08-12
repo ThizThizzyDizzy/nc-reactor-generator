@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
+import java.util.Set;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
@@ -60,5 +62,14 @@ public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
     }
     private int height(){
         return liningThickness*2+coreSize+2;
+    }
+    @Override
+    public Set<NCPFElementDefinition> getElements(){
+        Set<NCPFElementDefinition> elems = super.getElements();
+        if(recipe!=null)elems.add(recipe.definition);
+        if(coolantRecipe!=null)elems.add(coolantRecipe.definition);
+        getElements(design, elems);
+        getElements(breedingBlanketRecipes, elems);
+        return elems;
     }
 }

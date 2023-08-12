@@ -676,17 +676,17 @@ public class Core{
     /**
      * SAVE
      */
-    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format) throws IOException{
-        createFileChooser(selectedFile, onAccepted, format, "");
+    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, String[] extensions) throws IOException{
+        createFileChooser(selectedFile, onAccepted, extensions, "");
     }
     /**
      * SAVE
      */
-    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format, String hint) throws IOException{
+    public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, String[] extensions, String hint) throws IOException{
         hint = "SAVE_"+hint;
         PointerBuffer path = MemoryUtil.memAllocPointer(1);
         String filter = "";
-        for(String ext : format.extensions)filter+=","+ext;
+        for(String ext : extensions)filter+=","+ext;
         if(!filter.isEmpty())filter = filter.substring(1);
         try{
             int result = NativeFileDialog.NFD_SaveDialog(filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), path);

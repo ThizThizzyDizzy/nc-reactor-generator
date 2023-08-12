@@ -4,6 +4,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -95,5 +96,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     public boolean createsCluster(){
         return fuelVessel!=null||irradiator!=null||neutronShield!=null;
+    }
+    public void makePartial(List<Design> designs){
+        makePartial(fuels, designs);
+        makePartial(heaterRecipes, designs);
+        makePartial(irradiatorRecipes, designs);
     }
 }

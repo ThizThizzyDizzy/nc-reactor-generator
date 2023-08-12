@@ -2,9 +2,11 @@ package net.ncplanner.plannerator.ncpf;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
     public HashMap<String, NCPFConfiguration> configurations = new HashMap<>();
@@ -52,5 +54,11 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     }
     public void setReferences(){
         configurations.values().forEach(NCPFConfiguration::setReferences);
+    }
+    public void makePartial(List<Design> designs){
+        for(String key : configurations.keySet()){
+            NCPFConfiguration cfg = configurations.get(key);
+            cfg.makePartial(designs);
+        }
     }
 }

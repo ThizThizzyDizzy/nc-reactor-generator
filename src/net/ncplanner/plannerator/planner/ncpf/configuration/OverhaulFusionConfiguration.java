@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
@@ -51,5 +52,12 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     @Override
     public List<NCPFElement>[] getMultiblockRecipes(){
         return new List[]{recipes, coolantRecipes};
+    }
+    @Override
+    public void makePartial(List<Design> designs){
+        makePartial(blocks, designs);
+        blocks.forEach((t) -> t.makePartial(designs));
+        makePartial(coolantRecipes, designs);
+        makePartial(recipes, designs);
     }
 }

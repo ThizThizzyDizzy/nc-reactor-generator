@@ -20,6 +20,7 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -38,6 +39,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -307,55 +309,15 @@ public class MenuMain extends Menu{
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
             exportMultiblock.add(new Button(format.name, true, true).setTooltip(format.description)).addAction(() -> {
-                exportMultiblock.isDown = false;
-                exportMultiblock.isFocused = false;
-                focusedComponent = null;
-                Project ncpf = new Project();
-                ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
-                Multiblock multi = getSelectedMultiblock();
-                ncpf.designs.add(multi.toDesign());
-                String name = Core.filename;
-                if(name==null) name = ncpf.metadata.get("name");
-                if(name==null||name.isEmpty()){
-                    name = "unnamed";
-                    File file = new File(name+"."+format.extensions[0]);
-                    int i = 0;
-                    while(file.exists()){
-                        name = "unnamed_"+i;
-                        file = new File(name+"."+format.extensions[0]);
-                        i++;
-                    }
-                }
-                String nam = name;
-                Runnable r = () -> {
-                    new MenuInputDialog(gui, gui.menu, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", () -> {
-                        try{
-                            Core.createFileChooser(null, (file) -> {
-                                boolean hasExtension = false;
-                                for(String ext : format.extensions){
-                                    if(file.getName().endsWith("."+ext))hasExtension = true;
-                                }
-                                if(!hasExtension)file = new File(file.getAbsolutePath()+"."+format.extensions[0]);
-                                if(file==null)return;
-                                pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
-                            }, format);
-                        }catch(IOException ex){
-                            Core.error("Failed to export multiblock!", ex);
-                        }
-                    }, true).addButton("Save", (dialog, filename) -> {
-                        if(filename==null||filename.isEmpty()){
-                            Core.warning("Invalid filename: "+filename+"."+format.extensions[0], null);
-                        }else{
-                            Core.filename = filename;
-                            File file = new File(filename+"."+format.extensions[0]);
-                            if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+format.extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+format.extensions[0]), true).open();
-                            else imprt(ncpf, writer, file, filename+"."+format.extensions[0]);
-                        }
-                    }).open();
-                };
-                writer.openExportSettings(ncpf, r);
+                startExport(writer, format.name, format.description, format.extensions);
             });
         }
+        exportMultiblock.add(new Button("NCPF", true, true).setTooltip("NuclearCraft Planner File")).addAction(() -> {
+            new MenuPickNCPF(gui, this, (t) -> {
+                NCPFWriter.format = t;
+                startExport(FileWriter.NCPF, "NCPF", "NuclearCraft Planner File", new String[]{t.getExtension()});
+            }).open();
+        });
         addMultiblock.addAction(() -> {
             adding = true;
         });
@@ -636,6 +598,55 @@ public class MenuMain extends Menu{
     public Multiblock getSelectedMultiblock(){
         if(multiblocks.getSelectedIndex()==-1)return null;
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
+    }
+    private void startExport(FormatWriter writer, String formatName, String description, String[] extensions){
+        exportMultiblock.isDown = false;
+        exportMultiblock.isFocused = false;
+        focusedComponent = null;
+        Project ncpf = new Project();
+        ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
+        Multiblock multi = getSelectedMultiblock();
+        ncpf.designs.add(multi.toDesign());
+        String name = Core.filename;
+        if(name==null) name = ncpf.metadata.get("name");
+        if(name==null||name.isEmpty()){
+            name = "unnamed";
+            File file = new File(name+"."+extensions[0]);
+            int i = 0;
+            while(file.exists()){
+                name = "unnamed_"+i;
+                file = new File(name+"."+extensions[0]);
+                i++;
+            }
+        }
+        String nam = name;
+        Runnable r = () -> {
+            new MenuInputDialog(gui, gui.menu, nam, "Filename").addButton("Cancel", true).addButton("Save Dialog", () -> {
+                try{
+                    Core.createFileChooser(null, (file) -> {
+                        boolean hasExtension = false;
+                        for(String ext : extensions){
+                            if(file.getName().endsWith("."+ext))hasExtension = true;
+                        }
+                        if(!hasExtension)file = new File(file.getAbsolutePath()+"."+extensions[0]);
+                        if(file==null)return;
+                        pendingWrites.enqueue(new PendingWrite(ncpf, file, writer));
+                    }, extensions);
+                }catch(IOException ex){
+                    Core.error("Failed to export multiblock!", ex);
+                }
+            }, true).addButton("Save", (dialog, filename) -> {
+                if(filename==null||filename.isEmpty()){
+                    Core.warning("Invalid filename: "+filename+"."+extensions[0], null);
+                }else{
+                    Core.filename = filename;
+                    File file = new File(filename+"."+extensions[0]);
+                    if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+extensions[0]), true).open();
+                    else imprt(ncpf, writer, file, filename+"."+extensions[0]);
+                }
+            }).open();
+        };
+        writer.openExportSettings(ncpf, r);
     }
     private static class PendingWrite{
         private final Project ncpf;

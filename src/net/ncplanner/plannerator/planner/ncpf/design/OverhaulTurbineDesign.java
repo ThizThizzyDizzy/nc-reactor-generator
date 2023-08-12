@@ -1,6 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
+import java.util.Set;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
@@ -26,5 +28,12 @@ public class OverhaulTurbineDesign extends Design<NCPFOverhaulTurbineDesign>{
         definition.recipe = recipe;
         definition.design = design;
         super.convertToObject(ncpf);
+    }
+    @Override
+    public Set<NCPFElementDefinition> getElements(){
+        Set<NCPFElementDefinition> elems = super.getElements();
+        if(recipe!=null)elems.add(recipe.definition);
+        getElements(design, elems);
+        return elems;
     }
 }

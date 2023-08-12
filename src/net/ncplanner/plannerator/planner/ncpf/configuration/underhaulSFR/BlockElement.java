@@ -4,6 +4,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -49,5 +50,8 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public List<? extends NCPFElement> getBlockRecipes(){
         return activeCoolerRecipes;
+    }
+    public void makePartial(List<Design> designs){
+        makePartial(activeCoolerRecipes, designs);
     }
 }

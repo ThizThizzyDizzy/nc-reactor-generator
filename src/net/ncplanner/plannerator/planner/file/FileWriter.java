@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.file.writer.BGStringWriter;
 import net.ncplanner.plannerator.planner.file.writer.HellrageWriter;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 import net.ncplanner.plannerator.planner.file.writer.PNGWriter;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 public class FileWriter{
@@ -15,6 +16,7 @@ public class FileWriter{
     public static LegacyNCPFWriter LEGACY_NCPF;
     public static HellrageWriter HELLRAGE;
     public static ImageFormatWriter PNG;
+    public static NCPFWriter NCPF = new NCPFWriter();
     static{
         formats.add(HELLRAGE = new HellrageWriter());
         formats.add(LEGACY_NCPF = new LegacyNCPFWriter());

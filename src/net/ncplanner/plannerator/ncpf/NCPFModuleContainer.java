@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -58,5 +59,11 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
     @Override
     public void setReferences(List<NCPFElement> lst){
         for(NCPFModule module : modules.values())module.setReferences(lst);
+    }
+    void clearPlanneratorModules(){
+        for(Iterator<String> it = modules.keySet().iterator(); it.hasNext();){
+            String key = it.next();
+            if(!key.startsWith("ncpf:"))it.remove();
+        }
     }
 }

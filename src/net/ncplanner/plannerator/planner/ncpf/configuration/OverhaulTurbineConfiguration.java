@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
@@ -43,5 +44,10 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks,recipes};
+    }
+    @Override
+    public void makePartial(List<Design> designs){
+        makePartial(blocks, designs);
+        makePartial(recipes, designs);
     }
 }

@@ -1,12 +1,16 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public abstract class DefinedNCPFObject{
     public abstract void convertFromObject(NCPFObject ncpf);
     public abstract void convertToObject(NCPFObject ncpf);
@@ -132,6 +136,7 @@ public abstract class DefinedNCPFObject{
     }
     public <T extends NCPFElement> T convertElement(T elem, NCPFConfiguration convertTo){
         if(elem==null)return null;
+        if(convertTo==null)return null;
         for(List<NCPFElement> elems : convertTo.getElements()){
             NCPFElement match = matchElement(elem, elems);
             if(match!=null)return (T)match;
@@ -145,5 +150,20 @@ public abstract class DefinedNCPFObject{
             if(element.definition.matches(elem.definition))return elem;
         }
         return null;
+    }
+    public <T extends NCPFElement> void makePartial(List<T> elems, List<Design> designs){
+        HashSet<NCPFElementDefinition> used = new HashSet<>();
+        designs.forEach((t) -> {
+            used.addAll(t.getElements());
+        });
+        ELEMS:for(Iterator<T> it = elems.iterator(); it.hasNext();){
+            T elem = it.next();
+            for(NCPFElementDefinition def : used){
+                if(def.matches(elem.definition)){
+                    continue ELEMS;
+                }
+            }
+            it.remove();
+        }
     }
 }

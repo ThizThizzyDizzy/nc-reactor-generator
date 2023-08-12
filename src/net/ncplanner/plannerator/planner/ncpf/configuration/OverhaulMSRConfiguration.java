@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
@@ -34,5 +35,10 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks};
+    }
+    @Override
+    public void makePartial(List<Design> designs){
+        makePartial(blocks, designs);
+        blocks.forEach((t) -> t.makePartial(designs));
     }
 }

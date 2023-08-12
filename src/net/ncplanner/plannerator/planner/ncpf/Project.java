@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -63,5 +64,17 @@ public class Project extends NCPFFile{
         }
         for(Addon a : addons)s+="- "+a.toString()+"\n";
         return s;
+    }
+    public void makePartial(){
+        FOR:for(Iterator<String> it = conglomeration.configurations.keySet().iterator(); it.hasNext();){
+            String key = it.next();
+            for(Design d : designs){
+                if(d.definition.type.equals(key))continue FOR;
+            }
+            it.remove();
+        }
+        conglomeration.makePartial(designs);
+        configuration = conglomeration;
+        addons.clear();
     }
 }

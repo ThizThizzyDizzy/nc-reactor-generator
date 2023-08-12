@@ -14,11 +14,11 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     public NCPFModuleContainer modules = new NCPFModuleContainer();
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        modules = ncpf.getDefinedNCPFObject("modules", NCPFModuleContainer::new);
+        if(ncpf.containsKey("modules"))modules = ncpf.getDefinedNCPFObject("modules", NCPFModuleContainer::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        ncpf.setDefinedNCPFObject("modules", modules);
+        if(!modules.modules.isEmpty())ncpf.setDefinedNCPFObject("modules", modules);
     }
     public boolean hasModule(Supplier<NCPFModule> module){
         return modules.hasModule(module);

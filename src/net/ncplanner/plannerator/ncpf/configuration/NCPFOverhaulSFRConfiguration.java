@@ -4,6 +4,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public class NCPFOverhaulSFRConfiguration extends NCPFConfiguration{
     public List<NCPFElement> blocks = new ArrayList<>();
     public List<NCPFElement> coolantRecipes = new ArrayList<>();
@@ -33,4 +34,6 @@ public class NCPFOverhaulSFRConfiguration extends NCPFConfiguration{
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks, coolantRecipes};
     }
+    @Override
+    public void makePartial(List<Design> designs){}
 }

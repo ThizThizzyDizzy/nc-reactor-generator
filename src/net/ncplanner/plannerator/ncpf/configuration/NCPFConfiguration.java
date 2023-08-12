@@ -3,6 +3,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public final String name;
     public NCPFConfiguration(String name){
@@ -30,4 +31,5 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public List<NCPFElement>[] getMultiblockRecipes(){
         return new List[0];
     }
+    public abstract void makePartial(List<Design> designs);
 }
