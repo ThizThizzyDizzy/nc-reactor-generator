@@ -315,7 +315,7 @@ public class MenuMain extends Menu{
         exportMultiblock.add(new Button("NCPF", true, true).setTooltip("NuclearCraft Planner File")).addAction(() -> {
             new MenuPickNCPF(gui, this, (t) -> {
                 NCPFWriter.format = t;
-                startExport(FileWriter.NCPF, "NCPF", "NuclearCraft Planner File", new String[]{t.getExtension()});
+                startExport(FileWriter.NCPF, "NCPF", "NuclearCraft Planner File", new String[]{"ncpf."+t.getExtension()});
             }).open();
         });
         addMultiblock.addAction(() -> {

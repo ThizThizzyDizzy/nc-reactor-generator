@@ -12,10 +12,6 @@ import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.FluidStack;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.editor.decal.BlockInvalidDecal;
@@ -28,6 +24,9 @@ import net.ncplanner.plannerator.multiblock.editor.symmetry.CoilSymmetry;
 import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -42,6 +41,11 @@ import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public Recipe recipe;
     public boolean rotorValid;
@@ -60,7 +64,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public double[] actualExpansion;
     private boolean hasInlet, hasOutlet;
     public int bearingDiameter = 0;
-    private net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block[] blades;
+    private BlockElement[] blades;
     private boolean[] bladesComplete;
     private int calcStep = 0;
     private int calcSubstep = 0;
@@ -75,45 +79,47 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public OverhaulTurbine(){
         this(null);
     }
-    public OverhaulTurbine(Configuration configuration){
+    public OverhaulTurbine(NCPFConfigurationContainer configuration){
         this(configuration, 3, 3, null);
     }
-    public OverhaulTurbine(Configuration configuration, int diameter, int length, Recipe recipe){
+    public OverhaulTurbine(NCPFConfigurationContainer configuration, int diameter, int length, Recipe recipe){
         super(configuration, diameter, diameter, length);
-        this.recipe = recipe==null?(exists()?getConfiguration().overhaul.turbine.allRecipes.get(0):null):recipe;
+        this.recipe = recipe==null?(exists()?getSpecificConfiguration().recipes.get(0):null):recipe;
+    }
+    @Override
+    public OverhaulTurbineConfiguration getSpecificConfiguration(){
+        NCPFConfigurationContainer conf = getConfiguration();
+        if(conf==null)return null;
+        return conf.getConfiguration(OverhaulTurbineConfiguration::new);
     }
     @Override
     public String getDefinitionName(){
         return "Overhaul Turbine";
     }
     @Override
-    public Multiblock<Block> newInstance(Configuration configuration){
+    public Multiblock<Block> newInstance(NCPFConfigurationContainer configuration){
         return new OverhaulTurbine(configuration);
     }
     public void setBearing(int bearingSize){
         int bearingMax = getExternalWidth()/2+bearingSize/2;
         int bearingMin = getExternalWidth()/2-bearingSize/2;
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block bearing = null;
-        net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block shaft = null;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block : getConfiguration().overhaul.turbine.allBlocks){
-            if(block.shaft&&shaft==null)shaft = block;
-            if(block.bearing&&bearing==null)bearing = block;
-        }
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block : Core.configuration.overhaul.turbine.allBlocks){
-            if(block.shaft&&shaft==null)shaft = block;
-            if(block.bearing&&bearing==null)bearing = block;
+        BlockElement bearing = null;
+        BlockElement shaft = null;
+        for(BlockElement block : getSpecificConfiguration().blocks){
+            if(block.shaft!=null&&shaft==null)shaft = block;
+            if(block.bearing!=null&&bearing==null)bearing = block;
         }
         for(int z = 0; z<getExternalDepth(); z++){
             for(int x = bearingMin; x<=bearingMax; x++){
                 for(int y = bearingMin; y<=bearingMax; y++){
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block = shaft;
+                    BlockElement block = shaft;
                     if(z==0||z==getExternalDepth()-1)block = bearing;
                     if(block!=null)setBlock(x, y, z, new Block(getConfiguration(), x, y, z, block));
                 }
             }
         }
     }
-    public void setBlade(int bearingSize, int z, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block){
+    public void setBlade(int bearingSize, int z, BlockElement block){
         int bearingMax = getExternalWidth()/2+bearingSize/2;
         int bearingMin = getExternalWidth()/2-bearingSize/2;
         for(int x = 1; x<=getInternalWidth(); x++){
@@ -126,39 +132,39 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         }
     }
     @Override
-    public Multiblock<Block> newInstance(Configuration configuration, int x, int y, int z){
+    public Multiblock<Block> newInstance(NCPFConfigurationContainer configuration, int x, int y, int z){
         return new OverhaulTurbine(configuration, x, z, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
-        if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.turbine==null)return;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block : getConfiguration().overhaul.turbine.allBlocks){
+        if(getSpecificConfiguration()==null)return;
+        for(BlockElement block : getSpecificConfiguration().blocks){
             blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
         }
     }
     @Override
     public int getMinX(){
-        return getConfiguration().overhaul.turbine.minWidth;
+        return getSpecificConfiguration().settings.minWidth;
     }
     @Override
     public int getMinY(){
-        return getConfiguration().overhaul.turbine.minWidth;
+        return getSpecificConfiguration().settings.minWidth;
     }
     @Override
     public int getMinZ(){
-        return getConfiguration().overhaul.turbine.minLength;
+        return getSpecificConfiguration().settings.minLength;
     }
     @Override
     public int getMaxX(){
-        return getConfiguration().overhaul.turbine.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     @Override
     public int getMaxY(){
-        return getConfiguration().overhaul.turbine.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     @Override
     public int getMaxZ(){
-        return getConfiguration().overhaul.turbine.maxSize;
+        return getSpecificConfiguration().settings.maxSize;
     }
     public void expandDiameter(int i){
         if(getInternalWidth()+i>getMaxX())return;
@@ -236,10 +242,10 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                         if(addDecals)decals.enqueue(new MissingCasingDecal(x, y, z));
                     }
                     if(block!=null){
-                        if(block.template.inlet)hasInlet = true;
-                        if(block.template.outlet)hasOutlet = true;
-                        if(block.template.controller)numControllers++;
-                        if(block.template.casing||block.template.inlet||block.template.outlet||block.template.controller){
+                        if(block.template.inlet!=null)hasInlet = true;
+                        if(block.template.outlet!=null)hasOutlet = true;
+                        if(block.template.controller!=null)numControllers++;
+                        if(block.template.casing!=null||block.template.inlet!=null||block.template.outlet!=null||block.template.controller!=null){
                             block.valid = true;
                             if(addDecals)decals.enqueue(new BlockValidDecal(x, y, z));
                         }
@@ -260,7 +266,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                         for(int y = bearingMin; y<=bearingMax; y++){
                             for(int z = 0; z<getExternalDepth(); z++){
                                 Block block = getBlock(x, y, z);
-                                boolean valid = block!=null&&((z==0||z==getExternalDepth()-1)?block.template.bearing:block.template.shaft);
+                                boolean valid = block!=null&&((z==0||z==getExternalDepth()-1)?block.template.bearing!=null:block.template.shaft!=null);
                                 if(!valid)break BEARING;
                                 toValidate.enqueue(block);
                             }
@@ -278,7 +284,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 2://calculate blades
-                blades = new net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block[getInternalDepth()];
+                blades = new BlockElement[getInternalDepth()];
                 bladesComplete = new boolean[getInternalDepth()];
                 int bearingMin = getExternalWidth()/2-bearingDiameter/2;
                 int bearingMax = getExternalWidth()/2+bearingDiameter/2-(bearingDiameter%2==0?1:0);
@@ -322,7 +328,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             case 3://calculate rotor
                 rotorValid = true;
                 bladeCount = 0;
-                for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block blade : blades){
+                for(BlockElement blade : blades){
                     if(blade==null)rotorValid = false;
                     else bladeCount++;
                 }
@@ -337,39 +343,40 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     int numBlades = 0;
                     int numberOfBlades = 0;
                     for(int i = 0; i<blades.length; i++){
-                        if(blades[i].bladeStator){
-                            minStatorExpansion = Math.min(blades[i].bladeExpansion, minStatorExpansion);
+                        float expansion = blades[i].stator!=null?blades[i].stator.expansion:blades[i].blade.expansion;
+                        if(blades[i].stator!=null){
+                            minStatorExpansion = Math.min(expansion, minStatorExpansion);
                         }else{
                             numberOfBlades++;
                             numBlades+=bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
-                            minBladeExpansion = Math.min(blades[i].bladeExpansion, minBladeExpansion);
-                            maxBladeExpansion = Math.max(blades[i].bladeExpansion, maxBladeExpansion);
+                            minBladeExpansion = Math.min(expansion, minBladeExpansion);
+                            maxBladeExpansion = Math.max(expansion, maxBladeExpansion);
                         }
-                        idealExpansion[i] = MathUtil.pow(recipe.coefficient, (i+.5f)/blades.length);
-                        actualExpansion[i] = expansionSoFar*Math.sqrt(blades[i].bladeExpansion);
-                        expansionSoFar*=blades[i].bladeExpansion;
-                        rotorEfficiency+=blades[i].bladeEfficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
+                        idealExpansion[i] = MathUtil.pow(recipe.stats.coefficient, (i+.5f)/blades.length);
+                        actualExpansion[i] = expansionSoFar*Math.sqrt(expansion);
+                        expansionSoFar*=expansion;
+                        rotorEfficiency+=blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
                     }
                     rotorEfficiency/=numberOfBlades;
-                    maxInput = numBlades*getConfiguration().overhaul.turbine.fluidPerBlade;
+                    maxInput = numBlades*getSpecificConfiguration().settings.fluidPerBlade;
                     maxUnsafeInput = maxInput*2;
                     int effectiveMaxLength;
                     if(minBladeExpansion<=1||minStatorExpansion>=1d){
-                        effectiveMaxLength = getConfiguration().overhaul.turbine.maxSize;
+                        effectiveMaxLength = getSpecificConfiguration().settings.maxSize;
                     }else{
-                        effectiveMaxLength = (int)Math.ceil(Math.max(getConfiguration().overhaul.turbine.minLength, Math.min(getConfiguration().overhaul.turbine.maxSize, (MathUtil.log(recipe.coefficient)-getConfiguration().overhaul.turbine.maxSize*MathUtil.log(minStatorExpansion))/(MathUtil.log(minBladeExpansion)-MathUtil.log(minStatorExpansion)))));
+                        effectiveMaxLength = (int)Math.ceil(Math.max(getSpecificConfiguration().settings.minLength, Math.min(getSpecificConfiguration().settings.maxSize, (MathUtil.log(recipe.stats.coefficient)-getSpecificConfiguration().settings.maxSize*MathUtil.log(minStatorExpansion))/(MathUtil.log(minBladeExpansion)-MathUtil.log(minStatorExpansion)))));
                     }
                     int bladeArea = bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
                     double rate = Math.min(getInputRate(), maxInput);
-                    double lengthBonus = rate/(getConfiguration().overhaul.turbine.fluidPerBlade*bladeArea*effectiveMaxLength);
-                    double areaBonus = Math.sqrt(2*rate/(getConfiguration().overhaul.turbine.fluidPerBlade*(getInternalDepth())*getConfiguration().overhaul.turbine.maxSize*effectiveMaxLength));
-                    double effectiveMinLength = recipe.coefficient<=1||maxBladeExpansion<=1?getConfiguration().overhaul.turbine.maxSize:Math.ceil(MathUtil.log(recipe.coefficient)/MathUtil.log(maxBladeExpansion));
-                    int minBladeArea = ((getConfiguration().overhaul.turbine.minWidth-1)*2);
-                    double absoluteLeniency = effectiveMinLength*minBladeArea*getConfiguration().overhaul.turbine.fluidPerBlade;
+                    double lengthBonus = rate/(getSpecificConfiguration().settings.fluidPerBlade*bladeArea*effectiveMaxLength);
+                    double areaBonus = Math.sqrt(2*rate/(getSpecificConfiguration().settings.fluidPerBlade*(getInternalDepth())*getSpecificConfiguration().settings.maxSize*effectiveMaxLength));
+                    double effectiveMinLength = recipe.stats.coefficient<=1||maxBladeExpansion<=1?getSpecificConfiguration().settings.maxSize:Math.ceil(MathUtil.log(recipe.stats.coefficient)/MathUtil.log(maxBladeExpansion));
+                    int minBladeArea = ((getSpecificConfiguration().settings.minWidth-1)*2);
+                    double absoluteLeniency = effectiveMinLength*minBladeArea*getSpecificConfiguration().settings.fluidPerBlade;
                     double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
-                    double throughputEfficiencyMult = throughputRatio>=getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold?1:(1-getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult)*Math.sin(throughputRatio*Math.PI/(2*getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyThreshold))+getConfiguration().overhaul.turbine.throughputEfficiencyLeniencyMult;
-                    throughputEfficiency = (1+getConfiguration().overhaul.turbine.powerBonus*MathUtil.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
-                    idealityMultiplier = Math.min(expansionSoFar, recipe.coefficient)/Math.max(expansionSoFar, recipe.coefficient);
+                    double throughputEfficiencyMult = throughputRatio>=getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold?1:(1-getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier)*Math.sin(throughputRatio*Math.PI/(2*getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold))+getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier;
+                    throughputEfficiency = (1+getSpecificConfiguration().settings.powerBonus*MathUtil.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
+                    idealityMultiplier = Math.min(expansionSoFar, recipe.stats.coefficient)/Math.max(expansionSoFar, recipe.stats.coefficient);
                 }
                 calcRotor.finish();
                 calcStep++;
@@ -396,12 +403,12 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     for(int y = 1; y<=getInternalHeight(); y++){
                         Block in = getBlock(x, y, 0);
                         if(in!=null&&in.isCoil()&&in.isActive()){
-                            inputEff+=in.template.coilEfficiency;
+                            inputEff+=in.template.coil.efficiency;
                             inputCoils++;
                         }
                         Block out = getBlock(x, y, getExternalDepth()-1);
                         if(out!=null&&out.isCoil()&&out.isActive()){
-                            outputEff+=out.template.coilEfficiency;
+                            outputEff+=out.template.coil.efficiency;
                             outputCoils++;
                         }
                     }
@@ -413,7 +420,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 if(Float.isNaN(outputEff))outputEff = 0;
                 coilEfficiency = (inputEff+outputEff)/2;
                 totalEfficiency = coilEfficiency*rotorEfficiency*throughputEfficiency*idealityMultiplier;//*getConfiguration().overhaul.turbine.throughputEfficiencyLeniency;
-                totalFluidEfficiency = totalEfficiency*recipe.power;
+                totalFluidEfficiency = totalEfficiency*recipe.stats.power;
                 totalOutput = (long)(totalFluidEfficiency*getInputRate());
                 safeOutput = (long)(totalFluidEfficiency*maxInput);
                 unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
@@ -447,7 +454,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             block.valid = false;
             return wasValid!=block.valid;
         }
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> rule : block.template.rules){
+        for(NCPFPlacementRule rule : block.getRules()){
             if(!rule.isValid(block, this)){
                 if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
                 block.valid = false;
@@ -492,89 +499,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return text;
     }
     @Override
-    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
-        ConfigNumberList inputs = new ConfigNumberList();
-        for(Multiblock m : this.inputs){
-            if(ncpf.multiblocks.contains(m))inputs.add(ncpf.multiblocks.indexOf(m));
-        }
-        if(inputs.size()!=0)config.set("inputs", inputs);
-        ConfigNumberList blocks = new ConfigNumberList();
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
-            if(block==null)blocks.add(0);
-            else blocks.add(configuration.overhaul.turbine.allBlocks.indexOf(block.template)+1);
-            
-        });
-        config.set("blocks", blocks);
-        config.set("recipe", configuration.overhaul.turbine.allRecipes.indexOf(recipe));
-    }
-    @Override
-    public void doConvertTo(Configuration to) throws MissingConfigurationEntryException{
-        if(to.overhaul==null||to.overhaul.turbine==null)return;
-        for(Block block : getBlocks()){
-            block.convertTo(to);
-        }
-        recipe = to.overhaul.turbine.convert(recipe);
-        configuration = to;
-    }
-    @Override
     public boolean validate(){
         return false;
-    }
-    @Override
-    public void addGeneratorSettings(SingleColumnList multiblockSettings){}
-    @Override
-    public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulTurbine>("Valid Rotor", true, true){
-            @Override
-            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                return main.bladeCount-other.bladeCount;
-            }
-        });
-        priorities.add(new Priority<OverhaulTurbine>("RF per mb", true, true){
-            @Override
-            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                return main.totalFluidEfficiency-other.totalFluidEfficiency;
-            }
-        });
-        priorities.add(new Priority<OverhaulTurbine>("Total Efficiency", true, true){
-            @Override
-            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                return main.totalEfficiency-other.totalEfficiency;
-            }
-        });
-        priorities.add(new Priority<OverhaulTurbine>("Rotor Efficiency", true, true){
-            @Override
-            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                return main.rotorEfficiency-other.rotorEfficiency;
-            }
-        });
-        priorities.add(new Priority<OverhaulTurbine>("Coil Efficiency", true, true){
-            @Override
-            protected double doCompare(OverhaulTurbine main, OverhaulTurbine other){
-                return main.coilEfficiency-other.coilEfficiency;
-            }
-        });
-        for(Module m : Core.modules){
-            if(m.isActive())m.getGenerationPriorities(this, priorities);
-        }
-    }
-    @Override
-    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
-        presets.add(new Priority.Preset("RF per mb", priorities.get(0), priorities.get(1)));
-        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(2)));
-        presets.add(new Priority.Preset("Rotor Efficiency", priorities.get(0), priorities.get(3)));
-        presets.add(new Priority.Preset("Coil Efficiency", priorities.get(0), priorities.get(4)));
-    }
-    @Override
-    public void getSymmetries(ArrayList<Symmetry> symmetries){
-        symmetries.add(CoilSymmetry.X);
-        symmetries.add(CoilSymmetry.Y);
-        symmetries.add(CoilSymmetry.Z);
-    }
-    @Override
-    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        postProcessingEffects.add(new ClearInvalid());
     }
     @Override
     public void clearData(List<Block> blocks){
@@ -584,10 +510,6 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         bearingDiameter = 0;
         idealityMultiplier = throughputEfficiency = totalEfficiency = totalFluidEfficiency = rotorEfficiency = coilEfficiency = 0;
         totalOutput = safeOutput = unsafeOutput = maxInput = maxUnsafeInput = 0;
-    }
-    @Override
-    public boolean exists(){
-        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.turbine!=null;
     }
     @Override
     public OverhaulTurbine blankCopy(){
@@ -615,10 +537,6 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return copy;
     }
     @Override
-    protected int doCount(Object o){
-        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
-    }
-    @Override
     public String getGeneralName(){
         return "Turbine";
     }
@@ -627,19 +545,16 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return ((OverhaulTurbine)other).recipe==recipe;
     }
     private int getInputRate(){
-        if(inputs.isEmpty())return maxInput;
-        int input = 0;
-        for(Multiblock m : inputs){
-            ArrayList<FluidStack> outs = m.getFluidOutputs();
-            for(FluidStack stack : outs){
-                if(stack.name.equals(recipe.inputName))input+=stack.amount;
-            }
-        }
-        return input;
-    }
-    @Override
-    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
-        outputs.add(new FluidStack(recipe.outputName, recipe.outputDisplayName, getInputRate()*recipe.coefficient));
+        return maxInput;
+//        if(inputs.isEmpty())return maxInput;
+//        int input = 0;
+//        for(Multiblock m : inputs){
+//            ArrayList<FluidStack> outs = m.getFluidOutputs();
+//            for(FluidStack stack : outs){
+//                if(stack.name.equals(recipe.inputName))input+=stack.amount;
+//            }
+//        }
+//        return input;
     }
     @Override
     protected void getMainParts(ArrayList<PartCount> parts){
@@ -672,7 +587,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             float x2 = 1;
             float y2 = 1;
             float z2 = 1;
-            if(block.template.bladeStator){
+            if(block.template.stator!=null){
                 if(isXBlade){//side
                     x1+=7/16f;
                     x2-=7/16f;
@@ -742,7 +657,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                                 continue;
                             }
                             for(Block newBlock : blocks){
-                                if(newBlock.template.coilEfficiency>(block==null?0:block.template.coilEfficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.coil.efficiency>(block==null?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                             if(block!=null){
@@ -810,18 +725,18 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 boolean mustBeYBlade = y>=bearingMinMin&&y<=bearingMinMax;
                 if(x0||y0||z0||x1||y1||z1){
                     if(x0&&y0||x0&&z0||x0&&x1||x0&&y1||x0&&z1||y0&&z0||y0&&x1||y0&&y1||y0&&z1||z0&&x1||z0&&y1||z0&&z1||x1&&y1||x1&&z1||y1&&z1){
-                        return block.template.casing&&block.template.casingEdge;
+                        return block.template.casing!=null&&block.template.casing.edge;
                     }else{
-                        if(x0||y0||x1||y1)return block.template.casing;//a side
-                        if(mustBeXBlade&&mustBeYBlade)return block.template.bearing;
-                        if(canBeXBlade&&canBeYBlade)return block.template.bearing||block.template.casing||block.template.coil||block.template.connector||(z0?block.template.inlet:block.template.outlet);
-                        return block.template.casing||block.template.coil||block.template.connector||(z0?block.template.inlet:block.template.outlet);
+                        if(x0||y0||x1||y1)return block.template.casing!=null;//a side
+                        if(mustBeXBlade&&mustBeYBlade)return block.template.bearing!=null;
+                        if(canBeXBlade&&canBeYBlade)return block.template.bearing!=null||block.template.casing!=null||block.template.coil!=null||block.template.connector!=null||(z0?block.template.inlet!=null:block.template.outlet!=null);
+                        return block.template.casing!=null||block.template.coil!=null||block.template.connector!=null||(z0?block.template.inlet!=null:block.template.outlet!=null);
                     }
                 }
-                if(mustBeXBlade&&mustBeYBlade)return block.template.shaft;
-                if(canBeXBlade&&canBeYBlade)return block.template.shaft||block.template.blade;
+                if(mustBeXBlade&&mustBeYBlade)return block.template.shaft!=null;
+                if(canBeXBlade&&canBeYBlade)return block.template.shaft!=null||block.template.blade!=null||block.template.stator!=null;
                 if(!canBeXBlade&&!canBeYBlade)return false;
-                return block.template.blade;
+                return block.template.blade!=null||block.template.stator!=null;
             }
             @Override
             public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
@@ -852,19 +767,12 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         Block controller = null;
         Block inlet = null;
         Block outlet = null;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block template : getConfiguration().overhaul.turbine.allBlocks){
-            if(template.casing&&template.casingEdge)casing = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.casing&&!template.casingEdge&&!template.controller)window = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.controller)controller = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.inlet)inlet = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.outlet)outlet = new Block(getConfiguration(), 0, 0, 0, template);
-        }
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block template : Core.configuration.overhaul.turbine.allBlocks){
-            if(casing==null&&template.casing&&template.casingEdge)casing = new Block(getConfiguration(), 0, 0, 0, template);
-            if(window==null&&template.casing&&!template.casingEdge&&!template.controller)window = new Block(getConfiguration(), 0, 0, 0, template);
-            if(controller==null&&template.controller)controller = new Block(getConfiguration(), 0, 0, 0, template);
-            if(inlet==null&&template.inlet)inlet = new Block(getConfiguration(), 0, 0, 0, template);
-            if(outlet==null&&template.outlet)outlet = new Block(getConfiguration(), 0, 0, 0, template);
+        for(BlockElement template : getSpecificConfiguration().blocks){
+            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.casing!=null&&!template.casing.edge&&template.controller==null)window = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.inlet!=null)inlet = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.outlet!=null)outlet = new Block(getConfiguration(), 0, 0, 0, template);
         }
         final Block theCasing = casing;
         final Block theWindow = window==null?casing:window;
@@ -875,9 +783,9 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         boolean[] hasPlacedTheInlet = new boolean[1];
         boolean[] hasPlacedTheOutlet = new boolean[1];
         for(Block block : getBlocks()){
-            if(block.template.controller)hasPlacedTheController[0] = true;
-            if(block.template.inlet)hasPlacedTheInlet[0] = true;
-            if(block.template.outlet)hasPlacedTheOutlet[0] = true;
+            if(block.template.controller!=null)hasPlacedTheController[0] = true;
+            if(block.template.inlet!=null)hasPlacedTheInlet[0] = true;
+            if(block.template.outlet!=null)hasPlacedTheOutlet[0] = true;
         }
         forEachCasingFacePosition((x, y, z) -> {
             if(getBlock(x, y, z)!=null){
@@ -938,5 +846,23 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             bbox = new BoundingBox(bbox.x1, bbox.y1, bbox.z1-1, bbox.x2, bbox.y2, bbox.z2+1);
         }
         return bbox;
+    }
+    @Override
+    public Design toDesign(){
+        OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
+        forEachPosition((x, y, z) -> {
+            Block block = getBlock(x, y, z);
+            design.design[x][y][z] = block==null?null:block.template;
+        });
+        design.recipe = recipe;
+        return design;
+    }
+    @Override
+    public NCPFElement[] getMultiblockRecipes(){
+        return new NCPFElement[]{recipe};
+    }
+    @Override
+    public void setMultiblockRecipe(int recipeType, NCPFElement recipe){
+        this.recipe = (Recipe)recipe;
     }
 }

@@ -32,7 +32,6 @@ import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.planner.file.FileFormat;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -49,7 +48,6 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Configurations;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -628,9 +626,7 @@ public class Core{
         vsync = vs;
     }
     public static void setConfiguration(NCPFConfigurationContainer configuration){
-        configuration.configurations.remove(new OverhaulTurbineConfiguration().name);//TODO don do dat
         project.conglomeration = project.configuration = configuration;
-//        project.conglomerate();//TODO this duplicates references!
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);

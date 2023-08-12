@@ -17,6 +17,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
+import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
@@ -25,6 +26,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfigura
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
@@ -50,7 +52,7 @@ public class OverhaulModule extends Module<Object>{
     public void addMultiblockTypes(ArrayList multiblockTypes){
         multiblockTypes.add(new OverhaulSFR());
         multiblockTypes.add(new OverhaulMSR());
-//        multiblockTypes.add(new OverhaulTurbine());
+        multiblockTypes.add(new OverhaulTurbine());
     }
     @Override
     public void registerNCPF(){
@@ -59,7 +61,7 @@ public class OverhaulModule extends Module<Object>{
         registerNCPFConfiguration(OverhaulTurbineConfiguration::new);
         registerNCPFDesign(NCPFOverhaulSFRDesign::new, OverhaulSFRDesign::new);
         registerNCPFDesign(NCPFOverhaulMSRDesign::new, OverhaulMSRDesign::new);
-//        registerNCPFDesign(NCPFOverhaulTurbineDesign::new, OverhaulTurbineDesign::new);
+        registerNCPFDesign(NCPFOverhaulTurbineDesign::new, OverhaulTurbineDesign::new);
         
         registerNCPFModule(OverhaulSFRSettingsModule::new);
         registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule::new);

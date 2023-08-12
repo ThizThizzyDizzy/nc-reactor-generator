@@ -1,48 +1,32 @@
 package net.ncplanner.plannerator.multiblock.overhaul.turbine;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.AbstractPlacementRule;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.PlacementRule;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock implements ITemplateAccess<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement> {
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block template;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
+public class Block extends AbstractBlock{
+    public BlockElement template;
     public boolean valid;
-    public Block(Configuration configuration, int x, int y, int z, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block block){
+    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
         super(configuration, x, y, z);
-        this.template = block;
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
+        this.template = template;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.AbstractBlock newInstance(int x, int y, int z){
+    public AbstractBlock newInstance(int x, int y, int z){
         return new Block(getConfiguration(), x, y, z, template);
     }
     @Override
     public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){}
-    @Override
-    public Image getBaseTexture(){
-        return template.texture;
-    }
-    @Override
-    public Image getTexture(){
-        return template.displayTexture;
-    }
-    @Override
-    public String getBaseName(){
-        return template.name;
-    }
-    @Override
-    public String getName(){
-        return template.getDisplayName();
-    }
     @Override
     public void clearData(){
         valid = false;
@@ -50,38 +34,9 @@ public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock im
     @Override
     public String getTooltip(Multiblock multiblock){
         String tip = getName();
-        if(template.casing)tip+="\nCasing "+(isActive()?"Active":"Invalid");
+        if(template.casing!=null)tip+="\nCasing "+(isActive()?"Active":"Invalid");
         if(isConnector())tip+="\nConnector "+(isActive()?"Active":"Invalid");
         if(isCoil())tip+="\nCoil "+(isActive()?"Active":"Invalid");
-        return tip;
-    }
-    @Override
-    public String getListTooltip(){
-        String tip = getName();
-        if(isBearing())tip+="\nBearing";
-        if(isBlade()){
-            if(template.bladeStator){
-                tip+="\nStator"
-                    + "\nExpansion Coefficient: "+template.bladeExpansion;
-                if(template.bladeEfficiency>0){
-                    tip+="\nEfficiency: "+template.bladeEfficiency;
-                }
-            }else{
-                tip+="\nBlade"
-                    + "\nExpansion Coefficient: "+template.bladeExpansion
-                    + "\nEfficiency: "+template.bladeEfficiency;
-            }
-        }
-        if(isConnector())tip+="\nConnector";
-        if(isCoil()){
-            tip+="\nCoil"
-                + "\nEfficiency: "+template.coilEfficiency;
-        }
-        if(template!=null){
-            for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
-                tip+="\nRequires "+rule.toString();
-            }
-        }
         return tip;
     }
     @Override
@@ -106,59 +61,24 @@ public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock im
         return isBearing()||isBlade();
     }
     @Override
-    public boolean hasRules(){
-        return !template.rules.isEmpty();
-    }
-    @Override
-    public boolean calculateRules(Multiblock multiblock){
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
-            if(!rule.isValid(this, multiblock)){
-                return false;
-            }
-        }
-        return true;
-    }
-    @Override
-    public boolean matches(net.ncplanner.plannerator.multiblock.AbstractBlock template){
-        if(template==null)return false;
-        if(template instanceof Block){
-            return ((Block)template).template==this.template;
-        }
-        return false;
+    public List<? extends NCPFPlacementRule> getRules(){
+        if(template.coil!=null)return template.coil.rules;
+        if(template.connector!=null)return template.connector.rules;
+        return new ArrayList<>();
     }
     @Override
     public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
-        if(template.coil||template.connector)return requires(oth, null);
-        return false;
-    }
-    @Override
-    public boolean requires(net.ncplanner.plannerator.multiblock.AbstractBlock oth, Multiblock mb){
-        if(!isCoil()&&!isConnector())return false;
-        Block other = (Block) oth;
-        int totalDist = Math.abs(oth.x-x)+Math.abs(oth.y-y)+Math.abs(oth.z-z);
-        if(totalDist>1)return false;//too far away
-        if(hasRules()){
-            for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> rule : template.rules){
-                if(ruleHas((PlacementRule) rule, other))return true;
-            }
-        }
-        return false;
-    }
-    private boolean ruleHas(PlacementRule rule, Block b){
-        if(rule.block==b.template)return true;
-        if(rule.blockType!=null&&rule.blockType.blockMatches(null, b))return true;
-        for(AbstractPlacementRule<PlacementRule.BlockType, net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> rul : rule.rules){
-            if(ruleHas((PlacementRule) rul, b))return true;
-        }
+        if(template.coil!=null||template.connector!=null)return requires(oth, null);
         return false;
     }
     @Override
     public boolean canGroup(){
-        return template.coil||template.connector;
+        return template.coil!=null||template.connector!=null;
     }
     @Override
     public boolean canBeQuickReplaced(){
-        return template.coil||template.connector||(template.casing&&!template.controller&&!template.inlet&&!template.outlet);
+        return template.coil!=null||template.connector!=null||
+                (template.casing!=null&&template.controller==null&&template.inlet==null&&template.outlet==null);
     }
     @Override
     public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
@@ -171,30 +91,26 @@ public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock im
         return other instanceof Block&&((Block)other).template==template;
     }
     public boolean isBlade(){
-        return template.blade;
+        return template.blade!=null||template.stator!=null;
     }
     public boolean isBearing(){
-        return template.bearing;
+        return template.bearing!=null;
     }
     public boolean isCoil(){
-        return template.coil;
+        return template.coil!=null;
     }
     public boolean isConnector(){
-        return template.connector;
+        return template.connector!=null;
     }
     @Override
     public boolean isFullBlock(){
         return !isBlade();
     }
     @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
-        template = to.overhaul.turbine.convert(template);
-        configuration = to;
-    }
-    @Override
     public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.AbstractBlock against){
         if(super.shouldRenderFace(against))return true;
-        if(template.blade||((Block)against).template.blade)return true;
+        if(template.blade!=null||((Block)against).template.blade!=null)return true;
+        if(template.stator!=null||((Block)against).template.stator!=null)return true;
         if(template==((Block)against).template)return false;
         return Core.hasAlpha(against.getBaseTexture());
     }
@@ -209,12 +125,8 @@ public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock im
         return template.getSimpleSearchableNames();
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block getTemplate() {
+    public NCPFElement getTemplate(){
         return template;
-    }
-    @Override
-    public String getPinnedName(){
-        return template.getPinnedName();
     }
     @Override
     public boolean hasRecipes(){
@@ -224,4 +136,16 @@ public class Block extends net.ncplanner.plannerator.multiblock.AbstractBlock im
     public ArrayList<? extends IBlockRecipe> getRecipes(){
         return new ArrayList<>();
     }
+    @Override
+    public NCPFElement getRecipe(){
+        return null;
+    }
+    @Override
+    public void setRecipe(NCPFElement recipe){}
+    @Override
+    public boolean isToggled(){
+        return false;
+    }
+    @Override
+    public void setToggled(boolean toggled){}
 }
