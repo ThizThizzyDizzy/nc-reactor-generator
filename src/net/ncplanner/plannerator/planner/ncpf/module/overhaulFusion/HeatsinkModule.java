@@ -20,6 +20,7 @@ public class HeatsinkModule extends BlockFunctionModule implements ElementStatsM
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setInteger("cooling", cooling);
+        ncpf.setDefinedNCPFList("rules", rules);
     }
     @Override
     public String getFunctionName(){

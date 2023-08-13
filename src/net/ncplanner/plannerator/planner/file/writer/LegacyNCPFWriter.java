@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
@@ -11,13 +10,11 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
-import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.design.NCPFCuboidalMultiblockDesign;
@@ -29,7 +26,6 @@ import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
@@ -85,8 +81,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         return multi instanceof UnderhaulSFR
                 || multi instanceof OverhaulSFR
                 || multi instanceof OverhaulMSR
-                || multi instanceof OverhaulTurbine
-                || multi instanceof OverhaulFusionReactor;
+                || multi instanceof OverhaulTurbine;
     }
     public static void saveTexture(Config config, Image texture){
         saveTexture(config, "texture", texture);
@@ -634,18 +629,6 @@ public class LegacyNCPFWriter extends FormatWriter{
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule::new,
         net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule::new
-    };
-    protected final Supplier<NCPFModule>[] overhaulFusionBlockTypes = new Supplier[]{
-        AirModule::new,//air
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElectromagnetModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.HeatingBlanketModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.HeatsinkModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.HeatsinkModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule::new,
-        net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConnectorModule::new
     };
     public Config savePlacementRule(NCPFPlacementRule rule, NCPFConfiguration cfg, Supplier<NCPFModule>[] blockTypes){
         Config config = Config.newConfig();

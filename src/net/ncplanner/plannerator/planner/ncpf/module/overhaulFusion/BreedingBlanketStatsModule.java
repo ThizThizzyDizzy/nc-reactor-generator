@@ -10,7 +10,7 @@ public class BreedingBlanketStatsModule extends NCPFRecipeStatsModule{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        augmented = ncpf.getBoolean("augmented;");
+        augmented = ncpf.getBoolean("augmented");
         efficiency = ncpf.getFloat("efficiency");
         heat = ncpf.getFloat("heat");
     }

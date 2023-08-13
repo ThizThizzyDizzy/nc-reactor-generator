@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDefinition;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulFusionSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.*;
-public class FusionTestModule extends Module{
+public class FusionTestModule extends Module<Object>{
     public FusionTestModule(){
         super("fusion_test");
     }
@@ -32,7 +32,7 @@ public class FusionTestModule extends Module{
     @Override
     public void registerNCPF(){
         registerNCPFConfiguration(OverhaulFusionConfiguration::new);
-//        registerNCPFDesign(OverhaulFusionDefinition::new, OverhaulFusionDesign::new);
+        registerNCPFDesign(OverhaulFusionDefinition::new, OverhaulFusionDesign::new);
         
         registerNCPFModule(OverhaulFusionSettingsModule::new);
         registerNCPFModule(BreedingBlanketModule::new);

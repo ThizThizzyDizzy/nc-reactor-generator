@@ -35,22 +35,22 @@ public class RainbowFactorModule extends Module<Float>{
     public Float calculateMultiblock(Multiblock m){
         if(m instanceof UnderhaulSFR){
             float totalSinks = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block b : m.getConfiguration().underhaul.fissionSFR.allBlocks){
-                if(b.cooling!=0&&b.active==null)totalSinks++;
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : ((UnderhaulSFR)m).getSpecificConfiguration().blocks){
+                if(b.cooler!=null)totalSinks++;
             }
-            Set<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Block> unique = new HashSet<>();
+            Set<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement> unique = new HashSet<>();
             for(net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b : ((UnderhaulSFR)m).getBlocks()){
                 if(!b.isActive())continue;
-                if(b.isCooler())unique.add(b.template);
+                if(b.template.cooler!=null)unique.add(b.template);
             }
             return unique.size()/totalSinks;
         }
         if(m instanceof OverhaulSFR){
             float totalSinks = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block b : m.getConfiguration().overhaul.fissionSFR.allBlocks){
-                if(b.heatsink)totalSinks++;
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : ((OverhaulSFR)m).getSpecificConfiguration().blocks){
+                if(b.heatsink!=null)totalSinks++;
             }
-            Set<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.Block> unique = new HashSet<>();
+            Set<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> unique = new HashSet<>();
             for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b : ((OverhaulSFR)m).getBlocks()){
                 if(!b.isActive())continue;
                 if(b.isHeatsink())unique.add(b.template);
@@ -59,10 +59,10 @@ public class RainbowFactorModule extends Module<Float>{
         }
         if(m instanceof OverhaulMSR){
             float totalSinks = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block b : m.getConfiguration().overhaul.fissionMSR.allBlocks){
-                if(b.heater)totalSinks++;
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : ((OverhaulMSR)m).getSpecificConfiguration().blocks){
+                if(b.heater!=null)totalSinks++;
             }
-            Set<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.Block> unique = new HashSet<>();
+            Set<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> unique = new HashSet<>();
             for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b : ((OverhaulMSR)m).getBlocks()){
                 if(!b.isActive())continue;
                 if(b.isHeater())unique.add(b.template);
@@ -71,10 +71,10 @@ public class RainbowFactorModule extends Module<Float>{
         }
         if(m instanceof OverhaulTurbine){
             float totalCoils = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block b : m.getConfiguration().overhaul.turbine.allBlocks){
-                if(b.coil)totalCoils++;
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b : ((OverhaulTurbine)m).getSpecificConfiguration().blocks){
+                if(b.coil!=null)totalCoils++;
             }
-            Set<net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Block> unique = new HashSet<>();
+            Set<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement> unique = new HashSet<>();
             for(net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b : ((OverhaulTurbine)m).getBlocks()){
                 if(!b.isActive())continue;
                 if(b.isCoil())unique.add(b.template);
@@ -83,10 +83,10 @@ public class RainbowFactorModule extends Module<Float>{
         }
         if(m instanceof OverhaulFusionReactor){
             float totalSinks = 0;
-            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b : m.getConfiguration().overhaul.fusion.allBlocks){
-                if(b.heatsink)totalSinks++;
+            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement b : ((OverhaulFusionReactor)m).getSpecificConfiguration().blocks){
+                if(b.heatsink!=null)totalSinks++;
             }
-            Set<net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block> unique = new HashSet<>();
+            Set<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement> unique = new HashSet<>();
             for(net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b : ((OverhaulFusionReactor)m).getBlocks()){
                 if(!b.isActive())continue;
                 if(b.isHeatsink())unique.add(b.template);
@@ -167,7 +167,7 @@ public class RainbowFactorModule extends Module<Float>{
                     multiblock.getAvailableBlocks(blocks);
                     for(Iterator<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> it = blocks.iterator(); it.hasNext();){
                         net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = it.next();
-                        if(!b.isCooler()||b.template.active!=null)it.remove();
+                        if(b.template.cooler==null)it.remove();
                     }
                     int[] count = new int[1];
                     multiblock.forEachPosition((x, y, z) -> {
@@ -181,7 +181,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block newBlock : blocks){
                             net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.cooling>(block==null?0:block.template.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.cooler.cooling>(block==null?0:block.template.cooler.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -224,7 +224,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block newBlock : blocks){
                             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.heatsink.cooling>(block==null?0:block.template.heatsink.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -254,6 +254,7 @@ public class RainbowFactorModule extends Module<Float>{
                     for(Iterator<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> it = blocks.iterator(); it.hasNext();){
                         net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = it.next();
                         if(!b.isHeater())it.remove();
+                        b.heaterRecipe = b.template.heaterRecipes.get(0);
                     }
                     int[] count = new int[1];
                     multiblock.forEachPosition((x, y, z) -> {
@@ -267,7 +268,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block newBlock : blocks){
                             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heaterCooling>(block==null?0:block.template.heaterCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.heaterRecipe.stats.cooling>(block==null||block.heaterRecipe==null?0:block.heaterRecipe.stats.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -325,19 +326,19 @@ public class RainbowFactorModule extends Module<Float>{
             boolean isRainbowable = false;
             if(block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
                 net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
-                isRainbowable = b.template.cooling!=0&&b.template.active==null;
+                isRainbowable = b.template.cooler!=null;
             }
             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
                 net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-                isRainbowable = b.template.isHeatsink();
+                isRainbowable = b.template.heatsink!=null;
             }
             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block){
                 net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-                isRainbowable = b.template.isHeater();
+                isRainbowable = b.template.heater!=null;
             }
             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.turbine.Block){
                 net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b = (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)block;
-                isRainbowable = b.template.isCoil();
+                isRainbowable = b.template.coil!=null;
             }
             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block){
                 net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;

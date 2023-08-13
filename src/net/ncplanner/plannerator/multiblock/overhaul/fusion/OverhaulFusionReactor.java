@@ -3,46 +3,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockGrid;
 import net.ncplanner.plannerator.multiblock.Direction;
-import net.ncplanner.plannerator.multiblock.FluidStack;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
-import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
-import net.ncplanner.plannerator.multiblock.editor.ppe.FusionFill;
-import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
-import net.ncplanner.plannerator.multiblock.editor.ppe.SmartFillOverhaulFusion;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.MenuResizeFusion;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.gui.menu.component.generator.MenuComponentFusionToggleBlockRecipe;
-import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResizeFusion;
@@ -82,18 +72,24 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     public OverhaulFusionReactor(){
         this(null);
     }
-    public OverhaulFusionReactor(Configuration configuration){
+    public OverhaulFusionReactor(NCPFConfigurationContainer configuration){
         this(configuration, 1, 1, 1, 1, null, null);
     }
-    public OverhaulFusionReactor(Configuration configuration, int innerRadius, int coreSize, int toroidWidth, int liningThickness, Recipe recipe, CoolantRecipe coolantRecipe){
+    public OverhaulFusionReactor(NCPFConfigurationContainer configuration, int innerRadius, int coreSize, int toroidWidth, int liningThickness, Recipe recipe, CoolantRecipe coolantRecipe){
         super(configuration, innerRadius, coreSize, toroidWidth, liningThickness);
-        this.recipe = recipe==null?(exists()?getConfiguration().overhaul.fusion.allRecipes.get(0):null):recipe;
-        this.coolantRecipe = coolantRecipe==null?(exists()?getConfiguration().overhaul.fusion.allCoolantRecipes.get(0):null):coolantRecipe;
+        this.recipe = recipe==null?(exists()?getSpecificConfiguration().recipes.get(0):null):recipe;
+        this.coolantRecipe = coolantRecipe==null?(exists()?getSpecificConfiguration().coolantRecipes.get(0):null):coolantRecipe;
         this.innerRadius = innerRadius;
         this.coreSize = coreSize;
         this.toroidWidth = toroidWidth;
         this.liningThickness = liningThickness;
         fillRequiredSpaces();
+    }
+    @Override
+    public OverhaulFusionConfiguration getSpecificConfiguration(){
+        NCPFConfigurationContainer conf = getConfiguration();
+        if(conf==null)return null;
+        return conf.getConfiguration(OverhaulFusionConfiguration::new);
     }
     @Override
     protected void createBlockGrids(){
@@ -123,11 +119,11 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         ArrayList<Block> availableBlocks = new ArrayList<>();
         getAvailableBlocks(availableBlocks);
         for(Block b : availableBlocks){
-            if(core==null&&b.template.core)core = b;
-            if(connector==null&&b.template.connector)connector = b;
-            if(electromagnet==null&&b.template.electromagnet)electromagnet = b;
-            if(heatingBlanket==null&&b.template.heatingBlanket)heatingBlanket = b;
-            if(breedingBlanket==null&&b.template.breedingBlanket)breedingBlanket = b;
+            if(core==null&&b.template.core!=null)core = b;
+            if(connector==null&&b.template.connector!=null)connector = b;
+            if(electromagnet==null&&b.isElectromagnet())electromagnet = b;
+            if(heatingBlanket==null&&b.template.heatingBlanket!=null)heatingBlanket = b;
+            if(breedingBlanket==null&&b.template.breedingBlanket!=null)breedingBlanket = b;
         }
         final Block cor = core;
         final Block con = connector;
@@ -156,17 +152,17 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return "Overhaul Fusion Reactor";
     }
     @Override
-    public OverhaulFusionReactor newInstance(Configuration configuration){
+    public OverhaulFusionReactor newInstance(NCPFConfigurationContainer configuration){
         return new OverhaulFusionReactor(configuration);
     }
     @Override
-    public Multiblock<Block> newInstance(Configuration configuration, int... dimensions){
+    public Multiblock<Block> newInstance(NCPFConfigurationContainer configuration, int... dimensions){
         return new OverhaulFusionReactor(configuration, dimensions[0], dimensions[1], dimensions[2], dimensions[3], null, null);
     }
     @Override
     public void getAvailableBlocks(List<Block> blocks){
-        if(getConfiguration()==null||getConfiguration().overhaul==null||getConfiguration().overhaul.fusion==null)return;
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block : getConfiguration().overhaul.fusion.allBlocks){
+        if(getSpecificConfiguration()==null)return;
+        for(BlockElement block : getSpecificConfiguration().blocks){
             blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
         }
     }
@@ -208,9 +204,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         for(int i = 0; i<allBlocks.size(); i++){
             Block block = allBlocks.get(i);//detect clusters and shieldniness too
             if(block.isShielding()){
-                if(block.template.shieldingHasBaseStats||block.recipe!=null){
-                    shieldinessFactor+=block.recipe==null?block.template.shieldingShieldiness:block.recipe.shieldingShieldiness;
-                }
+                shieldinessFactor+=block.template.shielding.shieldiness;
             }
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
@@ -230,13 +224,13 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                     Block b = cluster.blocks.get(j);
                     if(b.isHeatingBlanketActive()){
                         heatingBlankets++;
-                        cluster.totalOutput += recipe.heat*b.efficiency;
+                        cluster.totalOutput += recipe.stats.heat*b.efficiency;
                         cluster.efficiency+=b.efficiency;
-                        cluster.totalHeat+=recipe.heat*b.heatMult;
+                        cluster.totalHeat+=recipe.stats.heat*b.heatMult;
                         cluster.heatMult+=b.heatMult;
                     }
                     if(b.isHeatsinkActive()){
-                        cluster.totalCooling+=b.recipe==null?b.template.heatsinkCooling:b.recipe.heatsinkCooling;
+                        cluster.totalCooling+=b.template.heatsink.cooling;
                     }
                     calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
@@ -246,7 +240,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
                 cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
                 if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-                else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getConfiguration().overhaul.fusion.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
                 cluster.efficiency*=cluster.coolingPenaltyMult;
                 cluster.totalOutput*=cluster.coolingPenaltyMult;
                 totalHeatingBlankets+=heatingBlankets;
@@ -277,10 +271,10 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             LocationCategory cat = getLocationCategory(x, y, z);
             if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR)volume[0]++;
         });
-        sparsityMult = (float) (functionalBlocks/(float)volume[0]>=getConfiguration().overhaul.fusion.sparsityPenaltyThreshold?1:getConfiguration().overhaul.fusion.sparsityPenaltyMult+(1-getConfiguration().overhaul.fusion.sparsityPenaltyMult)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getConfiguration().overhaul.fusion.sparsityPenaltyThreshold)));
+        sparsityMult = (float) (functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
         totalOutput*=sparsityMult;
         totalEfficiency*=sparsityMult;
-        totalOutput/=coolantRecipe.heat/coolantRecipe.outputRatio;
+        totalOutput/=coolantRecipe.stats.heat/coolantRecipe.stats.outputRatio;
         calcStats.finish();
         return false;
     }
@@ -291,7 +285,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.getOutputDisplayName()+"\n"
+            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of whatever "+coolantRecipe.getDisplayName()+" gets turned into\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"
@@ -334,46 +328,6 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         }
     }
     @Override
-    public int getMultiblockID(){
-        return 4;
-    }
-    @Override
-    protected void save(LegacyNCPFFile ncpf, Configuration configuration, Config config){
-        ConfigNumberList size = new ConfigNumberList();
-        size.add(innerRadius);
-        size.add(coreSize);
-        size.add(toroidWidth);
-        size.add(liningThickness);
-        config.set("size", size);
-        ConfigNumberList blox = new ConfigNumberList();
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
-            if(block==null)blox.add(0);
-            else blox.add(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1);
-            System.out.print((block==null?"0":(configuration.overhaul.fusion.allBlocks.indexOf(block.template)+1))+" ");
-        });
-        System.out.println(blox.size());
-        ConfigNumberList blockRecipes = new ConfigNumberList();
-        for(Block block : getBlocks()){
-            if(block.template.allRecipes.isEmpty())continue;
-            blockRecipes.add(block.template.allRecipes.indexOf(block.recipe)+1);
-        }
-        config.set("blocks", blox);
-        config.set("blockRecipes", blockRecipes);
-        config.set("recipe", (byte)configuration.overhaul.fusion.allRecipes.indexOf(recipe));
-        config.set("coolantRecipe", (byte)configuration.overhaul.fusion.allCoolantRecipes.indexOf(coolantRecipe));
-    }
-    @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException{
-        if(to.overhaul==null||to.overhaul.fusion==null)return;
-        for(Block block : getBlocks()){
-            block.convertTo(to);
-        }
-        recipe = to.overhaul.fusion.convert(recipe);
-        coolantRecipe = to.overhaul.fusion.convert(coolantRecipe);
-        configuration = to;
-    }
-    @Override
     public boolean validate(){
         return false;
     }
@@ -387,73 +341,6 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         }
         return new Cluster(block);
     }
-    private HashMap<BlockRecipe, MenuComponentFusionToggleBlockRecipe> blockRecipeToggles;
-    @Override
-    public void addGeneratorSettings(SingleColumnList multiblockSettings){
-        if(blockRecipeToggles==null)blockRecipeToggles = new HashMap<>();
-        blockRecipeToggles.clear();
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block block : getConfiguration().overhaul.fusion.allBlocks){
-            for(BlockRecipe recipe : block.allRecipes){
-                MenuComponentFusionToggleBlockRecipe toggle = new MenuComponentFusionToggleBlockRecipe(recipe);
-                blockRecipeToggles.put(recipe, toggle);
-                multiblockSettings.add(toggle);
-            }
-        }
-    }
-    private boolean isValid(){
-        return totalOutput>0;
-    }
-    @Override
-    public void getGenerationPriorities(ArrayList<Priority> priorities){
-        priorities.add(new Priority<OverhaulFusionReactor>("Valid (>0 output)", true, true){
-            @Override
-            protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
-                if(main.isValid()&&!other.isValid())return 1;
-                if(!main.isValid()&&other.isValid())return -1;
-                return 0;
-            }
-        });
-        priorities.add(new Priority<OverhaulFusionReactor>("Stability", false, true){
-            @Override
-            protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
-                return Math.max(0, other.netHeat)-Math.max(0, main.netHeat);
-            }
-        });
-        priorities.add(new Priority<OverhaulFusionReactor>("Efficiency", true, true){
-            @Override
-            protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
-                return (int) Math.round(main.totalEfficiency*100-other.totalEfficiency*100);
-            }
-        });
-        priorities.add(new Priority<OverhaulFusionReactor>("Output", true, true){
-            @Override
-            protected double doCompare(OverhaulFusionReactor main, OverhaulFusionReactor other){
-                return main.totalOutput-other.totalOutput;
-            }
-        });
-        for(Module m : Core.modules){
-            if(m.isActive())m.getGenerationPriorities(this, priorities);
-        }
-    }
-    @Override
-    public void getGenerationPriorityPresets(ArrayList<Priority> priorities, ArrayList<Priority.Preset> presets){
-        presets.add(new Priority.Preset("Efficiency", priorities.get(0), priorities.get(1), priorities.get(2), priorities.get(3)).addAlternative("Efficient"));
-        presets.add(new Priority.Preset("Output", priorities.get(0), priorities.get(1), priorities.get(3), priorities.get(2)).addAlternative("Power"));
-    }
-    @Override
-    public void getSymmetries(ArrayList<Symmetry> symmetries){
-        symmetries.add(AxialSymmetry.X);
-        symmetries.add(AxialSymmetry.Y);
-        symmetries.add(AxialSymmetry.Z);
-    }
-    @Override
-    public void getPostProcessingEffects(ArrayList<PostProcessingEffect> postProcessingEffects){
-        postProcessingEffects.add(new ClearInvalid());
-        postProcessingEffects.add(new SmartFillOverhaulFusion());
-        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Block b : getConfiguration().overhaul.fusion.allBlocks){
-            if(b.conductor||(b.cluster&&!b.functional))postProcessingEffects.add(new FusionFill(b));
-        }
-    }
     public boolean isPoloidal(Block b){
         return b!=null&&getLocationCategory(b.x, b.y, b.z)==LocationCategory.POLOID;
     }
@@ -461,7 +348,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return b!=null&&getLocationCategory(b.x, b.y, b.z)==LocationCategory.TOROID;
     }
     public void increaseInnerRadius(){
-        if(innerRadius>=getConfiguration().overhaul.fusion.maxInnerRadius)return;
+        if(innerRadius>=getSpecificConfiguration().settings.maxInnerRadius)return;
         innerRadius++;
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
         int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -474,7 +361,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void increaseCoreSize(){
-        if(coreSize>=getConfiguration().overhaul.fusion.maxCoreSize)return;
+        if(coreSize>=getSpecificConfiguration().settings.maxCoreSize)return;
         coreSize++;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -487,7 +374,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void increaseToroidWidth(){
-        if(toroidWidth>=getConfiguration().overhaul.fusion.maxToroidWidth)return;
+        if(toroidWidth>=getSpecificConfiguration().settings.maxToroidWidth)return;
         toroidWidth++;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -500,7 +387,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void increaseLiningThickness(){
-        if(liningThickness>=getConfiguration().overhaul.fusion.maxLiningThickness)return;
+        if(liningThickness>=getSpecificConfiguration().settings.maxLiningThickness)return;
         liningThickness++;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -513,7 +400,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void decreaseInnerRadius(){
-        if(innerRadius<=getConfiguration().overhaul.fusion.minInnerRadius)return;
+        if(innerRadius<=getSpecificConfiguration().settings.minInnerRadius)return;
         innerRadius--;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -526,7 +413,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void decreaseCoreSize(){
-        if(coreSize<=getConfiguration().overhaul.fusion.minCoreSize)return;
+        if(coreSize<=getSpecificConfiguration().settings.minCoreSize)return;
         coreSize--;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -539,7 +426,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void decreaseToroidWidth(){
-        if(toroidWidth<=getConfiguration().overhaul.fusion.minToroidWidth)return;
+        if(toroidWidth<=getSpecificConfiguration().settings.minToroidWidth)return;
         toroidWidth--;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -552,7 +439,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         clearCaches();
     }
     public void decreaseLiningThickness(){
-        if(liningThickness<=getConfiguration().overhaul.fusion.minLiningThickness)return;
+        if(liningThickness<=getSpecificConfiguration().settings.minLiningThickness)return;
         liningThickness--;
         blockGrids.clear();
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -587,7 +474,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         }
         public boolean isCreated(){
             for(Block block : blocks){
-                if(block.template.createCluster)return true;
+                if(block.template.createsCluster())return true;
             }
             return false;
         }
@@ -731,10 +618,6 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return list;
     }
     @Override
-    public boolean exists(){
-        return super.exists()&&getConfiguration().overhaul!=null&&getConfiguration().overhaul.fusion!=null;
-    }
-    @Override
     public OverhaulFusionReactor blankCopy(){
         return new OverhaulFusionReactor(configuration, innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
     }
@@ -762,30 +645,12 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return copy;
     }
     @Override
-    protected int doCount(Object o){
-        int[] count = new int[1];
-        if(o instanceof BlockRecipe){
-            BlockRecipe r = (BlockRecipe)o;
-            forEachPosition((x, y, z) -> {
-                Block b = getBlock(x, y, z);
-                if(b==null)return;
-                if(b.recipe==r)count[0]++;
-            });
-            return count[0];
-        }
-        throw new IllegalArgumentException("Cannot count "+o.getClass().getName()+" in "+getDefinitionName()+"!");
-    }
-    @Override
     public String getGeneralName(){
         return "Fusion Reactor";
     }
     @Override
     public boolean isCompatible(Multiblock<Block> other){
         return ((OverhaulFusionReactor)other).recipe==recipe&&((OverhaulFusionReactor)other).coolantRecipe==coolantRecipe;
-    }
-    @Override
-    protected void getFluidOutputs(ArrayList<FluidStack> outputs){
-        outputs.add(new FluidStack(coolantRecipe.outputName, coolantRecipe.outputDisplayName, totalOutput));
     }
     @Override
     protected void getExtraParts(ArrayList<PartCount> parts){}
@@ -871,11 +736,11 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             case CONNECTOR:
                 return block!=null&&block.isConnector();
             case CORE:
-                return block!=null&&block.template.core;
+                return block!=null&&block.template.core!=null;
             case EXTERIOR:
-                return block==null||block.isHeatsink()||block.isShielding()||block.isConductor()||block.isInert();
+                return block==null||block.isHeatsink()||block.isShielding()||block.isConductor();
             case INTERIOR:
-                return block==null||block.isHeatingBlanket()||block.isBreedingBlanket()||block.isReflector()||block.isHeatsink()||block.isShielding()||block.isConductor()||block.isInert();
+                return block==null||block.isHeatingBlanket()||block.isBreedingBlanket()||block.isReflector()||block.isHeatsink()||block.isShielding()||block.isConductor();
             case NONE:
             case PLASMA:
                 return block==null;
@@ -933,9 +798,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                         for(Block newBlock : blocks){
                             Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                int oldCooling = 0;
-                                if(block.template.heatsinkHasBaseStats||block.recipe!=null)oldCooling = block.recipe==null?block.template.heatsinkCooling:block.recipe.heatsinkCooling;
-                                int newCooling = newBlock.recipe==null?newBlock.template.heatsinkCooling:newBlock.recipe.heatsinkCooling;
+                                int oldCooling = block.template.heatsink.cooling;
+                                int newCooling = newBlock.template.heatsink.cooling;
                                 if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
@@ -956,5 +820,34 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     @Override
     public boolean shouldHideWithCasing(int x, int y, int z){
         return getLocationCategory(x, y, z)==LocationCategory.TOROID;
+    }
+    @Override
+    public Design toDesign(){
+        OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
+        forEachPosition((x, y, z) -> {
+            Block block = getBlock(x, y, z);
+            design.design[x][y][z] = block==null?null:block.template;
+            if(block!=null){
+                design.breedingBlanketRecipes[x][y][z] = block.breedingBlanketRecipe;
+            }
+        });
+        design.recipe = recipe;
+        design.coolantRecipe = coolantRecipe;
+        return design;
+    }
+    @Override
+    public NCPFElement[] getMultiblockRecipes(){
+        return new NCPFElement[]{recipe, coolantRecipe};
+    }
+    @Override
+    public void setMultiblockRecipe(int recipeType, NCPFElement recipe){
+        switch(recipeType){
+            case 0:
+                this.recipe = (Recipe)recipe;
+                break;
+            case 1:
+                coolantRecipe = (CoolantRecipe)recipe;
+                break;
+        }
     }
 }

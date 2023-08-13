@@ -334,7 +334,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
             net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)set.block;
             if(!block.template.allRecipes.isEmpty()){
-                block.recipe = getSelectedOverhaulFusionBlockRecipe(id);
+                block.breedingBlanketRecipe = getSelectedOverhaulFusionBlockRecipe(id);
             }
         }
         action(set, true);

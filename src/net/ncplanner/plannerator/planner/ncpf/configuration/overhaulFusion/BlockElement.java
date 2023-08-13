@@ -66,4 +66,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public void makePartial(List<Design> designs){
         makePartial(breedingBlanketRecipes, designs);
     }
+    public boolean createsCluster(){
+        return heatingBlanket!=null||breedingBlanket!=null;//I dunno, this sounds about right
+    }
 }

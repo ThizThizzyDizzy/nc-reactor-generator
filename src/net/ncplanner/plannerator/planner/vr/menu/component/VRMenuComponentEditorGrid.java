@@ -203,7 +203,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     }
                     if(multiblock instanceof OverhaulFusionReactor){
                         net.ncplanner.plannerator.multiblock.overhaul.fusion.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulFusionBlockRecipe(id))recipeMatches = true;
+                        if(bl.breedingBlanketRecipe!=null&&bl.breedingBlanketRecipe==editor.getSelectedOverhaulFusionBlockRecipe(id))recipeMatches = true;
                     }
                     if(recipeMatches){
                         renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
