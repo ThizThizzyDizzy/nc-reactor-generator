@@ -7,14 +7,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
@@ -469,14 +473,13 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
         if(!overhaulSFRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulSFRConfiguration::new).blocks.addAll(overhaulSFRAdditionalBlocks);
         if(!overhaulMSRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulMSRConfiguration::new).blocks.addAll(overhaulMSRAdditionalBlocks);
-        project.conglomerate();
         for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule rule : underhaulPostLoadMap.keySet()){
             int index = underhaulPostLoadMap.get(rule);
             if(index==0){
-                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.get(index-1));
+                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(postLoadBlockFromIndex(project, UnderhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -485,10 +488,10 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
             int index = overhaulSFRPostLoadMap.get(rule);
             if(index==0){
-                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(project.getConfiguration(OverhaulSFRConfiguration::new).blocks.get(index-1));
+                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(postLoadBlockFromIndex(project, OverhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -497,10 +500,10 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
             int index = overhaulMSRPostLoadMap.get(rule);
             if(index==0){
-                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(project.getConfiguration(OverhaulMSRConfiguration::new).blocks.get(index-1));
+                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(postLoadBlockFromIndex(project, OverhaulMSRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -509,10 +512,10 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
             int index = overhaulTurbinePostLoadMap.get(rule);
             if(index==0){
-                rule.target = rule.blockType = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
+                rule.target = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
             }else{
                 try{
-                    rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(project.getConfiguration(OverhaulTurbineConfiguration::new).blocks.get(index-1));
+                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(postLoadBlockFromIndex(project, OverhaulTurbineConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -521,10 +524,10 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule rule : overhaulFusionPostLoadMap.keySet()){
             int index = overhaulFusionPostLoadMap.get(rule);
             if(index==0){
-                rule.target = rule.blockType = new NCPFModuleReference(AirModule::new);
+                rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = rule.block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockReference(project.getConfiguration(OverhaulFusionConfiguration::new).blocks.get(index-1));
+                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockReference(postLoadBlockFromIndex(project, OverhaulFusionConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -547,7 +550,23 @@ public class LegacyNCPF11Reader implements FormatReader {
             
         };
         project.configuration.withConfiguration(UnderhaulSFRConfiguration::new, activeCoolerCombiner);
-        project.withConfiguration(UnderhaulSFRConfiguration::new, activeCoolerCombiner);
+        project.conglomerate();
+    }
+    private <Config extends NCPFConfiguration, Block extends NCPFElement> Block postLoadBlockFromIndex(Project project, Supplier<Config> config, Function<Config, List<Block>> blocksFunc, int index){
+        List<Block> blocks = new ArrayList<>();
+        blocks.addAll(blocksFunc.apply(project.configuration.getConfiguration(config)));
+        for(Addon a : project.addons){
+            a.configuration.withConfiguration(config, (cfg) -> {
+                for(Block block : blocksFunc.apply(cfg)){
+                    boolean match = false;
+                    for(Block b : blocks){
+                        if(b.definition.matches(block.definition))match = true;
+                    }
+                    if(!match)blocks.add(block);
+                }
+            });
+        }
+        return blocks.get(index);
     }
     protected Addon loadAddon(Project project, Config config){
         Addon addon = new Addon();

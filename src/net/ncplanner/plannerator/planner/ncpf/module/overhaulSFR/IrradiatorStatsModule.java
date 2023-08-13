@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class IrradiatorStatsModule extends NCPFRecipeStatsModule{
     public float efficiency;
@@ -21,5 +22,11 @@ public class IrradiatorStatsModule extends NCPFRecipeStatsModule{
     public String getTooltip(){
         return "Efficiency: "+efficiency+"\n"
               +"Heat: "+heat+"\n";
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        IrradiatorStatsModule stats = (IrradiatorStatsModule)addon;
+        efficiency = stats.efficiency;
+        heat = stats.heat;
     }
 }

@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
 public class MenuComponentAddon extends Component{
-    public final Configuration addon;
+    public final Addon addon;
     float textInset = 4;
     public final Button edit = add(new Button("", true, true){
         @Override
@@ -17,7 +17,7 @@ public class MenuComponentAddon extends Component{
         }
     }.setTooltip("Modify addon"));
     public final Button remove;
-    public MenuComponentAddon(Configuration addon, Runnable editAction, Runnable removeAction){
+    public MenuComponentAddon(Addon addon, Runnable editAction, Runnable removeAction){
         super(0, 0, 0, 48);
         this.addon = addon;
         remove = add(new Button("Remove", true, true).setTooltip("Remove or Delete Addon"));
@@ -44,14 +44,6 @@ public class MenuComponentAddon extends Component{
     public void drawForeground(double deltaTime){
         Renderer renderer = new Renderer();
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        String str;
-        if(addon.overhaulVersion==null&&addon.underhaulVersion==null){
-            str = addon.name;
-        }else if(addon.overhaulVersion!=null&&addon.underhaulVersion!=null){
-            str = addon.name+" "+addon.overhaulVersion+" | "+addon.underhaulVersion;
-        }else{
-            str = addon.name+" "+(addon.overhaulVersion==null?addon.underhaulVersion:addon.overhaulVersion);
-        }
-        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, str);
+        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
     }
 }

@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
@@ -10,7 +11,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockRef
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule;
@@ -157,8 +157,8 @@ public class OverhaulMSRConfigurationBuilder{
         return fuel;
     }
     
-    private PlacementRule parsePlacementRule(String rules){
-        return new PlacementRule().parseNc(rules, PlacementRule::new, (str)->{
+    private NCPFPlacementRule parsePlacementRule(String rules){
+        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str)->{
             if (str.startsWith("cell")) return FuelVesselModule::new;
             else if (str.startsWith("vessel")) return FuelVesselModule::new;
             else if (str.startsWith("moderator")) return ModeratorModule::new;

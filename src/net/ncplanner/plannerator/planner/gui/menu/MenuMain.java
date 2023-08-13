@@ -32,6 +32,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextView;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentMultiblock;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportConfirm;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuReadFiles;
@@ -41,6 +42,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -83,7 +85,6 @@ public class MenuMain extends Menu{
     private Button delete = add(new Button("Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
     private Button credits = add(new Button(0, 0, 192, 48, "Credits", true, true));
     private Button convertOverhaulMSFR = add(new Button("Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
-    private Button setInputs = add(new Button("Set Inputs", true).setTextColor(Core.theme::getInputsButtonTextColor).setTooltip("Choose multiblocks to input Steam to this turbine\nYou can choose as many as you want"));
     private Component sidePanel = add(new Component(0, 0, 0, 0){
         Button changelog = add(new Button("Changelog", true){
             @Override
@@ -293,7 +294,6 @@ public class MenuMain extends Menu{
     private double sidePanelScale = 0;
     private final int sidePanelTime = 3;
     private Queue<PendingWrite> pendingWrites = new Queue<>();
-    public OverhaulTurbine settingInputs = null;
     private boolean refreshNeeded = true;
     private float maxYRot = 80f;
     private float xRot = 30;
@@ -360,15 +360,6 @@ public class MenuMain extends Menu{
                 throw new RuntimeException(ex);
             }
             onOpened();
-        });
-        setInputs.addAction(() -> {
-            if(settingInputs==null){
-                settingInputs = (OverhaulTurbine)getSelectedMultiblock();
-                setInputs.text = "Finish Setting Inputs";
-            }else{
-                settingInputs = null;
-                setInputs.text = "Set Inputs";
-            }
         });
         multiblockCancel.addAction(() -> {
             adding = false;
@@ -484,11 +475,10 @@ public class MenuMain extends Menu{
             renderer.setColor(Core.theme.getRecoveryModeTextColor());
             renderer.drawCenteredText(0, gui.getHeight()-size*2, gui.getWidth(), gui.getHeight()-size, "RECOVERY MODE ENABLED. PRESS CTRL+SHIFT+R TO DISABLE");
         }
-        if(settingInputs!=null)multiblocks.setSelectedIndex(Core.multiblocks.indexOf(settingInputs));
         if(!pendingWrites.isEmpty()){
             pendingWrites.dequeue().write();
         }
-        convertOverhaulMSFR.x = setInputs.x = editMetadata.x = gui.getWidth()/3;
+        convertOverhaulMSFR.x = editMetadata.x = gui.getWidth()/3;
         exportMain.width = importFile.width = exportMultiblock.width = saveFile.width = loadFile.width = gui.getWidth()/12;
         exportMultiblock.x = importFile.width;
         saveFile.x = exportMultiblock.x+exportMultiblock.width;
@@ -498,7 +488,7 @@ public class MenuMain extends Menu{
         buttonSidePanel.x = settings.x = gui.getWidth()-gui.getHeight()/16;
         vr.x = settings.x-gui.getHeight()/16;
         multiblocks.y = gui.getHeight()/8;
-        convertOverhaulMSFR.height = setInputs.height = delete.height = addMultiblock.height;
+        convertOverhaulMSFR.height = delete.height = addMultiblock.height;
         if(multiblocks.getSelectedIndex()==-1)delete.height = 0;
         multiblocks.height = gui.getHeight()-multiblocks.y-delete.height;
         delete.y = gui.getHeight()-delete.height;
@@ -511,8 +501,7 @@ public class MenuMain extends Menu{
         addMultiblock.x = gui.getWidth()/3-gui.getHeight()/16;
         addMultiblock.y = gui.getHeight()/16;
         addMultiblock.width = addMultiblock.height = gui.getHeight()/16;
-        convertOverhaulMSFR.width = setInputs.width = editMetadata.width+(Core.vr?vr.width:0);
-        setInputs.y = convertOverhaulMSFR.y = addMultiblock.y;
+        convertOverhaulMSFR.width = editMetadata.width+(Core.vr?vr.width:0);
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.project.conglomeration.hasConfiguration(OverhaulMSRConfiguration::new)&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.text = "Convert to MSR (Hold Control)";
@@ -525,13 +514,6 @@ public class MenuMain extends Menu{
             convertOverhaulMSFR.enabled = false;
             convertOverhaulMSFR.y = -convertOverhaulMSFR.height*100;
             convertOverhaulMSFR.width = 0;
-        }
-        if(getSelectedMultiblock() instanceof OverhaulTurbine){
-            setInputs.enabled = true;
-        }else{
-            setInputs.enabled = false;
-            setInputs.y = -setInputs.height*100;
-            setInputs.width = 0;
         }
         credits.y = gui.getHeight()-credits.height;
         credits.x = gui.getWidth()-credits.width;
@@ -589,7 +571,9 @@ public class MenuMain extends Menu{
             MenuComponentMultiblock mcm = new MenuComponentMultiblock(this, multi);
             mcm.edit.addAction(() -> {
                 Core.saved = false;
-                gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, mcm.multiblock), MenuTransition.SplitTransitionX.slideIn((MenuEdit.partSize+MenuEdit.partSize/4f+MenuEdit.partsWide*MenuEdit.partSize)/gui.getWidth()), 5));
+                if(Core.multiblocks.contains(mcm.multiblock)){
+                    gui.open(new MenuTransition(gui, this, new MenuEdit(gui, this, mcm.multiblock), MenuTransition.SplitTransitionX.slideIn((MenuEdit.partSize+MenuEdit.partSize/4f+MenuEdit.partsWide*MenuEdit.partSize)/gui.getWidth()), 5));
+                }else new MenuError(gui, this, "Multiblock does not exist!\nMultiblocks may still be loading", null).open();
             });
             multiblocks.add(mcm);
         }

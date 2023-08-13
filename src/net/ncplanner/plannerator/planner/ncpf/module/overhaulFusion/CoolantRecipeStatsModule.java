@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class CoolantRecipeStatsModule extends NCPFRecipeStatsModule{
     public int heat;
@@ -21,5 +22,11 @@ public class CoolantRecipeStatsModule extends NCPFRecipeStatsModule{
     public String getTooltip(){
         return "Heat: "+heat+"\n"
              + "Output Ratio: "+outputRatio;
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        CoolantRecipeStatsModule stats = (CoolantRecipeStatsModule)addon;
+        heat = stats.heat;
+        outputRatio = stats.outputRatio;
     }
 }

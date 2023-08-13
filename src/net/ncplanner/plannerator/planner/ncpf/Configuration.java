@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
@@ -28,15 +29,16 @@ public class Configuration{
         internalAddons.clear();
     }
     public Configuration(Project project, String path){
+        project = project.copyTo(Project::new);
         this.configuration = project.configuration;
-        this.addons.addAll(project.addons);
+        this.addons = project.addons;
         this.path = path;
     }
     public Configuration(Project project){
         this(project, null);
     }
     public NCPFConfigurationContainer configuration;
-    public ArrayList<Addon> addons = new ArrayList<>();
+    public List<Addon> addons = new ArrayList<>();
     public String path;
     public ArrayList<String> alternatives = new ArrayList<>();
     public String getName(){//TODO name

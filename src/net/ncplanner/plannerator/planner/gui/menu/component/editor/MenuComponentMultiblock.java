@@ -8,7 +8,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import static org.lwjgl.glfw.GLFW.*;
 public class MenuComponentMultiblock extends Component{
     private final MenuMain main;
     public final Multiblock multiblock;
@@ -38,12 +37,6 @@ public class MenuComponentMultiblock extends Component{
         Renderer renderer = new Renderer();
         ArrayList<FluidStack> outs = new ArrayList<>();//TODO global recipe stuff
         boolean has = false;
-        if(main.settingInputs!=null){
-            for(FluidStack s : outs)if(s.name.equals(main.settingInputs.recipe.inputName))has = true;
-        }
-        if(main.settingInputs!=null&&!has){
-            isMouseFocused = false;
-        }
         if(isFocused){
             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
@@ -56,10 +49,6 @@ public class MenuComponentMultiblock extends Component{
             renderer.setColor(Core.theme.getMultiblockSelectedInputColor(), .25f);
             renderer.fillRect(x, y, x+width, y+height);
         }
-        if(main.settingInputs!=null&&!has){
-            renderer.setColor(Core.theme.getMultiblockInvalidInputColor(), .25f);
-            renderer.fillRect(x, y, x+width, y+height);
-        }
     }
     @Override
     public void drawForeground(double deltaTime){
@@ -67,25 +56,5 @@ public class MenuComponentMultiblock extends Component{
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.drawText(x, y, x+width, y+height/4, multiblock.getName());
         renderer.drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
-    }
-    @Override
-    public void onMouseButton(double x, double y, int button, int action, int mods){
-        super.onMouseButton(x, y, button, action, mods);
-        if(button==GLFW_MOUSE_BUTTON_LEFT&&action==GLFW_PRESS){
-            if(main.settingInputs!=null){
-                if(multiblock!=main.settingInputs){
-                    ArrayList<FluidStack> outs = multiblock.getFluidOutputs();
-                    boolean has = false;
-                    for(FluidStack s : outs)if(s.name.equals(main.settingInputs.recipe.inputName))has = true;
-                    if(has){
-                        if(main.settingInputs.inputs.contains(multiblock)){
-                            main.settingInputs.inputs.remove(multiblock);
-                        }else{
-                            main.settingInputs.inputs.add(multiblock);
-                        }
-                    }
-                }
-            }
-        }
     }
 }

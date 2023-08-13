@@ -91,7 +91,7 @@ public class UnderhaulSFRConfigurationBuilder{
     public PlacementRule atLeast(int min, Supplier<NCPFModule> block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
-        rule.blockType = new NCPFModuleReference(block);
+        rule.target = new NCPFModuleReference(block);
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
         return rule;
@@ -99,7 +99,7 @@ public class UnderhaulSFRConfigurationBuilder{
     public PlacementRule atLeast(int min, BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
-        rule.block = new BlockReference(block);
+        rule.target = new BlockReference(block);
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
         return rule;
@@ -107,21 +107,21 @@ public class UnderhaulSFRConfigurationBuilder{
     public PlacementRule exactly(int num, Supplier<NCPFModule> block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
-        rule.blockType = new NCPFModuleReference(block);
+        rule.target = new NCPFModuleReference(block);
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
     public PlacementRule exactly(int num, BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
-        rule.block = new BlockReference(block);
+        rule.target = new BlockReference(block);
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
     public PlacementRule axis(Supplier<NCPFModule> block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AXIAL;
-        rule.blockType = new NCPFModuleReference(block);
+        rule.target = new NCPFModuleReference(block);
         rule.min = 1;
         rule.max = 3;
         return rule;
@@ -129,7 +129,7 @@ public class UnderhaulSFRConfigurationBuilder{
     public PlacementRule axis(BlockElement block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AXIAL;
-        rule.block = new BlockReference(block);
+        rule.target = new BlockReference(block);
         rule.min = 1;
         rule.max = 3;
         return rule;
@@ -153,7 +153,7 @@ public class UnderhaulSFRConfigurationBuilder{
     public PlacementRule vertex(Supplier<NCPFModule> block){
         PlacementRule rule = new PlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.VERTEX;
-        rule.blockType = new NCPFModuleReference(block);
+        rule.target = new NCPFModuleReference(block);
         return rule;
     }
     public Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){

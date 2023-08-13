@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class HeaterStatsModule extends NCPFRecipeStatsModule{
     public int cooling;
@@ -17,5 +18,10 @@ public class HeaterStatsModule extends NCPFRecipeStatsModule{
     @Override
     public String getTooltip(){
         return "Heater Cooling: "+cooling+"\n";
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        HeaterStatsModule stats = (HeaterStatsModule)addon;
+        cooling = stats.cooling;
     }
 }

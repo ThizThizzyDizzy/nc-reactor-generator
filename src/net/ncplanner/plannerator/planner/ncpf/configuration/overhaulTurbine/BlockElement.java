@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
+import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -46,6 +47,11 @@ public class BlockElement extends NCPFElement{
         casing = getModule(CasingModule::new);
         inlet = getModule(InletModule::new);
         outlet = getModule(OutletModule::new);
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        setModules(names, texture, blade, stator, coil, bearing, shaft, connector, controller, casing, inlet, outlet);
+        super.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

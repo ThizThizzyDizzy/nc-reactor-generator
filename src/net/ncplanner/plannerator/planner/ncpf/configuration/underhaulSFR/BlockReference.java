@@ -8,7 +8,7 @@ public class BlockReference extends NCPFElementReference{
     public BlockReference(){}
     public BlockReference(BlockElement block){
         super(block.definition);
-        target = this.block = block;
+        this.block = block;
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

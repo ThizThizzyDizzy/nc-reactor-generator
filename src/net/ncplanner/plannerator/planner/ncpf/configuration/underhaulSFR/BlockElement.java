@@ -42,6 +42,11 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
     }
     @Override
+    public void setReferences(List<NCPFElement> lst){
+        setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
+        super.setReferences(lst);
+    }
+    @Override
     public void convertToObject(NCPFObject ncpf){
         setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
         setRecipes(activeCoolerRecipes);

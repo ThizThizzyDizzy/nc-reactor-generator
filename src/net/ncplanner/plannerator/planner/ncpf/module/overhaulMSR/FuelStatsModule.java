@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class FuelStatsModule extends NCPFRecipeStatsModule{
     public float efficiency;
@@ -35,5 +36,14 @@ public class FuelStatsModule extends NCPFRecipeStatsModule{
         ttp+="Criticality: "+criticality+"\n";
         if(selfPriming)ttp+="Self-Priming\n";
         return ttp;
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        FuelStatsModule stats = (FuelStatsModule)addon;
+        efficiency = stats.efficiency;
+        heat = stats.heat;
+        time = stats.time;
+        criticality = stats.criticality;
+        selfPriming = stats.selfPriming;
     }
 }

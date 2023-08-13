@@ -281,4 +281,15 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         }
         throw new IllegalArgumentException("Unknown rule type: " + rule);
     }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        rules.forEach((t) -> t.setReferences(lst));
+        if(lst==null){
+            if(target==null)return;
+            if(target.definition.typeMatches(NCPFModuleElement::new)){
+                target = target.copyTo(NCPFModuleReference::new);
+            }else target = target.copyTo(NCPFElementReference::new);
+        }
+        if(!rule.hasSubRules)target.setReferences(lst);
+    }
 }

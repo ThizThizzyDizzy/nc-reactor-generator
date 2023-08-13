@@ -120,12 +120,12 @@ public class MenuSettings extends SettingsMenu{
         });
         save.addAction(() -> {
             Project ncpf = new Project();
-            ncpf.configuration = Core.project.configuration;//TODO this does the conglomerated config...
+            ncpf.configuration = Core.project.configuration;
             ncpf.addons.addAll(Core.project.addons);
             new MenuSaveDialog(gui, this, ncpf, this::onOpened).open();
         });
         modify.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, Core.project.configuration), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
+            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, new Configuration(Core.project)), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
         });
     }
     @Override

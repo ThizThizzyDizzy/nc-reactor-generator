@@ -652,10 +652,7 @@ public class Core{
         Project p = new Project();
         p.configuration = configuration.configuration;
         p.addons = new ArrayList<>(configuration.addons);
-        p = p.copyTo(Project::new);
-        project.configuration = p.configuration;
-        project.conglomeration = p.conglomeration;
-        project.addons = p.addons;
+        project = p.copyTo(Project::new);
     }
     public static void setConfigurationAndConvertMultiblocks(Configuration config){
         ArrayList<MultiblockDesign> designs = new ArrayList<>();
@@ -663,6 +660,7 @@ public class Core{
         multiblocks.clear();
         setConfiguration(config);
         for(MultiblockDesign design : designs){
+            design.file = project;
             design.convertElements();
             multiblocks.add(design.toMultiblock());
         }

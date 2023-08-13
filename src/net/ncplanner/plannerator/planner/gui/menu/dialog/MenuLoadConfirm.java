@@ -56,9 +56,11 @@ public class MenuLoadConfirm extends MenuDialog{
         addButton("Load Anyway", () -> {
             Core.multiblocks.clear();
             Core.saved = true;
-            Core.project = project;//just overwrite the whole thing, it's fine
+            Core.setConfiguration(new Configuration(project));
             for(Design d : project.designs){
+                d.file = Core.project;
                 if(d instanceof MultiblockDesign){
+                    ((MultiblockDesign)d).convertElements();
                     Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
                 }
             }

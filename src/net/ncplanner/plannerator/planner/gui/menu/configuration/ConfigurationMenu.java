@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -14,9 +14,9 @@ public abstract class ConfigurationMenu extends Menu{
     public ArrayList<Component> sidebarBottom = new ArrayList<>();
     public ArrayList<Menu> parents = new ArrayList<>();
     public ArrayList<String> parentNames = new ArrayList<>();
-    public final Configuration configuration;
+    public final NCPFConfigurationContainer configuration;
     public final String name;
-    public ConfigurationMenu(GUI gui, Menu parent, Configuration configuration, String name){
+    public ConfigurationMenu(GUI gui, Menu parent, NCPFConfigurationContainer configuration, String name){
         super(gui, parent);
         this.configuration = configuration;
         this.name = name;

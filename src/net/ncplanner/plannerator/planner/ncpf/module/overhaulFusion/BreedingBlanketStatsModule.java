@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class BreedingBlanketStatsModule extends NCPFRecipeStatsModule{
     public boolean augmented;
@@ -27,5 +28,12 @@ public class BreedingBlanketStatsModule extends NCPFRecipeStatsModule{
         ttp+="Heat: "+heat+"\n";
         if(augmented)ttp+="Augmented"+"\n";
         return ttp;
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        BreedingBlanketStatsModule stats = (BreedingBlanketStatsModule)addon;
+        augmented = stats.augmented;
+        efficiency = stats.efficiency;
+        heat = stats.heat;
     }
 }

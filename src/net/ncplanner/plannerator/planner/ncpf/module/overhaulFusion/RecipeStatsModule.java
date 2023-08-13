@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class RecipeStatsModule extends NCPFRecipeStatsModule{
     public float efficiency;
@@ -29,5 +30,13 @@ public class RecipeStatsModule extends NCPFRecipeStatsModule{
              + "Base Heat: "+heat+"\n"
              + "Fluxiness: "+fluxiness+"\n"
              + "Base Time: "+time;
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        RecipeStatsModule stats = (RecipeStatsModule)addon;
+        efficiency = stats.efficiency;
+        heat = stats.heat;
+        time = stats.time;
+        fluxiness = stats.fluxiness;
     }
 }

@@ -49,7 +49,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             NCPFConfiguration addonConfig = addon.configurations.get(key);
             if(configurations.containsKey(key)){
                 configurations.get(key).conglomerate(addonConfig);
-            }else configurations.put(key, addonConfig);
+            }else configurations.put(key, addonConfig.copyTo(recognizedConfigurations.get(addonConfig.name)));
         }
     }
     public void setReferences(){

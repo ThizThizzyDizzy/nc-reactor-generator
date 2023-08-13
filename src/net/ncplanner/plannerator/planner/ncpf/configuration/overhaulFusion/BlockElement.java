@@ -54,6 +54,11 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(breedingBlanket!=null)breedingBlanketRecipes = getRecipes(BreedingBlanketRecipe::new);
     }
     @Override
+    public void setReferences(List<NCPFElement> lst){
+        setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
+        super.setReferences(lst);
+    }
+    @Override
     public void convertToObject(NCPFObject ncpf){
         setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
         setRecipes(breedingBlanketRecipes);

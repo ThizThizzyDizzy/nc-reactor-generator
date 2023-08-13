@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.ConglomerationError;
 import net.ncplanner.plannerator.ncpf.NCPFAddon;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFDesign;
@@ -19,8 +20,8 @@ public class Project extends NCPFFile{
     public List<Design> designs = new ArrayList<>();
     @Override
     public void postConvertFromObject(NCPFObject ncpf){
-        super.postConvertFromObject(ncpf);
         addons = copyList(super.addons, Addon::new);
+        super.postConvertFromObject(ncpf);
         designs = new ArrayList<>();
         for(NCPFDesign d : super.designs){
             designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(isConfigEmpty()?Core.project:this)));
@@ -37,10 +38,14 @@ public class Project extends NCPFFile{
     }
     @Override
     public void conglomerate(){
-        conglomeration = new NCPFConfigurationContainer();
-        conglomeration.conglomerate(configuration);
+        configuration.setReferences();
+        conglomeration = configuration.copyTo(NCPFConfigurationContainer::new);
         for(Addon addon : addons){
-            conglomeration.conglomerate(addon.configuration);
+            try{
+                conglomeration.conglomerate(addon.configuration);
+            }catch(ConglomerationError err){
+                throw new ConglomerationError("Failed to conglomerate addon "+addon.getName()+"!", err);
+            }
         }
         conglomeration.setReferences();
     }

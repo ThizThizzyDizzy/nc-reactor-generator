@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
 public class RecipeStatsModule extends NCPFRecipeStatsModule{
     public double power;
@@ -21,5 +22,11 @@ public class RecipeStatsModule extends NCPFRecipeStatsModule{
     public String getTooltip(){
         return "Expansion Coefficient: "+coefficient+"\n"
              + "Energy Density (RF/mb): "+power;
+    }
+    @Override
+    public void conglomerate(NCPFModule addon){
+        RecipeStatsModule stats = (RecipeStatsModule)addon;
+        power = stats.power;
+        coefficient = stats.coefficient;
     }
 }
