@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 public class MenuSaveDialog extends MenuInputDialog{
     private final Component panel;
@@ -38,7 +39,7 @@ public class MenuSaveDialog extends MenuInputDialog{
             });
         }
         Core.project.designs.clear();
-        for(Multiblock m : Core.multiblocks)Core.project.designs.add(m.toDesign());
+        for(Multiblock m : Core.multiblocks)Core.project.designs.add((Design)m.toDesign());
         addButton("Cancel", true);
         addButton("Save Dialog", (dialog, str) -> {
             try{
@@ -47,7 +48,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                     NCPFFileWriter.write(ncpf, file, selectedFormat);
                     Core.saved = true;
                     if(onSaved!=null)onSaved.run();
-                }, FileFormat.LEGACY_NCPF);
+                }, FileFormat.LEGACY_NCPF.extensions);
             }catch(IOException ex){
                 Core.error("Failed to save file!", ex);
             }

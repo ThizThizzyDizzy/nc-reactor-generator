@@ -9,14 +9,12 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
-public class UnderhaulSFRDesign extends Design<NCPFUnderhaulSFRDesign> implements MultiblockDesign<UnderhaulSFR>{
+public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign, UnderhaulSFR>{
     public Fuel fuel;
     public BlockElement[][][] design;
     public ActiveCoolerRecipe[][][] recipes;

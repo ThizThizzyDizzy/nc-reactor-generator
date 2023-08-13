@@ -10,7 +10,6 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
@@ -19,7 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule;
-public class OverhaulMSRDesign extends Design<NCPFOverhaulMSRDesign> implements MultiblockDesign<OverhaulMSR>{
+public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, OverhaulMSR>{
     public BlockElement[][][] design;
     public Fuel[][][] fuels;
     public IrradiatorRecipe[][][] irradiatorRecipes;

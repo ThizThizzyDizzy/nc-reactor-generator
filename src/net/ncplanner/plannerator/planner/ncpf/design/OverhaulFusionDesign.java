@@ -1,16 +1,17 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
 import java.util.Set;
+import net.ncplanner.plannerator.multiblock.overhaul.fusion.Block;
+import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
-public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
+public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinition, OverhaulFusionReactor>{
     public int innerRadius, coreSize, toroidWidth, liningThickness;
     public Recipe recipe;
     public CoolantRecipe coolantRecipe;
@@ -62,6 +63,29 @@ public class OverhaulFusionDesign extends Design<OverhaulFusionDefinition>{
     }
     private int height(){
         return liningThickness*2+coreSize+2;
+    }
+    @Override
+    public OverhaulFusionReactor toMultiblock(){
+        OverhaulFusionReactor reactor = new OverhaulFusionReactor(file.conglomeration, innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
+        for(int x = 0; x<design.length; x++){
+            for(int y = 0; y<design[x].length; y++){
+                for(int z = 0; z<design[x][y].length; z++){
+                    if(design[x][y][z]==null)continue;
+                    Block block = new Block(file.conglomeration, x, y, z, design[x][y][z]);
+                    block.breedingBlanketRecipe = breedingBlanketRecipes[x][y][z];
+                    reactor.setBlock(x, y, z, block);
+                }
+            }
+        }
+        return reactor;
+    }
+    @Override
+    public void convertElements(){
+        OverhaulFusionConfiguration config = file.getConfiguration(OverhaulFusionConfiguration::new);
+        convertElements(design, config);
+        convertRecipes(design, breedingBlanketRecipes, (b)->b.breedingBlanketRecipes, config);
+        recipe = convertElement(recipe, config);
+        coolantRecipe = convertElement(coolantRecipe, config);
     }
     @Override
     public Set<NCPFElementDefinition> getElements(){

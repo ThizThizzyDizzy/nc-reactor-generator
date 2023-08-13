@@ -42,6 +42,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
@@ -606,7 +607,7 @@ public class MenuMain extends Menu{
         Project ncpf = new Project();
         ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
         Multiblock multi = getSelectedMultiblock();
-        ncpf.designs.add(multi.toDesign());
+        ncpf.designs.add((Design)multi.toDesign());
         String name = Core.filename;
         if(name==null) name = ncpf.metadata.get("name");
         if(name==null||name.isEmpty()){

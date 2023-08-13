@@ -46,8 +46,10 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
-import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -505,21 +507,42 @@ public class Core{
         return img.flip();
     }
     public static void refreshModules(){
+        refreshModules(new Task(""));
+    }
+    public static void refreshModules(Task task){
+        ArrayList<Task> moduleTasks = new ArrayList<>();
+        Task clean = task.addSubtask("Cleaning up");
+        for(Module m : modules){
+            moduleTasks.add(task.addSubtask("Initialize "+m.name));
+        }
         multiblockTypes.clear();
         Tutorial.init();
-        Configurations.clearConfigurations();
+        Configuration.clearConfigurations();
         NCPFConfigurationContainer.recognizedConfigurations.clear();
         NCPFDesign.recognizedDesigns.clear();
         NCPFElement.recognizedElements.clear();
         NCPFModuleContainer.recognizedModules.clear();
-        for(Module m : modules){
+        clean.finish();
+        for(int i = 0; i<modules.size(); i++){
+            Module m = modules.get(i);
+            Task t = moduleTasks.get(i);
             if(m.isActive()){
+                Task mt = t.addSubtask("Adding multiblock types");
+                Task nt = t.addSubtask("Registering NCPF objects");
+                Task tt = t.addSubtask("Adding Tutorials");
+                Task ct = t.addSubtask("Adding configurations");
                 m.addMultiblockTypes(multiblockTypes);
+                mt.finish();
                 m.registerNCPF();
+                nt.finish();
                 m.addTutorials();
-                m.addConfigurations();
+                tt.finish();
+                m.addConfigurations(ct);
+                ct.finish();
             }
+            t.finish();
         }
+        task.finish();
     }
     public static boolean hasUnderhaulSFR(){
         for(Multiblock m : multiblockTypes){
@@ -625,8 +648,24 @@ public class Core{
         if(vsync!=vs)glfwSwapInterval(vs?1:0);
         vsync = vs;
     }
-    public static void setConfiguration(NCPFConfigurationContainer configuration){
-        project.conglomeration = project.configuration = configuration;
+    public static void setConfiguration(Configuration configuration){
+        Project p = new Project();
+        p.configuration = configuration.configuration;
+        p.addons = new ArrayList<>(configuration.addons);
+        p = p.copyTo(Project::new);
+        project.configuration = p.configuration;
+        project.conglomeration = p.conglomeration;
+        project.addons = p.addons;
+    }
+    public static void setConfigurationAndConvertMultiblocks(Configuration config){
+        ArrayList<MultiblockDesign> designs = new ArrayList<>();
+        for(Multiblock multi : multiblocks)designs.add(multi.toDesign());
+        multiblocks.clear();
+        setConfiguration(config);
+        for(MultiblockDesign design : designs){
+            design.convertElements();
+            multiblocks.add(design.toMultiblock());
+        }
     }
     public static interface BufferRenderer{
         void render(Renderer renderer, int width, int height);

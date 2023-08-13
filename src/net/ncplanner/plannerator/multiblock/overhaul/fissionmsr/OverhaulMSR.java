@@ -44,7 +44,6 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
@@ -2197,7 +2196,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return null;
     }
     @Override
-    public Design toDesign(){
+    public OverhaulMSRDesign toDesign(){
         OverhaulMSRDesign design = new OverhaulMSRDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

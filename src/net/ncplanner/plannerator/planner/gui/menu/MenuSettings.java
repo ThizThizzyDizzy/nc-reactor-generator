@@ -1,17 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -20,8 +14,10 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MenuConfiguration;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.module.Module;
-import static org.lwjgl.glfw.GLFW.*;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public class MenuSettings extends SettingsMenu{
     private final Label internalLabel = add(new Label(0, 0, 0, 48, "Internal Configurations", true));
     private final SingleColumnList internalList = add(new SingleColumnList(0, 0, 0, 0, 32));
@@ -69,14 +65,7 @@ public class MenuSettings extends SettingsMenu{
             Button b = new Button(0, 0, 0, 48, "Load "+config.toString(), true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
             b.addAction(() -> {
                 if(config.path!=null)Core.lastLoadedConfig = config.path;
-                config.impose(Core.configuration);
-                for(Multiblock multi : Core.multiblocks){
-                    try{
-                        multi.convertTo(Core.configuration);
-                    }catch(MissingConfigurationEntryException ex){
-                        throw new RuntimeException(ex);
-                    }
-                }
+                Core.setConfigurationAndConvertMultiblocks(config);
                 onOpened();
             });
             internalList.add(b);
@@ -92,20 +81,11 @@ public class MenuSettings extends SettingsMenu{
                     try{
                         externalConfigTask.progress = i/(float)loadingExternalConfigurations.length;
                         i++;
-                        LegacyNCPFFile file = FileReader.read(f);
-                        file.configuration.path = "external/configurations/"+f.getName();
-                        if(file.configuration.isPartial()||file.configuration.addon)continue;//get outta here partial configs and addons
-                        Button b = new Button(0, 0, 0, 48, "Load "+file.configuration.toString(), true).setTooltip("Replace the current configuration with "+file.configuration.toString()+"\nAll multiblocks will be converted to the new configuration");
+                        Configuration config = new Configuration(FileReader.read(f), "external/configurations/"+f.getName());
+                        Button b = new Button(0, 0, 0, 48, "Load "+config.toString(), true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
                         b.addAction(() -> {
-                            if(file.configuration.path!=null)Core.lastLoadedConfig = file.configuration.path;
-                            file.configuration.impose(Core.configuration);
-                            for(Multiblock multi : Core.multiblocks){
-                                try{
-                                    multi.convertTo(Core.configuration);
-                                }catch(MissingConfigurationEntryException ex){
-                                    throw new RuntimeException(ex);
-                                }
-                            }
+                            Core.lastLoadedConfig = config.path;
+                            Core.setConfigurationAndConvertMultiblocks(config);
                             onOpened();
                         });
                         externalList.add(b);
@@ -127,16 +107,8 @@ public class MenuSettings extends SettingsMenu{
             try{
                 Core.createFileChooser((file) -> {
                     Thread t = new Thread(() -> {
-                        LegacyNCPFFile ncpf = FileReader.read(file);
-                        if(ncpf==null)return;
-                        Configuration.impose(ncpf.configuration, Core.configuration);
-                        for(Multiblock multi : Core.multiblocks){
-                            try{
-                                multi.convertTo(Core.configuration);
-                            }catch(MissingConfigurationEntryException ex){
-                                throw new RuntimeException(ex);
-                            }
-                        }
+                        Configuration config = new Configuration(FileReader.read(file), null);
+                        Core.setConfigurationAndConvertMultiblocks(config);
                         onOpened();
                     }, "File Loading Thread");
                     t.setDaemon(true);
@@ -147,26 +119,13 @@ public class MenuSettings extends SettingsMenu{
             }
         });
         save.addAction(() -> {
-            try{
-                Core.createFileChooser(new File(Core.configuration.getFullName()), (file) -> {
-                    if(!file.getName().endsWith(".ncpf"))file = new File(file.getAbsolutePath()+".ncpf");
-                    if(file==null)return;
-                    try(FileOutputStream stream = new FileOutputStream(file)){
-                        Config header = Config.newConfig();
-                        header.set("version", LegacyNCPFFile.SAVE_VERSION);
-                        header.set("count", 0);
-                        header.save(stream);
-                        Core.configuration.save(null, Config.newConfig()).save(stream);
-                    }catch(IOException ex){
-                        Core.error("Failed to save configuration!", ex);
-                    }
-                }, FileFormat.LEGACY_NCPF, "configuration");
-            }catch(IOException ex){
-                Core.error("Failed to save configuration!", ex);
-            }
+            Project ncpf = new Project();
+            ncpf.configuration = Core.project.configuration;//TODO this does the conglomerated config...
+            ncpf.addons.addAll(Core.project.addons);
+            new MenuSaveDialog(gui, this, ncpf, this::onOpened).open();
         });
         modify.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, Core.configuration), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
+            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, Core.project.configuration), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
         });
     }
     @Override
@@ -175,7 +134,7 @@ public class MenuSettings extends SettingsMenu{
         autoBuildCasing.isToggledOn = Core.autoBuildCasing;
         vsync.isToggledOn = Core.vsync;
         rememberConfig.isToggledOn = Core.rememberConfig;
-        currentConfigLabel.text = "Current Configuration: "+Core.configuration.toString();
+        currentConfigLabel.text = "Current Configuration: "+new Configuration(Core.project).getName();
         int active = 0;
         for(Module m : Core.modules)if(m.isActive())active++;
         modules.text = "Modules ("+active+"/"+Core.modules.size()+" Active)";
@@ -206,21 +165,6 @@ public class MenuSettings extends SettingsMenu{
         currentConfigLabel.y = Math.max(internalList.y+internalList.height, externalList.y+externalList.height);
         save.y = load.y = modify.y = currentConfigLabel.y+currentConfigLabel.height;
         externalConfigBar.y = save.y+save.height;
-        if(Core.isShiftPressed()&&Core.isControlPressed()&&Core.configuration.name.equals("NuclearCraft Info")){
-            renderer.setColor(Core.theme.getSettingsMergeTextColor());
-            renderer.drawCenteredText(sidebar.width, gui.getHeight()-50, gui.getWidth(), gui.getHeight(), "Ctrl+Shift+MMB to convert to addon");
-            renderer.setWhite();
-        }
         super.render2d(deltaTime);
-    }
-    @Override
-    public void onMouseButton(double x, double y, int button, int action, int mods){
-        super.onMouseButton(x, y, button, action, mods);
-        if(button==GLFW_MOUSE_BUTTON_MIDDLE&&action==GLFW_PRESS&&Core.isShiftPressed()&&Core.isControlPressed()&&Core.configuration.name.equals("NuclearCraft Info")){
-            Configuration config = Configuration.configurations.get(0).copy();
-            config.addons.add(Core.configuration.makeAddon(config));
-            Core.configuration = config;
-            onOpened();
-        }
     }
 }

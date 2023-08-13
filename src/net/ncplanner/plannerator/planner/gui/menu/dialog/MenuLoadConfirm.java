@@ -3,6 +3,7 @@ import java.util.Arrays;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
@@ -55,9 +56,7 @@ public class MenuLoadConfirm extends MenuDialog{
         addButton("Load Anyway", () -> {
             Core.multiblocks.clear();
             Core.saved = true;
-            Core.project.metadata.clear();
-            Core.project.metadata.putAll(project.metadata.metadata);
-            Core.setConfiguration(project.conglomeration);
+            Core.project = project;//just overwrite the whole thing, it's fine
             for(Design d : project.designs){
                 if(d instanceof MultiblockDesign){
                     Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());

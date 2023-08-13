@@ -10,7 +10,6 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
@@ -18,7 +17,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule;
-public class OverhaulSFRDesign extends Design<NCPFOverhaulSFRDesign> implements MultiblockDesign<OverhaulSFR>{
+public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, OverhaulSFR>{
     public CoolantRecipe coolantRecipe;
     public BlockElement[][][] design;
     public Fuel[][][] fuels;

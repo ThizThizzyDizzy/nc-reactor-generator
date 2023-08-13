@@ -453,7 +453,7 @@ public class MenuDsslEditor extends Menu{
                     else currentTab.file = new File(t.getAbsolutePath()+(currentTab.editor.essl?".essl":".dssl"));
                     save(false);
                     currentTab.name = currentTab.file.getName();
-                }, FileFormat.DSSL, "dssl");
+                }, FileFormat.DSSL.extensions, "dssl");
             }catch(IOException ex){
                 throw new RuntimeException("Failed to save script!", ex);
             }

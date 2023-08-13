@@ -12,7 +12,6 @@ import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.Task;
@@ -62,7 +61,7 @@ import net.ncplanner.plannerator.planner.module.QuantumTraversedEfficiencyModule
 import net.ncplanner.plannerator.planner.module.RainbowFactorModule;
 import net.ncplanner.plannerator.planner.module.TiConModule;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
-import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
@@ -121,8 +120,6 @@ public class MenuInit extends Menu{
         for(String s : readerNames){
             readerTasks.put(s, tf.addSubtask("Adding "+s+"..."));
         }
-        Task tc = init.addSubtask("Initializing Configurations...");
-        Task tc1 = tc.addSubtask("Initializing Nuclearcraft Configuration");
         Task tps = init.addSubtask("Preloading settings...");
         Task tm = init.addSubtask("Adding modules...");
         Task tmc = tm.addSubtask("Adding Core Module");
@@ -135,6 +132,7 @@ public class MenuInit extends Menu{
         Task tmX = tm.addSubtask("Adding [REDACTED] Modules");
         Task ts = init.addSubtask("Loading settings...");
         Task tmr = init.addSubtask("Refreshing modules...");
+        Task tc = init.addSubtask("Initializing Nuclearcraft Configuration");
         Task tct = init.addSubtask("Adjusting MSR block textures...");
         Task tci = init.addSubtask("Imposing Configuration...");
         new Thread(() -> {
@@ -180,11 +178,11 @@ public class MenuInit extends Menu{
                 if(f.exists()){
                     Config settings = Config.newConfig(f);
                     settings.load();
-                    System.out.println("Loading theme");
                     Object o = settings.get("theme");
                     if(o instanceof String){
                         Core.setTheme(Theme.getByName((String)o));
                     }else Core.setTheme(Theme.getByLegacyID((int)o));
+                    System.out.println("Loaded theme");
                     Config modules = settings.get("modules", Config.newConfig());
                     HashMap<Module, Boolean> moduleStates = new HashMap<>();
                     for(String key : modules.properties()){
@@ -196,11 +194,12 @@ public class MenuInit extends Menu{
                         moduleStates.put(m, true);
                         if(!moduleStates.containsKey(m))continue;
                         if(m.isActive()){
-                            if(!moduleStates.get(m))m.deactivate();
+                            if(!moduleStates.get(m))m.deactivate(false);
                         }else{
-                            if(moduleStates.get(m))m.activate();
+                            if(moduleStates.get(m))m.activate(false);
                         }
                     }
+                    System.out.println("Activated Modules");
                     Core.tutorialShown = settings.get("tutorialShown", false);
                     Core.invertUndoRedo = settings.get("invertUndoRedo", false);
                     Core.autoBuildCasing = settings.get("autoBuildCasing", true);
@@ -226,14 +225,13 @@ public class MenuInit extends Menu{
                 }
                 System.out.println("Loaded Settings");
                 ts.finish();
-                Core.refreshModules();
+                Core.refreshModules(tmr);
                 System.out.println("Refreshed Modules");
-                
                 tmr.finish();
-                attemptInit(Configurations::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
-                tc1.finish();
-                for(NCPFConfigurationContainer configuration : Configurations.configurations){
-                    configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
+                attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
+                tc.finish();
+                for(Configuration configuration : Configuration.configurations){
+                    configuration.configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
                         for(BlockElement b : msr.blocks){
                             if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
                                 try{
@@ -262,7 +260,7 @@ public class MenuInit extends Menu{
                     });
                 }
                 System.out.println("Set MSR Textures");
-                Core.setConfiguration(Configurations.NUCLEARCRAFT);
+                Core.setConfiguration(Configuration.NUCLEARCRAFT);
                 System.out.println("Imposed Configuration");
                 //TODO remember config, but for real this time
                 if(Core.rememberConfig){
@@ -287,10 +285,10 @@ public class MenuInit extends Menu{
                                     message = "Unknown module "+split[1]+"!";
                                     break;
                                 }
-                                NCPFConfigurationContainer config = null;
+                                Configuration config = null;
                                 for(Object o : module.ownConfigs){
-                                    NCPFConfigurationContainer c = (NCPFConfigurationContainer)o;
-//                                    if(c.name.equals(split[2]))config = c;
+                                    Configuration c = (Configuration)o;
+                                    if(c.getName().equals(split[2]))config = c;
                                 }
                                 if(config==null){
                                     bad = true;
@@ -312,7 +310,7 @@ public class MenuInit extends Menu{
                                     break;
                                 }
                                 Project ncpf = FileReader.read(file);
-                                Core.setConfiguration(ncpf.conglomeration);
+                                Core.setConfiguration(new Configuration(ncpf));
                                 break;
                             case "default": //just do nothing, already done
                                 break;

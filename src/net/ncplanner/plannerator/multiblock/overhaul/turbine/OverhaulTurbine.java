@@ -30,7 +30,6 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
@@ -837,7 +836,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return bbox;
     }
     @Override
-    public Design toDesign(){
+    public OverhaulTurbineDesign toDesign(){
         OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

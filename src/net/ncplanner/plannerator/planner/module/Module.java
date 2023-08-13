@@ -20,15 +20,16 @@ import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
-import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
-    public ArrayList<NCPFConfigurationContainer> ownConfigs = new ArrayList<>();//used for loading configs on startup
+    public ArrayList<Configuration> ownConfigs = new ArrayList<>();//used for loading configs on startup
     public boolean unlocked = true;
     public String secretKey;
     public Module(String name){
@@ -44,15 +45,21 @@ public abstract class Module<T>{
         unlocked = false;
     }
     public final void activate(){
+        activate(true);
+    }
+    public final void activate(boolean refresh){
         active = true;
         unlocked = true;
         onActivated();
-        Core.refreshModules();
+        if(refresh)Core.refreshModules();
     }
     public final void deactivate(){
+        deactivate(true);
+    }
+    public final void deactivate(boolean refresh){
         active = false;
         onDeactivated();
-        Core.refreshModules();
+        if(refresh)Core.refreshModules();
     }
     public boolean isActive(){
         return active;
@@ -72,12 +79,13 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    public final void addConfiguration(NCPFConfigurationContainer c){
-        Configurations.configurations.add(c);
+    public final void addConfiguration(Configuration c){
+        Configuration.configurations.add(c);
+        c.path = "modules/"+name+"/"+c.getName();
         ownConfigs.add(c);
     }
     public final void addAddon(Addon addon, String link){
-        Configurations.addInternalAddon(addon, link);
+        Configuration.addInternalAddon(addon, link);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
@@ -120,5 +128,5 @@ public abstract class Module<T>{
         else deactivate();
     }
     public void addTutorials(){}
-    public void addConfigurations(){}
+    public void addConfigurations(Task task){}
 }

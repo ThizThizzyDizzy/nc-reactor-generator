@@ -27,7 +27,6 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.MenuResizeFusion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
@@ -822,7 +821,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return getLocationCategory(x, y, z)==LocationCategory.TOROID;
     }
     @Override
-    public Design toDesign(){
+    public OverhaulFusionDesign toDesign(){
         OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

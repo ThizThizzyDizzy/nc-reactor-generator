@@ -8,9 +8,7 @@ import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
-import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -20,8 +18,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickEnum;
-import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.design.UnknownDesign;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class TinkerTool extends SimpleMultiblock<ToolPart>{
     private ToolType type;
     boolean valid;
@@ -467,7 +464,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         return null;
     }
     @Override
-    public Design toDesign(){
-        return new UnknownDesign(Core.project);
+    public MultiblockDesign toDesign(){
+        return null;
     }
 }

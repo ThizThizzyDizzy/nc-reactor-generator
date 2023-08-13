@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
-import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.ActionResult;
@@ -28,12 +27,11 @@ import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.module.Module;
-import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Vector2f;
@@ -792,7 +790,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return null;
     }
     public abstract <T extends LiteMultiblock> T compile();
-    public abstract Design toDesign();
+    public abstract <T extends MultiblockDesign> T toDesign();
     public NCPFElement[] getMultiblockRecipes(){
         return new NCPFElement[0];
     }

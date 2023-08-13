@@ -5,9 +5,10 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.ncpf.Configurations;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDefinition;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
@@ -50,10 +51,10 @@ public class FusionTestModule extends Module<Object>{
         registerNCPFModule(ToroidalElectromagnetModule::new);
     }
     @Override
-    public void addConfigurations(){
-        Configurations.configurations.add(FileReader.read(() -> {
+    public void addConfigurations(Task task){
+        Configuration.configurations.add(new Configuration(FileReader.read(() -> {
             return Core.getInputStream("configurations/fusion_test.ncpf");
-        }).configuration);//not using addConfiguration, because you shouldn't auto-load into fusion test
+        })).addAlternative("Fusion"));//not using addConfiguration, because you shouldn't auto-load into fusion test
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block> augmentedBlanketOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block>("Augmente4d Breeding Blanket", "Highlights augmented breeding blankets with a green outline", true){
         @Override

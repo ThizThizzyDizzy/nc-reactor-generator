@@ -19,8 +19,10 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
@@ -119,73 +121,117 @@ public class OverhaulModule extends Module<Object>{
                 TutorialFileReader.read("tutorials/overhaul/turbine.ncpt"));
     }
     @Override
-    public void addConfigurations(){
-        addConfiguration(FileReader.read(() -> {
+    public void addConfigurations(Task t){
+        t.addSubtask("AAPN");
+        t.addSubtask("Quanta");
+        t.addSubtask("Extreme Reactors");
+        t.addSubtask("IC2");
+        t.addSubtask("QMD");
+        t.addSubtask("Trinity");
+        t.addSubtask("NCOUTO");
+        t.addSubtask("Moar Heat Sinks");
+        t.addSubtask("Moar Fuels");
+        t.addSubtask("Moar Fuels (Lite)");
+        t.addSubtask("Moar Fuels (Ultra Lite)");
+        t.addSubtask("Moar Reactor Functionality");
+        t.addSubtask("Nuclear Oil Refining");
+        t.addSubtask("Nuclear Tree Factory");
+        t.addSubtask("Binary's Extra Stuff");
+        t.addSubtask("AOP");
+        t.addSubtask("NCO Confectionery");
+        t.addSubtask("Thorium Mixed Fuels");
+        t.addSubtask("Inert Matrix Fuels");
+        t.addSubtask("Alloy Heat Sinks");
+        t.addSubtask("Spicy Heat Sinks (Stable)");
+        t.addSubtask("Spicy Heat Sinks (Unstable)");
+        addConfiguration(new Configuration(FileReader.read(() -> {
             return Core.getInputStream("configurations/aapn.ncpf");
-        }).configuration);
-        addConfiguration(FileReader.read(() -> {
+        })).addAlternative("AAPN"));
+        t.getCurrentSubtask().finish();
+        addConfiguration(new Configuration(FileReader.read(() -> {
             return Core.getInputStream("configurations/quanta.ncpf");
-        }).configuration);
+        })));
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/extreme_reactors.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/ic2.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/qmd.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/qmd");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/trinity.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/trinity");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/ncouto.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/moar_heat_sinks.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/moar_fuels.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/moar_fuels_lite.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/moar_fuels_ultra_lite.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moarfuels");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/moar_reactor_functionality.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/nuclear_oil_refining.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/nuclear_tree_factory.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/bes.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/aop.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/aop");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/nco_confectionery.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/nco-confectionery");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/thorium_mixed_fuels.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/inert_matrix_fuels.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/alloy_heat_sinks.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/spicy_heat_sinks_stable.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
+        t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> {
             return Core.getInputStream("configurations/addons/spicy_heat_sinks_unstable.ncpf");
         }).addons.get(0), "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
+        t.getCurrentSubtask().finish();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
         @Override
