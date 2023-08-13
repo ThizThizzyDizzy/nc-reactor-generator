@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
@@ -14,8 +14,9 @@ public class MenuPickGeneratorMutator<T extends LiteMultiblock> extends MenuDial
     public MenuPickGeneratorMutator(GUI gui, Menu parent, Mutator<T> mutator, Consumer<GeneratorMutator<T>> onConfirm){
         super(gui, parent);
         minWidth = minHeight = 0;
-        for(Function<Mutator, GeneratorMutator> func : GeneratorMutator.mutators){
-            GeneratorMutator<T> genMutator = func.apply(mutator);
+        for(Supplier<GeneratorMutator> func : GeneratorMutator.registeredMutators.values()){
+            GeneratorMutator<T> genMutator = func.get();
+            genMutator.mutator = mutator;
             buttons.add(new Button(genMutator.getTitle(), true).setTooltip(genMutator.getTooltip()).addAction(() -> {
                 close();
                 onConfirm.accept(genMutator);

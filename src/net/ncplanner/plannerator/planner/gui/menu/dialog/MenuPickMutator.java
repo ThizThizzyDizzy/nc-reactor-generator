@@ -13,14 +13,16 @@ public class MenuPickMutator<T extends LiteMultiblock> extends MenuDialog{
     public MenuPickMutator(GUI gui, Menu parent, T multiblock, Consumer<Mutator<T>> onConfirm){
         super(gui, parent);
         minWidth = minHeight = 0;
-        ArrayList<Supplier<Mutator<T>>> lst = new ArrayList<>();
-        multiblock.getMutators(lst);
-        for(Supplier<Mutator<T>> supplier : lst){
-            Mutator<T> mutator = supplier.get();
-            buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
-                close();
-                onConfirm.accept(mutator);
-            }));
+        for(Supplier<Mutator> supplier : Mutator.registeredMutators.values()){
+            Mutator m = supplier.get();
+            try{
+                Mutator<T> mutator = supplier.get();
+                mutator.setIndicies(multiblock);
+                buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
+                    close();
+                    onConfirm.accept(mutator);
+                }));
+            }catch(ClassCastException ex){}
         }
         setTitle("Choose a mutator");
         setContent(new ExpandingGridLayout(192, 64, 3).addAll(buttons));

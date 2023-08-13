@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 public class SettingIndicies implements Setting<int[]>{
     private final String name;
-    private int[] value;
+    private int[] value = new int[0];
     public String[] names;
     public Image[] images;
     public SettingIndicies(String name){

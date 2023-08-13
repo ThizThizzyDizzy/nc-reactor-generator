@@ -12,7 +12,7 @@ public class MenuPickCondition extends MenuDialog{
     public MenuPickCondition(GUI gui, Menu parent, Consumer<Condition> onConfirm){
         super(gui, parent);
         minWidth = minHeight = 0;
-        for(Supplier<Condition> supplier : Condition.conditions){
+        for(Supplier<Condition> supplier : Condition.registeredConditions.values()){
             Condition condition = supplier.get();
             buttons.add(new Button(condition.getTitle(), true).setTooltip(condition.getTooltip()).addAction(() -> {
                 close();
