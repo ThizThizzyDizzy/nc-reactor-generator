@@ -1,45 +1,22 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 public abstract class SimpleBlock extends AbstractBlock{
-    private static final Image UNSET = new Image(2, 2);
-    static{
-        UNSET.setRGB(0, 0, Color.BLACK.getRGB());
-        UNSET.setRGB(1, 1, Color.BLACK.getRGB());
-        UNSET.setRGB(0, 1, Color.MAGENTA.getRGB());
-        UNSET.setRGB(1, 0, Color.MAGENTA.getRGB());
-    }
-    public SimpleBlock(Configuration configuration, int x, int y, int z){
+    public SimpleBlock(NCPFConfigurationContainer configuration, int x, int y, int z){
         super(configuration, x, y, z);
     }
     @Override
     public void copyProperties(AbstractBlock other){}
     @Override
-    public Image getBaseTexture(){
-        return getTexture();
-    }
-    @Override
-    public Image getTexture(){
-        return UNSET;
-    }
-    @Override
-    public String getBaseName(){
-        return getName();
-    }
-    @Override
     public void clearData(){}
     @Override
     public String getTooltip(Multiblock multiblock){
-        return getName();
-    }
-    @Override
-    public String getListTooltip(){
         return getName();
     }
     @Override
@@ -57,23 +34,7 @@ public abstract class SimpleBlock extends AbstractBlock{
         return false;
     }
     @Override
-    public boolean hasRules(){
-        return false;
-    }
-    @Override
-    public boolean calculateRules(Multiblock multiblock){
-        return true;
-    }
-    @Override
-    public boolean matches(AbstractBlock template){
-        return template.getName().equals(getName());
-    }
-    @Override
     public boolean canRequire(AbstractBlock other){
-        return false;
-    }
-    @Override
-    public boolean requires(AbstractBlock other, Multiblock mb) {
         return false;
     }
     @Override
@@ -92,8 +53,6 @@ public abstract class SimpleBlock extends AbstractBlock{
     public boolean isEqual(AbstractBlock other){
         return matches(other);
     }
-    @Override
-    public void convertTo(Configuration to) throws MissingConfigurationEntryException {}
     @Override
     public boolean hasRecipes(){
         return false;
@@ -116,5 +75,20 @@ public abstract class SimpleBlock extends AbstractBlock{
         strs.add(getName());
         return strs;
     }
-    
+    @Override
+    public List<? extends NCPFPlacementRule> getRules(){
+        return new ArrayList<>();
+    }
+    @Override
+    public NCPFElement getRecipe(){
+        return null;
+    }
+    @Override
+    public void setRecipe(NCPFElement recipe){}
+    @Override
+    public boolean isToggled(){
+        return false;
+    }
+    @Override
+    public void setToggled(boolean toggled){}
 }

@@ -6,7 +6,7 @@ public class BreedingBlanketStatsModule extends NCPFRecipeStatsModule{
     public float efficiency;
     public float heat;
     public BreedingBlanketStatsModule(){
-        super("nuclearcraft:overhaul_sfr:irradiator_stats");
+        super("plannerator:fusion_test:breeding_blanket_stats");
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

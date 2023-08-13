@@ -4,10 +4,13 @@ import java.util.List;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockGrid;
 import net.ncplanner.plannerator.multiblock.SimpleMultiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFDesign;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -17,6 +20,8 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickEnum;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.design.UnknownDesign;
 public class TinkerTool extends SimpleMultiblock<ToolPart>{
     private ToolType type;
     boolean valid;
@@ -29,7 +34,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     double accuracy;
     private double range;
     private double drawspeed;
-    public TinkerTool(Configuration configuration, int type){
+    public TinkerTool(NCPFConfigurationContainer configuration, int type){
         super(configuration, type);
         this.type = ToolType.values()[type];
     }
@@ -42,11 +47,11 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         return "Tinker Tool";
     }
     @Override
-    public TinkerTool newInstance(Configuration configuration){
+    public TinkerTool newInstance(NCPFConfigurationContainer configuration){
         return new TinkerTool(configuration, 1);
     }
     @Override
-    public TinkerTool newInstance(Configuration configuration, int... dimensions){
+    public TinkerTool newInstance(NCPFConfigurationContainer configuration, int... dimensions){
         return new TinkerTool(configuration, dimensions[0]);
     }
     @Override
@@ -457,5 +462,12 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             }
         });
     }
-    
+    @Override
+    public NCPFConfiguration getSpecificConfiguration(){
+        return null;
+    }
+    @Override
+    public Design toDesign(){
+        return new UnknownDesign(Core.project);
+    }
 }
