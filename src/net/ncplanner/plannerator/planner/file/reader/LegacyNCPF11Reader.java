@@ -565,23 +565,23 @@ public class LegacyNCPF11Reader implements FormatReader {
             loadOverhaulTurbineBlocks(addon.configuration, overhaul, false);
             // No support for fusion addons.
         }
-        project.configuration.withConfiguration(UnderhaulSFRConfiguration::new, (cfg)->{
+        addon.configuration.withConfiguration(UnderhaulSFRConfiguration::new, (cfg)->{
             cfg.metadata.name = name;
             cfg.metadata.version = underhaulVersion;
         });
-        project.configuration.withConfiguration(OverhaulSFRConfiguration::new, (cfg)->{
+        addon.configuration.withConfiguration(OverhaulSFRConfiguration::new, (cfg)->{
             cfg.metadata.name = name;
             cfg.metadata.version = version;
         });
-        project.configuration.withConfiguration(OverhaulMSRConfiguration::new, (cfg)->{
+        addon.configuration.withConfiguration(OverhaulMSRConfiguration::new, (cfg)->{
             cfg.metadata.name = name;
             cfg.metadata.version = version;
         });
-        project.configuration.withConfiguration(OverhaulTurbineConfiguration::new, (cfg)->{
+        addon.configuration.withConfiguration(OverhaulTurbineConfiguration::new, (cfg)->{
             cfg.metadata.name = name;
             cfg.metadata.version = version;
         });
-        project.configuration.withConfiguration(OverhaulFusionConfiguration::new, (cfg)->{
+        addon.configuration.withConfiguration(OverhaulFusionConfiguration::new, (cfg)->{
             cfg.metadata.name = name;
             cfg.metadata.version = version;
         });

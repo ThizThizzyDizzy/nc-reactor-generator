@@ -20,7 +20,7 @@ public class Configuration{
         NUCLEARCRAFT = new Configuration(FileReader.read(() -> {
             return Core.getInputStream("configurations/nuclearcraft.ncpf");
         }), "default").addAlternative("").addAlternative("SF4");
-        configurations.add(NUCLEARCRAFT);
+        configurations.add(0, NUCLEARCRAFT);
     }
     public static void clearConfigurations(){
         configurations.clear();
