@@ -311,7 +311,7 @@ public class RainbowFactorModule extends Module<Float>{
                         for(net.ncplanner.plannerator.multiblock.overhaul.fusion.Block newBlock : blocks){
                             net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block = multiblock.getBlock(x, y, z);
                             if(block==null||block.canBeQuickReplaced()){
-                                if(newBlock.template.heatsinkCooling>(block==null?0:block.template.heatsinkCooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.heatsink.cooling>(block==null?0:block.template.heatsink.cooling)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                         }
@@ -342,7 +342,7 @@ public class RainbowFactorModule extends Module<Float>{
             }
             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block){
                 net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
-                isRainbowable = b.template.isHeatsink();
+                isRainbowable = b.template.heatsink!=null;
             }
             if(isRainbowable&&multiblock.count(block)==1){
                 int count = Core.theme.getRainbowColorCount();
