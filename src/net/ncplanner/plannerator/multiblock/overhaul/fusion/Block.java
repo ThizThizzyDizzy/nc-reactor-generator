@@ -57,7 +57,7 @@ public class Block extends AbstractBlock{
             tip+="\nHeating Blanket "+(isHeatingBlanketActive()?"Active":"Inactive");
             if(isHeatingBlanketActive()){
                 tip+="\nHeat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
-                        + "Heat Produced: "+heatMult*fusion.recipe.heat+"H/t\n"
+                        + "Heat Produced: "+heatMult*fusion.recipe.stats.heat+"H/t\n"
                         + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n";
             }
         }

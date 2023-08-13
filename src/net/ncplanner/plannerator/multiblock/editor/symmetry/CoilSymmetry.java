@@ -10,7 +10,7 @@ public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
                 if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
-                if(b.template.blade)continue;
+                if(b.template.blade!=null||b.template.stator!=null)continue;
                 int X = multiblock.getExternalWidth()-b.x-1;
                 multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
@@ -22,7 +22,7 @@ public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
                 if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
-                if(b.template.blade)continue;
+                if(b.template.blade!=null||b.template.stator!=null)continue;
                 int Y = multiblock.getExternalHeight()-b.y-1;
                 multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
             }
@@ -34,7 +34,7 @@ public abstract class CoilSymmetry extends Symmetry<OverhaulTurbine>{
             ArrayList<Block> bls = multiblock.getBlocks(true);
             for(Block b : bls){
                 if(b.x==0||b.y==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1)continue;
-                if(b.template.blade)continue;
+                if(b.template.blade!=null||b.template.stator!=null)continue;
                 int Z = multiblock.getExternalDepth()-b.z-1;
                 multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));
             }

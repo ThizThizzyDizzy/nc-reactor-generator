@@ -29,7 +29,6 @@ import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
@@ -367,7 +366,6 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(-1, 0, 0));
         }
     }
-    protected void save(LegacyNCPFFile ncpf, NCPFConfigurationContainer configuration, Config config) throws MissingConfigurationEntryException{}
     /**
      * @return true if anything changed
      */
