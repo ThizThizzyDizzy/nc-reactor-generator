@@ -28,7 +28,6 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
@@ -54,7 +53,7 @@ public class LegacyNCPFWriter extends FormatWriter{
     @Override
     public void write(Project ncpf, OutputStream stream){
         Config header = Config.newConfig();
-        header.set("version", LegacyNCPFFile.SAVE_VERSION);
+        header.set("version", (byte)11);
         header.set("count", ncpf.designs.size());
         Config meta = Config.newConfig();
         for(String key : ncpf.metadata.metadata.keySet()){
