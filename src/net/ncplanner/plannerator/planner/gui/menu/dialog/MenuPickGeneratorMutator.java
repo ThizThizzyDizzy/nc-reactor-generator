@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.ExpandingGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyExpandingGridLayout;
 public class MenuPickGeneratorMutator<T extends LiteMultiblock> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickGeneratorMutator(GUI gui, Menu parent, Mutator<T> mutator, Consumer<GeneratorMutator<T>> onConfirm){
@@ -23,7 +23,7 @@ public class MenuPickGeneratorMutator<T extends LiteMultiblock> extends MenuDial
             }));
         }
         setTitle("Choose Mutator Type");
-        setContent(new ExpandingGridLayout(192, 64, 3).addAll(buttons));
+        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
         addButton("Cancel", () -> {
             close();
         });

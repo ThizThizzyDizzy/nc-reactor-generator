@@ -519,6 +519,7 @@ public class Core{
         Tutorial.init();
         Configuration.clearConfigurations();
         NCPFConfigurationContainer.recognizedConfigurations.clear();
+        NCPFConfigurationContainer.configOrder.clear();
         NCPFDesign.recognizedDesigns.clear();
         NCPFElement.recognizedElements.clear();
         NCPFModuleContainer.recognizedModules.clear();

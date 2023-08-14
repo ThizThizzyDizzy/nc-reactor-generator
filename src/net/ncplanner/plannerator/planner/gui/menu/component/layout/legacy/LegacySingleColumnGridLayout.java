@@ -1,15 +1,15 @@
-package net.ncplanner.plannerator.planner.gui.menu.component.layout;
+package net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy;
 import net.ncplanner.plannerator.planner.gui.Component;
-public class SingleColumnGridLayout extends Component{
+public class LegacySingleColumnGridLayout extends Component{
     private final float componentHeight;
-    public SingleColumnGridLayout(float componentHeight){
+    public LegacySingleColumnGridLayout(float componentHeight){
         this.componentHeight = componentHeight;
     }
-    public SingleColumnGridLayout(float x, float y, float width, float componentHeight){
+    public LegacySingleColumnGridLayout(float x, float y, float width, float componentHeight){
         super(x, y, width, 0);
         this.componentHeight = componentHeight;
     }
-    public SingleColumnGridLayout addAll(Iterable<? extends Component> components){
+    public LegacySingleColumnGridLayout addAll(Iterable<? extends Component> components){
         components.forEach(this::add);
         return this;
     }
@@ -22,7 +22,7 @@ public class SingleColumnGridLayout extends Component{
             for(int i = 0; i<components.size(); i++){
                 Component component = components.get(i);
                 component.width = width;
-                component.height = (component instanceof SingleColumnGridLayout)?(((SingleColumnGridLayout)component).rows()*componentHeight):componentHeight;
+                component.height = (component instanceof LegacySingleColumnGridLayout)?(((LegacySingleColumnGridLayout)component).rows()*componentHeight):componentHeight;
                 component.x = 0;
                 component.y = Y;
                 Y+=component.height;
@@ -32,8 +32,8 @@ public class SingleColumnGridLayout extends Component{
     private int rows(){
         int rows = 0;
         for(Component c : components){
-            if(c instanceof SingleColumnGridLayout){
-                rows+=((SingleColumnGridLayout)c).rows();
+            if(c instanceof LegacySingleColumnGridLayout){
+                rows+=((LegacySingleColumnGridLayout)c).rows();
             }else rows++;
         }
         return rows;

@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockRef
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule;
@@ -81,7 +82,7 @@ public class OverhaulMSRConfigurationBuilder{
     public BlockElement heater(String name, String displayName, String texture, String rules){
         BlockElement block = block(name, displayName, texture);
         block.heater = new HeaterModule();
-        block.heater.rules.add(parsePlacementRule(rules));
+        block.heater.rules.add(parsePlacementRule(rules).copyTo(PlacementRule::new));
         return block;
     }
     public HeaterRecipe heaterRecipe(BlockElement block, String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){

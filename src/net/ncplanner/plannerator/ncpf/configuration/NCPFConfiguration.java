@@ -32,4 +32,5 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         return new List[0];
     }
     public abstract void makePartial(List<Design> designs);
+    public abstract String getName();
 }

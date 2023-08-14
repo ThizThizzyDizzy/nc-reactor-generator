@@ -73,7 +73,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentSuggestor;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentTurbineRotorGraph;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyGridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOverlaySettings;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSymmetrySettings;
@@ -250,7 +250,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         partsList.addAction(() -> {
             new MenuDialog(gui, this){
                 {
-                    GridLayout gl = new GridLayout(48, 1);
+                    LegacyGridLayout gl = new LegacyGridLayout(48, 1);
                     gl.width = 512;
                     ArrayList<PartCount> parts = multiblock.getPartsList();
                     parts.forEach((t) -> {

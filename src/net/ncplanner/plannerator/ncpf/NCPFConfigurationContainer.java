@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
+    public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
     public HashMap<String, NCPFConfiguration> configurations = new HashMap<>();
     @Override

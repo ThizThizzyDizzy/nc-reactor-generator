@@ -10,13 +10,13 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacySingleColumnGridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOverlaySettings;
 import org.lwjgl.glfw.GLFW;
 public class MenuImageExportPreview extends Menu{
     private Image image;
     int sidebarWidth = 300;
-    private final SingleColumnGridLayout buttons = add(new SingleColumnGridLayout(0, 0, 300, 40));
+    private final LegacySingleColumnGridLayout buttons = add(new LegacySingleColumnGridLayout(0, 0, 300, 40));
     private final Button back = buttons.add(new Button(0, 0, 300, 40, "Back", true));
     private final ToggleBox includeCasing = buttons.add(new ToggleBox(0, 80, 300, 40, "Include Casing", Core.imageExportCasing, true));
     private final ToggleBox preview3D = buttons.add(new ToggleBox(0, 40, 300, 40, "Include 3D View", Core.imageExport3DView, true));

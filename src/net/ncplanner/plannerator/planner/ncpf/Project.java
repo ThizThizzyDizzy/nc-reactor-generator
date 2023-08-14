@@ -85,7 +85,7 @@ public class Project extends NCPFFile{
     public String getConfigName(){
         for(NCPFConfiguration cfg : configuration.configurations.values()){
             ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
-            if(module!=null)return module.name;
+            if(module!=null&&module.name!=null)return module.name;
         }
         return "Unknown Configuration";
     }

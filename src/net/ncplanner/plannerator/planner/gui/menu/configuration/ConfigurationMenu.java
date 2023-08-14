@@ -4,20 +4,24 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.LayoutMenu;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuTransition;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-public abstract class ConfigurationMenu extends Menu{
-    public SingleColumnList sidebar;
-    public ArrayList<Component> sidebarBottom = new ArrayList<>();
+import net.ncplanner.plannerator.planner.gui.menu.component.LayoutPanel;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SidebarLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitListLayout;
+public abstract class ConfigurationMenu extends LayoutMenu{
     public ArrayList<Menu> parents = new ArrayList<>();
     public ArrayList<String> parentNames = new ArrayList<>();
     public final NCPFConfigurationContainer configuration;
     public final String name;
-    public ConfigurationMenu(GUI gui, Menu parent, NCPFConfigurationContainer configuration, String name){
-        super(gui, parent);
+    public final LayoutPanel sidebar;
+    public final Layout content;
+    public ConfigurationMenu(GUI gui, Menu parent, NCPFConfigurationContainer configuration, String name, Layout content){
+        super(gui, parent, new SidebarLayout(256));
         this.configuration = configuration;
         this.name = name;
         if(parent instanceof ConfigurationMenu){
@@ -27,39 +31,20 @@ public abstract class ConfigurationMenu extends Menu{
         parents.add(parent);
         if(parent instanceof ConfigurationMenu)parentNames.add(((ConfigurationMenu)parent).name);
         else parentNames.add("Done");
-        sidebar = add(new SingleColumnList(0, 0, 256, 0, 0));
-        sidebar.setBackgroundColor(Core.theme::getConfigurationSidebarColor);
+        sidebar = super.add(new LayoutPanel(new SplitListLayout(48)).setBackgroundColor(Core.theme::getConfigurationSidebarColor));
         for(int i = 0; i<parents.size(); i++){
             Menu menu = parents.get(i);
-            Button configurationButton = addToSidebar(new Button(0, 0, 0, 48, parentNames.get(i), true, true));
+            Button configurationButton = sidebar.add(new Button(parentNames.get(i), true, true));
             configurationButton.addAction(() -> {
                 if(menu instanceof ConfigurationMenu)gui.open(menu);
                 else gui.open(new MenuTransition(gui, this, menu, MenuTransition.SplitTransitionX.slideOut(sidebar.width/gui.getWidth()), 4));
             });
         }
-        addToSidebar(new Label(0, 0, 0, 48, name, true));
-    }
-    public <V extends Component> V addToSidebar(V component){
-        component.width = sidebar.width;
-        return sidebar.add(component);
-    }
-    public <V extends Component> V addToSidebarBottom(V component){
-        component.width = sidebar.width;
-        sidebarBottom.add(component);
-        return add(component);
+        sidebar.add(new Label(name, true));
+        this.content = super.add(content);
     }
     @Override
-    public void render2d(double deltaTime){
-        float h = 0;
-        for(Component comp : sidebarBottom){
-            h+=comp.height;
-        }
-        float Y = sidebar.height = gui.getHeight()-h;
-        for(int i = 0; i<sidebarBottom.size(); i++){
-            Component comp = sidebarBottom.get(i);
-            comp.y = Y;
-            Y+=comp.height;
-        }
-        super.render2d(deltaTime);
+    public <T extends Component> T add(T component){
+        return content.add(component);
     }
 }

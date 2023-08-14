@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyGridLayout;
 public class SettingIndicies implements Setting<int[]>{
     private final String name;
     private int[] value = new int[0];
@@ -32,7 +32,7 @@ public class SettingIndicies implements Setting<int[]>{
     }
     @Override
     public void addSettings(SingleColumnList list, MenuGenerator menu){
-        GridLayout grid = new GridLayout(24, 2);
+        LegacyGridLayout grid = new LegacyGridLayout(24, 2);
         ToggleBox[] boxes = new ToggleBox[names.length];
         for(int i = 0; i<names.length; i++){
             boolean on = false;

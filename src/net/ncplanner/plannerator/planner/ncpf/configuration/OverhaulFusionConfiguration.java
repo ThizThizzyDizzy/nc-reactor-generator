@@ -60,4 +60,8 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
         makePartial(coolantRecipes, designs);
         makePartial(recipes, designs);
     }
+    @Override
+    public String getName(){
+        return "Fusion Test Configuration";
+    }
 }

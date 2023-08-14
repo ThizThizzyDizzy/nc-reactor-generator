@@ -89,6 +89,7 @@ public abstract class Module<T>{
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
+        NCPFConfigurationContainer.configOrder.add(configuration.get().name);
     }
     public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design, Function<NCPFFile, Design> specificDesign){
         NCPFDesign.recognizedDesigns.put(design.get().type, design);

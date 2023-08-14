@@ -29,4 +29,8 @@ public class UnknownNCPFConfiguration extends NCPFConfiguration{
     }
     @Override
     public void makePartial(List<Design> designs){}
+    @Override
+    public String getName(){
+        return "Unknown Configuration";
+    }
 }

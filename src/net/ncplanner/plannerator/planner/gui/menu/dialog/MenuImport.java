@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyGridLayout;
 public class MenuImport extends MenuDialog{
     private final Runnable onImport;
     public MenuImport(GUI gui, Menu parent, Runnable onImport){
@@ -36,7 +36,7 @@ public class MenuImport extends MenuDialog{
         refresh();
     }
     private void refresh(){
-        GridLayout layout = new GridLayout(36, 1);
+        LegacyGridLayout layout = new LegacyGridLayout(36, 1);
         File root = new File("file").getAbsoluteFile().getParentFile();
         for(File file : root.listFiles()){
             String filename = file.getName();

@@ -4,9 +4,13 @@ import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
-public class SingleColumnList extends Scrollable{
+public class SingleColumnList extends Scrollable{//TODO combine with ListLayout?
     private Supplier<Color> backgroundColor;
     private boolean enableSelection = true;
+    private Number componentHeight;
+    public SingleColumnList(float scrollbarWidth){
+        this(0, 0, 0, 0, scrollbarWidth);
+    }
     public SingleColumnList(float x, float y, float width, float height, float scrollbarWidth){
         super(x, y, width, height, 0, scrollbarWidth);
     }

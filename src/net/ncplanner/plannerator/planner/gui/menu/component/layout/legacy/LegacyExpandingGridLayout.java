@@ -1,16 +1,16 @@
-package net.ncplanner.plannerator.planner.gui.menu.component.layout;
+package net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy;
 import net.ncplanner.plannerator.planner.gui.Component;
-public class ExpandingGridLayout extends Component{
+public class LegacyExpandingGridLayout extends Component{
     private final int minHeight;
     private final float widthRatio;
     private final int minWidth;
-    public ExpandingGridLayout(int minWidth, int minHeight, float widthRatio){
+    public LegacyExpandingGridLayout(int minWidth, int minHeight, float widthRatio){
         super(0, 0, minWidth, minHeight);
         this.minHeight = minHeight;
         this.widthRatio = widthRatio;
         this.minWidth = minWidth;
     }
-    public ExpandingGridLayout addAll(Iterable<? extends Component> components){
+    public LegacyExpandingGridLayout addAll(Iterable<? extends Component> components){
         components.forEach(this::add);
         return this;
     }

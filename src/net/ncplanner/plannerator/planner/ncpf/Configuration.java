@@ -41,10 +41,10 @@ public class Configuration{
     public List<Addon> addons = new ArrayList<>();
     public String path;
     public ArrayList<String> alternatives = new ArrayList<>();
-    public String getName(){//TODO name
+    public String getName(){
         for(NCPFConfiguration cfg : configuration.configurations.values()){
             ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
-            if(module!=null)return module.name;
+            if(module!=null&&module.name!=null)return module.name;
         }
         return "Unknown Configuration";
     }

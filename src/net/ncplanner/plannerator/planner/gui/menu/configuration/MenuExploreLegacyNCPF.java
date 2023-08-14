@@ -20,8 +20,8 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacySingleColumnGridLayout;
 public class MenuExploreLegacyNCPF extends ConfigurationMenu{
     private final SingleColumnList list;
     private final ProgressBar progress;
@@ -91,7 +91,7 @@ public class MenuExploreLegacyNCPF extends ConfigurationMenu{
         return configs;
     }
     private synchronized void add(Component c1, Component c2){
-        GridLayout lay = new GridLayout(20, 2);
+        LegacyGridLayout lay = new LegacyGridLayout(20, 2);
         lay.add(c1);
         lay.add(c2);
         list.add(lay);
@@ -118,7 +118,7 @@ public class MenuExploreLegacyNCPF extends ConfigurationMenu{
                 for(int j = listIndex+1; j<list.components.size();){
                     comps.add(list.components.remove(j));
                 }
-                SingleColumnGridLayout gl = new SingleColumnGridLayout(20){
+                LegacySingleColumnGridLayout gl = new LegacySingleColumnGridLayout(20){
                     @Override
                     public void onFocusGained(){
                         addAll(comps);
@@ -157,7 +157,7 @@ public class MenuExploreLegacyNCPF extends ConfigurationMenu{
                 for(int j = listIndex+1; j<list.components.size();){
                     comps.add(list.components.remove(j));
                 }
-                SingleColumnGridLayout gl = new SingleColumnGridLayout(20){
+                LegacySingleColumnGridLayout gl = new LegacySingleColumnGridLayout(20){
                     @Override
                     public void onFocusGained(){
                         addAll(comps);

@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.SingleColumnGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacySingleColumnGridLayout;
 public class MenuSelect<T> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuSelect(GUI gui, Menu parent, ArrayList<T> options, ArrayList<String> names, Consumer<T> onConfirm){
@@ -17,7 +17,7 @@ public class MenuSelect<T> extends MenuDialog{
                 onConfirm.accept(t);
             }));
         }
-        setContent(new SingleColumnGridLayout(32).addAll(buttons));
+        setContent(new LegacySingleColumnGridLayout(32).addAll(buttons));
         content.width = 640;
         addButton("Cancel", () -> {
             close();

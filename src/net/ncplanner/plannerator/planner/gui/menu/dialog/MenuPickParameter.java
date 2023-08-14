@@ -7,7 +7,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Para
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.ExpandingGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyExpandingGridLayout;
 public class MenuPickParameter<T extends LiteMultiblock> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     private final Consumer<Parameter> onConfirm;
@@ -19,7 +19,7 @@ public class MenuPickParameter<T extends LiteMultiblock> extends MenuDialog{
             addVar(key, val);
         });
         setTitle("Choose a parameter");
-        setContent(new ExpandingGridLayout(192, 64, 3).addAll(buttons));
+        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
         addButton("Cancel", () -> {
             close();
         });

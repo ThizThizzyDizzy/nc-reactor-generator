@@ -21,11 +21,15 @@ public class Label extends Component implements Searchable{
     public Label(String label){
         this(0, 0, 0, 0, label);
     }
+    public Label(String label, boolean darker){
+        this(0, 0, 0, 0, label, darker);
+    }
     public Label(float x, float y, float width, float height, String label){
         this(x, y, width, height, label, false);
     }
     public Label(float x, float y, float width, float height, String label, boolean darker){
         super(x, y, width, height);
+        if(label==null)throw new IllegalArgumentException("Label cannot be null!");//realistically should be allowed, but this helps catch bugs
         this.text = label;
         this.darker = darker;
     }

@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.ExpandingGridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.LegacyExpandingGridLayout;
 public class MenuPickCondition extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickCondition(GUI gui, Menu parent, Consumer<Condition> onConfirm){
@@ -19,7 +19,7 @@ public class MenuPickCondition extends MenuDialog{
                 onConfirm.accept(condition);
             }));
         }
-        setContent(new ExpandingGridLayout(128, 64, 2).addAll(buttons));
+        setContent(new LegacyExpandingGridLayout(128, 64, 2).addAll(buttons));
         addButton("Cancel", () -> {
             close();
         });
