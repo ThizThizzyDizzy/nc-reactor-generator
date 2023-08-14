@@ -82,4 +82,11 @@ public class Project extends NCPFFile{
         configuration = conglomeration;
         addons.clear();
     }
+    public String getConfigName(){
+        for(NCPFConfiguration cfg : configuration.configurations.values()){
+            ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
+            if(module!=null)return module.name;
+        }
+        return "Unknown Configuration";
+    }
 }

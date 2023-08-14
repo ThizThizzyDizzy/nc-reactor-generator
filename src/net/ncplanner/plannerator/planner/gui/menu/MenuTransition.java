@@ -5,6 +5,8 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 public class MenuTransition extends Menu{
     private final Menu from;
     private final Menu to;
@@ -31,7 +33,21 @@ public class MenuTransition extends Menu{
         transition.render(from, to, ratio, deltaTime);
         if(timer>=time){
             transition.finalCheck(from, to);
-            gui.open(to);
+            Menu dialog = null;
+            Menu baseDialog = null;
+            if(gui.menu instanceof MenuDialog){
+                dialog = baseDialog = gui.menu;
+                while(baseDialog.parent instanceof MenuDialog)baseDialog = baseDialog.parent;
+            }
+            try{
+                gui.open(to);
+            }catch(Exception ex){
+                dialog = new MenuError(gui, dialog, "Error opening menu!", ex);
+            }
+            if(baseDialog!=null){
+                baseDialog.parent = gui.menu;
+                gui.menu = dialog;
+            }
         }
     }
     public static interface Transition{

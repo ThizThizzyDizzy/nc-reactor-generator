@@ -134,7 +134,7 @@ public class MenuSettings extends SettingsMenu{
         autoBuildCasing.isToggledOn = Core.autoBuildCasing;
         vsync.isToggledOn = Core.vsync;
         rememberConfig.isToggledOn = Core.rememberConfig;
-        currentConfigLabel.text = "Current Configuration: "+new Configuration(Core.project).getName();
+        currentConfigLabel.text = "Current Configuration: "+Core.project.getConfigName();
         int active = 0;
         for(Module m : Core.modules)if(m.isActive())active++;
         modules.text = "Modules ("+active+"/"+Core.modules.size()+" Active)";
