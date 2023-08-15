@@ -15,6 +15,9 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public OverhaulSFRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     public List<CoolantRecipe> coolantRecipes = new ArrayList<>();
+    public OverhaulSFRConfiguration(){
+        setModule(metadata);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

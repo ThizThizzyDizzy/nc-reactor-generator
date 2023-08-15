@@ -13,6 +13,9 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();
     public OverhaulMSRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
+    public OverhaulMSRConfiguration(){
+        setModule(metadata);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

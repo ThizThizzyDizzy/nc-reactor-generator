@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -23,7 +24,16 @@ public class TextBox extends Component{
     public float textInset = .1f;
     public boolean oscillator;
     public double oscillatorTimer = 0;
-    private ArrayList<Runnable> changeListeners = new ArrayList<>();
+    private ArrayList<Consumer<String>> changeListeners = new ArrayList<>();
+    public TextBox(String text, boolean editable){
+        this(0, 0, 0, 0, text, editable);
+    }
+    public TextBox(String text, boolean editable, String title){
+        this(0, 0, 0, 0, text, editable, title);
+    }
+    public TextBox(String text, boolean editable, String title, float titleInset){
+        this(0, 0, 0, 0, text, editable, title, titleInset);
+    }
     public TextBox(float x, float y, float width, float height, String text, boolean editable){
         this(x, y, width, height, text, editable, null);
     }
@@ -133,7 +143,7 @@ public class TextBox extends Component{
             while(text.endsWith("0"))text = text.substring(0, text.length()-1);
             if(text.equals("."))text = "0";
         }
-        changeListeners.forEach(Runnable::run);
+        changeListeners.forEach((t) -> t.accept(text));
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){
@@ -198,7 +208,7 @@ public class TextBox extends Component{
                 if(text.equals("."))text = "0";
             }
         }
-        changeListeners.forEach(Runnable::run);
+        changeListeners.forEach((t) -> t.accept(text));
     }
     public TextBox setIntFilter(){
         return setIntFilter(null, null);
@@ -237,7 +247,11 @@ public class TextBox extends Component{
         return this;
     }
     public TextBox onChange(Runnable r){
-        changeListeners.add(r);
+        changeListeners.add((t) -> r.run());
+        return this;
+    }
+    public TextBox onChange(Consumer<String> c){
+        changeListeners.add(c);
         return this;
     }
 }

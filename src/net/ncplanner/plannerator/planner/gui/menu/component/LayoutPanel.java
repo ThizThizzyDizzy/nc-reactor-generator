@@ -1,11 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
-public class LayoutPanel extends Component{
-    private Supplier<Color> background = null;
+public class LayoutPanel extends Panel{
     private final Layout layout;
     public LayoutPanel(Layout layout){
         this.layout = super.add(layout);
@@ -23,15 +21,7 @@ public class LayoutPanel extends Component{
         super.render2d(deltaTime);
     }
     @Override
-    public void drawBackground(double deltaTime){
-        if(background!=null){
-            Renderer renderer = new Renderer();
-            renderer.setColor(background.get());
-            renderer.fillRect(x, y, width, height);
-        }
-    }
     public LayoutPanel setBackgroundColor(Supplier<Color> color){
-        background = color;
-        return this;
+        return (LayoutPanel)super.setBackgroundColor(color);
     }
 }

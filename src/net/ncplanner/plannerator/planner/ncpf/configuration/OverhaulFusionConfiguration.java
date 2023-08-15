@@ -19,6 +19,7 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     public List<Recipe> recipes = new ArrayList<>();
     public OverhaulFusionConfiguration(){
         super("plannerator:fusion_test");
+        setModule(metadata);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

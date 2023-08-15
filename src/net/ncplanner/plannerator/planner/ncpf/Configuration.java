@@ -42,6 +42,13 @@ public class Configuration{
     public String path;
     public ArrayList<String> alternatives = new ArrayList<>();
     public String getName(){
+        for(String key : NCPFConfigurationContainer.configOrder){
+            if(configuration.configurations.containsKey(key)){
+                NCPFConfiguration cfg = configuration.configurations.get(key);
+                ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
+                if(module!=null&&module.name!=null)return module.name;
+            }
+        }
         for(NCPFConfiguration cfg : configuration.configurations.values()){
             ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
             if(module!=null&&module.name!=null)return module.name;

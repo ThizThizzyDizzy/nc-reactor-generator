@@ -15,6 +15,9 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     public OverhaulTurbineSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     public List<Recipe> recipes = new ArrayList<>();
+    public OverhaulTurbineConfiguration(){
+        setModule(metadata);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

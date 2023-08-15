@@ -15,7 +15,9 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.FakeMenu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
@@ -23,6 +25,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTask;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class MenuConfiguration extends ConfigurationMenu{
     private final SingleColumnList addonsList;
     private final Configuration configuration;
@@ -31,7 +34,7 @@ public class MenuConfiguration extends ConfigurationMenu{
     public MenuConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, new FakeMenu(parent, () -> {
             Core.setConfigurationAndConvertMultiblocks(configuration);
-        }), null, configuration.getName(), new SplitLayout(0.6f));
+        }), null, configuration.getName(), new SplitLayout(SplitLayout.Y_AXIS, 0.5f, 48, 144).fitSize().setBorder(8, Core.theme::getConfigurationDividerColor));
         this.configuration = configuration;
         configList = add(new SingleColumnList(16));
         BorderLayout addonsPanel = add(new BorderLayout());
@@ -61,22 +64,21 @@ public class MenuConfiguration extends ConfigurationMenu{
         });
     }
     @Override
-    public void render2d(double deltaTime){
-        float h = 0;
-        for(Component c : configList.components)h+=c.height;
-        float pos = h/height;
-        ((SplitLayout)content).splitPos = Math.min(pos, 0.6f);//TODO make this part of SplitLayout
-        super.render2d(deltaTime);
-    }
-    @Override
     public void onOpened(){
         configList.components.clear();
         for(String key : NCPFConfigurationContainer.configOrder){
             Supplier<NCPFConfiguration> cfg = NCPFConfigurationContainer.recognizedConfigurations.get(key);
             configuration.configuration.withConfiguration(cfg, (config) -> {
-                configList.add(new Label(0, 0, 0, 48, config.getName(), true));
-                GridLayout buttons = configList.add(new GridLayout(0, 1));
-                buttons.height = 48;
+                SplitLayout split = configList.add(new SplitLayout(SplitLayout.X_AXIS, 0.7f));
+                split.height = 96;
+                GridLayout left = split.add(new GridLayout(1, 2));
+                left.add(new Label(config.getName(), true));
+                GridLayout fields = left.add(new GridLayout(0, 1));
+                config.withModule(ConfigurationMetadataModule::new, (meta)->{
+                    fields.add(new TextBox(meta.name==null?"":meta.name, true, "Name").onChange((str) -> meta.name = str));
+                    fields.add(new TextBox(meta.version==null?"":meta.version, true, "Version").onChange((str) -> meta.version = str));
+                });
+                GridLayout buttons = split.add(new GridLayout(1, 2));
                 buttons.add(new Button("Edit", true).addAction(() -> {
                     gui.open(new MenuSpecificConfiguration(gui, this, config));
                 }));
@@ -92,10 +94,10 @@ public class MenuConfiguration extends ConfigurationMenu{
                 }));
             });
             if(!configuration.configuration.hasConfiguration(cfg)){
-                configList.add(new Label(0, 0, 0, 48, cfg.get().getName(), true));
-                GridLayout buttons = configList.add(new GridLayout(0, 1));
-                buttons.height = 48;
-                buttons.add(new Button("Create (Shift)", false){
+                SplitLayout split = configList.add(new SplitLayout(SplitLayout.X_AXIS, 0.7f));
+                split.height = 48;
+                split.add(new Label(cfg.get().getName(), true));
+                split.add(new Button("Create (Shift)", false){
                     @Override
                     public void render2d(double deltaTime){
                         enabled = Core.isShiftPressed();

@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.LayoutPanel;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.SidebarLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitListLayout;
 public abstract class ConfigurationMenu extends LayoutMenu{
     public ArrayList<Menu> parents = new ArrayList<>();
@@ -21,7 +21,7 @@ public abstract class ConfigurationMenu extends LayoutMenu{
     public final LayoutPanel sidebar;
     public final Layout content;
     public ConfigurationMenu(GUI gui, Menu parent, NCPFConfigurationContainer configuration, String name, Layout content){
-        super(gui, parent, new SidebarLayout(256));
+        super(gui, parent, new SplitLayout(SplitLayout.X_AXIS, 0, 256, 0));
         this.configuration = configuration;
         this.name = name;
         if(parent instanceof ConfigurationMenu){

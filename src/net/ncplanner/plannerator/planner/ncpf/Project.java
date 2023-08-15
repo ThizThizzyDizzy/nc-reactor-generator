@@ -83,6 +83,13 @@ public class Project extends NCPFFile{
         addons.clear();
     }
     public String getConfigName(){
+        for(String key : NCPFConfigurationContainer.configOrder){
+            if(configuration.configurations.containsKey(key)){
+                NCPFConfiguration cfg = configuration.configurations.get(key);
+                ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
+                if(module!=null&&module.name!=null)return module.name;
+            }
+        }
         for(NCPFConfiguration cfg : configuration.configurations.values()){
             ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
             if(module!=null&&module.name!=null)return module.name;
