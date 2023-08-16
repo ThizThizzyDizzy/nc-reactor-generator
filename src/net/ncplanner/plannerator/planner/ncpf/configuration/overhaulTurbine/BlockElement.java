@@ -58,4 +58,8 @@ public class BlockElement extends NCPFElement{
         setModules(names, texture, blade, stator, coil, bearing, shaft, connector, controller, casing, inlet, outlet);
         super.convertToObject(ncpf);
     }
+    @Override
+    public String getTitle(){
+        return "Block";
+    }
 }

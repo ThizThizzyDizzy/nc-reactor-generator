@@ -26,4 +26,8 @@ public class HeaterRecipe extends NCPFElement implements IBlockRecipe{
         setModules(stats, names, texture);
         super.convertToObject(ncpf);
     }
+    @Override
+    public String getTitle(){
+        return "Heater Recipe";
+    }
 }

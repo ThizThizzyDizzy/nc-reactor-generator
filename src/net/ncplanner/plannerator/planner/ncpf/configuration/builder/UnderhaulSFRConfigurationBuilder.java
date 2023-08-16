@@ -13,7 +13,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveC
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
@@ -57,10 +56,10 @@ public class UnderhaulSFRConfigurationBuilder{
         configuration.blocks.add(block);
         return block;
     }
-    public ActiveCoolerRecipe activeRecipe(int cooling, String liquid, String texture, PlacementRule... rules){
+    public ActiveCoolerRecipe activeRecipe(int cooling, String liquid, String texture, NCPFPlacementRule... rules){
         ActiveCoolerRecipe recipe = new ActiveCoolerRecipe(new NCPFLegacyFluidElement(liquid));
         recipe.stats.cooling = cooling;
-        for(PlacementRule r : rules){
+        for(NCPFPlacementRule r : rules){
             recipe.stats.rules.add(r);
         }
         recipe.texture.texture = TextureManager.getImage(texture);
@@ -73,11 +72,11 @@ public class UnderhaulSFRConfigurationBuilder{
         activeCooler = block;
         return block;
     }
-    public BlockElement cooler(String name, String displayName, int cooling, String texture, PlacementRule... rules){
+    public BlockElement cooler(String name, String displayName, int cooling, String texture, NCPFPlacementRule... rules){
         BlockElement block = block(name, displayName, texture);
         block.cooler = new CoolerModule();
         block.cooler.cooling = cooling;
-        for(PlacementRule r : rules){
+        for(NCPFPlacementRule r : rules){
             block.cooler.rules.add(r);
         }
         return block;
@@ -88,70 +87,70 @@ public class UnderhaulSFRConfigurationBuilder{
         return block;
     }
     
-    public PlacementRule atLeast(int min, Supplier<NCPFModule> block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule atLeast(int min, Supplier<NCPFModule> block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.target = new NCPFModuleReference(block);
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
         return rule;
     }
-    public PlacementRule atLeast(int min, BlockElement block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule atLeast(int min, BlockElement block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.target = new BlockReference(block);
         rule.min = (byte)Math.min(6,Math.max(1,min));
         rule.max = 6;
         return rule;
     }
-    public PlacementRule exactly(int num, Supplier<NCPFModule> block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule exactly(int num, Supplier<NCPFModule> block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.target = new NCPFModuleReference(block);
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
-    public PlacementRule exactly(int num, BlockElement block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule exactly(int num, BlockElement block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.BETWEEN;
         rule.target = new BlockReference(block);
         rule.min = rule.max = (byte)Math.min(6,Math.max(1,num));
         return rule;
     }
-    public PlacementRule axis(Supplier<NCPFModule> block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule axis(Supplier<NCPFModule> block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AXIAL;
         rule.target = new NCPFModuleReference(block);
         rule.min = 1;
         rule.max = 3;
         return rule;
     }
-    public PlacementRule axis(BlockElement block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule axis(BlockElement block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AXIAL;
         rule.target = new BlockReference(block);
         rule.min = 1;
         rule.max = 3;
         return rule;
     }
-    public PlacementRule or(PlacementRule... rules){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule or(NCPFPlacementRule... rules){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.OR;
-        for(PlacementRule r : rules){
+        for(NCPFPlacementRule r : rules){
             rule.rules.add(r);
         }
         return rule;
     }
-    public PlacementRule and(PlacementRule... rules){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule and(NCPFPlacementRule... rules){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.AND;
-        for(PlacementRule r : rules){
+        for(NCPFPlacementRule r : rules){
             rule.rules.add(r);
         }
         return rule;
     }
-    public PlacementRule vertex(Supplier<NCPFModule> block){
-        PlacementRule rule = new PlacementRule();
+    public NCPFPlacementRule vertex(Supplier<NCPFModule> block){
+        NCPFPlacementRule rule = new NCPFPlacementRule();
         rule.rule = NCPFPlacementRule.RuleType.VERTEX;
         rule.target = new NCPFModuleReference(block);
         return rule;

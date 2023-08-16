@@ -6,7 +6,6 @@ import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomFuelMutator;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;

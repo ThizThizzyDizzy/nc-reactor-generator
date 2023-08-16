@@ -125,7 +125,7 @@ public class MenuSettings extends SettingsMenu{
             new MenuSaveDialog(gui, this, ncpf, this::onOpened).open();
         });
         modify.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuConfiguration(gui, this, new Configuration(Core.project)), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
+            gui.open(new MenuTransition(gui, this, new MenuConfiguration(this, new Configuration(Core.project)), MenuTransition.SplitTransitionX.slideIn(sidebar.width/gui.getWidth()), 4));
         });
     }
     @Override

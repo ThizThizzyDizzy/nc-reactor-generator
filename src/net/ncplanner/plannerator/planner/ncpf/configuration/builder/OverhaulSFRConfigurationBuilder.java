@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
@@ -10,7 +11,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockRef
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
@@ -168,8 +168,8 @@ public class OverhaulSFRConfigurationBuilder{
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         return recipe;
     }
-    private PlacementRule parsePlacementRule(String rules){
-        return new PlacementRule().parseNc(rules, PlacementRule::new, (str)->{
+    private NCPFPlacementRule parsePlacementRule(String rules){
+        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str)->{
             if(str.startsWith("cell"))return FuelCellModule::new;
             else if(str.startsWith("moderator"))return ModeratorModule::new;
             else if(str.startsWith("reflector"))return ReflectorModule::new;

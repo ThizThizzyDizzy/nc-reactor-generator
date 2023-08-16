@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -19,7 +20,11 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     public List<Recipe> recipes = new ArrayList<>();
     public OverhaulFusionConfiguration(){
         super("plannerator:fusion_test");
+    }
+    @Override
+    public void init(){
         setModule(metadata);
+        settings = setModule(new OverhaulFusionSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -49,6 +54,10 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks,coolantRecipes,recipes};
+    }
+    @Override
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        return new Supplier[]{BlockElement::new, CoolantRecipe::new, Recipe::new};
     }
     @Override
     public List<NCPFElement>[] getMultiblockRecipes(){

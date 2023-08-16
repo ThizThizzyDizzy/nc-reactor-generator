@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
@@ -13,8 +14,10 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();
     public OverhaulMSRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
-    public OverhaulMSRConfiguration(){
+    @Override
+    public void init(){
         setModule(metadata);
+        settings = setModule(new OverhaulMSRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -38,6 +41,10 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks};
+    }
+    @Override
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        return new Supplier[]{BlockElement::new};
     }
     @Override
     public void makePartial(List<Design> designs){

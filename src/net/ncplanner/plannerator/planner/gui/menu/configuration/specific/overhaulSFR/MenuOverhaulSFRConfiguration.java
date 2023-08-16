@@ -17,13 +17,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlaceme
 public class MenuOverhaulSFRConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulSFRConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul SFR");
-        addSettingInt("Minimum Size", configuration.overhaul.fissionSFR::getMinSize, configuration.overhaul.fissionSFR::setMinSize).setTooltip("The minimum size of this multiblock");
-        addSettingFloat("Sparsity Penalty Mult", configuration.overhaul.fissionSFR::getSparsityPenaltyMult, configuration.overhaul.fissionSFR::setSparsityPenaltyMult);
-        addSettingInt("Neutron Reach", configuration.overhaul.fissionSFR::getNeutronReach, configuration.overhaul.fissionSFR::setNeutronReach).setTooltip("The maximum length of moderator lines");
-        addSettingRow();
-        addSettingInt("Maximum Size", configuration.overhaul.fissionSFR::getMaxSize, configuration.overhaul.fissionSFR::setMaxSize).setTooltip("The maximum size of this multiblock");
-        addSettingFloat("Sparsity Penalty Threshold", configuration.overhaul.fissionSFR::getSparsityPenaltyThreshold, configuration.overhaul.fissionSFR::setSparsityPenaltyThreshold);
-        addSettingInt("Cooling Efficiency Leniency", configuration.overhaul.fissionSFR::getCoolingEfficiencyLeniency, configuration.overhaul.fissionSFR::setCoolingEfficiencyLeniency).setTooltip("The size of the \"safe zone\" around 0 H/t before you get overheating and overcooling penalties");
         addList(()->{return "Blocks ("+configuration.overhaul.fissionSFR.blocks.size()+")";}, "Add Block", ()->{
             Block b = new Block("nuclearcraft:new_block");
             configuration.overhaul.fissionSFR.blocks.add(b);

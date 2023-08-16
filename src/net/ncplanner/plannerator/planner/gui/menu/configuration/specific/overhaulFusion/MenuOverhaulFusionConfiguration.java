@@ -20,19 +20,6 @@ import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlaceme
 public class MenuOverhaulFusionConfiguration extends MultiblockConfigurationMenu{
     public MenuOverhaulFusionConfiguration(GUI gui, Menu parent, Configuration configuration){
         super(gui, parent, configuration, "Overhaul Fusion");
-        addSettingInt("Minimum Inner Radius", configuration.overhaul.fusion::getMinInnerRadius, configuration.overhaul.fusion::setMinInnerRadius);
-        addSettingInt("Minimum Core Size", configuration.overhaul.fusion::getMinCoreSize, configuration.overhaul.fusion::setMinCoreSize);
-        addSettingInt("Minimum Toroid Width", configuration.overhaul.fusion::getMinToroidWidth, configuration.overhaul.fusion::setMinToroidWidth);
-        addSettingInt("Minimum Lining Thickness", configuration.overhaul.fusion::getMinLiningThickness, configuration.overhaul.fusion::setMinLiningThickness);
-        addSettingRow();
-        addSettingInt("Maximum Inner Radius", configuration.overhaul.fusion::getMaxInnerRadius, configuration.overhaul.fusion::setMaxInnerRadius);
-        addSettingInt("Maximum Core Size", configuration.overhaul.fusion::getMaxCoreSize, configuration.overhaul.fusion::setMaxCoreSize);
-        addSettingInt("Maximum Toroid Width", configuration.overhaul.fusion::getMaxToroidWidth, configuration.overhaul.fusion::setMaxToroidWidth);
-        addSettingInt("Maximum Lining Thickness", configuration.overhaul.fusion::getMaxLiningThickness, configuration.overhaul.fusion::setMaxLiningThickness);
-        addSettingRow();
-        addSettingFloat("Sparsity Penalty Mult", configuration.overhaul.fusion::getSparsityPenaltyMult, configuration.overhaul.fusion::setSparsityPenaltyMult);
-        addSettingFloat("Sparsity Penalty Threshold", configuration.overhaul.fusion::getSparsityPenaltyThreshold, configuration.overhaul.fusion::setSparsityPenaltyThreshold);
-        addSettingInt("Cooling Efficiency Leniency", configuration.overhaul.fusion::getCoolingEfficiencyLeniency, configuration.overhaul.fusion::setCoolingEfficiencyLeniency).setTooltip("The size of the \"safe zone\" around 0 H/t before you get overheating and overcooling penalties");
         addList(() -> {return "Blocks ("+configuration.overhaul.fusion.blocks.size()+")";}, "Add Block", () -> {
             Block b = new Block("nuclearcraft:new_block");
             configuration.overhaul.fusion.blocks.add(b);

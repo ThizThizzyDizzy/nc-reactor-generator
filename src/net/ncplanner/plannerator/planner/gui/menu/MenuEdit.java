@@ -481,7 +481,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             renderer.setColor(Core.theme.getSecondaryComponentColor(i));
             renderer.fillRect(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y);
             renderer.setColor(Core.theme.getComponentTextColor(i));
-            renderer.drawCenteredText(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y, ((MultiblockRecipeElement)recipeLists[i].get(0)).getRecipeType());
+            renderer.drawCenteredText(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y, ((MultiblockRecipeElement)recipeLists[i].get(0)).getTitle());
         }
         renderer.setColor(Core.theme.getSecondaryComponentColor(0));
         renderer.fillRect(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y);

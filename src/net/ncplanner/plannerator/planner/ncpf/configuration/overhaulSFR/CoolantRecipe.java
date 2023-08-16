@@ -27,7 +27,7 @@ public class CoolantRecipe extends NCPFElement implements MultiblockRecipeElemen
         super.convertToObject(ncpf);
     }
     @Override
-    public String getRecipeType(){
+    public String getTitle(){
         return "Coolant Recipe";
     }
 }

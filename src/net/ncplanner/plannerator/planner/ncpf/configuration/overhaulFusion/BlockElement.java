@@ -74,4 +74,8 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public boolean createsCluster(){
         return heatingBlanket!=null||breedingBlanket!=null;//I dunno, this sounds about right
     }
+    @Override
+    public String getTitle(){
+        return "Block";
+    }
 }

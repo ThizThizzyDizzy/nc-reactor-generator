@@ -5,22 +5,21 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.FakeMenu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
+import net.ncplanner.plannerator.planner.gui.menu.configuration.specific.SpecificConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTask;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -31,8 +30,8 @@ public class MenuConfiguration extends ConfigurationMenu{
     private final Configuration configuration;
     private final GridLayout addonButtons;
     private final SingleColumnList configList;
-    public MenuConfiguration(GUI gui, Menu parent, Configuration configuration){
-        super(gui, new FakeMenu(parent, () -> {
+    public MenuConfiguration(Menu parent, Configuration configuration){
+        super(new FakeMenu(parent, () -> {
             Core.setConfigurationAndConvertMultiblocks(configuration);
         }), null, configuration.getName(), new SplitLayout(SplitLayout.Y_AXIS, 0.5f, 48, 144).fitSize().setBorder(8, Core.theme::getConfigurationDividerColor));
         this.configuration = configuration;
@@ -80,7 +79,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                 });
                 GridLayout buttons = split.add(new GridLayout(1, 2));
                 buttons.add(new Button("Edit", true).addAction(() -> {
-                    gui.open(new MenuSpecificConfiguration(gui, this, config));
+                    config.convertToObject(new NCPFObject());//set all module references
+                    gui.open(new SpecificConfigurationMenu(this, super.configuration, config));
                 }));
                 buttons.add(new Button("Delete (Shift)", false){
                     @Override
@@ -104,7 +104,9 @@ public class MenuConfiguration extends ConfigurationMenu{
                         super.render2d(deltaTime);
                     }
                 }.addAction(() -> {
-                    configuration.configuration.setConfiguration(cfg.get());
+                    NCPFConfiguration c = cfg.get();
+                    c.init();
+                    configuration.configuration.setConfiguration(c);
                     onOpened();
                 }));
             }

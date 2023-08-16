@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
@@ -15,8 +16,10 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     public UnderhaulSFRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     public List<Fuel> fuels = new ArrayList<>();
-    public UnderhaulSFRConfiguration(){
+    @Override
+    public void init(){
         setModule(metadata);
+        settings = setModule(new UnderhaulSFRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -47,6 +50,10 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks, fuels};
+    }
+    @Override
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        return new Supplier[]{BlockElement::new, Fuel::new};
     }
     @Override
     public void makePartial(List<Design> designs){

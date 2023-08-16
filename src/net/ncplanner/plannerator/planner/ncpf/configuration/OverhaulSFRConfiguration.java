@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
@@ -15,8 +16,10 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public OverhaulSFRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     public List<CoolantRecipe> coolantRecipes = new ArrayList<>();
-    public OverhaulSFRConfiguration(){
+    @Override
+    public void init(){
         setModule(metadata);
+        settings = setModule(new OverhaulSFRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -47,6 +50,10 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks,coolantRecipes};
+    }
+    @Override
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        return new Supplier[]{BlockElement::new, CoolantRecipe::new};
     }
     @Override
     public void makePartial(List<Design> designs){

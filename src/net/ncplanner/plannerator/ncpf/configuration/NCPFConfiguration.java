@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.configuration;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
@@ -20,6 +21,11 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         }
     }
     public abstract List<NCPFElement>[] getElements();
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        Supplier<NCPFElement>[] supps = new Supplier[getElements().length];
+        for(int i = 0; i<supps.length; i++)supps[i] = NCPFElement::new;
+        return supps;
+    }
     public <T extends NCPFElement> T getElement(NCPFElementDefinition definition){
         for(List<NCPFElement> elems : getElements()){
             for(NCPFElement elem : elems){
@@ -33,4 +39,5 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     }
     public abstract void makePartial(List<Design> designs);
     public abstract String getName();
+    public void init(){}
 }

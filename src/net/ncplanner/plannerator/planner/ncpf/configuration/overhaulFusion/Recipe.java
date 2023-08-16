@@ -27,7 +27,7 @@ public class Recipe extends NCPFElement implements MultiblockRecipeElement{
         super.convertToObject(ncpf);
     }
     @Override
-    public String getRecipeType(){
+    public String getTitle(){
         return "Recipe";
     }
 }

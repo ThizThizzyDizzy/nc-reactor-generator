@@ -39,7 +39,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
@@ -152,9 +151,9 @@ public class LegacyNCPFWriter extends FormatWriter{
                 block.set("cooling", b.activeCoolerRecipes.get(0).stats.cooling);
             }
             if(b.cooler!=null||b.activeCooler!=null){
-                List<PlacementRule> rules = b.cooler==null?b.activeCoolerRecipes.get(0).stats.rules:b.cooler.rules;
+                List<NCPFPlacementRule> rules = b.cooler==null?b.activeCoolerRecipes.get(0).stats.rules:b.cooler.rules;
                 ConfigList ruls = new ConfigList();
-                for(PlacementRule rule : rules){
+                for(NCPFPlacementRule rule : rules){
                     ruls.add(savePlacementRule(rule, sfr, underhaulSFRBlockTypes));
                 }
                 block.set("rules", ruls);

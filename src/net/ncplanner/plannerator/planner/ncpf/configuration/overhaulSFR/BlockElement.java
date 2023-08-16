@@ -100,4 +100,8 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         makePartial(fuels, designs);
         makePartial(irradiatorRecipes, designs);
     }
+    @Override
+    public String getTitle(){
+        return "Block";
+    }
 }

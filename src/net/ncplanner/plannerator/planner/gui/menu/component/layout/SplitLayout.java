@@ -8,8 +8,8 @@ public class SplitLayout extends Layout{
     public static final int Y_AXIS = 1;
     public final int axis;
     public float splitPos;
-    private final float minSize1;
-    private final float minSize2;
+    public float minSize1;
+    public float minSize2;
     private float borderSize;
     private Supplier<Color> borderColor;
     private boolean fitSize;

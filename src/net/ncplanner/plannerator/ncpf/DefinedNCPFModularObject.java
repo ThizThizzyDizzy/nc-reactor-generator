@@ -23,8 +23,9 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     public boolean hasModule(Supplier<NCPFModule> module){
         return modules.hasModule(module);
     }
-    public void setModule(NCPFModule module){
+    public <T extends NCPFModule> T setModule(T module){
         modules.setModule(module);
+        return module;
     }
     public void setModules(NCPFModule... modules){
         for(NCPFModule module : modules)setModule(module);

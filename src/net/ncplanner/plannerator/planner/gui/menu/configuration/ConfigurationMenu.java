@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.LayoutMenu;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuTransition;
@@ -18,10 +17,12 @@ public abstract class ConfigurationMenu extends LayoutMenu{
     public ArrayList<String> parentNames = new ArrayList<>();
     public final NCPFConfigurationContainer configuration;
     public final String name;
-    public final LayoutPanel sidebar;
+    public final SplitListLayout sidebar;
     public final Layout content;
-    public ConfigurationMenu(GUI gui, Menu parent, NCPFConfigurationContainer configuration, String name, Layout content){
-        super(gui, parent, new SplitLayout(SplitLayout.X_AXIS, 0, 256, 0));
+    private final ArrayList<Runnable> onOpen = new ArrayList<>();
+    private boolean refreshNeeded;
+    public ConfigurationMenu(Menu parent, NCPFConfigurationContainer configuration, String name, Layout content){
+        super(parent, new SplitLayout(SplitLayout.X_AXIS, 0, 256, 0));
         this.configuration = configuration;
         this.name = name;
         if(parent instanceof ConfigurationMenu){
@@ -31,7 +32,7 @@ public abstract class ConfigurationMenu extends LayoutMenu{
         parents.add(parent);
         if(parent instanceof ConfigurationMenu)parentNames.add(((ConfigurationMenu)parent).name);
         else parentNames.add("Done");
-        sidebar = super.add(new LayoutPanel(new SplitListLayout(48)).setBackgroundColor(Core.theme::getConfigurationSidebarColor));
+        super.add(new LayoutPanel(sidebar = new SplitListLayout(48)).setBackgroundColor(Core.theme::getConfigurationSidebarColor));
         for(int i = 0; i<parents.size(); i++){
             Menu menu = parents.get(i);
             Button configurationButton = sidebar.add(new Button(parentNames.get(i), true, true));
@@ -46,5 +47,20 @@ public abstract class ConfigurationMenu extends LayoutMenu{
     @Override
     public <T extends Component> T add(T component){
         return content.add(component);
+    }
+    @Override
+    public void onOpened(){
+        onOpen.forEach(Runnable::run);
+    }
+    @Override
+    public void render2d(double deltaTime){
+        if(refreshNeeded)onOpened();
+        super.render2d(deltaTime);
+    }
+    public void onOpen(Runnable r){
+        onOpen.add(r);
+    }
+    public void refresh(){
+        refreshNeeded = true;
     }
 }

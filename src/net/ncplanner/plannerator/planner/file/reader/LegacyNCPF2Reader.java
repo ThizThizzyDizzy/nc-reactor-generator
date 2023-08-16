@@ -108,18 +108,18 @@ public class LegacyNCPF2Reader extends LegacyNCPF3Reader {
     }
 
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule readUnderRule(Config ruleCfg, String blockName){
-        return readGenericRuleNcpf2(underhaulPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule::new,
+    protected NCPFPlacementRule readUnderRule(Config ruleCfg, String blockName){
+        return readGenericRuleNcpf2(underhaulPostLoadMap, NCPFPlacementRule::new,
                 underhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule::new, blockName);
     }
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule readOverSFRRule(Config ruleCfg, String blockName){
-        return readGenericRuleNcpf2(overhaulSFRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule::new,
+    protected NCPFPlacementRule readOverSFRRule(Config ruleCfg, String blockName){
+        return readGenericRuleNcpf2(overhaulSFRPostLoadMap, NCPFPlacementRule::new,
                 overhaulSFRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new, blockName);
     }
     @Override
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule readOverMSRRule(Config ruleCfg, String blockName){
-        return readGenericRuleNcpf2(overhaulMSRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule::new,
+    protected NCPFPlacementRule readOverMSRRule(Config ruleCfg, String blockName){
+        return readGenericRuleNcpf2(overhaulMSRPostLoadMap, NCPFPlacementRule::new,
                 overhaulMSRBlockTypes, ruleCfg, net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new, blockName);
     }
 }

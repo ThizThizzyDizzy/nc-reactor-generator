@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
@@ -107,8 +107,8 @@ public class OverhaulTurbineConfigurationBuilder{
         return recipe;
     }
     
-    private PlacementRule parsePlacementRule(String rules){
-        return new PlacementRule().parseNc(rules, PlacementRule::new, (str)->{
+    private NCPFPlacementRule parsePlacementRule(String rules){
+        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str)->{
             if(str.startsWith("coil")) return CoilModule::new;
             else if(str.startsWith("bearing")) return BearingModule::new;
             else if(str.startsWith("connector")) return ConnectorModule::new;

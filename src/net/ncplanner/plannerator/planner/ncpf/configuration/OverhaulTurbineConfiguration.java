@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfiguration;
@@ -15,8 +16,10 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     public OverhaulTurbineSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     public List<Recipe> recipes = new ArrayList<>();
-    public OverhaulTurbineConfiguration(){
+    @Override
+    public void init(){
         setModule(metadata);
+        settings = setModule(new OverhaulTurbineSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -47,6 +50,10 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     @Override
     public List<NCPFElement>[] getElements(){
         return new List[]{blocks,recipes};
+    }
+    @Override
+    public Supplier<NCPFElement>[] getElementSuppliers(){
+        return new Supplier[]{BlockElement::new, Recipe::new};
     }
     @Override
     public void makePartial(List<Design> designs){

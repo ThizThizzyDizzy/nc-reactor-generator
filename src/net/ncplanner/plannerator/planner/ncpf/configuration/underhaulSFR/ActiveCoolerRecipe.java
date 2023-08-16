@@ -26,4 +26,8 @@ public class ActiveCoolerRecipe extends NCPFElement implements IBlockRecipe{
         setModules(names, texture, stats);
         super.convertToObject(ncpf);
     }
+    @Override
+    public String getTitle(){
+        return "Active Cooler Recipe";
+    }
 }

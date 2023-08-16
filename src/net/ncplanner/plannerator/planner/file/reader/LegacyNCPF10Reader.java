@@ -40,15 +40,35 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
             case 1:
                 return LegacyRuleType.AXIAL;
             case 2:
-                if (rule instanceof net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule) return LegacyRuleType.EDGE;
-                else return LegacyRuleType.VERTEX;
+                return LegacyRuleType.VERTEX;
             case 3:
                 return LegacyRuleType.BETWEEN_GROUP;
             case 4:
                 return LegacyRuleType.AXIAL_GROUP;
             case 5:
-                if (rule instanceof net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule) return LegacyRuleType.EDGE_GROUP;
-                else return LegacyRuleType.VERTEX_GROUP;
+                return LegacyRuleType.VERTEX_GROUP;
+            case 6:
+                return LegacyRuleType.OR;
+            case 7:
+                return LegacyRuleType.AND;
+            default:
+                throw new RuntimeException("Found rule with invalid type: "+type);
+        }
+    }
+    protected LegacyRuleType mapTurbineRuleTypeNcpf10(NCPFPlacementRule rule, byte type) {
+        switch (type) {
+            case 0:
+                return LegacyRuleType.BETWEEN;
+            case 1:
+                return LegacyRuleType.AXIAL;
+            case 2:
+                return LegacyRuleType.EDGE;
+            case 3:
+                return LegacyRuleType.BETWEEN_GROUP;
+            case 4:
+                return LegacyRuleType.AXIAL_GROUP;
+            case 5:
+                return LegacyRuleType.EDGE_GROUP;
             case 6:
                 return LegacyRuleType.OR;
             case 7:
@@ -70,7 +90,7 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
     protected <Rule extends NCPFPlacementRule> Rule readGenericRule(HashMap<Rule, Integer> postMap, Supplier<Rule> newRule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg, String blockName){
         Rule rule = newRule.get();
         byte type = ruleCfg.get("type");
-        LegacyRuleType ruleType = mapRuleTypeNcpf10(rule, type);
+        LegacyRuleType ruleType = blockTypes==overhaulTurbineBlockTypes?mapTurbineRuleTypeNcpf10(rule, type):mapRuleTypeNcpf10(rule, type);
         rule.rule = ruleType.currentRule;
         switch(ruleType){
             case BETWEEN:

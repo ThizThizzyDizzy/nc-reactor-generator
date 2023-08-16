@@ -76,6 +76,9 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
         withModule(DisplayNamesModule::new, (names)-> nams.addAll(names.legacyNames));
         return nams;
     }
+    public String getTitle(){
+        return "NCPF Element";
+    }
     @Override
     public String toString(){
         return getDisplayName();

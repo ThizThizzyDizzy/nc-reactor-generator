@@ -65,11 +65,11 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
     }
 
-    HashMap<net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule, Integer> underhaulPostLoadMap = new HashMap<>();
-    HashMap<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule, Integer> overhaulSFRPostLoadMap = new HashMap<>();
-    HashMap<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule, Integer> overhaulMSRPostLoadMap = new HashMap<>();
-    HashMap<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule, Integer> overhaulTurbinePostLoadMap = new HashMap<>();
-    HashMap<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule, Integer> overhaulFusionPostLoadMap = new HashMap<>();
+    HashMap<NCPFPlacementRule, Integer> underhaulPostLoadMap = new HashMap<>();
+    HashMap<NCPFPlacementRule, Integer> overhaulSFRPostLoadMap = new HashMap<>();
+    HashMap<NCPFPlacementRule, Integer> overhaulMSRPostLoadMap = new HashMap<>();
+    HashMap<NCPFPlacementRule, Integer> overhaulTurbinePostLoadMap = new HashMap<>();
+    HashMap<NCPFPlacementRule, Integer> overhaulFusionPostLoadMap = new HashMap<>();
     HashMap<NCPFPlacementRule, String> postNames = new HashMap<>();
     HashMap<OverhaulTurbineDesign, ArrayList<Integer>> overhaulTurbinePostLoadInputsMap = new HashMap<>();
 
@@ -407,20 +407,20 @@ public class LegacyNCPF11Reader implements FormatReader {
         return rule;
     }
 
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule readUnderRule(Config ruleCfg, String blockName) {
-        return readGenericRule(underhaulPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule::new, underhaulSFRBlockTypes, ruleCfg, blockName);
+    protected NCPFPlacementRule readUnderRule(Config ruleCfg, String blockName) {
+        return readGenericRule(underhaulPostLoadMap, NCPFPlacementRule::new, underhaulSFRBlockTypes, ruleCfg, blockName);
     }
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule readOverSFRRule(Config ruleCfg, String blockName){
-        return readGenericRule(overhaulSFRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule::new, overhaulSFRBlockTypes, ruleCfg, blockName);
+    protected NCPFPlacementRule readOverSFRRule(Config ruleCfg, String blockName){
+        return readGenericRule(overhaulSFRPostLoadMap, NCPFPlacementRule::new, overhaulSFRBlockTypes, ruleCfg, blockName);
     }
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule readOverMSRRule(Config ruleCfg, String blockName){
-        return readGenericRule(overhaulMSRPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule::new, overhaulMSRBlockTypes, ruleCfg, blockName);
+    protected NCPFPlacementRule readOverMSRRule(Config ruleCfg, String blockName){
+        return readGenericRule(overhaulMSRPostLoadMap, NCPFPlacementRule::new, overhaulMSRBlockTypes, ruleCfg, blockName);
     }
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule readOverTurbineRule(Config ruleCfg, String blockName){
-        return readGenericRule(overhaulTurbinePostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule::new, overhaulTurbineBlockTypes, ruleCfg, blockName);
+    protected NCPFPlacementRule readOverTurbineRule(Config ruleCfg, String blockName){
+        return readGenericRule(overhaulTurbinePostLoadMap, NCPFPlacementRule::new, overhaulTurbineBlockTypes, ruleCfg, blockName);
     }
-    protected net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule readOverFusionRule(Config ruleCfg, String blockName) {
-        return readGenericRule(overhaulFusionPostLoadMap, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule::new, overhaulFusionBlockTypes, ruleCfg, blockName);
+    protected NCPFPlacementRule readOverFusionRule(Config ruleCfg, String blockName) {
+        return readGenericRule(overhaulFusionPostLoadMap, NCPFPlacementRule::new, overhaulFusionBlockTypes, ruleCfg, blockName);
     }
 
     protected void loadConfiguration(Project project, Config config){
@@ -473,7 +473,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
         if(!overhaulSFRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulSFRConfiguration::new).blocks.addAll(overhaulSFRAdditionalBlocks);
         if(!overhaulMSRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulMSRConfiguration::new).blocks.addAll(overhaulMSRAdditionalBlocks);
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule rule : underhaulPostLoadMap.keySet()){
+        for(NCPFPlacementRule rule : underhaulPostLoadMap.keySet()){
             int index = underhaulPostLoadMap.get(rule);
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
@@ -485,7 +485,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 }
             }
         }
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.PlacementRule rule : overhaulSFRPostLoadMap.keySet()){
+        for(NCPFPlacementRule rule : overhaulSFRPostLoadMap.keySet()){
             int index = overhaulSFRPostLoadMap.get(rule);
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
@@ -497,7 +497,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 }
             }
         }
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.PlacementRule rule : overhaulMSRPostLoadMap.keySet()){
+        for(NCPFPlacementRule rule : overhaulMSRPostLoadMap.keySet()){
             int index = overhaulMSRPostLoadMap.get(rule);
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
@@ -509,7 +509,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 }
             }
         }
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.PlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
+        for(NCPFPlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
             int index = overhaulTurbinePostLoadMap.get(rule);
             if(index==0){
                 rule.target = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
@@ -521,7 +521,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 }
             }
         }
-        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.PlacementRule rule : overhaulFusionPostLoadMap.keySet()){
+        for(NCPFPlacementRule rule : overhaulFusionPostLoadMap.keySet()){
             int index = overhaulFusionPostLoadMap.get(rule);
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);

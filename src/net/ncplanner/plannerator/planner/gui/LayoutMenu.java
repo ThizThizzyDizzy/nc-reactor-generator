@@ -2,8 +2,8 @@ package net.ncplanner.plannerator.planner.gui;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
 public class LayoutMenu extends Menu{
     private final Layout layout;
-    public LayoutMenu(GUI gui, Menu parent, Layout layout){
-        super(gui, parent);
+    public LayoutMenu(Menu parent, Layout layout){
+        super(parent);
         this.layout = super.add(layout);
     }
     @Override

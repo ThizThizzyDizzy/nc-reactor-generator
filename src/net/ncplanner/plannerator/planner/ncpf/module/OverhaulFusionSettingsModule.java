@@ -1,7 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-public class OverhaulFusionSettingsModule extends NCPFModule{
+public class OverhaulFusionSettingsModule extends NCPFSettingsModule{
     public int minInnerRadius;
     public int maxInnerRadius;
     public int minCoreSize;
@@ -15,37 +13,16 @@ public class OverhaulFusionSettingsModule extends NCPFModule{
     public int coolingEfficiencyLeniency;
     public OverhaulFusionSettingsModule(){
         super("plannerator:fusion_test_configuration_settings");
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        minInnerRadius = ncpf.getInteger("min_inner_radius");
-        maxInnerRadius = ncpf.getInteger("max_inner_radius");
-        minCoreSize = ncpf.getInteger("min_core_size");
-        maxCoreSize = ncpf.getInteger("max_core_size");
-        minToroidWidth = ncpf.getInteger("min_toroid_width");
-        maxToroidWidth = ncpf.getInteger("max_toroid_width");
-        minLiningThickness = ncpf.getInteger("min_lining_thickness");
-        maxLiningThickness = ncpf.getInteger("max_lining_thickness");
-        sparsityPenaltyMultiplier = ncpf.getFloat("sparsity_penalty_multiplier");
-        sparsityPenaltyThreshold = ncpf.getFloat("sparsity_penalty_threshold");
-        coolingEfficiencyLeniency = ncpf.getInteger("cooling_efficiency_leniency");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setInteger("min_inner_radius", minInnerRadius);
-        ncpf.setInteger("max_inner_radius", maxInnerRadius);
-        ncpf.setInteger("min_core_size", minCoreSize);
-        ncpf.setInteger("max_core_size", maxCoreSize);
-        ncpf.setInteger("min_toroid_width", minToroidWidth);
-        ncpf.setInteger("max_toroid_width", maxToroidWidth);
-        ncpf.setInteger("min_lining_thickness", minLiningThickness);
-        ncpf.setInteger("max_lining_thickness", maxLiningThickness);
-        ncpf.setFloat("sparsity_penalty_multiplier", sparsityPenaltyMultiplier);
-        ncpf.setFloat("sparsity_penalty_threshold", sparsityPenaltyThreshold);
-        ncpf.setInteger("cooling_efficiency_leniency", coolingEfficiencyLeniency);
-    }
-    @Override
-    public void conglomerate(NCPFModule addon){
-        throw new UnsupportedOperationException("Configuration settings may not be overwritten!");
+        addInteger("min_inner_radius", ()->minInnerRadius, (v)->minInnerRadius = v, "Minimum Inner Radius");
+        addInteger("min_core_size", ()->minCoreSize, (v)->minCoreSize = v, "Minimum Core Size");
+        addInteger("min_toroid_width", ()->minToroidWidth, (v)->minToroidWidth = v, "Minimum Toroid Width");
+        addInteger("min_lining_thickness", ()->minLiningThickness, (v)->minLiningThickness = v, "Minimum Lining Thickness");
+        addInteger("max_inner_radius", ()->maxInnerRadius, (v)->maxInnerRadius = v, "Maximum Inner Radius");
+        addInteger("max_core_size", ()->maxCoreSize, (v)->maxCoreSize = v, "Maximum Core Size");
+        addInteger("max_toroid_width", ()->maxToroidWidth, (v)->maxToroidWidth = v, "Maximum Toroid Width");
+        addInteger("max_lining_thickness", ()->maxLiningThickness, (v)->maxLiningThickness = v, "Maximum Lining Thickness");
+        addFloat("sparsity_penalty_multiplier", ()->sparsityPenaltyMultiplier, (v)->sparsityPenaltyMultiplier = v, "Sparsity Penalty Multiplier");
+        addFloat("sparsity_penalty_threshold", ()->sparsityPenaltyThreshold, (v)->sparsityPenaltyThreshold = v, "Sparsity Penalty Threshold");
+        addInteger("cooling_efficiency_leniency", ()->coolingEfficiencyLeniency, (v)->coolingEfficiencyLeniency = v, "Cooling Efficiency Leniency", "The size of the \"safe zone\" around 0 H/t before you get overheating and overcooling penalties");
     }
 }

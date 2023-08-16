@@ -12,6 +12,9 @@ public class Menu extends Component{
         this.gui = gui;
         this.parent = parent;
     }
+    public Menu(Menu parent){
+        this(parent.gui, parent);
+    }
     @Override
     public void render2d(double deltaTime){
         super.render2d(deltaTime);
