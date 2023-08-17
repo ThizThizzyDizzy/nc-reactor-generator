@@ -27,7 +27,7 @@ public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     }
     @Override
     public String toString(){
-        return metadata!=null?name+":"+metadata:name;
+        return name+(metadata!=null?":"+metadata:"")+stringifyBlockstate(blockstate)+(nbt!=null?nbt:"");
     }
     public NCPFLegacyBlockElement with(String key, Object value){
         blockstate.put(key, value);

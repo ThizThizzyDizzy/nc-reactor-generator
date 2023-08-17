@@ -25,6 +25,7 @@ public class TextBox extends Component{
     public boolean oscillator;
     public double oscillatorTimer = 0;
     private ArrayList<Consumer<String>> changeListeners = new ArrayList<>();
+    private boolean allowEmpty;
     public TextBox(String text, boolean editable){
         this(0, 0, 0, 0, text, editable);
     }
@@ -42,7 +43,7 @@ public class TextBox extends Component{
     }
     public TextBox(float x, float y, float width, float height, String text, boolean editable, String title, float titleInset){
         super(x, y, width, height);
-        this.text = text;
+        this.text = text==null?"":text;
         this.editable = editable;
         this.title = title;
         if(titleInset==0)titlenessSpeed = 0;
@@ -90,52 +91,54 @@ public class TextBox extends Component{
     public void onCharTyped(char c){
         String lastText = text;
         if(editable)text+=c;//TODO allow cursor moving
-        if(filter==INT){
-            if(text.trim().isEmpty())text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                int val = Integer.parseInt(text);
-                if(min!=null&&val<min.intValue()){
-                    text = min.toString();
+        if(!text.isEmpty()||!allowEmpty){
+            if(filter==INT){
+                if(text.trim().isEmpty())text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    int val = Integer.parseInt(text);
+                    if(min!=null&&val<min.intValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.intValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.intValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
-        }
-        if(filter==FLOAT){
-            if(text.trim().isEmpty())text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                float val = Float.parseFloat(text);
-                if(min!=null&&val<min.floatValue()){
-                    text = min.toString();
+            if(filter==FLOAT){
+                if(text.trim().isEmpty())text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    float val = Float.parseFloat(text);
+                    if(min!=null&&val<min.floatValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.floatValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.floatValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
-        }
-        if(filter==DOUBLE){
-            if(text.trim().isEmpty())text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                double val = Double.parseDouble(text);
-                if(min!=null&&val<min.doubleValue()){
-                    text = min.toString();
+            if(filter==DOUBLE){
+                if(text.trim().isEmpty())text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    double val = Double.parseDouble(text);
+                    if(min!=null&&val<min.doubleValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.doubleValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.doubleValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
         }
         while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
@@ -152,60 +155,62 @@ public class TextBox extends Component{
         if(action==GLFW_PRESS||action==GLFW_REPEAT){
             if(key==GLFW_KEY_BACKSPACE&&!text.isEmpty())text = text.substring(0, text.length()-1);//TODO allow cursor moving
         }
-        if(filter==INT){
-            if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                int val = Integer.parseInt(text);
-                if(min!=null&&val<min.intValue()){
-                    text = min.toString();
+        if(!text.isEmpty()||!allowEmpty){
+            if(filter==INT){
+                if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    int val = Integer.parseInt(text);
+                    if(min!=null&&val<min.intValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.intValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.intValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
-        }
-        if(filter==FLOAT){
-            if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                float val = Float.parseFloat(text);
-                if(min!=null&&val<min.floatValue()){
-                    text = min.toString();
+            if(filter==FLOAT){
+                if(text.trim().isEmpty()||text.trim().equals("-"))text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    float val = Float.parseFloat(text);
+                    if(min!=null&&val<min.floatValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.floatValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.floatValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
-        }
-        if(filter==DOUBLE){
-            if(text.trim().isEmpty())text = "0";
-            if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
-            if(text.startsWith("--"))text = text.substring(2);
-            try{
-                double val = Double.parseDouble(text);
-                if(min!=null&&val<min.doubleValue()){
-                    text = min.toString();
+            if(filter==DOUBLE){
+                if(text.trim().isEmpty())text = "0";
+                if(text.endsWith("-"))text = "-"+text.substring(0, text.length()-1);
+                if(text.startsWith("--"))text = text.substring(2);
+                try{
+                    double val = Double.parseDouble(text);
+                    if(min!=null&&val<min.doubleValue()){
+                        text = min.toString();
+                    }
+                    if(max!=null&&val>max.doubleValue()){
+                        text = max.toString();
+                    }
+                }catch(NumberFormatException ex){
+                    text = lastText;
                 }
-                if(max!=null&&val>max.doubleValue()){
-                    text = max.toString();
-                }
-            }catch(NumberFormatException ex){
-                text = lastText;
             }
-        }
-        if(filter!=NONE){
-            while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
-            while(text.startsWith("-0")&&!text.startsWith("-0.")&&text.length()>2)text = "-"+text.substring(2);
-            if(text.startsWith(".")){
-                while(text.endsWith("0"))text = text.substring(0, text.length()-1);
-                if(text.equals("."))text = "0";
+            if(filter!=NONE){
+                while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
+                while(text.startsWith("-0")&&!text.startsWith("-0.")&&text.length()>2)text = "-"+text.substring(2);
+                if(text.startsWith(".")){
+                    while(text.endsWith("0"))text = text.substring(0, text.length()-1);
+                    if(text.equals("."))text = "0";
+                }
             }
         }
         changeListeners.forEach((t) -> t.accept(text));
@@ -235,6 +240,10 @@ public class TextBox extends Component{
         this.min = min;
         this.max = max;
         filter = DOUBLE;
+        return this;
+    }
+    public TextBox allowEmpty(){
+        allowEmpty = true;
         return this;
     }
     public TextBox setSuffix(String suffix){

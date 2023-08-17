@@ -19,6 +19,10 @@ public class NCPFBlockTagElement extends NCPFSettingsElement{
         return name;
     }
     @Override
+    public String toString(){
+        return name+stringifyBlockstate(blockstate)+(nbt!=null?nbt:"");
+    }
+    @Override
     public String getTypeName(){
         return "Block Tag";
     }

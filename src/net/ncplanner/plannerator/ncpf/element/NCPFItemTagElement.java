@@ -16,6 +16,10 @@ public class NCPFItemTagElement extends NCPFSettingsElement{
         return name;
     }
     @Override
+    public String toString(){
+        return name+(nbt!=null?nbt:"");
+    }
+    @Override
     public String getTypeName(){
         return "Item Tag";
     }

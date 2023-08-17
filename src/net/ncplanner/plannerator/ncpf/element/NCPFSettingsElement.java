@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -105,6 +106,14 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
             return true;
         }
         return false;
+    }
+    public String stringifyBlockstate(HashMap<String, Object> state){
+        if(state.isEmpty())return "";
+        String s = "";
+        ArrayList<String> keys = new ArrayList<>(state.keySet());
+        Collections.sort(keys);
+        for(String key : keys)s+=","+key+"="+state.get(key);
+        return "["+s.substring(1)+"]";
     }
     public static enum Type{
         NAMESPACED_NAME,NAME,NBT,BLOCKSTATE,METADATA,TAG,OREDICT;

@@ -24,7 +24,7 @@ public class NCPFLegacyItemElement extends NCPFSettingsElement{
     }
     @Override
     public String toString(){
-        return metadata!=null?name+":"+metadata:name;
+        return name+(metadata!=null?":"+metadata:"")+(nbt!=null?nbt:"");
     }
     @Override
     public String getTypeName(){
