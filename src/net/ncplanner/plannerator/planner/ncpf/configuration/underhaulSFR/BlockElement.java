@@ -1,9 +1,11 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
@@ -62,5 +64,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public String getTitle(){
         return "Block";
+    }
+    @Override
+    public Supplier<NCPFModule>[] getPreferredModules(){
+        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, CoolerModule::new, ActiveCoolerModule::new,
+            FuelCellModule::new, ModeratorModule::new, CasingModule::new, ControllerModule::new};
     }
 }

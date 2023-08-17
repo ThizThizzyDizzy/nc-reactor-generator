@@ -109,6 +109,9 @@ public class ElementConfigurationMenu extends ConfigurationMenu{
             }else definitionFields.add(new Panel());
         }else definitionList.add(new Panel());
         SplitLayout settings = add(new SplitLayout(SplitLayout.Y_AXIS, 0.5f));
+        
+        element.getPreferredModules(); //TODO something with this lol, separate block functions and other modules
+        
         GridLayout moduleLists = settings.add(new GridLayout(0, 1));
         //TODO add modules
         GridLayout lists = settings.add(new GridLayout(0, 1));//block recipes

@@ -1,15 +1,17 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.CoolantRecipeStatsModule;
 public class CoolantRecipe extends NCPFElement implements MultiblockRecipeElement{
-    public CoolantRecipeStatsModule stats = new CoolantRecipeStatsModule();
     public DisplayNamesModule names = new DisplayNamesModule();
     public TextureModule texture = new TextureModule();
+    public CoolantRecipeStatsModule stats = new CoolantRecipeStatsModule();
     public CoolantRecipe(){}
     public CoolantRecipe(NCPFElementDefinition definition){
         super(definition);
@@ -29,5 +31,9 @@ public class CoolantRecipe extends NCPFElement implements MultiblockRecipeElemen
     @Override
     public String getTitle(){
         return "Coolant Recipe";
+    }
+    @Override
+    public Supplier<NCPFModule>[] getPreferredModules(){
+        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, CoolantRecipeStatsModule::new};
     }
 }

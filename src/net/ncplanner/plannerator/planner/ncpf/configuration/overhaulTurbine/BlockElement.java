@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
@@ -61,5 +63,11 @@ public class BlockElement extends NCPFElement{
     @Override
     public String getTitle(){
         return "Block";
+    }
+    @Override
+    public Supplier<NCPFModule>[] getPreferredModules(){
+        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, BladeModule::new, StatorModule::new,
+            CoilModule::new, BearingModule::new, ShaftModule::new, ConnectorModule::new, ControllerModule::new,
+            CasingModule::new, InletModule::new, OutletModule::new};
     }
 }
