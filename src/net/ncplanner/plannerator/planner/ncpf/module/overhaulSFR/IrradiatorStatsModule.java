@@ -1,32 +1,11 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipeStatsModule;
-public class IrradiatorStatsModule extends NCPFRecipeStatsModule{
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFStatsModule;
+public class IrradiatorStatsModule extends NCPFStatsModule{
     public float efficiency;
     public float heat;
     public IrradiatorStatsModule(){
         super("nuclearcraft:overhaul_sfr:irradiator_stats");
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        efficiency = ncpf.getFloat("efficiency");
-        heat = ncpf.getFloat("heat");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setFloat("efficiency", efficiency);
-        ncpf.setFloat("heat", heat);
-    }
-    @Override
-    public String getTooltip(){
-        return "Efficiency: "+efficiency+"\n"
-              +"Heat: "+heat+"\n";
-    }
-    @Override
-    public void conglomerate(NCPFModule addon){
-        IrradiatorStatsModule stats = (IrradiatorStatsModule)addon;
-        efficiency = stats.efficiency;
-        heat = stats.heat;
+        addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
+        addFloat("heat", ()->heat, (v)->heat = v, "Heat");
     }
 }

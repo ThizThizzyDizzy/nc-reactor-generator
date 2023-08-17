@@ -19,7 +19,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.specific.SpecificConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTask;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;

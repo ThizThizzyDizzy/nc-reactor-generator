@@ -11,11 +11,13 @@ public abstract class BlockRulesModule extends BlockFunctionModule implements El
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
+        super.convertFromObject(ncpf);
         rules = ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setDefinedNCPFList("rules", rules);
+        super.convertToObject(ncpf);
     }
     public String getStatsTooltip(){
         return "";

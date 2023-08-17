@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 public class CoolantVentModule extends BlockFunctionModule{
@@ -10,18 +9,11 @@ public class CoolantVentModule extends BlockFunctionModule{
     private NCPFElement otherVent;
     public CoolantVentModule(){
         super("nuclearcraft:overhaul_sfr:coolant_vent");
+        addBoolean("output", ()->output, (v)->output = v, "Output");
     }
     public CoolantVentModule(boolean output){
         this();
         this.output = output;
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        output = ncpf.getBoolean("output");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setBoolean("output", output);
     }
     @Override
     public void setReferences(List<NCPFElement> lst){

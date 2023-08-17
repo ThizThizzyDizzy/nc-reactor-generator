@@ -8,8 +8,8 @@ import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public abstract class NCPFSettingsModule extends NCPFModule{
     public final ArrayList<String> settings = new ArrayList<>();
     public final HashMap<String, Type> types = new HashMap<>();
-    public final HashMap<String, Supplier<? extends Number>> gets = new HashMap<>();
-    public final HashMap<String, Consumer<? extends Number>> sets = new HashMap<>();
+    public final HashMap<String, Supplier> gets = new HashMap<>();
+    public final HashMap<String, Consumer> sets = new HashMap<>();
     public final HashMap<String, String> titles = new HashMap<>();
     public final HashMap<String, String> tooltips = new HashMap<>();
     public NCPFSettingsModule(String name){
@@ -37,18 +37,44 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         titles.put(name, title);
         tooltips.put(name, tooltip);
     }
+    public void addDouble(String name, Supplier<Double> get, Consumer<Double> set, String title){
+        addDouble(name, get, set, title, null);
+    }
+    public void addDouble(String name, Supplier<Double> get, Consumer<Double> set, String title, String tooltip){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.DOUBLE);
+        titles.put(name, title);
+        tooltips.put(name, tooltip);
+    }
+    public void addBoolean(String name, Supplier<Boolean> get, Consumer<Boolean> set, String title){
+        addBoolean(name, get, set, title, null);
+    }
+    public void addBoolean(String name, Supplier<Boolean> get, Consumer<Boolean> set, String title, String tooltip){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.BOOLEAN);
+        titles.put(name, title);
+        tooltips.put(name, tooltip);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String setting : settings){
-            Consumer<? extends Number> set = sets.get(setting);
+            Consumer set = sets.get(setting);
             switch(types.get(setting)){
                 case FLOAT:
-                    Consumer<Float> setf = (Consumer<Float>)sets.get(setting);
-                    setf.accept(ncpf.getFloat(setting));
+                    ((Consumer<Float>)set).accept(ncpf.getFloat(setting));
+                    break;
+                case DOUBLE:
+                    ((Consumer<Double>)set).accept(ncpf.getDouble(setting));
                     break;
                 case INTEGER:
-                    Consumer<Integer> seti = (Consumer<Integer>)sets.get(setting);
-                    seti.accept(ncpf.getInteger(setting));
+                    ((Consumer<Integer>)set).accept(ncpf.getInteger(setting));
+                    break;
+                case BOOLEAN:
+                    ((Consumer<Boolean>)set).accept(ncpf.getBoolean(setting));
                     break;
             }
         }
@@ -56,22 +82,51 @@ public abstract class NCPFSettingsModule extends NCPFModule{
     @Override
     public void convertToObject(NCPFObject ncpf){
         for(String setting : settings){
-            Supplier<? extends Number> get = gets.get(setting);
+            Supplier get = gets.get(setting);
             switch(types.get(setting)){
                 case FLOAT:
-                    ncpf.setFloat(setting, get.get().floatValue());
+                    ncpf.setFloat(setting, ((Supplier<Float>)get).get());
+                    break;
+                case DOUBLE:
+                    ncpf.setDouble(setting, ((Supplier<Double>)get).get());
                     break;
                 case INTEGER:
-                    ncpf.setInteger(setting, get.get().intValue());
+                    ncpf.setInteger(setting, ((Supplier<Integer>)get).get());
+                    break;
+                case BOOLEAN:
+                    ncpf.setBoolean(setting, ((Supplier<Boolean>)get).get());
                     break;
             }
         }
     }
     @Override
     public void conglomerate(NCPFModule addon){
-        throw new UnsupportedOperationException("Settings may not be overwritten!");
+        NCPFSettingsModule other = (NCPFSettingsModule)addon;
+        for(String setting : settings){
+            sets.get(setting).accept(other.gets.get(setting).get());
+        }
+    }
+    public String getTooltip(){
+        String ttp = "";
+        for(String setting : settings){
+            switch(types.get(setting)){
+                case BOOLEAN:
+                    if(((Supplier<Boolean>)gets.get(setting)).get())ttp+=titles.get(setting)+"\n";
+                    break;
+                case FLOAT:
+                    ttp+=titles.get(setting)+": "+((Supplier<Float>)gets.get(setting)).get()+"\n";
+                    break;
+                case DOUBLE:
+                    ttp+=titles.get(setting)+": "+((Supplier<Double>)gets.get(setting)).get()+"\n";
+                    break;
+                case INTEGER:
+                    ttp+=titles.get(setting)+": "+((Supplier<Integer>)gets.get(setting)).get()+"\n";
+                    break;
+            }
+        }
+        return ttp.trim();
     }
     public static enum Type{
-        INTEGER,FLOAT;
+        INTEGER,FLOAT,DOUBLE,BOOLEAN;
     }
 }

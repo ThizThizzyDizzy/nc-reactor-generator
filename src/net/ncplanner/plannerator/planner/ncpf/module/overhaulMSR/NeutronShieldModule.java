@@ -13,18 +13,18 @@ public class NeutronShieldModule extends BlockFunctionModule implements ElementS
     public BlockReference closed;
     public NeutronShieldModule(){
         super("nuclearcraft:overhaul_msr:neutron_shield");
+        addInteger("heat_per_flux", ()->heatPerFlux, (v)->heatPerFlux = v, "Heat Per Flux");
+        addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        heatPerFlux = ncpf.getInteger("heat_per_flux");
-        efficiency = ncpf.getFloat("efficiency");
+        super.convertFromObject(ncpf);
         closed = ncpf.getDefinedNCPFObject("closed", BlockReference::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        ncpf.setInteger("heat_per_flux", heatPerFlux);
-        ncpf.setFloat("efficiency", efficiency);
         ncpf.setDefinedNCPFObject("closed", closed);
+        super.convertToObject(ncpf);
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
@@ -40,10 +40,5 @@ public class NeutronShieldModule extends BlockFunctionModule implements ElementS
     @Override
     public String getFunctionName(){
         return "Neutron Shield";
-    }
-    @Override
-    public String getTooltip(){
-        return "Heat Per Flux: "+heatPerFlux+"\n"
-                + "Efficiency: "+efficiency;
     }
 }

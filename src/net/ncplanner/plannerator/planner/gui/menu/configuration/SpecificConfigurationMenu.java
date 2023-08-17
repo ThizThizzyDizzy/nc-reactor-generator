@@ -1,4 +1,4 @@
-package net.ncplanner.plannerator.planner.gui.menu.configuration.specific;
+package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -16,7 +16,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.ConfigurationMenu;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;

@@ -35,7 +35,7 @@ public class TextDisplay extends Component{
         renderer.fillRect(x, y, x+width, y+height);
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         float textHeight = this.textHeight;
-        if(fitText)textHeight = Math.min(textHeight, height/strs.length);
+        if(fitText)textHeight = Math.min(textHeight, (height)/(strs.length+padding));
         for(int i = 0; i<strs.length; i++){
             String str = strs[i];
             if(centered){
