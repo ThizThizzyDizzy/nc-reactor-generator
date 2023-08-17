@@ -20,4 +20,5 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
     public String toString(){
         return getName();
     }
+    public abstract String getTypeName();
 }

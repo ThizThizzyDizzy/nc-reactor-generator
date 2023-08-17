@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.ncpf.element;
-import java.util.Objects;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFLegacyItemElement extends NCPFElementDefinition{
-    public String name;
+public class NCPFLegacyItemElement extends NCPFSettingsElement{
+    public String name = "";
     public Integer metadata;
     public String nbt;
     public NCPFLegacyItemElement(){
         super("legacy_item");
+        addString("name", ()->name, (v)->name = v, "Name", Type.NAMESPACED_NAME);
+        addMetadata(()->metadata, (v)->metadata = v);
+        addString("nbt", ()->nbt, (v)->nbt = v, "NBT Tag", Type.NBT);
     }
     public NCPFLegacyItemElement(String name){
         this();
@@ -18,31 +19,15 @@ public class NCPFLegacyItemElement extends NCPFElementDefinition{
         this.name = name;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        name = ncpf.getString("name");
-        metadata = ncpf.getInteger("metadata");
-        nbt = ncpf.getString("nbt");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("name", name);
-        ncpf.setInteger("metadata", metadata);
-        ncpf.setString("nbt", nbt);
-    }
-    @Override
-    public boolean matches(NCPFElementDefinition definition){
-        if(definition instanceof NCPFLegacyItemElement){
-            NCPFLegacyItemElement other = (NCPFLegacyItemElement) definition;
-            return name.equals(other.name)&&Objects.equals(metadata, other.metadata)&&Objects.equals(nbt, other.nbt);
-        }
-        return false;
-    }
-    @Override
     public String getName(){
         return name;
     }
     @Override
     public String toString(){
         return metadata!=null?name+":"+metadata:name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Legacy Item";
     }
 }

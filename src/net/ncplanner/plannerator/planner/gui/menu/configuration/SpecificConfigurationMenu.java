@@ -10,7 +10,6 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.NCPFElementComponent;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
@@ -58,8 +57,9 @@ public class SpecificConfigurationMenu extends ConfigurationMenu{
                 if(hasRuls&&Core.isShiftPressed()){
                     gui.open(new MenuPlacementRuleTree(this, elems));
                 }else{
-                    elems.add(supplier.get());
-                    refresh();
+                    NCPFElement elem;
+                    elems.add(elem = supplier.get());
+                    gui.open(new ElementConfigurationMenu(this, configuration, config, elem));
                 }
             }));
             onOpen(() -> {

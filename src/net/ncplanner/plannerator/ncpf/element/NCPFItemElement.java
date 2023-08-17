@@ -1,36 +1,22 @@
 package net.ncplanner.plannerator.ncpf.element;
-import java.util.Objects;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFItemElement extends NCPFElementDefinition{
-    public String name;
+public class NCPFItemElement extends NCPFSettingsElement{
+    public String name = "";
     public String nbt;
     public NCPFItemElement(){
         super("item");
+        addString("name", ()->name, (v)->name = v, "Name", Type.NAMESPACED_NAME);
+        addString("nbt", ()->nbt, (v)->nbt = v, "NBT Tag", Type.NBT);
     }
     public NCPFItemElement(String name){
         this();
         this.name = name;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        name = ncpf.getString("name");
-        nbt = ncpf.getString("nbt");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("name", name);
-        ncpf.setString("nbt", nbt);
-    }
-    @Override
-    public boolean matches(NCPFElementDefinition definition){
-        if(definition instanceof NCPFItemElement){
-            NCPFItemElement other = (NCPFItemElement) definition;
-            return name.equals(other.name)&&Objects.equals(nbt, other.nbt);
-        }
-        return false;
-    }
-    @Override
     public String getName(){
         return name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Item";
     }
 }

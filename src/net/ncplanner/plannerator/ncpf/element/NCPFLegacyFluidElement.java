@@ -1,9 +1,9 @@
 package net.ncplanner.plannerator.ncpf.element;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFLegacyFluidElement extends NCPFElementDefinition{
-    public String name;
+public class NCPFLegacyFluidElement extends NCPFSettingsElement{
+    public String name = "";
     public NCPFLegacyFluidElement(){
         super("legacy_fluid");
+        addString("name", ()->name, (v)->name = v, "Name", Type.NAME);
     }
     public NCPFLegacyFluidElement(String name){
         this();
@@ -11,22 +11,11 @@ public class NCPFLegacyFluidElement extends NCPFElementDefinition{
         this.name = name;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        name = ncpf.getString("name");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("name", name);
-    }
-    @Override
-    public boolean matches(NCPFElementDefinition definition){
-        if(definition instanceof NCPFLegacyFluidElement){
-            return name.equals(((NCPFLegacyFluidElement)definition).name);
-        }
-        return false;
-    }
-    @Override
     public String getName(){
         return name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Legacy Fluid";
     }
 }

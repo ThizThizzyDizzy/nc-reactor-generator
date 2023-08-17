@@ -24,6 +24,7 @@ public abstract class ConfigurationMenu extends LayoutMenu{
     public ConfigurationMenu(Menu parent, NCPFConfigurationContainer configuration, String name, Layout content){
         super(parent, new SplitLayout(SplitLayout.X_AXIS, 0, 256, 0));
         this.configuration = configuration;
+        if(name==null)name = "Unknown";
         this.name = name;
         if(parent instanceof ConfigurationMenu){
             parents.addAll(((ConfigurationMenu)parent).parents);

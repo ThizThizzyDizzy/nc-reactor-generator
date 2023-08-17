@@ -14,7 +14,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
-    public NCPFElementDefinition definition;
+    public NCPFElementDefinition definition = new UnknownNCPFElement();
     public NCPFElement(){}
     public NCPFElement(NCPFElementDefinition definition){
         this.definition = definition;

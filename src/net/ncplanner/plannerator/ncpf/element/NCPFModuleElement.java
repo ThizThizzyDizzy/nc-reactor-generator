@@ -3,7 +3,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public class NCPFModuleElement extends NCPFElementDefinition{
-    public String name;
+    public String name = "";
     public NCPFModuleElement(){
         super("module");
     }
@@ -36,5 +36,9 @@ public class NCPFModuleElement extends NCPFElementDefinition{
     @Override
     public String getName(){
         return name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Module";
     }
 }

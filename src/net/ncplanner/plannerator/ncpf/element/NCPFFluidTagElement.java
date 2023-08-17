@@ -1,32 +1,20 @@
 package net.ncplanner.plannerator.ncpf.element;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFFluidTagElement extends NCPFElementDefinition{
-    public String name;
+public class NCPFFluidTagElement extends NCPFSettingsElement{
+    public String name = "";
     public NCPFFluidTagElement(){
         super("fluid_tag");
+        addString("name", ()->name, (v)->name = v, "Name", Type.TAG);
     }
     public NCPFFluidTagElement(String name){
         this();
         this.name = name;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        name = ncpf.getString("name");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("name", name);
-    }
-    @Override
-    public boolean matches(NCPFElementDefinition definition){
-        if(definition instanceof NCPFFluidTagElement){
-            NCPFFluidTagElement other = (NCPFFluidTagElement) definition;
-            return name.equals(other.name);
-        }
-        return false;
-    }
-    @Override
     public String getName(){
         return name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Fluid Tag";
     }
 }

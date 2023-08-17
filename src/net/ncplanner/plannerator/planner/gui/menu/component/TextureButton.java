@@ -16,6 +16,15 @@ public class TextureButton extends Button{
     private final Supplier<Image> texture;
     private final Consumer<Image> setTextureFunc;
     private final String textureName;
+    public TextureButton(Supplier<Image> texture, Consumer<Image> setTextureFunc){
+        this(true, texture, setTextureFunc);
+    }
+    public TextureButton(boolean enabled, Supplier<Image> texture, Consumer<Image> setTextureFunc){
+        this("", enabled, texture, setTextureFunc);
+    }
+    public TextureButton(String textureName, boolean enabled, Supplier<Image> texture, Consumer<Image> setTextureFunc){
+        this(0, 0, 0, 0, textureName, enabled, texture, setTextureFunc);
+    }
     public TextureButton(float x, float y, float width, float height, String textureName, boolean enabled, Supplier<Image> texture, Consumer<Image> setTextureFunc){
         super(x, y, width, height, textureName!=null?"Set "+textureName+" Texture":"Set Texture", enabled);
         this.textureName = textureName;
@@ -72,7 +81,7 @@ public class TextureButton extends Button{
     public void onMouseButton(double x, double y, int button, int action, int mods){
         super.onMouseButton(x, y, button, action, mods);
         if(action==GLFW_PRESS&&enabled&&button==GLFW_MOUSE_BUTTON_RIGHT&&!pressed){
-            new MenuGenerateTexture(gui, (Menu)parent, textureName, setTextureFunc).open();
+            new MenuGenerateTexture(gui, gui.menu, textureName, setTextureFunc).open();
         }
     }
 }

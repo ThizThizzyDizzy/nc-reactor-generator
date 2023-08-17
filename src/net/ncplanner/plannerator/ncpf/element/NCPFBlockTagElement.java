@@ -1,45 +1,25 @@
 package net.ncplanner.plannerator.ncpf.element;
 import java.util.HashMap;
-import java.util.Objects;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class NCPFBlockTagElement extends NCPFElementDefinition{
-    public String name;
+public class NCPFBlockTagElement extends NCPFSettingsElement{
+    public String name = "";
     public HashMap<String, Object> blockstate = new HashMap<>();
     public String nbt;
     public NCPFBlockTagElement(){
         super("block_tag");
+        addString("name", ()->name, (v)->name = v, "Name", Type.TAG);
+        addBlockstate(()->blockstate, (v)->blockstate = v);
+        addString("nbt", ()->nbt, (v)->nbt = v, "NBT Tag", Type.NBT);
     }
     public NCPFBlockTagElement(String name){
         this();
         this.name = name;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        name = ncpf.getString("name");
-        NCPFObject state = ncpf.getNCPFObject("blockstate");
-        if(state!=null)blockstate.putAll(state);
-        nbt = ncpf.getString("nbt");
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setString("name", name);
-        if(!blockstate.isEmpty()){
-            NCPFObject state = new NCPFObject();
-            state.putAll(blockstate);
-            ncpf.setNCPFObject("blockstate", state);
-        }
-        ncpf.setString("nbt", nbt);
-    }
-    @Override
-    public boolean matches(NCPFElementDefinition definition){
-        if(definition instanceof NCPFBlockTagElement){
-            NCPFBlockTagElement other = (NCPFBlockTagElement) definition;
-            return name.equals(other.name)&&Objects.equals(blockstate, other.blockstate)&&Objects.equals(nbt, other.nbt);
-        }
-        return false;
-    }
-    @Override
     public String getName(){
         return name;
+    }
+    @Override
+    public String getTypeName(){
+        return "Block Tag";
     }
 }
