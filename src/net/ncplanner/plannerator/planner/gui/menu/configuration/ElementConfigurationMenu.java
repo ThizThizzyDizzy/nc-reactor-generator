@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -16,12 +17,14 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickElementDefinition;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import static net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement.Type;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 public class ElementConfigurationMenu extends ConfigurationMenu{
     private final NCPFConfiguration config;
     private final NCPFElement element;
@@ -39,8 +42,8 @@ public class ElementConfigurationMenu extends ConfigurationMenu{
                 gui.open(new ElementConfigurationMenu(parent, configuration, config, element));
             }).open();
         }));
-        definitionHeader.add(new TextBox(element.getOrCreateModule(DisplayNamesModule::new).displayName, true, "Display Name").onChange((t) -> {
-            element.getOrCreateModule(DisplayNamesModule::new).displayName = t;
+        definitionHeader.add(new TextBox(element.getOrCreateModule(DisplayNameModule::new).displayName, true, "Display Name").onChange((t) -> {
+            element.getOrCreateModule(DisplayNameModule::new).displayName = t;
         }));
         if(element.definition instanceof NCPFSettingsElement){
             NCPFSettingsElement def = (NCPFSettingsElement)element.definition;
@@ -109,10 +112,23 @@ public class ElementConfigurationMenu extends ConfigurationMenu{
             }else definitionFields.add(new Panel());
         }else definitionList.add(new Panel());
         SplitLayout settings = add(new SplitLayout(SplitLayout.Y_AXIS, 0.5f));
-        
-        element.getPreferredModules(); //TODO something with this lol, separate block functions and other modules
-        
+        ArrayList<Supplier<NCPFModule>> functionModules = new ArrayList<>();
+        ArrayList<Supplier<NCPFModule>> otherModules = new ArrayList<>();
+        for(Supplier<NCPFModule> s : element.getPreferredModules()){
+            if(s.get().name.equals(new TextureModule().name))continue;
+            if(s.get().name.equals(new DisplayNameModule().name))continue;
+            if(s.get() instanceof BlockFunctionModule)functionModules.add(s);
+            else otherModules.add(s);
+        }
         GridLayout moduleLists = settings.add(new GridLayout(0, 1));
+        SingleColumnList functionList = moduleLists.add(new SingleColumnList(16));
+        for(Supplier<NCPFModule> mod : functionModules){
+            functionList.add(new BlockstateComponent(mod.get().name, ((BlockFunctionModule)mod.get()).getFunctionName()));
+        }
+        SingleColumnList otherList = moduleLists.add(new SingleColumnList(16));
+        for(Supplier<NCPFModule> mod : otherModules){
+            otherList.add(new BlockstateComponent(mod.get().name, "yeet"));
+        }
         //TODO add modules
         GridLayout lists = settings.add(new GridLayout(0, 1));//block recipes
         //TODO add lists

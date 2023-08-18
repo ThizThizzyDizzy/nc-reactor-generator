@@ -5,11 +5,11 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
 public class HeaterRecipe extends NCPFElement implements IBlockRecipe{
-    public DisplayNamesModule names = new DisplayNamesModule();
+    public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public HeaterStatsModule stats = new HeaterStatsModule();
     public HeaterRecipe(){}
@@ -20,7 +20,7 @@ public class HeaterRecipe extends NCPFElement implements IBlockRecipe{
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         stats = getModule(HeaterStatsModule::new);
-        names = getModule(DisplayNamesModule::new);
+        names = getModule(DisplayNameModule::new);
         texture = getModule(TextureModule::new);
     }
     @Override
@@ -34,6 +34,6 @@ public class HeaterRecipe extends NCPFElement implements IBlockRecipe{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, HeaterStatsModule::new};
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new, HeaterStatsModule::new};
     }
 }

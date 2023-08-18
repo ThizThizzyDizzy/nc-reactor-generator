@@ -44,7 +44,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -81,7 +81,7 @@ public class CoreModule<T> extends Module<T>{
         registerNCPFModule(MetadataModule::new);
         registerNCPFModule(ConfigurationMetadataModule::new);
         
-        registerNCPFModule(DisplayNamesModule::new);
+        registerNCPFModule(DisplayNameModule::new);
         registerNCPFModule(TextureModule::new);
         
         registerNCPFModule(AirModule::new);

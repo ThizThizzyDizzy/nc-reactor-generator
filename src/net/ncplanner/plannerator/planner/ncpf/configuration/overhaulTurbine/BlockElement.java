@@ -5,7 +5,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
@@ -18,7 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.OutletModul
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ShaftModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
 public class BlockElement extends NCPFElement{
-    public DisplayNamesModule names = new DisplayNamesModule();
+    public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public BladeModule blade;
     public StatorModule stator;
@@ -37,7 +37,7 @@ public class BlockElement extends NCPFElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNamesModule::new);
+        names = getModule(DisplayNameModule::new);
         texture = getModule(TextureModule::new);
         blade = getModule(BladeModule::new);
         stator = getModule(StatorModule::new);
@@ -66,7 +66,7 @@ public class BlockElement extends NCPFElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, BladeModule::new, StatorModule::new,
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new, BladeModule::new, StatorModule::new,
             CoilModule::new, BearingModule::new, ShaftModule::new, ConnectorModule::new, ControllerModule::new,
             CasingModule::new, InletModule::new, OutletModule::new};
     }

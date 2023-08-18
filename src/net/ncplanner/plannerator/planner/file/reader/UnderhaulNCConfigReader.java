@@ -38,7 +38,6 @@ public class UnderhaulNCConfigReader implements FormatReader{
         builder.casing("nuclearcraft:fission_block:0", "Casing", "underhaul/casing");
         builder.casing("nuclearcraft:reactor_casing_transparent", "Transparent Casing", "underhaul/transparent_casing");
         BlockElement cell = builder.fuelCell("nuclearcraft:cell_block", "Reactor Cell", "underhaul/cell");
-        cell.names.legacyNames.add("Fuel Cell");
         BlockElement water = builder.cooler("nuclearcraft:cooler:1", "Water Cooler", (int)coolingRates.getDouble(0), "underhaul/water", builder.or(builder.atLeast(1, FuelCellModule::new), builder.atLeast(1, ModeratorModule::new)));
         if(!waterCoolerRequirements){
             water.cooler.rules.clear();
@@ -50,7 +49,6 @@ public class UnderhaulNCConfigReader implements FormatReader{
         BlockElement lapis = builder.cooler("nuclearcraft:cooler:6", "Lapis Cooler", (int)coolingRates.getDouble(5), "underhaul/lapis", builder.atLeast(1, FuelCellModule::new),builder.atLeast(1, CasingModule::new));
         BlockElement diamond = builder.cooler("nuclearcraft:cooler:7", "Diamond Cooler",  (int)coolingRates.getDouble(6), "underhaul/diamond", builder.atLeast(1, water), builder.atLeast(1, quartz));
         BlockElement helium = builder.cooler("nuclearcraft:cooler:8", "Liquid Helium Cooler", (int)coolingRates.getDouble(7), "underhaul/helium", builder.exactly(1, redstone), builder.atLeast(1, CasingModule::new));
-        helium.names.legacyNames.add("Helium Cooler");
         BlockElement enderium = builder.cooler("nuclearcraft:cooler:9", "Enderium Cooler", (int)coolingRates.getDouble(8), "underhaul/enderium", builder.and(builder.exactly(3, CasingModule::new),builder.vertex(CasingModule::new)));
         BlockElement cryotheum = builder.cooler("nuclearcraft:cooler:10", "Cryotheum Cooler", (int)coolingRates.getDouble(9), "underhaul/cryotheum", builder.atLeast(2, FuelCellModule::new));
         BlockElement iron = builder.cooler("nuclearcraft:cooler:11", "Iron Cooler", (int)coolingRates.getDouble(10), "underhaul/iron", builder.atLeast(1, gold));

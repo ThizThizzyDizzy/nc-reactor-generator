@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule;
@@ -21,7 +21,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorMod
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
 public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNamesModule names = new DisplayNamesModule();
+    public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
     public ConnectorModule connector;
@@ -41,7 +41,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNamesModule::new);
+        names = getModule(DisplayNameModule::new);
         texture = getModule(TextureModule::new);
         conductor = getModule(ConductorModule::new);
         connector = getModule(ConnectorModule::new);
@@ -82,7 +82,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, ConductorModule::new, ConnectorModule::new,
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new, ConductorModule::new, ConnectorModule::new,
             CoreModule::new, PoloidalElectromagnetModule::new, ToroidalElectromagnetModule::new, HeatingBlanketModule::new,
             BreedingBlanketModule::new, ShieldingModule::new, ReflectorModule::new, HeatsinkModule::new};
     }

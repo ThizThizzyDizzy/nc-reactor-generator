@@ -15,7 +15,6 @@ import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -39,7 +38,8 @@ import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulFusionSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
@@ -632,7 +632,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
                         for(int idx = 0; idx<names.size(); idx++){
-                            block.names.legacyNames.add(names.get(idx));
+                            String name = names.get(idx);
+                            block.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     String active = blockCfg.getString("active");
@@ -672,7 +675,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(fuelCfg.hasProperty("legacyNames")){
                         ConfigList names = fuelCfg.getConfigList("legacyNames");
                         for(int idx = 0; idx<names.size(); idx++){
-                            fuel.names.legacyNames.add(names.get(idx));
+                            String name = names.get(idx);
+                            fuel.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     if(fuelCfg.hasProperty("texture"))fuel.texture.texture = loadNCPFTexture(fuelCfg.getConfigNumberList("texture"));
@@ -716,7 +722,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
                         for(int idx = 0; idx<names.size(); idx++){
-                            block.names.legacyNames.add(names.get(idx));
+                            String name = names.get(idx);
+                            block.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     if(blockCfg.hasProperty("cluster")&&!blockCfg.hasProperty("functional")||
@@ -809,11 +818,13 @@ public class LegacyNCPF11Reader implements FormatReader {
                     Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.getConfig("input");
                     String name = inputCfg.getString("name");
-                    DisplayNamesModule recipeNames = null;
+                    DisplayNameModule recipeNames = null;
+                    NCPFElement recip = null;
                     TextureModule texture = null;
                     if(isFuelCell){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel(new NCPFLegacyItemElement(name));
                         //TODO output
+                        recip = fuel;
                         recipeNames = fuel.names;
                         texture = fuel.texture;
                         Config recipeFuelCellCfg = recipeCfg.getConfig("fuelCell");
@@ -827,6 +838,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(isIrradiator){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe(new NCPFLegacyItemElement(name));
                         //TODO output
+                        recip = recipe;
                         recipeNames = recipe.names;
                         texture = recipe.texture;
                         Config recipeIrradiatorCfg = recipeCfg.getConfig("irradiator");
@@ -838,7 +850,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(inputCfg.hasProperty("legacyNames")){
                         ConfigList names = inputCfg.getConfigList("legacyNames");
                         for(int j = 0; j<names.size(); j++){
-                            recipeNames.legacyNames.add(names.get(j));
+                            String nam = names.get(j);
+                            recip.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     if(inputCfg.hasProperty("texture"))texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -857,7 +872,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");
                     for(int j = 0; j<names.size(); j++){
-                        recipe.names.legacyNames.add(names.get(j));
+                        String name = names.get(j);
+                        recipe.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -900,7 +918,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(blockCfg.hasProperty("legacyNames")){
                         ConfigList names = blockCfg.getConfigList("legacyNames");
                         for(int idx = 0; idx<names.size(); idx++){
-                            block.names.legacyNames.add(names.get(idx));
+                            String name = names.get(idx);
+                            block.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule();
@@ -980,10 +1001,12 @@ public class LegacyNCPF11Reader implements FormatReader {
                     Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.getConfig("input");
                     String name = inputCfg.getString("name");
-                    DisplayNamesModule recipeNames = null;
+                    DisplayNameModule recipeNames = null;
+                    NCPFElement recip = null;
                     TextureModule texture = null;
                     if(isFuelVessel){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel(new NCPFLegacyFluidElement(name));
+                        recip = fuel;
                         recipeNames = fuel.names;
                         texture = fuel.texture;
                         Config recipeFuelVesselCfg = recipeCfg.getConfig("fuelVessel");
@@ -996,6 +1019,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     }
                     if(isIrradiator){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe(new NCPFLegacyItemElement(name));
+                        recip = recipe;
                         recipeNames = recipe.names;
                         texture = recipe.texture;
                         Config recipeIrradiatorCfg = recipeCfg.getConfig("irradiator");
@@ -1005,6 +1029,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     }
                     if(isHeater){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe(new NCPFLegacyFluidElement(name));
+                        recip = recipe;
                         recipeNames = recipe.names;
                         texture = recipe.texture;
                         Config recipeHeaterCfg = recipeCfg.getConfig("heater");
@@ -1015,7 +1040,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(inputCfg.hasProperty("legacyNames")){
                         ConfigList names = inputCfg.getConfigList("legacyNames");
                         for(int j = 0; j<names.size(); j++){
-                            recipeNames.legacyNames.add(names.get(j));
+                            String nam = names.get(j);
+                            recip.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(nam);
+                            });
                         }
                     }
                     if(inputCfg.hasProperty("texture"))texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -1048,7 +1076,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(blockCfg.hasProperty("legacyNames")){
                     ConfigList names = blockCfg.getConfigList("legacyNames");
                     for(int idx = 0; idx<names.size(); idx++){
-                        block.names.legacyNames.add(names.get(idx));
+                        String name = names.get(idx);
+                        block.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 Config bladeCfg = blockCfg.getConfig("blade");
@@ -1094,7 +1125,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");
                     for(int j = 0; j<names.size(); j++){
-                        recipe.names.legacyNames.add(names.get(j));
+                        String name = names.get(j);
+                        recipe.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -1130,7 +1164,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(blockCfg.hasProperty("legacyNames")){
                     ConfigList names = blockCfg.getConfigList("legacyNames");
                     for(int idx = 0; idx<names.size(); idx++){
-                        block.names.legacyNames.add(names.get(idx));
+                        String name = names.get(idx);
+                        block.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule();
@@ -1176,7 +1213,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(inputCfg.hasProperty("legacyNames")){
                         ConfigList names = inputCfg.getConfigList("legacyNames");
                         for(int j = 0; j<names.size(); j++){
-                            recipe.names.legacyNames.add(names.get(j));
+                            String name = names.get(j);
+                            recipe.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                                legacy.legacyNames.add(name);
+                            });
                         }
                     }
                     if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -1200,7 +1240,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");
                     for(int j = 0; j<names.size(); j++){
-                        recipe.names.legacyNames.add(names.get(j));
+                        String name = names.get(j);
+                        recipe.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));
@@ -1217,7 +1260,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");
                     for(int j = 0; j<names.size(); j++){
-                        recipe.names.legacyNames.add(names.get(j));
+                        String name = names.get(j);
+                        recipe.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
+                            legacy.legacyNames.add(name);
+                        });
                     }
                 }
                 if(inputCfg.hasProperty("texture"))recipe.texture.texture = loadNCPFTexture(inputCfg.getConfigNumberList("texture"));

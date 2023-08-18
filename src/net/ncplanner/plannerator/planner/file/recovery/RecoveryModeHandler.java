@@ -14,7 +14,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfigura
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 public class RecoveryModeHandler implements RecoveryHandler{
     HashMap<String, Integer> fallbackChoices = new HashMap<>();
     @Override
@@ -127,9 +127,11 @@ public class RecoveryModeHandler implements RecoveryHandler{
             return nam.equalsIgnoreCase(name);
         };
         for(T t : list){
-            for(String legacy : t.getModule(DisplayNamesModule::new).legacyNames){
-                if(nameProcessor.apply(legacy))return t;
-            }
+            t.withModule(LegacyNamesModule::new, (nlm)->{
+                for(String legacy : nlm.legacyNames){
+                    if(nameProcessor.apply(legacy))return t;
+                }
+            });
         }
         T fallback = recoverFunc==null?null:recoverFunc.get();
         MenuMessageDialog dialog = new MenuMessageDialog(cap(type)+" name invalid: "+name+"!"+"\nReset to "+list.get(0).toString()+"?"+(fallback==null?"":"\nRecover as "+fallback+"?"));

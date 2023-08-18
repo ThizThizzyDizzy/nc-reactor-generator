@@ -9,8 +9,9 @@ import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Pinnable;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
@@ -55,7 +56,7 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
         return definition.getName();
     }
     public String getDisplayName(){
-        DisplayNamesModule names = getModule(DisplayNamesModule::new);
+        DisplayNameModule names = getModule(DisplayNameModule::new);
         if(names!=null&&names.displayName!=null)return names.displayName;
         return definition.getName();
     }
@@ -73,14 +74,14 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> nams = new ArrayList<>();
         nams.add(getDisplayName());
-        withModule(DisplayNamesModule::new, (names)-> nams.addAll(names.legacyNames));
+        withModule(LegacyNamesModule::new, (names)-> nams.addAll(names.legacyNames));
         return nams;
     }
     public String getTitle(){
         return "NCPF Element";
     }
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new};
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new};
     }
     @Override
     public String toString(){

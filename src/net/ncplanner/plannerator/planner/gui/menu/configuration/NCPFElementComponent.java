@@ -11,7 +11,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElementComponent extends LayoutPanel{
@@ -24,7 +24,7 @@ public class NCPFElementComponent extends LayoutPanel{
             content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
         });
         TextDisplay display = content.add(new TextDisplay().fitText(), BorderLayout.CENTER);
-        element.withModule(DisplayNamesModule::new, (nam)->{
+        element.withModule(DisplayNameModule::new, (nam)->{
             display.addText(nam.displayName);
         });
         display.addText("\n"+element.definition.toString());

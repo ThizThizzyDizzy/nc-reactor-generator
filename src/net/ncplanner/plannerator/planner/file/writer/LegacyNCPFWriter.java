@@ -140,11 +140,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(!b.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : b.names.legacyNames)lst.add(s);
-                block.set("legacyNames", lst);
-            }
             if(b.cooler!=null)block.set("cooling", b.cooler.cooling);
             if(b.activeCooler!=null){
                 block.set("active", b.activeCoolerRecipes.get(0).definition.toString());
@@ -171,11 +166,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config fuel = Config.newConfig();
             fuel.set("name", f.definition.toString());//toString formats legacy metadata and whatnot
             if(f.names.displayName!=null)fuel.set("displayName", f.names.displayName);
-            if(!f.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : f.names.legacyNames)lst.add(s);
-                fuel.set("legacyNames", lst);
-            }
             fuel.set("power", f.stats.power);
             fuel.set("heat", f.stats.heat);
             fuel.set("time", f.stats.time);
@@ -200,11 +190,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(!b.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : b.names.legacyNames)lst.add(s);
-                block.set("legacyNames", lst);
-            }
             block.set("cluster", b.heatsink!=null||b.neutronShield!=null||b.conductor!=null||b.fuelCell!=null||b.irradiator!=null);
             block.set("createCluster", b.fuelCell!=null||b.irradiator!=null||b.neutronShield!=null);
             block.set("functional", b.fuelCell!=null||b.irradiator!=null||b.heatsink!=null||b.reflector!=null||b.neutronShield!=null);
@@ -228,11 +213,6 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.set("name", f.definition.toString());
                     if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
-                    if(!f.names.legacyNames.isEmpty()){
-                        ConfigList lst = new ConfigList();
-                        for(String s : f.names.legacyNames)lst.add(s);
-                        inputCfg.set("legacyNames", lst);
-                    }
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     fuel.set("input", inputCfg);
                     fuel.set("output", inputCfg);//...don't worry about it, it's fine
@@ -257,11 +237,6 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.set("name", r.definition.toString());
                     if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
-                    if(!r.names.legacyNames.isEmpty()){
-                        ConfigList lst = new ConfigList();
-                        for(String s : r.names.legacyNames)lst.add(s);
-                        inputCfg.set("legacyNames", lst);
-                    }
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
                     recipe.set("output", inputCfg);//...don't worry about it, it's fine
@@ -339,11 +314,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config inputCfg = Config.newConfig();
             inputCfg.set("name", r.definition.toString());
             if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
-            if(!r.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : r.names.legacyNames)lst.add(s);
-                inputCfg.set("legacyNames", lst);
-            }
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
             recipe.set("output", inputCfg);//...don't worry about it, it's fine
@@ -368,11 +338,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(!b.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : b.names.legacyNames)lst.add(s);
-                block.set("legacyNames", lst);
-            }
             block.set("cluster", b.heater!=null||b.neutronShield!=null||b.conductor!=null||b.fuelVessel!=null||b.irradiator!=null);
             block.set("createCluster", b.fuelVessel!=null||b.irradiator!=null||b.neutronShield!=null);
             block.set("functional", b.fuelVessel!=null||b.irradiator!=null||b.heater!=null||b.reflector!=null||b.neutronShield!=null);
@@ -390,11 +355,6 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.set("name", f.definition.toString());
                     if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
-                    if(!f.names.legacyNames.isEmpty()){
-                        ConfigList lst = new ConfigList();
-                        for(String s : f.names.legacyNames)lst.add(s);
-                        inputCfg.set("legacyNames", lst);
-                    }
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     inputCfg.set("rate", 1);
                     fuel.set("input", inputCfg);
@@ -420,11 +380,6 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.set("name", r.definition.toString());
                     if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
-                    if(!r.names.legacyNames.isEmpty()){
-                        ConfigList lst = new ConfigList();
-                        for(String s : r.names.legacyNames)lst.add(s);
-                        inputCfg.set("legacyNames", lst);
-                    }
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
                     recipe.set("output", inputCfg);//...don't worry about it, it's fine
@@ -513,11 +468,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config block = Config.newConfig();
             block.set("name", b.definition.toString());
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(!b.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : b.names.legacyNames)lst.add(s);
-                block.set("legacyNames", lst);
-            }
             if(b.bearing!=null)block.set("bearing", true);
             if(b.shaft!=null)block.set("shaft", true);
             if(b.connector!=null){
@@ -569,11 +519,6 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config inputCfg = Config.newConfig();
             inputCfg.set("name", r.definition.toString());
             if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
-            if(!r.names.legacyNames.isEmpty()){
-                ConfigList lst = new ConfigList();
-                for(String s : r.names.legacyNames)lst.add(s);
-                inputCfg.set("legacyNames", lst);
-            }
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
             recipe.set("output", inputCfg);//...don't worry about it, it's fine

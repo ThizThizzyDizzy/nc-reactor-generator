@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
@@ -24,7 +24,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
 public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNamesModule names = new DisplayNamesModule();
+    public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public ConductorModule conductor;
     public CasingModule casing;
@@ -52,7 +52,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNamesModule::new);
+        names = getModule(DisplayNameModule::new);
         texture = getModule(TextureModule::new);
         conductor = getModule(ConductorModule::new);
         casing = getModule(CasingModule::new);
@@ -108,7 +108,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, ConductorModule::new, CasingModule::new,
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new, ConductorModule::new, CasingModule::new,
             CoolantVentModule::new, ControllerModule::new, FuelCellModule::new, IrradiatorModule::new, ReflectorModule::new,
             ModeratorModule::new, NeutronShieldModule::new, HeatsinkModule::new, NeutronSourceModule::new, PortModule::new,
             RecipePortsModule::new};

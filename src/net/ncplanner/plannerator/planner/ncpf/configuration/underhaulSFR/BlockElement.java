@@ -8,7 +8,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
@@ -17,7 +17,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
 public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNamesModule names = new DisplayNamesModule();
+    public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public CoolerModule cooler;
     public ActiveCoolerModule activeCooler;
@@ -33,7 +33,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNamesModule::new);
+        names = getModule(DisplayNameModule::new);
         texture = getModule(TextureModule::new);
         cooler = getModule(CoolerModule::new);
         activeCooler = getModule(ActiveCoolerModule::new);
@@ -67,7 +67,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNamesModule::new, TextureModule::new, CoolerModule::new, ActiveCoolerModule::new,
+        return new Supplier[]{DisplayNameModule::new, TextureModule::new, CoolerModule::new, ActiveCoolerModule::new,
             FuelCellModule::new, ModeratorModule::new, CasingModule::new, ControllerModule::new};
     }
 }
