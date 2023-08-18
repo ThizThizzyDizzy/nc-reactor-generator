@@ -127,11 +127,12 @@ public class RecoveryModeHandler implements RecoveryHandler{
             return nam.equalsIgnoreCase(name);
         };
         for(T t : list){
-            t.withModule(LegacyNamesModule::new, (nlm)->{
-                for(String legacy : nlm.legacyNames){
+            LegacyNamesModule module = t.getModule(LegacyNamesModule::new);
+            if(module!=null){
+                for(String legacy : module.legacyNames){
                     if(nameProcessor.apply(legacy))return t;
                 }
-            });
+            }
         }
         T fallback = recoverFunc==null?null:recoverFunc.get();
         MenuMessageDialog dialog = new MenuMessageDialog(cap(type)+" name invalid: "+name+"!"+"\nReset to "+list.get(0).toString()+"?"+(fallback==null?"":"\nRecover as "+fallback+"?"));
