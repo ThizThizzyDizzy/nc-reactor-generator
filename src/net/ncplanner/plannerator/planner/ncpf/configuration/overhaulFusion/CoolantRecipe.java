@@ -34,6 +34,6 @@ public class CoolantRecipe extends NCPFElement implements MultiblockRecipeElemen
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new, CoolantRecipeStatsModule::new};
+        return new Supplier[]{CoolantRecipeStatsModule::new};
     }
 }

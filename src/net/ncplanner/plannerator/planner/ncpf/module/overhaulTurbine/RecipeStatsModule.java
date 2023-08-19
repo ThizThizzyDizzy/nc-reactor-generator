@@ -8,4 +8,8 @@ public class RecipeStatsModule extends NCPFStatsModule{
         addDouble("coefficient", ()->coefficient, (v)->coefficient = v, "Expansion Coefficient");
         addDouble("power", ()->power, (v)->power = v, "Energy Density (RF/mb)");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Recipe Stats";
+    }
 }

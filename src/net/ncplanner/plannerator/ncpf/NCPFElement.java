@@ -81,7 +81,7 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
         return "NCPF Element";
     }
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new};
+        return new Supplier[]{};
     }
     @Override
     public String toString(){
@@ -94,5 +94,8 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
         }catch(ConglomerationError ex){
             throw new ConglomerationError("Failed to conglomerate "+getDisplayName()+" with "+addon.toString()+"!", ex);
         }
+    }
+    public void removeModule(NCPFModule module){
+        modules.removeModule(module);
     }
 }

@@ -82,8 +82,22 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new, ConductorModule::new, ConnectorModule::new,
+        return new Supplier[]{ConductorModule::new, ConnectorModule::new,
             CoreModule::new, PoloidalElectromagnetModule::new, ToroidalElectromagnetModule::new, HeatingBlanketModule::new,
             BreedingBlanketModule::new, ShieldingModule::new, ReflectorModule::new, HeatsinkModule::new};
+    }
+    @Override
+    public void removeModule(NCPFModule module){
+        if(module==conductor)conductor = null;
+        if(module==connector)connector = null;
+        if(module==core)core = null;
+        if(module==poloid)poloid = null;
+        if(module==toroid)toroid = null;
+        if(module==heatingBlanket)heatingBlanket = null;
+        if(module==breedingBlanket)breedingBlanket = null;
+        if(module==shielding)shielding = null;
+        if(module==reflector)reflector = null;
+        if(module==heatsink)heatsink = null;
+        super.removeModule(module);
     }
 }

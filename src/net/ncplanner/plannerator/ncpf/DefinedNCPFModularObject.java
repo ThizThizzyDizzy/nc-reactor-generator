@@ -20,7 +20,7 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     public void convertToObject(NCPFObject ncpf){
         if(!modules.modules.isEmpty())ncpf.setDefinedNCPFObject("modules", modules);
     }
-    public boolean hasModule(Supplier<NCPFModule> module){
+    public <T extends NCPFModule> boolean hasModule(Supplier<T> module){
         return modules.hasModule(module);
     }
     public <T extends NCPFModule> T setModule(T module){

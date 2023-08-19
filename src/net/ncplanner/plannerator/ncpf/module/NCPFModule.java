@@ -8,4 +8,7 @@ public abstract class NCPFModule extends DefinedNCPFObject{
     }
     public abstract void conglomerate(NCPFModule addon);
     public void setLocalReferences(DefinedNCPFModularObject parentObject){}
+    public String getFriendlyName(){
+        return name;
+    }
 }

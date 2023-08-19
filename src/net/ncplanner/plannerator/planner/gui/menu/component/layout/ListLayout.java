@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.layout;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class ListLayout extends Layout{
-    public final Number componentHeight;
+    public Number componentHeight;
     public ListLayout(){
         this(null);
     }
@@ -10,6 +10,7 @@ public class ListLayout extends Layout{
     }
     @Override
     public void arrangeComponents(){
+        if(componentHeight!=null&&height<getTotalHeight())height = getTotalHeight();
         float Y = 0;
         for(Component c : components){
             if(componentHeight!=null)c.height = componentHeight.floatValue();

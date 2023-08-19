@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR;
-import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
-public class FuelStatsModule extends NCPFSettingsModule implements ElementStatsModule{
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFStatsModule;
+public class FuelStatsModule extends NCPFStatsModule{
     public float power;
     public float heat;
     public int time;
@@ -10,5 +9,9 @@ public class FuelStatsModule extends NCPFSettingsModule implements ElementStatsM
         addFloat("power", ()->power, (v)->power = v, "Base Power");
         addFloat("heat", ()->heat, (v)->heat = v, "Base Heat");
         addInteger("time", ()->time, (v)->time = v, "Base Time");
+    }
+    @Override
+    public String getFriendlyName(){
+        return "Fuel Stats";
     }
 }

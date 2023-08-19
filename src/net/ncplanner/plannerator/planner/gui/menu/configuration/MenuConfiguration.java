@@ -79,7 +79,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                 GridLayout buttons = split.add(new GridLayout(1, 2));
                 buttons.add(new Button("Edit", true).addAction(() -> {
                     config.convertToObject(new NCPFObject());//set all module references
-                    gui.open(new SpecificConfigurationMenu(this, super.configuration, config));
+                    gui.open(new MenuSpecificConfiguration(this, super.configuration, config));
                 }));
                 buttons.add(new Button("Delete (Shift)", false){
                     @Override

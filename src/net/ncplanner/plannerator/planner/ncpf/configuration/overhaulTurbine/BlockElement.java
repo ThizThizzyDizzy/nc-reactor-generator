@@ -66,8 +66,22 @@ public class BlockElement extends NCPFElement{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new, BladeModule::new, StatorModule::new,
+        return new Supplier[]{BladeModule::new, StatorModule::new,
             CoilModule::new, BearingModule::new, ShaftModule::new, ConnectorModule::new, ControllerModule::new,
             CasingModule::new, InletModule::new, OutletModule::new};
+    }
+    @Override
+    public void removeModule(NCPFModule module){
+        if(module==blade)blade = null;
+        if(module==stator)stator = null;
+        if(module==coil)coil = null;
+        if(module==bearing)bearing = null;
+        if(module==shaft)shaft = null;
+        if(module==connector)connector = null;
+        if(module==controller)controller = null;
+        if(module==casing)casing = null;
+        if(module==inlet)inlet = null;
+        if(module==outlet)outlet = null;
+        super.removeModule(module);
     }
 }

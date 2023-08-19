@@ -3,4 +3,6 @@ public abstract class NCPFStatsModule extends NCPFSettingsModule implements Elem
     public NCPFStatsModule(String name){
         super(name);
     }
+    @Override
+    public abstract String getFriendlyName();
 }

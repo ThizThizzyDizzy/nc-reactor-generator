@@ -17,4 +17,8 @@ public class UnknownNCPFModule extends NCPFModule{
     public void conglomerate(NCPFModule addon){
         ncpf.putAll(((UnknownNCPFModule)addon).ncpf);
     }
+    @Override
+    public String getFriendlyName(){
+        return "Unknown Module";
+    }
 }

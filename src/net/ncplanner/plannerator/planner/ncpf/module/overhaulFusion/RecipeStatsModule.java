@@ -12,4 +12,8 @@ public class RecipeStatsModule extends NCPFStatsModule{
         addFloat("fluxiness", ()->fluxiness, (v)->fluxiness = v, "Fluxiness");
         addInteger("time", ()->time, (v)->time = v, "Base Time");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Recipe Stats";
+    }
 }

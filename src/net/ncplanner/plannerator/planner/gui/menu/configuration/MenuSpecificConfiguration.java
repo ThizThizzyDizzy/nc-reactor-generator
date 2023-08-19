@@ -18,8 +18,8 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
-public class SpecificConfigurationMenu extends ConfigurationMenu{
-    public SpecificConfigurationMenu(Menu parent, NCPFConfigurationContainer configuration, NCPFConfiguration config){
+public class MenuSpecificConfiguration extends ConfigurationMenu{
+    public MenuSpecificConfiguration(Menu parent, NCPFConfigurationContainer configuration, NCPFConfiguration config){
         super(parent, configuration, config.getName().replace(" Configuration", ""), new SplitLayout(SplitLayout.Y_AXIS, 0).fitSize());
         NCPFSettingsModule settings = null;
         for(NCPFModule module : config.modules.modules.values()){
@@ -59,7 +59,7 @@ public class SpecificConfigurationMenu extends ConfigurationMenu{
                 }else{
                     NCPFElement elem;
                     elems.add(elem = supplier.get());
-                    gui.open(new ElementConfigurationMenu(this, configuration, config, elem));
+                    gui.open(new MenuElementConfiguration(this, configuration, config, elem));
                 }
             }));
             onOpen(() -> {
@@ -70,7 +70,7 @@ public class SpecificConfigurationMenu extends ConfigurationMenu{
                         elems.remove(elem);
                         refresh();
                     }).addButton("pencil", "Modify "+title, () -> {
-                        gui.open(new ElementConfigurationMenu(this, configuration, config, elem));
+                        gui.open(new MenuElementConfiguration(this, configuration, config, elem));
                     }));
                     button.height = 96;
                 }

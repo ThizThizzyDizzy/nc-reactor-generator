@@ -10,4 +10,8 @@ public abstract class BlockFunctionModule extends NCPFSettingsModule{
         throw new ConglomerationError("Block stats may not be overwritten! (Tried to conglomerate "+name+")");
     }
     public abstract String getFunctionName();
+    @Override
+    public String getFriendlyName(){
+        return getFunctionName();
+    }
 }

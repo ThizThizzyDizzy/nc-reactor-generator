@@ -8,4 +8,8 @@ public class CoolantRecipeStatsModule extends NCPFStatsModule{
         addInteger("heat", ()->heat, (v)->heat = v, "Heat");
         addFloat("output_ratio", ()->outputRatio, (v)->outputRatio = v, "Output Ratio");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Coolant Recipe Stats";
+    }
 }

@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -56,6 +57,17 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         gets.put(name, get);
         sets.put(name, set);
         types.put(name, Type.BOOLEAN);
+        titles.put(name, title);
+        tooltips.put(name, tooltip);
+    }
+    public void addStringList(String name, Supplier<List<String>> get, Consumer<List<String>> set, String title){
+        addStringList(name, get, set, title, null);
+    }
+    public void addStringList(String name, Supplier<List<String>> get, Consumer<List<String>> set, String title, String tooltip){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.STRING_LIST);
         titles.put(name, title);
         tooltips.put(name, tooltip);
     }
@@ -127,6 +139,6 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         return ttp.trim();
     }
     public static enum Type{
-        INTEGER,FLOAT,DOUBLE,BOOLEAN;
+        INTEGER,FLOAT,DOUBLE,BOOLEAN,STRING_LIST;
     }
 }

@@ -22,7 +22,7 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
             ncpf.setDefinedNCPFObject(key, modules.get(key));
         }
     }
-    public boolean hasModule(Supplier<NCPFModule> module){
+    public <T extends NCPFModule> boolean hasModule(Supplier<T> module){
         return modules.containsKey(module.get().name);
     }
     public <T extends NCPFModule> T getModule(Supplier<T> module){
@@ -60,10 +60,13 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
     public void setReferences(List<NCPFElement> lst){
         for(NCPFModule module : modules.values())module.setReferences(lst);
     }
-    void clearPlanneratorModules(){
+    public void clearPlanneratorModules(){
         for(Iterator<String> it = modules.keySet().iterator(); it.hasNext();){
             String key = it.next();
             if(!key.startsWith("ncpf:"))it.remove();
         }
+    }
+    public void removeModule(NCPFModule module){
+        modules.remove(module.name);
     }
 }

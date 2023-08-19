@@ -6,4 +6,8 @@ public class HeaterStatsModule extends NCPFStatsModule{
         super("nuclearcraft:overhaul_msr:heater_stats");
         addInteger("cooling", ()->cooling, (v)->cooling = v, "Cooling");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Heater Stats";
+    }
 }

@@ -14,4 +14,8 @@ public class PortModule extends BlockFunctionModule{
     public String getFunctionName(){
         return (output?"Output":"Input")+" Port";
     }
+    @Override
+    public String getFriendlyName(){
+        return "Port";
+    }
 }

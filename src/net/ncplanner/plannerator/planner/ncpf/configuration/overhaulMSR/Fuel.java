@@ -34,6 +34,6 @@ public class Fuel extends NCPFElement implements IBlockRecipe{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new, FuelStatsModule::new};
+        return new Supplier[]{FuelStatsModule::new};
     }
 }

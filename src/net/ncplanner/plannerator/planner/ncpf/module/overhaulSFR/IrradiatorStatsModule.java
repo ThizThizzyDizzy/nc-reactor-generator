@@ -8,4 +8,8 @@ public class IrradiatorStatsModule extends NCPFStatsModule{
         addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
         addFloat("heat", ()->heat, (v)->heat = v, "Heat");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Irradiator Recipe Stats";
+    }
 }

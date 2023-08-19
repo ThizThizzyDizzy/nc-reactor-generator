@@ -34,6 +34,6 @@ public class IrradiatorRecipe extends NCPFElement implements IBlockRecipe{
     }
     @Override
     public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{DisplayNameModule::new, TextureModule::new, IrradiatorStatsModule::new};
+        return new Supplier[]{IrradiatorStatsModule::new};
     }
 }

@@ -56,6 +56,7 @@ public abstract class ConfigurationMenu extends LayoutMenu{
     @Override
     public void render2d(double deltaTime){
         if(refreshNeeded)onOpened();
+        refreshNeeded = false;
         super.render2d(deltaTime);
     }
     public void onOpen(Runnable r){

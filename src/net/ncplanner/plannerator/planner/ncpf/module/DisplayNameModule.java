@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-public class DisplayNameModule extends NCPFModule{
+public class DisplayNameModule extends NCPFModule implements ElementModule{
     public String displayName;
     public DisplayNameModule(){
         super("plannerator:display_name");
@@ -15,5 +15,9 @@ public class DisplayNameModule extends NCPFModule{
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setString("display_name", displayName);
+    }
+    @Override
+    public String getFriendlyName(){
+        return "Display Name";
     }
 }

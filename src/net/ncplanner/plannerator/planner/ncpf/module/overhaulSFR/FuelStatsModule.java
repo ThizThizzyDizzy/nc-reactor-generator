@@ -14,4 +14,8 @@ public class FuelStatsModule extends NCPFStatsModule{
         addInteger("criticality", ()->criticality, (v)->criticality = v, "Criticality");
         addBoolean("self_priming", ()->selfPriming, (v)->selfPriming = v, "Self-Priming");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Fuel Stats";
+    }
 }

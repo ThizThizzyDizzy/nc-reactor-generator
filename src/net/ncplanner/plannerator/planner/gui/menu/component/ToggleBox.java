@@ -17,6 +17,18 @@ public class ToggleBox extends Component{
     private Image image = null;
     private static Boolean sliding = null;
     private boolean allowSliding = false;
+    public ToggleBox(String label){
+        this(label, false);
+    }
+    public ToggleBox(String label, boolean isToggledOn){
+        this(label, isToggledOn, false);
+    }
+    public ToggleBox(String label, boolean isToggledOn, boolean darker){
+        super();
+        this.isToggledOn = isToggledOn;
+        this.text = label;
+        this.darker = darker;
+    }
     public ToggleBox(float x, float y, float width, float height, String label){
         this(x, y, width, height, label, false);
     }

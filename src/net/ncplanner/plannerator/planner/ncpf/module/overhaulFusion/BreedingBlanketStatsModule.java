@@ -10,4 +10,8 @@ public class BreedingBlanketStatsModule extends NCPFStatsModule{
         addFloat("heat", ()->heat, (v)->heat = v, "Heat");
         addBoolean("augmented", ()->augmented, (v)->augmented = v, "Augmented");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Breeding Blanket Stats";
+    }
 }

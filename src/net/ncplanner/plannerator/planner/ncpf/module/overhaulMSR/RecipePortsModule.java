@@ -39,4 +39,8 @@ public class RecipePortsModule extends NCPFModule{
     public void conglomerate(NCPFModule addon){
         throw new UnsupportedOperationException("Block ports may not be overwritten!");
     }
+    @Override
+    public String getFriendlyName(){
+        return "Recipe Ports";
+    }
 }

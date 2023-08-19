@@ -116,7 +116,9 @@ public class Component{
     }
     public void onMouseButton(double x, double y, int button, int action, int mods){
         if(mouseFocusedComponent!=null){
+            Component didEvent = null;//prevent doubling release events at each layer
             if(action==GLFW_RELEASE&&focusedComponent!=null){
+                didEvent = focusedComponent;
                 focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);
             }//still get release event when mouse not over
             if(action==GLFW_PRESS){
@@ -130,7 +132,7 @@ public class Component{
                     focusedComponent.onFocusGained();
                 }
             }
-            if(mouseFocusedComponent!=null)mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
+            if(mouseFocusedComponent!=null&&didEvent!=mouseFocusedComponent)mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
         }
     }
     public void onFocusGained(){}
