@@ -13,6 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveC
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
@@ -51,7 +52,7 @@ public class UnderhaulSFRConfigurationBuilder{
     public BlockElement block(String name, String displayName, String texture){
         BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
         block.names.displayName = displayName;
-        block.names.legacyNames.add(displayName);
+        block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
         return block;
@@ -161,7 +162,7 @@ public class UnderhaulSFRConfigurationBuilder{
         fuel.stats.heat = heat;
         fuel.stats.time = time;
         fuel.names.displayName = displayName;
-        fuel.names.legacyNames.add(displayName);
+        fuel.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         fuel.texture.texture = TextureManager.getImage(texture);
         configuration.fuels.add(fuel);
         return fuel;

@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
@@ -11,11 +10,9 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 public class Block extends AbstractBlock{
     public BlockElement template;
     public ActiveCoolerRecipe recipe;
@@ -113,12 +110,6 @@ public class Block extends AbstractBlock{
         }
     }
     @Override
-    public List<PlacementRule> getRules(){
-        if(template.cooler!=null)return template.cooler.rules;
-        if(recipe!=null)return recipe.stats.rules;
-        return new ArrayList<>();
-    }
-    @Override
     public boolean canRequire(AbstractBlock oth){
         if(template.cooler!=null||recipe!=null)return requires(oth, null);
         Block other = (Block) oth;
@@ -150,22 +141,8 @@ public class Block extends AbstractBlock{
         return copy;
     }
     @Override
-    public ArrayList<String> getSearchableNames(){
-        ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
-        return searchables;
-    }
-    @Override
-    public ArrayList<String> getSimpleSearchableNames(){
-        return template.getSimpleSearchableNames();
-    }
-    @Override
     public BlockElement getTemplate(){
         return template;
-    }
-    @Override
-    public boolean hasRecipes(){
-        return template.activeCooler!=null;
     }
     @Override
     public List<? extends IBlockRecipe> getRecipes(){
@@ -180,10 +157,4 @@ public class Block extends AbstractBlock{
         if(template.activeCooler!=null)this.recipe = (ActiveCoolerRecipe)recipe;
         else throw new IllegalArgumentException("Tried to set block recipe, but this block can't have recipes!");
     }
-    @Override
-    public boolean isToggled(){
-        return false;
-    }
-    @Override
-    public void setToggled(boolean toggled){}
 }

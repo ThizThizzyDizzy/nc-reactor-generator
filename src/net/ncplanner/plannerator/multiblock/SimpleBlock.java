@@ -1,12 +1,10 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 public abstract class SimpleBlock extends AbstractBlock{
     public SimpleBlock(NCPFConfigurationContainer configuration, int x, int y, int z){
         super(configuration, x, y, z);
@@ -54,10 +52,6 @@ public abstract class SimpleBlock extends AbstractBlock{
         return matches(other);
     }
     @Override
-    public boolean hasRecipes(){
-        return false;
-    }
-    @Override
     public ArrayList<? extends IBlockRecipe> getRecipes() {
         return new ArrayList<>();
     }
@@ -76,19 +70,9 @@ public abstract class SimpleBlock extends AbstractBlock{
         return strs;
     }
     @Override
-    public List<? extends NCPFPlacementRule> getRules(){
-        return new ArrayList<>();
-    }
-    @Override
     public NCPFElement getRecipe(){
         return null;
     }
     @Override
     public void setRecipe(NCPFElement recipe){}
-    @Override
-    public boolean isToggled(){
-        return false;
-    }
-    @Override
-    public void setToggled(boolean toggled){}
 }

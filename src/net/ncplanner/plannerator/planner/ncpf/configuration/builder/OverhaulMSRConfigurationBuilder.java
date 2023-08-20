@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule;
@@ -40,7 +41,7 @@ public class OverhaulMSRConfigurationBuilder{
     public BlockElement block(String name, String displayName, String texture){
         BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
         block.names.displayName = displayName;
-        block.names.legacyNames.add(displayName);
+        block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
         return block;
@@ -87,7 +88,7 @@ public class OverhaulMSRConfigurationBuilder{
     public HeaterRecipe heaterRecipe(BlockElement block, String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
         HeaterRecipe recipe = new HeaterRecipe(new NCPFLegacyFluidElement(inputName));
         recipe.names.displayName = inputDisplayName;
-        recipe.names.legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.cooling = cooling;
         block.heaterRecipes.add(recipe);
@@ -136,7 +137,7 @@ public class OverhaulMSRConfigurationBuilder{
     public IrradiatorRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         IrradiatorRecipe recipe = new IrradiatorRecipe(new NCPFLegacyItemElement(inputName));
         recipe.names.displayName = inputDisplayName;
-        recipe.names.legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
@@ -146,7 +147,7 @@ public class OverhaulMSRConfigurationBuilder{
     public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         Fuel fuel = new Fuel(new NCPFLegacyFluidElement(inputName));
         fuel.names.displayName = inputDisplayName;
-        fuel.names.legacyNames.add(inputDisplayName);
+        fuel.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         fuel.texture.texture = TextureManager.getImage(inputTexture);
         fuel.stats.efficiency = efficiency;
         fuel.stats.heat = heat;
@@ -182,7 +183,8 @@ public class OverhaulMSRConfigurationBuilder{
             }
             for (BlockElement b : configuration.blocks) {
                 if (b.parent != null) continue;
-                for (String s : b.names.legacyNames) {
+                LegacyNamesModule names = b.getModule(LegacyNamesModule::new);
+                if(names!=null)for (String s : names.legacyNames) {
                     if(str.endsWith(" heater")||str.endsWith(" heaters")){
                         String withoutTheHeater = str.substring(0, str.indexOf(" heater"));
                         if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheHeater)){

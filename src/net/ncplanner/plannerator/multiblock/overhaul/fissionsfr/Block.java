@@ -12,10 +12,8 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
@@ -261,11 +259,6 @@ public class Block extends AbstractBlock{
         }
     }
     @Override
-    public List<? extends NCPFPlacementRule> getRules(){
-        if(template.heatsink!=null)return template.heatsink.rules;
-        return new ArrayList<>();
-    }
-    @Override
     public boolean canRequire(AbstractBlock oth){
         if(template.heatsink!=null)return requires(oth, null);
         Block other = (Block) oth;
@@ -351,16 +344,6 @@ public class Block extends AbstractBlock{
         if(b!=null&&(b.isController()||b.template.coolantVent!=null||b.template.port!=null||b.template.neutronSource!=null))return false;
         sfr.setBlock(X, Y, Z, new Block(sfr.getConfiguration(), X, Y, Z, source));
         return true;
-    }
-    @Override
-    public ArrayList<String> getSearchableNames(){
-        ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
-        return searchables;
-    }
-    @Override
-    public ArrayList<String> getSimpleSearchableNames(){
-        return template.getSimpleSearchableNames();
     }
     @Override
     public NCPFElement getTemplate(){

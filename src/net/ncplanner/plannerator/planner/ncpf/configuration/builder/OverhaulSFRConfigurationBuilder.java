@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantR
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule;
@@ -41,7 +42,7 @@ public class OverhaulSFRConfigurationBuilder{
     public BlockElement block(String name, String displayName, String texture){
         BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
         block.names.displayName = displayName;
-        block.names.legacyNames.add(displayName);
+        block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
         return block;
@@ -138,7 +139,7 @@ public class OverhaulSFRConfigurationBuilder{
     public IrradiatorRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
         IrradiatorRecipe recipe = new IrradiatorRecipe(new NCPFLegacyItemElement(inputName));
         recipe.names.displayName = inputDisplayName;
-        recipe.names.legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
@@ -148,7 +149,7 @@ public class OverhaulSFRConfigurationBuilder{
     public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         Fuel fuel = new Fuel(new NCPFLegacyItemElement(inputName));
         fuel.names.displayName = inputDisplayName;
-        fuel.names.legacyNames.add(inputDisplayName);
+        fuel.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         fuel.texture.texture = TextureManager.getImage(inputTexture);
         fuel.stats.efficiency = efficiency;
         fuel.stats.heat = heat;
@@ -164,7 +165,7 @@ public class OverhaulSFRConfigurationBuilder{
         recipe.stats.heat = heat;
         recipe.stats.outputRatio = outputRatio;
         recipe.names.displayName = inputDisplayName;
-        recipe.names.legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         return recipe;
     }
@@ -190,7 +191,8 @@ public class OverhaulSFRConfigurationBuilder{
             }
             for(BlockElement b : configuration.blocks){
                 if(b.port!=null)continue;
-                for(String s : b.names.legacyNames){
+                LegacyNamesModule names = b.getModule(LegacyNamesModule::new);
+                if(names!=null)for(String s : names.legacyNames){
                     if(str.endsWith(" sink")||str.endsWith(" sinks")){
                         String withoutTheSink = str.substring(0, str.indexOf(" sink"));
                         if(s.equals("nuclearcraft:solid_fission_sink_"+withoutTheSink)){

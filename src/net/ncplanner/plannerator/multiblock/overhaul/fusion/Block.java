@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.multiblock.overhaul.fusion;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
@@ -13,7 +12,6 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe;
 public class Block extends AbstractBlock{
@@ -195,11 +193,6 @@ public class Block extends AbstractBlock{
         return isReflector()||isBreedingBlanket()||isHeatingBlanket();
     }
     @Override
-    public List<? extends NCPFPlacementRule> getRules(){
-        if(template.heatsink!=null)return template.heatsink.rules;
-        return new ArrayList<>();
-    }
-    @Override
     public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
         if(template.heatsink!=null)return requires(oth, null);
         Block other = (Block) oth;
@@ -300,22 +293,8 @@ public class Block extends AbstractBlock{
         return (isHeatingBlanket()||isBreedingBlanket()||isReflector()||isHeatsink()||isShielding())&&(isActive()||breedingBlanketValid);
     }
     @Override
-    public ArrayList<String> getSearchableNames(){
-        ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
-        return searchables;
-    }
-    @Override
-    public ArrayList<String> getSimpleSearchableNames(){
-        return template.getSimpleSearchableNames();
-    }
-    @Override
     public NCPFElement getTemplate(){
         return template;
-    }
-    @Override
-    public boolean hasRecipes(){
-        return template.breedingBlanket!=null;
     }
     @Override
     public List<? extends IBlockRecipe> getRecipes(){
@@ -330,10 +309,4 @@ public class Block extends AbstractBlock{
         if(template.breedingBlanket!=null)breedingBlanketRecipe = (BreedingBlanketRecipe)recipe;
         else throw new IllegalArgumentException("Tried to set block recipe to "+template.definition.toString()+", but it can't have recipes!");
     }
-    @Override
-    public boolean isToggled(){
-        return false;
-    }
-    @Override
-    public void setToggled(boolean toggled){}
 }

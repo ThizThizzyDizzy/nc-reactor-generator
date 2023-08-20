@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.multiblock.overhaul.turbine;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
@@ -9,9 +8,7 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 public class Block extends AbstractBlock{
     public BlockElement template;
@@ -59,12 +56,6 @@ public class Block extends AbstractBlock{
     @Override
     public boolean isCore(){
         return isBearing()||isBlade();
-    }
-    @Override
-    public List<? extends NCPFPlacementRule> getRules(){
-        if(template.coil!=null)return template.coil.rules;
-        if(template.connector!=null)return template.connector.rules;
-        return new ArrayList<>();
     }
     @Override
     public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
@@ -115,22 +106,8 @@ public class Block extends AbstractBlock{
         return Core.hasAlpha(against.getBaseTexture());
     }
     @Override
-    public ArrayList<String> getSearchableNames(){
-        ArrayList<String> searchables = template.getSearchableNames();
-        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
-        return searchables;
-    }
-    @Override
-    public ArrayList<String> getSimpleSearchableNames(){
-        return template.getSimpleSearchableNames();
-    }
-    @Override
     public NCPFElement getTemplate(){
         return template;
-    }
-    @Override
-    public boolean hasRecipes(){
-        return false;
     }
     @Override
     public ArrayList<? extends IBlockRecipe> getRecipes(){
@@ -142,10 +119,4 @@ public class Block extends AbstractBlock{
     }
     @Override
     public void setRecipe(NCPFElement recipe){}
-    @Override
-    public boolean isToggled(){
-        return false;
-    }
-    @Override
-    public void setToggled(boolean toggled){}
 }

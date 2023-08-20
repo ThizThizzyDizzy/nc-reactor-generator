@@ -17,7 +17,9 @@ import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -322,7 +324,18 @@ public abstract class AbstractBlock implements Pinnable{
     public abstract boolean isActive();
     @Deprecated
     public abstract boolean isCore();
-    public abstract List<? extends NCPFPlacementRule> getRules();
+    public List<NCPFPlacementRule> getRules(){
+        for(NCPFModule module : getTemplate().modules.modules.values()){
+            if(module instanceof BlockRulesModule)return ((BlockRulesModule)module).rules;
+        }
+        NCPFElement recipe = getRecipe();
+        if(recipe!=null){
+            for(NCPFModule module : recipe.modules.modules.values()){
+                if(module instanceof BlockRulesModule)return ((BlockRulesModule)module).rules;
+            }
+        }
+        return new ArrayList<>();
+    }
     public boolean matches(AbstractBlock template){
         if(template==null)return getTemplate()==null;
         if(getTemplate()==null)return false;
@@ -368,10 +381,27 @@ public abstract class AbstractBlock implements Pinnable{
         if(matches(against))return false;
         return Core.hasAlpha(against.getBaseTexture());
     }
-    public abstract boolean hasRecipes();
+    @Override
+    public ArrayList<String> getSearchableNames(){
+        ArrayList<String> searchables = getTemplate().getSearchableNames();
+        for(String s : StringUtil.split(getListTooltip(), "\n"))searchables.add(s.trim());
+        return searchables;
+    }
+    @Override
+    public ArrayList<String> getSimpleSearchableNames(){
+        return getTemplate().getSimpleSearchableNames();
+    }
+    public boolean hasRecipes(){
+        for(NCPFModule module : getTemplate().modules.modules.values()){
+            if(module instanceof RecipesBlockModule)return true;
+        }
+        return false;
+    }
     public abstract List<? extends IBlockRecipe> getRecipes();
     public abstract NCPFElement getRecipe();
     public abstract void setRecipe(NCPFElement recipe);
-    public abstract boolean isToggled();
-    public abstract void setToggled(boolean toggled);
+    public boolean isToggled(){
+        return false;
+    }
+    public void setToggled(boolean toggled){}
 }

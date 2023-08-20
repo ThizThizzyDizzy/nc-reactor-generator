@@ -8,6 +8,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfi
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
@@ -34,7 +35,7 @@ public class OverhaulTurbineConfigurationBuilder{
     public BlockElement block(String name, String displayName, String texture){
         BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
         block.names.displayName = displayName;
-        block.names.legacyNames.add(displayName);
+        block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
         return block;
@@ -102,7 +103,7 @@ public class OverhaulTurbineConfigurationBuilder{
         recipe.stats.power = power;
         recipe.stats.coefficient = coefficient;
         recipe.names.displayName = inputDisplayName;
-        recipe.names.legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         return recipe;
     }
@@ -122,7 +123,8 @@ public class OverhaulTurbineConfigurationBuilder{
                 throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
             for(BlockElement b : configuration.blocks){
-                for(String s : b.names.legacyNames){
+                LegacyNamesModule names = b.getModule(LegacyNamesModule::new);
+                if(names!=null)for(String s : names.legacyNames){
                     if(str.endsWith(" coil")||str.endsWith(" coils")){
                         String withoutTheCoil = str.substring(0, str.indexOf(" coil"));
                         if(s.equals("nuclearcraft:turbine_dynamo_coil_"+withoutTheCoil)){
