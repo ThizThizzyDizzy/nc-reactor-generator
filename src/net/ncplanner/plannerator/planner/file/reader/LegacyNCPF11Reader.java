@@ -924,7 +924,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                             });
                         }
                     }
-                    if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule();
+                    if(blockCfg.hasProperty("cluster")&&!blockCfg.hasProperty("functional")||
+                            blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule();
                     if(blockCfg.getBoolean("casing", false))block.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule(blockCfg.getBoolean("casingEdge", false));
                     if(blockCfg.getBoolean("controller", false))block.controller = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ControllerModule();
                     boolean hasRecipes = blockCfg.getConfigList("recipes", new ConfigList()).size()>0;
@@ -1170,7 +1171,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         });
                     }
                 }
-                if(blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule();
+                if(blockCfg.hasProperty("cluster")&&!blockCfg.hasProperty("functional")||
+                        blockCfg.getBoolean("conductor", false))block.conductor = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule();
                 if(blockCfg.getBoolean("connector", false))block.connector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConnectorModule();
                 if(blockCfg.getBoolean("core", false))block.core = new net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.CoreModule();
                 if(blockCfg.getBoolean("electromagnet", false)){
