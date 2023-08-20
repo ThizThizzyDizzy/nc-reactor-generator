@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.layout;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class GridLayout extends Layout{
-    private final int columns;
-    private final int rows;
+    public int columns;
+    public int rows;
     public GridLayout(int columns, int rows){
         if(rows==0&&columns==0)throw new IllegalArgumentException("Cannot create grid layout with infinite rows and columns!");
         if(columns==0)columns = Integer.MAX_VALUE;

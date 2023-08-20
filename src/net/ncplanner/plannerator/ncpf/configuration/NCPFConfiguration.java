@@ -39,5 +39,5 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     }
     public abstract void makePartial(List<Design> designs);
     public abstract String getName();
-    public void init(){}
+    public void init(boolean isAddon){}
 }

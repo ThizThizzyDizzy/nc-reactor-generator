@@ -17,9 +17,9 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public List<BlockElement> blocks = new ArrayList<>();
     public List<CoolantRecipe> coolantRecipes = new ArrayList<>();
     @Override
-    public void init(){
+    public void init(boolean addon){
         setModule(metadata);
-        settings = setModule(new OverhaulSFRSettingsModule());
+        if(!addon)settings = setModule(new OverhaulSFRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

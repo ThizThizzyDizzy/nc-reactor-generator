@@ -15,9 +15,9 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     public OverhaulMSRSettingsModule settings;
     public List<BlockElement> blocks = new ArrayList<>();
     @Override
-    public void init(){
+    public void init(boolean addon){
         setModule(metadata);
-        settings = setModule(new OverhaulMSRSettingsModule());
+        if(!addon)settings = setModule(new OverhaulMSRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

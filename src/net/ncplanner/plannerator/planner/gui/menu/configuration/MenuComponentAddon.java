@@ -42,8 +42,10 @@ public class MenuComponentAddon extends Component{
     }
     @Override
     public void drawForeground(double deltaTime){
+        String text = addon.getName();
+        if(text==null)text = "null";
         Renderer renderer = new Renderer();
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
+        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text);
     }
 }

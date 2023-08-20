@@ -21,7 +21,7 @@ public class UnknownNCPFElement extends NCPFElementDefinition{
     }
     @Override
     public String getName(){
-        return null;
+        return "null";
     }
     @Override
     public String getTypeName(){

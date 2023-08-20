@@ -1,5 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf;
+import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFAddon;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
@@ -22,5 +25,18 @@ public class Addon extends NCPFAddon{
             if(module!=null)return module.name;
         }
         return metadata.metadata.getOrDefault("name", "Unknown Configuration");
+    }
+    public void setReferences(NCPFConfigurationContainer config){
+        for(String key : this.configuration.configurations.keySet()){
+            NCPFConfiguration other = config.configurations.get(key);
+            if(other!=null){
+                NCPFConfiguration thisOne = configuration.configurations.get(key);
+                for(List<NCPFElement> otherElements : other.getElements()){
+                    for(List<NCPFElement> elems : thisOne.getElements()){
+                        for(NCPFElement elem : elems)elem.setReferences(otherElements);
+                    }
+                }
+            }
+        }
     }
 }

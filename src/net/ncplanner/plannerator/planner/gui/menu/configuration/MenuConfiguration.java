@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -43,8 +44,8 @@ public class MenuConfiguration extends ConfigurationMenu{
         Button createAddon = addonButtons.add(new Button("Create Addon", true, true));
         createAddon.addAction(() -> {
             Addon addon = new Addon();
-            configuration.addons.add(addon);
-            gui.open(new MenuAddon(gui, this, addon));
+            configuration.addAddon(addon);
+            gui.open(new MenuAddon(this, configuration, addon));
         });
         importAddon.addAction(() -> {
             try{
@@ -79,7 +80,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                 GridLayout buttons = split.add(new GridLayout(1, 2));
                 buttons.add(new Button("Edit", true).addAction(() -> {
                     config.convertToObject(new NCPFObject());//set all module references
-                    gui.open(new MenuSpecificConfiguration(this, super.configuration, config));
+                    gui.open(new MenuSpecificConfiguration(this, configuration, super.configuration, config));
                 }));
                 buttons.add(new Button("Delete (Shift)", false){
                     @Override
@@ -104,7 +105,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }
                 }.addAction(() -> {
                     NCPFConfiguration c = cfg.get();
-                    c.init();
+                    c.init(false);
                     configuration.configuration.setConfiguration(c);
                     onOpened();
                 }));
@@ -118,7 +119,7 @@ public class MenuConfiguration extends ConfigurationMenu{
         addonsList.components.clear();
         for(Addon addon : configuration.addons){
             addonsList.add(new MenuComponentAddon(addon, () -> {
-                gui.open(new MenuAddon(gui, this, addon));
+                gui.open(new MenuAddon(this, configuration, addon));
             }, () -> {
                 configuration.addons.remove(addon);
                 onOpened();
@@ -126,10 +127,10 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
         FOR:for(Addon addon : Configuration.internalAddons){
             for(Addon a : configuration.addons){
-                if(a.getName().equals(addon.getName()))continue FOR;
+                if(Objects.equals(a.getName(), addon.getName()))continue FOR;
             }
             addonsList.add(new MenuComponentInternalAddon(addon, () -> {
-                configuration.addons.add(addon.copyTo(Addon::new));
+                configuration.addAddon(addon.copyTo(Addon::new));
                 onOpened();
             }));
         }
@@ -154,7 +155,7 @@ public class MenuConfiguration extends ConfigurationMenu{
     private void loadAddon(File file){
         try{
             Project ncpf = FileReader.read(file);
-            configuration.addons.add(ncpf.addons.get(0));
+            configuration.addAddon(ncpf.addons.get(0));
         }catch(Exception ex){
             Core.error("Failed to load addon", ex);
         }

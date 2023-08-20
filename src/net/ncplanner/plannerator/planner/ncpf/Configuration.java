@@ -63,4 +63,17 @@ public class Configuration{
         alternatives.add(alt);
         return this;
     }
+    public void addAddon(Addon addon){
+        addon.setReferences(configuration);
+        addons.add(addon);
+        for(Addon a : addons)addon.setReferences(a.configuration);
+    }
+    public List<NCPFConfiguration> getConfigurations(String name){
+        List<NCPFConfiguration> lst = new ArrayList<>();
+        if(configuration.configurations.containsKey(name))lst.add(configuration.configurations.get(name));
+        for(Addon a : addons){
+            if(a.configuration.configurations.containsKey(name))lst.add(a.configuration.configurations.get(name));
+        }
+        return lst;
+    }
 }

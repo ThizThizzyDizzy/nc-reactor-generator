@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -65,6 +66,13 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         neutronSource = getModule(NeutronSourceModule::new);
         port = getModule(PortModule::new);
         recipePorts = getModule(RecipePortsModule::new);
+        if(fuelVessel!=null)fuels = getRecipes(Fuel::new);
+        if(heater!=null)heaterRecipes = getRecipes(HeaterRecipe::new);
+        if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
+    }
+    @Override
+    public void conglomerate(DefinedNCPFModularObject addon){
+        super.conglomerate(addon);
         if(fuelVessel!=null)fuels = getRecipes(Fuel::new);
         if(heater!=null)heaterRecipes = getRecipes(HeaterRecipe::new);
         if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);

@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -41,6 +42,11 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         moderator = getModule(ModeratorModule::new);
         casing = getModule(CasingModule::new);
         controller = getModule(ControllerModule::new);
+        if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
+    }
+    @Override
+    public void conglomerate(DefinedNCPFModularObject addon){
+        super.conglomerate(addon);
         if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
     }
     @Override

@@ -4,7 +4,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -16,10 +18,15 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
 public class MenuSpecificConfiguration extends ConfigurationMenu{
-    public MenuSpecificConfiguration(Menu parent, NCPFConfigurationContainer configuration, NCPFConfiguration config){
+    public MenuSpecificConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config){
         super(parent, configuration, config.getName().replace(" Configuration", ""), new SplitLayout(SplitLayout.Y_AXIS, 0).fitSize());
         NCPFSettingsModule settings = null;
         for(NCPFModule module : config.modules.modules.values()){
@@ -45,6 +52,13 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                     if(m instanceof BlockRulesModule)hasRules = true;
                 }
             }
+            boolean hasRecipes = false;
+            for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
+                if(confg==config)break;
+                for(NCPFElement elem : confg.getElements()[i]){
+                    if(elem instanceof BlockRecipesElement)hasRecipes = true;
+                }
+            }
             boolean hasRuls = hasRules;
             buttons.add(new Button("Add "+title, true, true){
                 @Override
@@ -59,9 +73,25 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                 }else{
                     NCPFElement elem = supplier.get().copyTo(supplier);
                     elems.add(elem);
-                    gui.open(new MenuElementConfiguration(this, configuration, config, elem));
+                    gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                 }
             }));
+            if(hasRecipes){
+                buttons.add(new Button("Add Parent "+title, true, true).addAction(() -> {
+                    new MenuPickReference(this, cnfg, config, false, (t) -> {
+                        NCPFElement elem = supplier.get().copyTo(supplier);
+                        elem.definition = t.target.definition;
+                        elems.add(elem);
+                        gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
+                    }, (elem) -> {
+                        if(!(elem instanceof BlockRecipesElement))return false;
+                        for(NCPFModule module : elem.modules.modules.values()){
+                            if(module instanceof RecipesBlockModule)return true;
+                        }
+                        return false;
+                    }).open();
+                }));
+            }
             onOpen(() -> {
                 label.text = title+"s ("+elems.size()+")";
                 lst.components.clear();
@@ -70,7 +100,7 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                         elems.remove(elem);
                         refresh();
                     }).addIconButton("pencil", "Modify "+title, () -> {
-                        gui.open(new MenuElementConfiguration(this, configuration, config, elem));
+                        gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                     }));
                     button.height = 96;
                 }

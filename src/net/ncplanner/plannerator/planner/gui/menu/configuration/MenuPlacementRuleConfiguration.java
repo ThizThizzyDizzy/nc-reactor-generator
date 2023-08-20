@@ -22,8 +22,9 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSelect;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
-    public MenuPlacementRuleConfiguration(Menu parent, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFPlacementRule rule){
+    public MenuPlacementRuleConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFPlacementRule rule){
         super(parent, configuration, "Placement Rule", new SplitLayout(SplitLayout.Y_AXIS, 0.5f).fitSize());
         ListLayout definition = add(new ListLayout());
         Button type = definition.add(new Button(Objects.toString(rule.rule), true).addAction(() -> {
@@ -49,7 +50,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                     target = new NCPFElement(new NCPFModuleElement(((NCPFModuleReference)reference).module));
                 }
                 panel.add(new NCPFElementComponent(target).addIconButton("pencil", "Change Target", () -> {
-                    new MenuPickReference(this, config, true, (ref)->{
+                    new MenuPickReference(this, cnfg, config, true, (ref)->{
                         rule.target = ref;
                         refresh();
                     }).open();
@@ -79,7 +80,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                         rules.remove(rul);
                         refresh();
                     }).addButton("pencil", "Modify Rule", () -> {
-                        gui.open(new MenuPlacementRuleConfiguration(this, configuration, config, rul));
+                        gui.open(new MenuPlacementRuleConfiguration(this, cnfg, configuration, config, rul));
                     })).height = 48;
                 }
                 rulesListContainer.add(new Label("Placement Rules"), BorderLayout.TOP, 48);
@@ -87,7 +88,7 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 rulesListContainer.add(new Button("Add Rule", true).addAction(() -> {
                     NCPFPlacementRule rul;
                     rules.add(rul = new NCPFPlacementRule());
-                    gui.open(new MenuPlacementRuleConfiguration(this, configuration, config, rul));
+                    gui.open(new MenuPlacementRuleConfiguration(this, cnfg, configuration, config, rul));
                 }), BorderLayout.BOTTOM, 48);
             }
         });

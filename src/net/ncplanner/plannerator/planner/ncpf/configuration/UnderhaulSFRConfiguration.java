@@ -17,9 +17,9 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     public List<BlockElement> blocks = new ArrayList<>();
     public List<Fuel> fuels = new ArrayList<>();
     @Override
-    public void init(){
+    public void init(boolean addon){
         setModule(metadata);
-        settings = setModule(new UnderhaulSFRSettingsModule());
+        if(!addon)settings = setModule(new UnderhaulSFRSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

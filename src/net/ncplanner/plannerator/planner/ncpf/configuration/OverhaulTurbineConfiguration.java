@@ -17,9 +17,9 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
     public List<BlockElement> blocks = new ArrayList<>();
     public List<Recipe> recipes = new ArrayList<>();
     @Override
-    public void init(){
+    public void init(boolean addon){
         setModule(metadata);
-        settings = setModule(new OverhaulTurbineSettingsModule());
+        if(!addon)settings = setModule(new OverhaulTurbineSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

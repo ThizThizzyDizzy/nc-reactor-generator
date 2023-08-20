@@ -22,9 +22,9 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
         super("plannerator:fusion_test");
     }
     @Override
-    public void init(){
+    public void init(boolean addon){
         setModule(metadata);
-        settings = setModule(new OverhaulFusionSettingsModule());
+        if(!addon)settings = setModule(new OverhaulFusionSettingsModule());
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
