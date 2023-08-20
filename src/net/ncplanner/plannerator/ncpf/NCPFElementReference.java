@@ -10,6 +10,10 @@ public class NCPFElementReference extends DefinedNCPFObject{
     public NCPFElementReference(NCPFElementDefinition definition){
         this.definition = definition;
     }
+    public NCPFElementReference(NCPFElement element){
+        this(element.definition);
+        target = element;
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         definition = NCPFElement.recognizedElements.getOrDefault(ncpf.getString("type"), UnknownNCPFElement::new).get();
@@ -17,6 +21,7 @@ public class NCPFElementReference extends DefinedNCPFObject{
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
+        if(target!=null)definition = target.definition;
         ncpf.setString("type", definition.type);
         definition.convertToObject(ncpf);
     }

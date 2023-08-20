@@ -20,6 +20,12 @@ public class Slider extends Component{
     private final boolean darker;
     private String name;
     private ArrayList<Consumer<Double>> onChange = new ArrayList<>();
+    public Slider(String name, int minimum, int maximum, int initial, boolean enabled){
+        this(0, 0, 0, 0, name, minimum, maximum, initial, enabled, false);
+    }
+    public Slider(String name, double minimum, double maximum, double initial, int digits, boolean enabled){
+        this(0, 0, 0, 0, name, minimum, maximum, initial, digits, enabled, false);
+    }
     public Slider(float x, float y, float width, float height, String name, int minimum, int maximum, int initial, boolean enabled){
         this(x, y, width, height, name, minimum, maximum, initial, enabled, false);
     }

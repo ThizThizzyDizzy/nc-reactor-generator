@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 public class NCPFModuleReference extends NCPFElementReference{
     public Supplier<NCPFModule> module;
     public NCPFModuleReference(){}
@@ -24,10 +23,6 @@ public class NCPFModuleReference extends NCPFElementReference{
     @Override
     public String getDisplayName(){
         NCPFModule mod = module.get();
-        if(mod instanceof BlockFunctionModule){
-            BlockFunctionModule function = (BlockFunctionModule)mod;
-            return function.getFunctionName();
-        }
-        return super.getDisplayName();
+        return mod.getFriendlyName();
     }
 }

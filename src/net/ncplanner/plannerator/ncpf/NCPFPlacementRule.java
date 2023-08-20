@@ -69,7 +69,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             return null;
         }
         private final String name;
-        private final boolean hasQuantity;
+        public final boolean hasQuantity;
         public final boolean hasSubRules;
         private RuleType(String name, boolean hasQuantity, boolean hasSubRules){
             this.name = name;
@@ -167,34 +167,36 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         return (T)this;
     }
     private String getTargetName(){
-        return target.getDisplayName();
+        return target==null?null:target.getDisplayName();
     }
     public String toTooltipString(){
-        switch (rule) {
-            case BETWEEN:
-                if (max == 6) return "At least " + min + " " + getTargetName();
-                if (min == max) return "Exactly " + min + " " + getTargetName();
-                return "Between " + min + " and " + max + " " + getTargetName();
-            case AXIAL:
-                if (max == 3) return "At least " + min + " Axial pairs of " + getTargetName();
-                if (min == max) return "Exactly " + min + " Axial pairs of " + getTargetName();
-                return "Between " + min + " and " + max + " Axial pairs of " + getTargetName();
-            case VERTEX:
-                return "Three " + getTargetName() + " at the same vertex";
-            case EDGE:
-                return "Two " + getTargetName() + " at the same edge";
-            case AND:
-                StringBuilder s = new StringBuilder();
-                for (NCPFPlacementRule rule : rules) {
-                    s.append(" AND ").append(rule.toTooltipString());
-                }
-                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 5);
-            case OR:
-                s = new StringBuilder();
-                for (NCPFPlacementRule rule : rules) {
-                    s.append(" OR ").append(rule.toTooltipString());
-                }
-                return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 4);
+        if(rule!=null){
+            switch (rule) {
+                case BETWEEN:
+                    if (max == 6) return "At least " + min + " " + getTargetName();
+                    if (min == max) return "Exactly " + min + " " + getTargetName();
+                    return "Between " + min + " and " + max + " " + getTargetName();
+                case AXIAL:
+                    if (max == 3) return "At least " + min + " Axial pairs of " + getTargetName();
+                    if (min == max) return "Exactly " + min + " Axial pairs of " + getTargetName();
+                    return "Between " + min + " and " + max + " Axial pairs of " + getTargetName();
+                case VERTEX:
+                    return "Three " + getTargetName() + " at the same vertex";
+                case EDGE:
+                    return "Two " + getTargetName() + " at the same edge";
+                case AND:
+                    StringBuilder s = new StringBuilder();
+                    for (NCPFPlacementRule rule : rules) {
+                        s.append(" AND ").append(rule.toTooltipString());
+                    }
+                    return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 5);
+                case OR:
+                    s = new StringBuilder();
+                    for (NCPFPlacementRule rule : rules) {
+                        s.append(" OR ").append(rule.toTooltipString());
+                    }
+                    return (s.length() == 0) ? s.toString() : StringUtil.substring(s, 4);
+            }
         }
         return "Unknown Rule";
     }

@@ -7,6 +7,10 @@ public class IconButton extends Button{
         super("", enabled);
         this.icon = icon;
     }
+    public IconButton(String icon, boolean enabled, boolean dark){
+        super("", enabled, dark);
+        this.icon = icon;
+    }
     @Override
     public void drawForeground(double deltaTime){
         Renderer renderer = new Renderer();

@@ -219,10 +219,10 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 recelement.clearBlockRecipes();//clear cached recipes, use module only
                 element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
                     for(NCPFElement elem : module.recipes){
-                        recipesList.add(new NCPFElementComponent(elem).addButton("delete", "Delete "+elem.getTitle(), () -> {
+                        recipesList.add(new NCPFElementComponent(elem).addIconButton("delete", "Delete "+elem.getTitle(), () -> {
                             module.recipes.remove(elem);
                             refresh();
-                        }).addButton("pencil", "Modify "+elem.getTitle(), () -> {
+                        }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
                             gui.open(new MenuElementConfiguration(this, configuration, config, elem));
                         })).height = 96;
                     }

@@ -66,10 +66,10 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                 label.text = title+"s ("+elems.size()+")";
                 lst.components.clear();
                 for(NCPFElement elem : elems){
-                    NCPFElementComponent button = lst.add(new NCPFElementComponent(elem).addButton("delete", "Delete "+title, () -> {
+                    NCPFElementComponent button = lst.add(new NCPFElementComponent(elem).addIconButton("delete", "Delete "+title, () -> {
                         elems.remove(elem);
                         refresh();
-                    }).addButton("pencil", "Modify "+title, () -> {
+                    }).addIconButton("pencil", "Modify "+title, () -> {
                         gui.open(new MenuElementConfiguration(this, configuration, config, elem));
                     }));
                     button.height = 96;

@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
 public class LayoutPanel extends Panel{
-    private final Layout layout;
+    public final Layout layout;
     public LayoutPanel(Layout layout){
         this.layout = super.add(layout);
     }
