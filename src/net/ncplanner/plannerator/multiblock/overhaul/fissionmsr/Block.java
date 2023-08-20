@@ -14,7 +14,9 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
@@ -290,9 +292,25 @@ public class Block extends AbstractBlock{
         return template.heater!=null;
     }
     public net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block convertToSFR() throws MissingConfigurationEntryException{
-        if(template.parent!=null&&template.parent.heater!=null)return null;
-        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(getConfiguration(), x, y, z, getConfiguration().overhaul.fissionSFR.convertToSFR(template));
-        b.recipe = b.template.convertToSFR(recipe);
+        if(template.parent!=null&&template.parent.heater!=null)return null;//remove heater ports
+        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement newTemplate = null;
+        for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement elem : getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).blocks){
+            if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "salt", "solid", "vessel", "cell", "heater", "sink")))newTemplate = elem;
+        }
+        if(newTemplate==null)return null;
+        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(getConfiguration(), x, y, z, newTemplate);
+        if(irradiatorRecipe!=null){
+           for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe : b.template.irradiatorRecipes){
+               if(recipe.definition.matches(irradiatorRecipe.definition))b.irradiatorRecipe = recipe;
+           }
+        }
+        if(fuel!=null){
+           for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel recipe : b.template.fuels){
+               for(String name : recipe.getLegacyNames()){
+                   if(name.equals(fuel.getName())||StringUtil.toLowerCase(name.trim()).startsWith(StringUtil.superReplace(StringUtil.toLowerCase(fuel.getDisplayName().trim()), " fluoride", "", "mf4", "mox")))b.fuel = recipe;
+               }
+           }
+        }
         return b;
     }
     @Override

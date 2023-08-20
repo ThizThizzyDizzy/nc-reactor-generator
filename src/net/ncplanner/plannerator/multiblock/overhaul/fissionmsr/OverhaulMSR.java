@@ -45,6 +45,7 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
@@ -1464,7 +1465,12 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return counts;
     }
     public OverhaulSFR convertToSFR() throws MissingConfigurationEntryException{
-        throw new UnsupportedOperationException("Not yet implemented");
+        OverhaulSFR sfr = new OverhaulSFR(configuration, getInternalWidth(), getInternalHeight(), getInternalDepth(), getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes.get(0));
+        for(Block b : getBlocks(true)){
+            sfr.setBlockExact(b.x, b.y, b.z, b.convertToSFR());
+        }
+        sfr.metadata.putAll(metadata);
+        return sfr;
     }
     public class Cluster{
         public ArrayList<Block> blocks = new ArrayList<>();

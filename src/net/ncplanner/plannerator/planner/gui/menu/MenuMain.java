@@ -42,7 +42,6 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -502,6 +501,7 @@ public class MenuMain extends Menu{
         addMultiblock.y = gui.getHeight()/16;
         addMultiblock.width = addMultiblock.height = gui.getHeight()/16;
         convertOverhaulMSFR.width = editMetadata.width+(Core.vr?vr.width:0);
+        convertOverhaulMSFR.y = addMultiblock.y;
         if(getSelectedMultiblock() instanceof OverhaulSFR){
             convertOverhaulMSFR.enabled = Core.project.conglomeration.hasConfiguration(OverhaulMSRConfiguration::new)&&!(adding||metadating)&&Core.isControlPressed();
             convertOverhaulMSFR.text = "Convert to MSR (Hold Control)";
