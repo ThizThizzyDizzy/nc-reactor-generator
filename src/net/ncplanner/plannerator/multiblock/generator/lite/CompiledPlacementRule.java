@@ -6,7 +6,6 @@ import net.ncplanner.plannerator.multiblock.Edge;
 import net.ncplanner.plannerator.multiblock.Vertex;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
-import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule.RuleType;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;

@@ -5,13 +5,13 @@ import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.PlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 public class CompiledUnderhaulSFRConfiguration{
@@ -137,10 +137,10 @@ public class CompiledUnderhaulSFRConfiguration{
                 if(module instanceof BlockFunctionModule)type = ((BlockFunctionModule)module).name;
             }
             blockType[i] = type;
-            List<PlacementRule> rules = recipe==null?(block.cooler==null?null:block.cooler.rules):recipe.stats.rules;
+            List<NCPFPlacementRule> rules = recipe==null?(block.cooler==null?null:block.cooler.rules):recipe.stats.rules;
             blockPlacementRules[i] = new CompiledPlacementRule[rules==null?0:rules.size()];
             for(int j = 0; j<blockPlacementRules[i].length; j++){
-                PlacementRule rule = rules.get(j);
+                NCPFPlacementRule rule = rules.get(j);
                 blockPlacementRules[i][j] = CompiledPlacementRule.compile(rule, rawBlocks, CasingModule::new);
             }
         }
