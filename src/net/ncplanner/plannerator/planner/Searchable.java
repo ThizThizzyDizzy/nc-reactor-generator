@@ -25,7 +25,7 @@ public interface Searchable{
                     }
                     excludeRegex+=".*";
                     for(String nam : searchable.getSearchableNames()){
-                        if(nam.matches(excludeRegex))return false;//excluded
+                        if(nam!=null&&nam.matches(excludeRegex))return false;//excluded
                     }
                     searchText = searchText.replaceFirst(excludePattern, " ");
                 }else break;
@@ -40,7 +40,7 @@ public interface Searchable{
         }
         for(String nam : searchable.getSearchableNames()){
             try{
-                if(nam.matches(regex))return true;
+                if(nam!=null&&nam.matches(regex))return true;
             }catch(PatternSyntaxException ex){return false;}
         }
         return false;

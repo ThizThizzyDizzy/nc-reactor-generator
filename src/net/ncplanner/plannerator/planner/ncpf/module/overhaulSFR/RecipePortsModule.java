@@ -1,31 +1,22 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
-import java.util.List;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
-public class RecipePortsModule extends NCPFModule{
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
+public class RecipePortsModule extends NCPFSettingsModule{
     public BlockReference input;
     public BlockReference output;
     public RecipePortsModule(){
         super("nuclearcraft:overhaul_sfr:recipe_ports");
+        addReference("input", ()->input, (v)->input = BlockReference.create((BlockElement)v), "Input");
+        addReference("output", ()->output, (v)->output = BlockReference.create((BlockElement)v), "Output");
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         input = ncpf.getDefinedNCPFObject("input", BlockReference::new);
         output = ncpf.getDefinedNCPFObject("output", BlockReference::new);
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        ncpf.setDefinedNCPFObject("input", input);
-        ncpf.setDefinedNCPFObject("output", output);
-    }
-    @Override
-    public void setReferences(List<NCPFElement> lst){
-        input.setReferences(lst);
-        output.setReferences(lst);
     }
     @Override
     public void setLocalReferences(DefinedNCPFModularObject parentObject){

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 public abstract class NCPFSettingsModule extends NCPFModule{
@@ -71,6 +74,17 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         titles.put(name, title);
         tooltips.put(name, tooltip);
     }
+    public void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, String title){
+        addReference(name, get, set, title, null);
+    }
+    public void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, String title, String tooltip){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.REFERENCE);
+        titles.put(name, title);
+        tooltips.put(name, tooltip);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String setting : settings){
@@ -87,6 +101,12 @@ public abstract class NCPFSettingsModule extends NCPFModule{
                     break;
                 case BOOLEAN:
                     ((Consumer<Boolean>)set).accept(ncpf.getBoolean(setting));
+                    break;
+                case STRING_LIST:
+                    List<String> lst = new ArrayList<>();
+                    NCPFList list = ncpf.getNCPFList(setting);
+                    for(int i = 0; i<list.size(); i++)lst.add(list.getString(i));
+                    ((Consumer<List<String>>)set).accept(lst);
                     break;
             }
         }
@@ -107,6 +127,25 @@ public abstract class NCPFSettingsModule extends NCPFModule{
                     break;
                 case BOOLEAN:
                     ncpf.setBoolean(setting, ((Supplier<Boolean>)get).get());
+                    break;
+                case STRING_LIST:
+                    NCPFList<String> list = new NCPFList<>();
+                    list.addAll(((Supplier<List<String>>)get).get());
+                    ncpf.setNCPFList(setting, list);
+                    break;
+                case REFERENCE:
+                    ncpf.setDefinedNCPFObject(setting, ((Supplier<NCPFElementReference>)get).get());
+                    break;
+            }
+        }
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst){
+        for(String setting : settings){
+            Supplier get = gets.get(setting);
+            switch(types.get(setting)){
+                case REFERENCE:
+                    ((Supplier<NCPFElementReference>)get).get().setReferences(lst);
                     break;
             }
         }
@@ -139,6 +178,6 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         return ttp.trim();
     }
     public static enum Type{
-        INTEGER,FLOAT,DOUBLE,BOOLEAN,STRING_LIST;
+        INTEGER,FLOAT,DOUBLE,BOOLEAN,STRING_LIST,REFERENCE;
     }
 }

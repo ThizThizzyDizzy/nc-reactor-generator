@@ -18,10 +18,11 @@ import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElementComponent extends LayoutPanel{
     private final ListButtonsLayout buttons;
+    private final BorderLayout content;
     public NCPFElementComponent(NCPFElement element){
         super(new LayeredLayout());
         add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
-        BorderLayout content = add(new BorderLayout());
+        content = add(new BorderLayout());
         if(element!=null)element.withModule(TextureModule::new, (tex)->{
             content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
         });
@@ -53,5 +54,10 @@ public class NCPFElementComponent extends LayoutPanel{
     public NCPFElementComponent addButton(String text, String tooltip, Runnable onClick){
         buttons.add(new Button(text, true, true).setTooltip(tooltip).addAction(onClick));
         return this;
+    }
+    @Override
+    public void render2d(double deltaTime){
+        content.leftWidth = height;
+        super.render2d(deltaTime);
     }
 }

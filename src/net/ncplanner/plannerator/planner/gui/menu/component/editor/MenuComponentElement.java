@@ -32,10 +32,12 @@ public class MenuComponentElement extends Component implements Pinnable{
         drawText(renderer);
     }
     public void drawText(Renderer renderer){
-        float textLength = renderer.getStringWidth(element.getDisplayName(), height);
+        String text = element.getDisplayName();
+        if(text==null)text = "null";
+        float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-(element.getTexture()!=null?height:0))/textLength);
         float textHeight = (int)(height*scale)-1;
-        renderer.drawText(element.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, element.getDisplayName());
+        renderer.drawText(element.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override    
     public String getTooltip(){

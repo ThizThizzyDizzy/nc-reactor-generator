@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -36,6 +37,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
@@ -200,11 +202,11 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             }
 
             if(!possibleFunctions.isEmpty()||!functions.isEmpty()){
-                for(NCPFModule mod : functions)functionList.add(makeModuleComponent(element, mod));
+                for(NCPFModule mod : functions)functionList.add(makeModuleComponent(config, element, mod));
                 for(Supplier<NCPFModule> s : possibleFunctions)functionList.add(makePossibleModuleComponent(element, s));
             }
             if(!possibleModules.isEmpty()||!modules.isEmpty()){
-                for(NCPFModule mod : modules)otherList.add(makeModuleComponent(element, mod));
+                for(NCPFModule mod : modules)otherList.add(makeModuleComponent(config, element, mod));
                 for(Supplier<NCPFModule> s : possibleModules)otherList.add(makePossibleModuleComponent(element, s));
             }
             settings.splitPos = recipeModule==null&&rulesModule==null?1:0.5f;
@@ -258,7 +260,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             }
         });
     }
-    private Component makeModuleComponent(NCPFElement element, NCPFModule module){
+    private Component makeModuleComponent(NCPFConfiguration config, NCPFElement element, NCPFModule module){
         ListLayout list = new ListLayout(48);
         LayoutPanel panel = list.add(new LayoutPanel(new LayeredLayout()));
         panel.add(new Label(module.getFriendlyName()));
@@ -314,7 +316,16 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 }, true).addButton("Cancel").open();
                             }));
                             break;
-
+                        case REFERENCE:
+                            NCPFElementReference ref = ((Supplier<? extends NCPFElementReference>)mod.gets.get(setting)).get();
+                            NCPFElement elem = ref==null?null:ref.target;
+                            grid.add(new NCPFElementComponent(elem).addIconButton("pencil", "Change Target", () -> {
+                                new MenuPickReference(this, config, false, (t) -> {
+                                    ((Consumer<NCPFElement>)mod.sets.get(setting)).accept(t.target);
+                                    refresh();
+                                }).open();
+                            }));
+                            break;
                         default:
                             throw new UnsupportedOperationException("Unrecognized setting type: "+mod.types.get(setting));
                     }

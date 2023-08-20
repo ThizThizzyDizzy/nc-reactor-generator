@@ -7,7 +7,7 @@ public class BorderLayout extends Layout{
     public static final int RIGHT = 3;
     public static final int CENTER = 4;
     private Component top, bottom, left, right, center;
-    private Number topHeight, bottomHeight, leftWidth, rightWidth;
+    public Number topHeight, bottomHeight, leftWidth, rightWidth;
     @Override
     public void arrangeComponents(){
         if(top!=null){

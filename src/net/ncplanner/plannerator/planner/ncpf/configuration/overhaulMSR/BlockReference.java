@@ -4,6 +4,11 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class BlockReference extends NCPFElementReference{
+    public static BlockReference create(BlockElement blockElement){
+        BlockReference ref = new BlockReference(blockElement);
+        ref.target = ref.block;
+        return ref;
+    }
     public BlockElement block;
     public BlockReference(){}
     public BlockReference(BlockElement block){
