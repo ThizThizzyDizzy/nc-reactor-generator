@@ -852,7 +852,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                         for(int j = 0; j<names.size(); j++){
                             String nam = names.get(j);
                             recip.withModuleOrCreate(LegacyNamesModule::new, (legacy)->{
-                                legacy.legacyNames.add(name);
+                                legacy.legacyNames.add(nam);
                             });
                         }
                     }
