@@ -13,6 +13,12 @@ public class DropdownList extends Component{
     public boolean isDown = false;
     public ArrayList<Component> allComponents = new ArrayList<>();
     private boolean showButton = true;
+    public DropdownList(){
+        this(0, 0, 0, 0);
+    }
+    public DropdownList(boolean searchable){
+        this(0, 0, 0, 0, searchable);
+    }
     public DropdownList(float x, float y, float width, float height){
         this(x, y, width, height, false);
     }

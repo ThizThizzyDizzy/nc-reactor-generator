@@ -57,8 +57,8 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                 if(hasRuls&&Core.isShiftPressed()){
                     gui.open(new MenuPlacementRuleTree(this, elems));
                 }else{
-                    NCPFElement elem;
-                    elems.add(elem = supplier.get());
+                    NCPFElement elem = supplier.get().copyTo(supplier);
+                    elems.add(elem);
                     gui.open(new MenuElementConfiguration(this, configuration, config, elem));
                 }
             }));

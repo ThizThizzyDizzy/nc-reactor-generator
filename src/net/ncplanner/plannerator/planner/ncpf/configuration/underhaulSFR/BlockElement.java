@@ -58,6 +58,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public List<? extends NCPFElement> getBlockRecipes(){
         return activeCoolerRecipes;
     }
+    @Override
+    public void clearBlockRecipes(){
+        activeCoolerRecipes.clear();
+    }
     public void makePartial(List<Design> designs){
         makePartial(activeCoolerRecipes, designs);
     }

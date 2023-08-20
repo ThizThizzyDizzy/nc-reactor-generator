@@ -92,6 +92,11 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
         if(parent!=null)return parent.getBlockRecipes();
         return null;
     }
+    @Override
+    public void clearBlockRecipes(){
+        fuels.clear();
+        irradiatorRecipes.clear();
+    }
     public boolean blocksLOS(){
         return fuelCell!=null||irradiator!=null||reflector!=null;
     }

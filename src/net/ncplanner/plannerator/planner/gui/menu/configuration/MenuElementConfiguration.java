@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
+import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -24,6 +25,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickElementDefiniti
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import static net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement.Type;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.IconButton;
@@ -34,16 +36,14 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
 public class MenuElementConfiguration extends ConfigurationMenu{
-    private final NCPFConfiguration config;
-    private final NCPFElement element;
     public MenuElementConfiguration(Menu parent, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFElement element){
         super(parent, configuration, element.getDisplayName(), new SplitLayout(SplitLayout.Y_AXIS, 0, 192, 0));
-        this.config = config;
-        this.element = element;
         SplitLayout definition = add(new SplitLayout(SplitLayout.X_AXIS, 0, 192, 0));
         definition.add(new TextureButton(()->element.getOrCreateModule(TextureModule::new).texture, (img)->element.getOrCreateModule(TextureModule::new).texture = img));
         SplitLayout definitionList = definition.add(new SplitLayout(SplitLayout.Y_AXIS, 0, 48, 0));
@@ -130,7 +130,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 }));
             }else definitionFields.add(new Panel());
         }else definitionList.add(new Panel());
-        GridLayout settings = add(new GridLayout(1, 0));
+        SplitLayout settings = add(new SplitLayout(SplitLayout.Y_AXIS, 1f));
         GridLayout moduleLists = settings.add(new GridLayout(0, 1));
         BorderLayout functionListContainer = moduleLists.add(new BorderLayout());
         functionListContainer.add(new Label("Functions", true), BorderLayout.TOP, 48);
@@ -138,6 +138,11 @@ public class MenuElementConfiguration extends ConfigurationMenu{
         BorderLayout otherListContainer = moduleLists.add(new BorderLayout());
         otherListContainer.add(new Label("Other Modules", true), BorderLayout.TOP, 48);
         SingleColumnList otherList = otherListContainer.add(new SingleColumnList(16), BorderLayout.CENTER);
+        SplitLayout lists = settings.add(new SplitLayout(SplitLayout.X_AXIS, 0.5f));
+        BorderLayout recipesListContainer = lists.add(new BorderLayout());
+        SingleColumnList recipesList = recipesListContainer.add(new SingleColumnList(16), BorderLayout.CENTER);
+        BorderLayout rulesListContainer = lists.add(new BorderLayout());
+        SingleColumnList rulesList = rulesListContainer.add(new SingleColumnList(16), BorderLayout.CENTER);
         onOpen(() -> {
             functionList.components.clear();
             otherList.components.clear();
@@ -168,10 +173,10 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     it.remove();
                 }
             }
-
             for(NCPFModule module : element.modules.modules.values()){
                 if(module.name.equals(new TextureModule().name))continue;
                 if(module.name.equals(new DisplayNameModule().name))continue;
+                if(module.name.equals(new NCPFBlockRecipesModule().name))continue;
                 if(modules.contains(module)||functions.contains(module))continue;//already visited
                 if(module instanceof ElementModule){
                     modules.add(module);
@@ -187,6 +192,12 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     }
                 }
             }
+            RecipesBlockModule recipeModule = null;
+            BlockRulesModule rulesModule = null;
+            for(NCPFModule module : functions){
+                if(module instanceof RecipesBlockModule)recipeModule = (RecipesBlockModule)module;
+                if(module instanceof BlockRulesModule)rulesModule = (BlockRulesModule)module;
+            }
 
             if(!possibleFunctions.isEmpty()||!functions.isEmpty()){
                 for(NCPFModule mod : functions)functionList.add(makeModuleComponent(element, mod));
@@ -196,9 +207,56 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 for(NCPFModule mod : modules)otherList.add(makeModuleComponent(element, mod));
                 for(Supplier<NCPFModule> s : possibleModules)otherList.add(makePossibleModuleComponent(element, s));
             }
+            settings.splitPos = recipeModule==null&&rulesModule==null?1:0.5f;
+            recipesListContainer.components.clear();
+            recipesList.components.clear();
+            rulesListContainer.components.clear();
+            rulesList.components.clear();
+            lists.splitPos = 0.5f;
+            if(recipeModule!=null){
+                lists.splitPos+=0.5f;
+                BlockRecipesElement recelement = (BlockRecipesElement)element;
+                recelement.clearBlockRecipes();//clear cached recipes, use module only
+                element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                    for(NCPFElement elem : module.recipes){
+                        recipesList.add(new NCPFElementComponent(elem).addButton("delete", "Delete "+elem.getTitle(), () -> {
+                            module.recipes.remove(elem);
+                            refresh();
+                        }).addButton("pencil", "Modify "+elem.getTitle(), () -> {
+                            gui.open(new MenuElementConfiguration(this, configuration, config, elem));
+                        })).height = 96;
+                    }
+                });
+                NCPFElement recipe = recipeModule.getRecipeElement().get().copyTo(recipeModule.getRecipeElement());
+                recipesListContainer.add(new Label(recipe.getTitle()+"s"), BorderLayout.TOP, 48);
+                recipesListContainer.add(recipesList, BorderLayout.CENTER);
+                recipesListContainer.add(new Button("Add "+recipe.getTitle(), true).addAction(() -> {
+                    element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                        module.recipes.add(recipe);
+                        gui.open(new MenuElementConfiguration(this, configuration, config, recipe));
+                    });
+                }), BorderLayout.BOTTOM, 48);
+            }
+            if(rulesModule!=null){
+                List<NCPFPlacementRule> rules = rulesModule.rules;
+                lists.splitPos-=0.5f;
+                for(NCPFPlacementRule rule : rules){
+                    rulesList.add(new NCPFPlacementRuleComponent(rule).addButton("delete", "Delete Rule", () -> {
+                        rules.remove(rule);
+                        refresh();
+                    }).addButton("pencil", "Modify Rule", () -> {
+                        gui.open(new MenuPlacementRuleConfiguration(this, configuration, config, rule));
+                    })).height = 48;
+                }
+                rulesListContainer.add(new Label("Placement Rules"), BorderLayout.TOP, 48);
+                rulesListContainer.add(rulesList, BorderLayout.CENTER);
+                rulesListContainer.add(new Button("Add Rule", true).addAction(() -> {
+                    NCPFPlacementRule rul;
+                    rules.add(rul = new NCPFPlacementRule());
+                    gui.open(new MenuPlacementRuleConfiguration(this, configuration, config, rul));
+                }), BorderLayout.BOTTOM, 48);
+            }
         });
-//        GridLayout lists = settings.add(new GridLayout(0, 1));//block recipes
-        //TODO add lists
     }
     private Component makeModuleComponent(NCPFElement element, NCPFModule module){
         ListLayout list = new ListLayout(48);
@@ -263,9 +321,6 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 }
                 if(grid.components.isEmpty())list.components.remove(grid);
             }
-        }
-        if(module instanceof BlockRulesModule){
-            list.add(new Label("TODO block rules"));
         }
         return list;
     }

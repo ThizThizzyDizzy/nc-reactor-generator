@@ -70,6 +70,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public List<? extends NCPFElement> getBlockRecipes(){
         return breedingBlanketRecipes;
     }
+    @Override
+    public void clearBlockRecipes(){
+        breedingBlanketRecipes.clear();
+    }
     public void makePartial(List<Design> designs){
         makePartial(breedingBlanketRecipes, designs);
     }

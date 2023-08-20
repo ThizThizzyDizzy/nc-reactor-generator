@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
@@ -17,6 +19,7 @@ public class Slider extends Component{
     public float sliderX;    
     private final boolean darker;
     private String name;
+    private ArrayList<Consumer<Double>> onChange = new ArrayList<>();
     public Slider(float x, float y, float width, float height, String name, int minimum, int maximum, int initial, boolean enabled){
         this(x, y, width, height, name, minimum, maximum, initial, enabled, false);
     }
@@ -101,6 +104,7 @@ public class Slider extends Component{
         updateSlider();
     }
     private void updateSlider(){
+        for(Consumer<Double> c : onChange)c.accept(value);
         sliderHeight = height/2;
         maxSliderX = width-sliderHeight;
         sliderX = 0;
@@ -128,6 +132,16 @@ public class Slider extends Component{
     @Override
     public Slider setTooltip(String tooltip){
         this.tooltip = tooltip;
+        return this;
+    }
+    public Slider onChangeAsInt(Consumer<Integer> consumer){
+        this.onChange.add((t) -> {
+            consumer.accept((int)Math.round(t));
+        });
+        return this;
+    }
+    public Slider onChange(Consumer<Double> consumer){
+        this.onChange.add(consumer);
         return this;
     }
 }

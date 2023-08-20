@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class UnknownNCPFElement extends NCPFElementDefinition{
-    public NCPFObject ncpf;
+    public NCPFObject ncpf = new NCPFObject();
     public UnknownNCPFElement(){
         super(null);
     }
