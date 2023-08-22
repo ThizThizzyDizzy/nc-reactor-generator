@@ -1,120 +1,134 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.File;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
 import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.LayoutMenu;
+import net.ncplanner.plannerator.planner.gui.menu.component.BenchmarkComponent;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
-public class MenuBenchmark extends Menu{
-    private final Task task;
-    private final ProgressBar progressBar;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
+public class MenuBenchmark extends LayoutMenu{
+    private Task task;
+    private final ProgressBar bar;
+    private final GridLayout grid;
+    private BenchmarkComponent benchmark;
     public MenuBenchmark(GUI gui){
-        super(gui, null);
-        File f = new File("benchmark.ncpf");
+        super(gui, new SplitLayout(SplitLayout.Y_AXIS, 0));
+        File f = new File("benchmark.ncpf.json");
+        if(!f.exists())f = new File("benchmark.ncpf");
         if(!f.exists())f = new File("benchmark.json");
-        task = new Task("Running Benchmark");
-        Task load = task.addSubtask(f.exists()?"Loading "+f.getName():"Benchmark not found");
-        Task benchmark = task.addSubtask("Benchmarking");
-        progressBar = add(new ProgressBar(0, 0, gui.getWidth(), gui.getHeight(), 3){
+        task = new Task(f.exists()?"Loading "+f.getName():"Benchmark not found");
+        bar = add(new ProgressBar(3){
             @Override
             public Task getTask(){
                 return task;
             }
         });
+        grid = add(new GridLayout(1, 0));
         File file = f;
-        if(f==null)return;
         Thread thread = new Thread(() -> {
-            LegacyNCPFFile ncpf = FileReader.read(file);
+            Project ncpf = FileReader.read(file);
             if(ncpf==null)return;
             Core.multiblocks.clear();
-            Core.metadata.clear();
-            Core.metadata.putAll(ncpf.metadata);
-            if(ncpf.configuration==null||ncpf.configuration.isPartial()){
-                if(ncpf.configuration!=null&&!ncpf.configuration.name.equals(Core.configuration.name)){
-                    Core.warning("File configuration '"+ncpf.configuration.name+"' does not match currently loaded configuration '"+Core.configuration.name+"'!", null);
+            Core.saved = true;
+            Core.setConfiguration(new Configuration(ncpf));
+            for(Design d : ncpf.designs){
+                d.file = Core.project;
+                if(d instanceof MultiblockDesign){
+                    ((MultiblockDesign)d).convertElements();
+                    Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
                 }
-            }else{
-                Core.configuration = ncpf.configuration;
             }
-            convertAndImportMultiblocks(ncpf.multiblocks);
-            load.finish();
-            Multiblock multiblock = Core.multiblocks.get(0);
-            if(multiblock instanceof UnderhaulSFR){
-                System.out.println("Commencing test...");
-                UnderhaulSFR sfr = (UnderhaulSFR)multiblock;
-                long duration = 60_000_000_000l;
-                long now = System.nanoTime();
-                int count = 0;
-//                    while(System.nanoTime()-duration<now){
-//                        sfr.recalculate();
-//                        count++;
-//                    }
-//                    System.out.println("V3 clc: "+count);
-//                    now = System.nanoTime();
-//                    count = 0;
-//                    while(System.nanoTime()-duration<now){
-//                        Multiblock v = sfr.copy();
-//                        v.recalculate();
-//                        count++;
-//                    }
-//                    System.out.println("V3 cp/clc: "+count);
-                CompiledUnderhaulSFRConfiguration compiledConfig = CompiledUnderhaulSFRConfiguration.compile(sfr.configuration.underhaul.fissionSFR);
-                LiteUnderhaulSFR lite = new LiteUnderhaulSFR(compiledConfig);
-                lite.importAndConvert(sfr);
-                lite.calculate();
-                System.out.println(lite.getTooltip());
-                now = System.nanoTime();
-                count = 0;
-//                while(System.nanoTime()-duration<now){
-//                    lite.calculate();
-//                    count++;
-//                }
-//                System.out.println("V4 Lite clc: "+count);
-                now = System.nanoTime();
-                count = 0;
-                while(System.nanoTime()-duration<now){
-                    LiteUnderhaulSFR liteCopy = new LiteUnderhaulSFR(compiledConfig);
-                    liteCopy.fuel = lite.fuel;
-                    liteCopy.dims[0] = lite.dims[0];
-                    liteCopy.dims[1] = lite.dims[1];
-                    liteCopy.dims[2] = lite.dims[2];
-                    for(int x = 0; x<lite.dims[0]; x++){
-                        for(int y = 0; y<lite.dims[1]; y++){
-                            for(int z = 0; z<lite.dims[2]; z++){
-                                liteCopy.blocks[x][y][z] = lite.blocks[x][y][z];
-                            }
-                        }
-                    }
-                    liteCopy.calculate();
-                    count++;
-                    double secs = Math.max(1,(System.nanoTime()-now)/1000000000d);
-                    benchmark.progress = (System.nanoTime()-now)/(double)duration;
-                    task.name = "Running Benchmark ("+count+" | "+Math.round(count/secs)+"/sec)";
+            task.finish();
+            while(true){
+                Multiblock multiblock = Core.multiblocks.get(0);
+                switch(new MenuMessageDialog("Choose Benchmark").addButton("Standard").addButton("Lite").addButton("Cancel").openAsync()){
+                    case 0:
+                        benchmark(new String[]{"V3 clc", "V3 cp/clc"}, multiblock::recalculate, ()->{
+                            Multiblock v = multiblock.copy();
+                            v.recalculate();
+                        });
+                        break;
+                    case 1: //lite
+                        if(multiblock instanceof UnderhaulSFR){
+                            System.out.println("Commencing test...");
+                            LiteUnderhaulSFR lite = ((UnderhaulSFR)multiblock).compile();
+                            CompiledUnderhaulSFRConfiguration compiledConfig = lite.configuration;
+                            lite.calculate();
+                            System.out.println(lite.getTooltip());
+                            benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
+                                LiteUnderhaulSFR liteCopy = new LiteUnderhaulSFR(compiledConfig);
+                                liteCopy.fuel = lite.fuel;
+                                liteCopy.dims[0] = lite.dims[0];
+                                liteCopy.dims[1] = lite.dims[1];
+                                liteCopy.dims[2] = lite.dims[2];
+                                for(int x = 0; x<lite.dims[0]; x++){
+                                    for(int y = 0; y<lite.dims[1]; y++){
+                                        for(int z = 0; z<lite.dims[2]; z++){
+                                            liteCopy.blocks[x][y][z] = lite.blocks[x][y][z];
+                                        }
+                                    }
+                                }
+                                liteCopy.calculate();
+                            });
+                        }else new MenuMessageDialog("No lite model exists for "+multiblock.getDefinitionName()+"!").openAsync();
+                        break;
+                    case 2:
+                        gui.open(new MenuMain(gui));
+                        return;
                 }
-                System.out.println("V4 Lite cp/clc: "+count);
             }
-            benchmark.finish();
         }, "Benchmark Thread");
         thread.setDaemon(true);
         thread.start();
     }
-    private void convertAndImportMultiblocks(ArrayList<Multiblock> multiblocks){
-        for(Multiblock mb : multiblocks){
-            try{
-                mb.convertTo(Core.configuration);
-            }catch(MissingConfigurationEntryException ex){
-                Core.warning("Failed to load multiblock - Are you missing an addon?", ex);
-                continue;
-            }
-            Core.multiblocks.add(mb);
+    @Override
+    public void render2d(double deltaTime){
+        ((SplitLayout)layout).minSize1 = bar.getTaskHeight();
+        super.render2d(deltaTime);
+    }
+    public void benchmark(String[] name, Runnable... r){
+        if(name.length!=r.length)throw new IllegalArgumentException("Length of names and benchmark arrays must match!");
+        task = new Task("Benchmarking");
+        Task[] tasks = new Task[r.length];
+        if(benchmark==null)benchmark = grid.add(new BenchmarkComponent());
+        for(int i = 0; i<r.length; i++){
+            tasks[i] = task.addSubtask(name[i]);
         }
+        for(int i = 0; i<r.length; i++){
+            benchmark(name[i], r[i], tasks[i]);
+            tasks[i].finish();
+        }
+    }
+    public long benchmark(String name, Runnable r, Task task){
+        long duration = 60_000_000_000l;
+        long now = System.nanoTime();
+        long count = 0;
+        benchmark.addBenchmark(name);
+        double thresh = 0.1;//log time per this many seconds
+        double logged = 0;
+        while(System.nanoTime()-duration<now){
+            r.run();
+            count++;
+            double secs = (System.nanoTime()-now)/1000000000d;
+            if(secs>logged+thresh){
+                benchmark.log(count);
+                logged+= thresh;
+            }
+            task.progress = (System.nanoTime()-now)/(double)duration;
+            task.name = "Running Benchmark: "+name+" ("+count+" | "+Math.round(count/Math.max(1,secs))+"/sec)";
+        }
+        return count;
     }
 }

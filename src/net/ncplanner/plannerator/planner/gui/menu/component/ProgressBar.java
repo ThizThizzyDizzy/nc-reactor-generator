@@ -7,6 +7,9 @@ public abstract class ProgressBar extends Component{
     private final float textHeight;
     private final float textInset;
     private final float progressBarHeight;
+    public ProgressBar(float scale){
+        this(0, 0, 0, 0, scale);
+    }
     public ProgressBar(float x, float y, float width, float height){
         this(x, y, width, height, 1);
     }
