@@ -1,4 +1,4 @@
-package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
+package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Image;
@@ -14,8 +14,8 @@ import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLe
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.ConditionLessEqual;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.RandomQuantityMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.SingleMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.ClearInvalidMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators.random.RandomBlockMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.ClearInvalidMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.random.RandomBlockMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloat;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;

@@ -1,7 +1,7 @@
-package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.mutators;
+package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class ClearInvalidMutator extends Mutator<LiteUnderhaulSFR>{

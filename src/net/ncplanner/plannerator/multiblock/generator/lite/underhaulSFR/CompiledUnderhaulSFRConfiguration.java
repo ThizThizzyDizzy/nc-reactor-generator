@@ -1,4 +1,4 @@
-package net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr;
+package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
