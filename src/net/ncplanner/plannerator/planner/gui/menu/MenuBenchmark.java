@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.File;
+import java.util.ArrayList;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaul.fissionsfr.LiteUnderhaulSFR;
@@ -53,9 +55,28 @@ public class MenuBenchmark extends LayoutMenu{
             task.finish();
             while(true){
                 Multiblock multiblock = Core.multiblocks.get(0);
-                switch(new MenuMessageDialog("Choose Benchmark").addButton("Standard").addButton("Lite").addButton("Cancel").openAsync()){
+                switch(new MenuMessageDialog("Choose Benchmark").addButton("V3").addButton("V4 (Lite)").addButton("Done").openAsync()){
                     case 0:
-                        benchmark(new String[]{"V3 clc", "V3 cp/clc"}, multiblock::recalculate, ()->{
+                        benchmark(new String[]{"V3 stp/clc", "V3 clc", "V3 cp/clc"}, ()->{
+                            multiblock.clearCaches();
+                            ArrayList<AbstractBlock> blocks = multiblock.getBlocks();
+                            multiblock.clearData(blocks);
+                            multiblock.validate();
+                            {
+                                multiblock.calculateTask = new Task("Calculating Multiblock");
+                                multiblock.genCalcSubtasks();
+                                while(multiblock.doCalculationStep(blocks, true))multiblock.decals.clear();
+                                multiblock.calculationPaused = false;
+                                for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+                                    if(m.isActive()){
+                                        Object result = m.calculateMultiblock(multiblock);
+                                        if(result!=null)multiblock.moduleData.put(m, result);
+                                    }
+                                }
+                                multiblock.calculateTask = null;
+                            }
+                            multiblock.calculate(blocks);
+                        }, multiblock::recalculate, ()->{
                             Multiblock v = multiblock.copy();
                             v.recalculate();
                         });
