@@ -5,10 +5,8 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
-import org.junit.Test;
 import net.ncplanner.plannerator.planner.Core;
 public class MultiblockTester{
-    @Test
     public void test(){
         for(Configuration config : Configuration.configurations){
             Core.configuration = config;

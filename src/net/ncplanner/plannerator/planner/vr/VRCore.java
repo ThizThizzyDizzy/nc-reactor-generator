@@ -113,14 +113,6 @@ public class VRCore{
                         while(event.trackedDeviceIndex()>=touchedButtons.size())touchedButtons.add(new ArrayList<>());
                         touchedButtons.get(event.trackedDeviceIndex()).remove((Integer)event.data().controller().button());
                     }
-                    if(type==EVREventType_VREvent_DualAnalog_Press)System.out.println("- DualAnalog_Press");
-                    if(type==EVREventType_VREvent_DualAnalog_Unpress)System.out.println("- DualAnalog_Unpress");
-                    if(type==EVREventType_VREvent_DualAnalog_Touch)System.out.println("- DualAnalog_Touch");
-                    if(type==EVREventType_VREvent_DualAnalog_Untouch)System.out.println("- DualAnalog_Untouch");
-                    if(type==EVREventType_VREvent_DualAnalog_Move)System.out.println("- DualAnalog_Move");
-                    if(type==EVREventType_VREvent_DualAnalog_ModeSwitch1)System.out.println("- DualAnalog_ModeSwitch1");
-                    if(type==EVREventType_VREvent_DualAnalog_ModeSwitch2)System.out.println("- DualAnalog_ModeSwitch2");
-                    if(type==EVREventType_VREvent_DualAnalog_Cancel)System.out.println("- DualAnalog_Cancel");
                     if(type==EVREventType_VREvent_MouseMove)System.out.println("- MouseMove");
                     if(type==EVREventType_VREvent_MouseButtonDown)System.out.println("- MouseButtonDown");
                     if(type==EVREventType_VREvent_MouseButtonUp)System.out.println("- MouseButtonUp");
@@ -133,12 +125,8 @@ public class VRCore{
                     if(type==EVREventType_VREvent_ScrollSmooth)System.out.println("- ScrollSmooth");
                     if(type==EVREventType_VREvent_InputFocusCaptured)System.out.println("- InputFocusCaptured");
                     if(type==EVREventType_VREvent_InputFocusReleased)System.out.println("- InputFocusReleased");
-                    if(type==EVREventType_VREvent_SceneFocusLost)System.out.println("- SceneFocusLost");
-                    if(type==EVREventType_VREvent_SceneFocusGained)System.out.println("- SceneFocusGained");
                     if(type==EVREventType_VREvent_SceneApplicationChanged)System.out.println("- SceneApplicationChanged");
-                    if(type==EVREventType_VREvent_SceneFocusChanged)System.out.println("- SceneFocusChanged");
                     if(type==EVREventType_VREvent_InputFocusChanged)System.out.println("- InputFocusChanged");
-                    if(type==EVREventType_VREvent_SceneApplicationSecondaryRenderingStarted)System.out.println("- SceneApplicationSecondaryRenderingStarted");
                     if(type==EVREventType_VREvent_SceneApplicationUsingWrongGraphicsAdapter)System.out.println("- SceneApplicationUsingWrongGraphicsAdapter");
                     if(type==EVREventType_VREvent_ActionBindingReloaded)System.out.println("- ActionBindingReloaded");
                     if(type==EVREventType_VREvent_HideRenderModels)System.out.println("- HideRenderModels");
@@ -151,7 +139,6 @@ public class VRCore{
                     if(type==EVREventType_VREvent_DashboardDeactivated)System.out.println("- DashboardDeactivated");
                     if(type==EVREventType_VREvent_DashboardRequested)System.out.println("- DashboardRequested");
                     if(type==EVREventType_VREvent_ResetDashboard)System.out.println("- ResetDashboard");
-                    if(type==EVREventType_VREvent_RenderToast)System.out.println("- RenderToast");
                     if(type==EVREventType_VREvent_ImageLoaded)System.out.println("- ImageLoaded");
                     if(type==EVREventType_VREvent_ShowKeyboard)System.out.println("- ShowKeyboard");
                     if(type==EVREventType_VREvent_HideKeyboard)System.out.println("- HideKeyboard");
@@ -181,7 +168,6 @@ public class VRCore{
                         gui.open(new MenuMain(gui));
                     }
                     if(type==EVREventType_VREvent_ProcessQuit)System.out.println("- ProcessQuit");
-                    if(type==EVREventType_VREvent_QuitAborted_UserPrompt)System.out.println("- QuitAborted_UserPrompt");
                     if(type==EVREventType_VREvent_QuitAcknowledged)System.out.println("- QuitAcknowledged");
                     if(type==EVREventType_VREvent_DriverRequestedQuit)System.out.println("- DriverRequestedQuit");
                     if(type==EVREventType_VREvent_RestartRequested)System.out.println("- RestartRequested");
@@ -221,16 +207,10 @@ public class VRCore{
                     if(type==EVREventType_VREvent_KeyboardClosed)System.out.println("- KeyboardClosed");
                     if(type==EVREventType_VREvent_KeyboardCharInput)System.out.println("- KeyboardCharInput");
                     if(type==EVREventType_VREvent_KeyboardDone)System.out.println("- KeyboardDone");
-                    if(type==EVREventType_VREvent_ApplicationTransitionStarted)System.out.println("- ApplicationTransitionStarted");
-                    if(type==EVREventType_VREvent_ApplicationTransitionAborted)System.out.println("- ApplicationTransitionAborted");
-                    if(type==EVREventType_VREvent_ApplicationTransitionNewAppStarted)System.out.println("- ApplicationTransitionNewAppStarted");
                     if(type==EVREventType_VREvent_ApplicationListUpdated)System.out.println("- ApplicationListUpdated");
                     if(type==EVREventType_VREvent_ApplicationMimeTypeLoad)System.out.println("- ApplicationMimeTypeLoad");
-                    if(type==EVREventType_VREvent_ApplicationTransitionNewAppLaunchComplete)System.out.println("- ApplicationTransitionNewAppLaunchComplete");
                     if(type==EVREventType_VREvent_ProcessConnected)System.out.println("- ProcessConnected");
                     if(type==EVREventType_VREvent_ProcessDisconnected)System.out.println("- ProcessDisconnected");
-                    if(type==EVREventType_VREvent_Compositor_MirrorWindowShown)System.out.println("- Compositor_MirrorWindowShown");
-                    if(type==EVREventType_VREvent_Compositor_MirrorWindowHidden)System.out.println("- Compositor_MirrorWindowHidden");
                     if(type==EVREventType_VREvent_Compositor_ChaperoneBoundsShown)System.out.println("- Compositor_ChaperoneBoundsShown");
                     if(type==EVREventType_VREvent_Compositor_ChaperoneBoundsHidden)System.out.println("- Compositor_ChaperoneBoundsHidden");
                     if(type==EVREventType_VREvent_Compositor_DisplayDisconnected)System.out.println("- Compositor_DisplayDisconnected");

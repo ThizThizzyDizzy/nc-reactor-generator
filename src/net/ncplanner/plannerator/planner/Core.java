@@ -65,7 +65,9 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.openvr.VR;
 import static org.lwjgl.stb.STBImage.*;
 import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.nfd.NFDFilterItem;
 import org.lwjgl.util.nfd.NativeFileDialog;
 public class Core{
     public static Logger logger = Logger.getLogger(Core.class.getName());
@@ -130,6 +132,8 @@ public class Core{
             System.out.println("Loading discord bot");
             Bot.start(args);
         }
+        System.out.println("Initializing NFD");
+        NativeFileDialog.NFD_Init();
         System.out.println("Initializing GLFW");
         if(!glfwInit())throw new RuntimeException("Failed to initialize GLFW!");
         glfwSetErrorCallback(new GLFWErrorCallbackI() {
@@ -637,12 +641,13 @@ public class Core{
      */
     public static void createFileChooser(Consumer<File> onAccepted, FileFormat format, String hint) throws IOException{
         hint = "OPEN_"+hint;
-        PointerBuffer path = MemoryUtil.memAllocPointer(1);
-        String filter = "";
-        for(String ext : format.extensions)filter+=","+ext;
-        if(!filter.isEmpty())filter = filter.substring(1);
-        try{
-            int result = NativeFileDialog.NFD_OpenDialog(filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), path);
+        try(MemoryStack stack = MemoryStack.stackPush()){
+            PointerBuffer path = stack.mallocPointer(1);
+            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(format.extensions.length);
+            for(int i = 0; i<format.extensions.length; i++){
+                filter.get(i).name(stack.UTF8(format.extensions[i])).spec(stack.UTF8(format.extensions[i]));//TODO proper file format grouping
+            }
+            int result = NativeFileDialog.NFD_OpenDialog(path, filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath());
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
                     String str = path.getStringUTF8();
@@ -655,8 +660,6 @@ public class Core{
                 default: //NFD_ERROR
                     throw new IOException(NativeFileDialog.NFD_GetError());
             }
-        }finally{
-            MemoryUtil.memFree(path);
         }
     }
     /**
@@ -670,12 +673,13 @@ public class Core{
      */
     public static void createFileChooser(File selectedFile, Consumer<File> onAccepted, FileFormat format, String hint) throws IOException{
         hint = "SAVE_"+hint;
-        PointerBuffer path = MemoryUtil.memAllocPointer(1);
-        String filter = "";
-        for(String ext : format.extensions)filter+=","+ext;
-        if(!filter.isEmpty())filter = filter.substring(1);
-        try{
-            int result = NativeFileDialog.NFD_SaveDialog(filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), path);
+        try(MemoryStack stack = MemoryStack.stackPush()){
+            PointerBuffer path = stack.mallocPointer(1);
+            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(format.extensions.length);
+            for(int i = 0; i<format.extensions.length; i++){
+                filter.get(i).name(stack.UTF8(format.extensions[i])).spec(stack.UTF8(format.extensions[i]));//TODO proper file format grouping
+            }
+            int result = NativeFileDialog.NFD_SaveDialog(path, filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), selectedFile==null?hint:selectedFile.getName());
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
                     String str = path.getStringUTF8();
@@ -688,8 +692,6 @@ public class Core{
                 default: //NFD_ERROR
                     throw new IOException(NativeFileDialog.NFD_GetError());
             }
-        }finally{
-            MemoryUtil.memFree(path);
         }
     }
     public static boolean areImagesEqual(Image img1, Image img2) {

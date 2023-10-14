@@ -246,7 +246,7 @@ public class Main{
             }
             if(failed>0)throw new RuntimeException("Failed to download "+failed+" librar"+(failed==1?"y":"ies")+"!");
             System.out.println("Libraries OK");
-            String[] additionalClasspathElements = new String[requiredLibs.length+4];
+            String[] additionalClasspathElements = new String[requiredLibs.length];
             for(int i = 0; i<requiredLibs.length; i++){
                 additionalClasspathElements[i] = requiredLibs[i].getAbsolutePath();
             }
