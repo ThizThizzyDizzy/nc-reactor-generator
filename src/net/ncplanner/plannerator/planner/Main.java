@@ -120,26 +120,28 @@ public class Main{
             if(os==OS_UNKNOWN){
                 throw new IllegalArgumentException("Unknown OS: "+osName);
             }
+            final int ARCH_UNKNOWN = -1;
+            final int ARCH_X86 = 0;
+            final int ARCH_X64 = 1;
+            final int ARCH_ARM32 = 3;
+            final int ARCH_ARM64 = 4;
+            int arch = ARCH_UNKNOWN;
+            String osArch = System.getProperty("os.arch");
+            if(osArch==null)osArch = "null";
+            osArch = osArch.toLowerCase(Locale.ROOT);
+            if(osArch.equals("amd64"))arch = ARCH_X64;
+            if(osArch.equals("x64"))arch = ARCH_X64;
+            if(osArch.equals("x86"))arch = ARCH_X86;
+            if(osArch.equals("arm32"))arch = ARCH_ARM32;
+            if(osArch.equals("arm64"))arch = ARCH_ARM64;
+            if(arch==ARCH_UNKNOWN){
+                System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
+                arch = ARCH_X64;
+            }
             switch(os){
                 case OS_WINDOWS:
                     {
-                        final int ARCH_UNKNOWN = -1;
-                        final int ARCH_X86 = 0;
-                        final int ARCH_X64 = 1;
-                        final int ARCH_ARM64 = 2;
-                        int arch = ARCH_UNKNOWN;
-                        String osArch = System.getProperty("os.arch");
-                        if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ROOT);
-                        if(osArch.equals("amd64"))arch = ARCH_X64;
-                        if(osArch.equals("x64"))arch = ARCH_X64;
-                        if(osArch.equals("x86"))arch = ARCH_X86;
-                        if(osArch.equals("arm64"))arch = ARCH_ARM64;
                         System.out.println("OS: Windows");
-                        if(arch==ARCH_UNKNOWN){
-                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                            arch = ARCH_X64;
-                        }
                         switch(arch){
                             case ARCH_X86:
                                 System.out.println("OS Architecture: x86");
@@ -173,26 +175,14 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-windows-arm64.jar", "lwjgl-3.3.3-stb-natives-windows-arm64.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-windows-arm64.jar", "lwjgl-3.3.3-nfd-natives-windows-arm64.jar");
                                 break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
                         }
                     }
                     break;
                 case OS_MACOS:
                     {
-                        final int ARCH_UNKNOWN = -1;
-                        final int ARCH_X64 = 0;
-                        final int ARCH_ARM64 = 2;
-                        int arch = ARCH_UNKNOWN;
-                        String osArch = System.getProperty("os.arch");
-                        if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ROOT);
-                        if(osArch.equals("amd64"))arch = ARCH_X64;
-                        if(osArch.equals("x64"))arch = ARCH_X64;
-                        if(osArch.equals("arm64"))arch = ARCH_ARM64;
                         System.out.println("OS: Mac OS");
-                        if(arch==ARCH_UNKNOWN){
-                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                            arch = ARCH_X64;
-                        }
                         switch(arch){
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
@@ -215,28 +205,14 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-macos-arm64.jar", "lwjgl-3.3.3-stb-natives-macos-arm64.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-macos-arm64.jar", "lwjgl-3.3.3-nfd-natives-macos-arm64.jar");
                                 break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
                         }
                     }
                     break;
                 case OS_LINUX:
                     {
-                        final int ARCH_UNKNOWN = -1;
-                        final int ARCH_X64 = 0;
-                        final int ARCH_ARM32 = 1;
-                        final int ARCH_ARM64 = 2;
-                        int arch = ARCH_UNKNOWN;
-                        String osArch = System.getProperty("os.arch");
-                        if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ROOT);
-                        if(osArch.equals("amd64"))arch = ARCH_X64;
-                        if(osArch.equals("x64"))arch = ARCH_X64;
-                        if(osArch.equals("arm32"))arch = ARCH_ARM32;
-                        if(osArch.equals("arm64"))arch = ARCH_ARM64;
                         System.out.println("OS: Linux");
-                        if(arch==ARCH_UNKNOWN){
-                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                            arch = ARCH_X64;
-                        }
                         switch(arch){
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
@@ -269,6 +245,8 @@ public class Main{
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-linux-arm64.jar", "lwjgl-3.3.3-stb-natives-linux-arm64.jar");
                                 addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-linux-arm64.jar", "lwjgl-3.3.3-nfd-natives-linux-arm64.jar");
                                 break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
                         }
                     }
                     break;
