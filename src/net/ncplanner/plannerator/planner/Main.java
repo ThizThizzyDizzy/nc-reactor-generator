@@ -108,15 +108,6 @@ public class Main{
         if(osName.contains("mac"))os = OS_MACOS;
         if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
         if(args.length<1||!args[0].equals("Skip Dependencies")){
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp.jar", "lwjgl-3.3.3-assimp.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw.jar", "lwjgl-3.3.3-glfw.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal.jar", "lwjgl-3.3.3-openal.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl.jar", "lwjgl-3.3.3-opengl.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb.jar", "lwjgl-3.3.3-stb.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3.jar", "lwjgl-3.3.3.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
-            if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr.jar", "lwjgl-3.3.3-openvr.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd.jar", "lwjgl-3.3.3-nfd.jar");
             if(os==OS_UNKNOWN){
                 throw new IllegalArgumentException("Unknown OS: "+osName);
             }
@@ -138,6 +129,19 @@ public class Main{
                 System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
                 arch = ARCH_X64;
             }
+            if((arch==ARCH_ARM32||arch==ARCH_ARM64)&&!novr){
+                System.err.println("OpenVR is not supported on arm! Excluding OpenVR libraries.");
+                novr = true;
+            }
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp.jar", "lwjgl-3.3.3-assimp.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw.jar", "lwjgl-3.3.3-glfw.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal.jar", "lwjgl-3.3.3-openal.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl.jar", "lwjgl-3.3.3-opengl.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb.jar", "lwjgl-3.3.3-stb.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3.jar", "lwjgl-3.3.3.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
+            if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr.jar", "lwjgl-3.3.3-openvr.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd.jar", "lwjgl-3.3.3-nfd.jar");
             switch(os){
                 case OS_WINDOWS:
                     {
