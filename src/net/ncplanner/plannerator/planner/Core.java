@@ -643,10 +643,11 @@ public class Core{
         hint = "OPEN_"+hint;
         try(MemoryStack stack = MemoryStack.stackPush()){
             PointerBuffer path = stack.mallocPointer(1);
-            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(format.extensions.length);
-            for(int i = 0; i<format.extensions.length; i++){
-                filter.get(i).name(stack.UTF8(format.extensions[i])).spec(stack.UTF8(format.extensions[i]));//TODO proper file format grouping
-            }
+            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(1);
+            String extensions = "";
+            for(String s : format.extensions)extensions+=","+s;
+            if(!extensions.isEmpty())extensions = extensions.substring(1);
+            filter.get(0).name(stack.UTF8(format.name)).spec(stack.UTF8(extensions));
             int result = NativeFileDialog.NFD_OpenDialog(path, filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath());
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
@@ -675,10 +676,11 @@ public class Core{
         hint = "SAVE_"+hint;
         try(MemoryStack stack = MemoryStack.stackPush()){
             PointerBuffer path = stack.mallocPointer(1);
-            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(format.extensions.length);
-            for(int i = 0; i<format.extensions.length; i++){
-                filter.get(i).name(stack.UTF8(format.extensions[i])).spec(stack.UTF8(format.extensions[i]));//TODO proper file format grouping
-            }
+            NFDFilterItem.Buffer filter = NFDFilterItem.malloc(1);
+            String extensions = "";
+            for(String s : format.extensions)extensions+=","+s;
+            if(!extensions.isEmpty())extensions = extensions.substring(1);
+            filter.get(0).name(stack.UTF8(format.name)).spec(stack.UTF8(extensions));
             int result = NativeFileDialog.NFD_SaveDialog(path, filter, lastFolders.getOrDefault(hint, defaultFolder).getAbsolutePath(), selectedFile==null?hint:selectedFile.getName());
             switch(result){
                 case NativeFileDialog.NFD_OKAY:
