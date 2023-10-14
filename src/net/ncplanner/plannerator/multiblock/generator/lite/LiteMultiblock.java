@@ -21,6 +21,7 @@ public interface LiteMultiblock<T extends Multiblock> extends ThingWithVariables
     public int getDimension(int id);
     public Image getBlockTexture(int x, int y, int z);
     public float getCubeBounds(int x, int y, int z, int index);
+    @Deprecated // load from NCPF instead
     public LiteGenerator<? extends LiteMultiblock<T>>[] createGenerators(LiteMultiblock<T> priorityMultiblock);
     public void clear();
 }

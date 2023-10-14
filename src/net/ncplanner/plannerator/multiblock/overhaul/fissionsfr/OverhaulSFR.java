@@ -28,6 +28,8 @@ import net.ncplanner.plannerator.multiblock.editor.decal.OverhaulModeratorLineDe
 import net.ncplanner.plannerator.multiblock.editor.decal.ReflectorAdjacentModeratorLineDecal;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.CompiledOverhaulSFRConfiguration;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -975,7 +977,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(flux>0)block.positionalEfficiency+=efficiency/length;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        f+=b.template.moderator==null?0:b.template.moderator.flux;//could be a shield
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1858,7 +1861,9 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public LiteMultiblock<OverhaulSFR> compile(){
-        return null;
+        LiteOverhaulSFR sfr = new LiteOverhaulSFR(CompiledOverhaulSFRConfiguration.compile(getSpecificConfiguration()));
+        sfr.importAndConvert(this);
+        return sfr;
     }
     @Override
     public OverhaulSFRDesign toDesign(){

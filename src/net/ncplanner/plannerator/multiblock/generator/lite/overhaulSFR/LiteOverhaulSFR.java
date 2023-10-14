@@ -1,11 +1,18 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.BlockPos;
+import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
@@ -13,6 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Irradiat
 public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     public final CompiledOverhaulSFRConfiguration configuration;
     public int[][][] sourceValid;
+    public float[][][] sourceEfficiency;
     public int[][][] propogated;
     public int[][][] neutronFlux;
     public int[][][] hadFlux;
@@ -24,14 +32,31 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     private final int[] dims;
     public final int[][][] blocks;
     
+    public int[][][] blockEfficiency;
+    public float[][][] blockEfficiencyF;
+    private final ArrayList<Cluster> clusters = new ArrayList<>();
+    
     public int coolantRecipe;
     
-    //TODO stats stuff
+    public int totalFuelCells;
+    public int rawOutput;
+    public float totalOutput;
+    public int totalCooling;
+    public int totalHeat;
+    public int netHeat;
+    public float totalEfficiency;
+    public float totalHeatMult;
+    public int totalIrradiation;
+    public int functionalBlocks;
+    public float sparsityMult;
+    public float shutdownFactor;
+    
     private int[] blockCount;
     private int[][] heatsinkCalculationStepIndicies;
     public LiteOverhaulSFR(CompiledOverhaulSFRConfiguration configuration){
         this.configuration = configuration;
         blocks = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
+        blockEfficiency = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
         blockCount = new int[configuration.blockDefinition.length];//only initialized this early for variables
         for(int x = 0; x<configuration.maxSize; x++){
             for(int y = 0; y<configuration.maxSize; y++){
@@ -51,28 +76,6 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                 }
             }
         }
-    }
-    public void optimizeHeatsinkSteps(){
-        int steps = 0;
-        int[][] newCCSIs = new int[configuration.heatsinkCalculationStepIndicies.length][];
-        for(int[] indicies : configuration.heatsinkCalculationStepIndicies){
-            int stps = 0;
-            int[] newIndicies = new int[indicies.length];
-            for(int index : indicies){
-                if(blockCount[index]>0){
-                    newIndicies[stps] = index;
-                    stps++;
-                }
-            }
-            int[] newNewIndicies = new int[stps];
-            for(int i = 0; i<stps; i++){
-                newNewIndicies[i] = newIndicies[i];
-            }
-            newCCSIs[steps] = newNewIndicies;
-            steps++;
-        }
-        heatsinkCalculationStepIndicies = new int[steps][];
-        System.arraycopy(newCCSIs, 0, heatsinkCalculationStepIndicies, 0, steps);
     }
     public void propogateNeutronFlux(int x, int y, int z, boolean force, boolean initial){
         if(!force&&sourceValid[x][y][z]==0&&neutronFlux[x][y][z]<configuration.blockCriticality[blocks[x][y][z]])return;
@@ -202,9 +205,207 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         }
         propogated[x][y][z]++;
     }
+    public void optimizeHeatsinkSteps(){
+        int steps = 0;
+        int[][] newCCSIs = new int[configuration.heatsinkCalculationStepIndicies.length][];
+        for(int[] indicies : configuration.heatsinkCalculationStepIndicies){
+            int stps = 0;
+            int[] newIndicies = new int[indicies.length];
+            for(int index : indicies){
+                if(blockCount[index]>0){
+                    newIndicies[stps] = index;
+                    stps++;
+                }
+            }
+            int[] newNewIndicies = new int[stps];
+            for(int i = 0; i<stps; i++){
+                newNewIndicies[i] = newIndicies[i];
+            }
+            newCCSIs[steps] = newNewIndicies;
+            steps++;
+        }
+        heatsinkCalculationStepIndicies = new int[steps][];
+        System.arraycopy(newCCSIs, 0, heatsinkCalculationStepIndicies, 0, steps);
+    }
+    public void calculateHeatsinks(){
+        int[] adjacents = new int[]{-2,-2,-2,-2,-2,-2};
+        int[] active = new int[6];
+        int somethingChanged;
+        do{
+            somethingChanged = 0;
+            for(int[] indicies : heatsinkCalculationStepIndicies){
+                for(int x = 0; x<dims[0]; x++){
+                    for(int y = 0; y<dims[1]; y++){
+                        for(int z = 0; z<dims[2]; z++){
+                            B:for(int c : indicies){
+                                if(blocks[x][y][z]==c){
+                                    if(x>0){
+                                        adjacents[0] = blocks[x-1][y][z];
+                                        active[0] = blockEfficiency[x-1][y][z];
+                                    }else{
+                                        adjacents[0] = -2;
+                                        active[0] = 0;
+                                    }
+                                    if(y>0){
+                                        adjacents[1] = blocks[x][y-1][z];
+                                        active[1] = blockEfficiency[x][y-1][z];
+                                    }else{
+                                        adjacents[1] = -2;
+                                        active[1] = 0;
+                                    }
+                                    if(z>0){
+                                        adjacents[2] = blocks[x][y][z-1];
+                                        active[2] = blockEfficiency[x][y][z-1];
+                                    }else{
+                                        adjacents[2] = -2;
+                                        active[2] = 0;
+                                    }
+                                    if(x<dims[0]-1){
+                                        adjacents[3] = blocks[x+1][y][z];
+                                        active[3] = blockEfficiency[x+1][y][z];
+                                    }else{
+                                        adjacents[3] = -2;
+                                        active[3] = 0;
+                                    }
+                                    if(y<dims[1]-1){
+                                        adjacents[4] = blocks[x][y+1][z];
+                                        active[4] = blockEfficiency[x][y+1][z];
+                                    }else{
+                                        adjacents[4] = -2;
+                                        active[4] = 0;
+                                    }
+                                    if(z<dims[2]-1){
+                                        adjacents[5] = blocks[x][y][z+1];
+                                        active[5] = blockEfficiency[x][y][z+1];
+                                    }else{
+                                        adjacents[5] = -2;
+                                        active[5] = 0;
+                                    }
+                                    int was = blockEfficiency[x][y][z];
+                                    blockEfficiency[x][y][z] = 1;
+                                    for(CompiledPlacementRule rule : configuration.blockPlacementRules[c]){
+                                        if(!rule.isValid(adjacents, active, configuration.blockType)){
+                                            blockEfficiency[x][y][z] = 0;
+                                            somethingChanged += was-blockEfficiency[x][y][z];
+                                            break B;
+                                        }
+                                    }
+                                    somethingChanged += blockEfficiency[x][y][z]-was;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }while(somethingChanged>0&&configuration.hasRecursiveRules);
+    }
+    public void initCells(){
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                for(int z = 0; z<dims[2]; z++){
+                    int block = blocks[x][y][z];
+                    if(block>=0&&configuration.blockFuelCell[block]){
+                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(configuration.blockFlux[block]-2*configuration.blockCriticality[block]))));
+                        blockEfficiencyF[x][y][z] = configuration.blockEfficiency[block]*positionalEfficiency[x][y][z]*(sourceValid[x][y][z]>0?sourceEfficiency[x][y][z]:1)*criticalityModifier;
+                    }
+                }
+            }
+        }
+    }
+    public void buildClusters(){
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                for(int z = 0; z<dims[2]; z++){
+                    Cluster cluster = getCluster(x, y, z);
+                    if(cluster==null)continue;//that's not a cluster!
+                    if(clusters.contains(cluster))continue;//already know about that one!
+                    clusters.add(cluster);
+                }
+            }
+        }
+    }
+    public void calculateClusters(){
+        for(int i = 0; i<clusters.size(); i++){
+            Cluster cluster = clusters.get(i);
+            int fuelCells = 0;
+            for(int j = 0; j<cluster.blocks.size(); j++){
+                BlockPos b = cluster.blocks.get(j);
+                int x = b.x;
+                int y = b.y;
+                int z = b.z;
+                int block = blocks[b.x][b.y][b.z];
+                if(configuration.blockFuelCell[block]&&blockActive[x][y][z]>0){
+                    fuelCells++;
+                    cluster.totalOutput+=configuration.blockHeat[block]*blockEfficiencyF[x][y][z];
+                    cluster.efficiency+=blockEfficiencyF[x][y][z];
+                    cluster.totalHeat+=moderatorLines[x][y][z]*configuration.blockHeat[block];
+                    cluster.heatMult+=moderatorLines[x][y][z];
+                }
+                if(configuration.blockHeatsink[block]&&blockActive[x][y][z]>0){
+                    cluster.totalCooling+=configuration.blockCooling[block];
+                }
+                if(configuration.blockShield[block]&&blockActive[x][y][z]>0){
+                    cluster.totalOutput+=configuration.blockHeatPerFlux[block]*neutronFlux[x][y][z]*configuration.blockEfficiency[block];
+                    cluster.totalHeat+=configuration.blockHeatPerFlux[block]*neutronFlux[x][y][z];
+                }
+                if(configuration.blockIrradiator[block]&&blockActive[x][y][z]>0){
+                    cluster.irradiation+=neutronFlux[x][y][z];
+                    cluster.totalHeat+=configuration.blockHeat[block]*neutronFlux[x][y][z];
+                }
+            }
+            cluster.efficiency/=fuelCells;
+            cluster.heatMult/=fuelCells;
+            if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
+            if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
+            cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
+            if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
+            else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+configuration.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+            cluster.efficiency*=cluster.coolingPenaltyMult;
+            cluster.totalOutput*=cluster.coolingPenaltyMult;
+            totalFuelCells+=fuelCells;
+            rawOutput+=cluster.totalOutput;
+            totalOutput+=cluster.totalOutput;
+            totalCooling+=cluster.totalCooling;
+            totalHeat+=cluster.totalHeat;
+            netHeat+=cluster.netHeat;
+            totalEfficiency+=cluster.efficiency*fuelCells;
+            totalHeatMult+=cluster.heatMult*fuelCells;
+            totalIrradiation+=cluster.irradiation;
+            if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
+        }
+    }
+    public void calculateStats(){
+        totalEfficiency/=totalFuelCells;
+        totalHeatMult/=totalFuelCells;
+        if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
+        if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
+        functionalBlocks = 0;
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                for(int z = 0; z<dims[2]; z++){
+                    //TODO exclude non-clustered blocks
+                    int block = blocks[x][y][z];
+                    if(block<0)continue;
+                    if(blockActive[x][y][z]+moderatorValid[x][y][z]>0){
+                        if(configuration.blockFuelCell[block]||configuration.blockModerator[block]||configuration.blockReflector[block]||configuration.blockIrradiator[block]||configuration.blockHeatsink[block]||configuration.blockShield[block]){
+                            functionalBlocks++;
+                        }
+                    }
+                }
+            }
+        }
+        int volume = dims[0]*dims[1]*dims[2];
+        sparsityMult = (float) (functionalBlocks/(float)volume>=configuration.sparsityPenaltyThreshold?1:configuration.sparsityPenaltyMultiplier+(1-configuration.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*configuration.sparsityPenaltyThreshold)));
+        totalOutput*=sparsityMult;
+        totalEfficiency*=sparsityMult;
+        totalOutput/=configuration.coolantRecipeHeat[coolantRecipe]/configuration.coolantRecipeOutputRatio[coolantRecipe];
+    }
     @Override
     public void calculate(){
+        clusters.clear();
         sourceValid = new int[dims[0]][dims[1]][dims[2]];
+        sourceEfficiency = new float[dims[0]][dims[1]][dims[2]];
         propogated = new int[dims[0]][dims[1]][dims[2]];
         neutronFlux = new int[dims[0]][dims[1]][dims[2]];
         hadFlux = new int[dims[0]][dims[1]][dims[2]];
@@ -212,6 +413,21 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         positionalEfficiency = new float[dims[0]][dims[1]][dims[2]];
         moderatorValid = new int[dims[0]][dims[1]][dims[2]];
         blockActive = new int[dims[0]][dims[1]][dims[2]];
+        blockEfficiency = new int[dims[0]][dims[1]][dims[2]];
+        blockEfficiencyF = new float[dims[0]][dims[1]][dims[2]];
+        
+        totalFuelCells = 0;
+        rawOutput = 0;
+        totalOutput = 0;
+        totalCooling = 0;
+        totalHeat = 0;
+        netHeat = 0;
+        totalEfficiency = 0;
+        totalHeatMult = 0;
+        totalIrradiation = 0;
+        functionalBlocks = 0;
+        sparsityMult = 0;
+        shutdownFactor = 0;
         
         //<editor-fold defaultstate="collapsed" desc="Base flux propogation">
         for(int x = 0; x<dims[0]; x++){
@@ -219,6 +435,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                 for(int z = 0; z<dims[2]; z++){
                     if(blocks[x][y][z]>=0&&configuration.blockFuelCell[blocks[x][y][z]]){
                         sourceValid[x][y][z]+=findSources(x, y, z, configuration.losTest);
+                        sourceEfficiency[x][y][z]+=findSources(x, y, z, configuration.losTest);
                     }
                 }
             }
@@ -286,7 +503,8 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         }
 //</editor-fold>
         //don't care about partial
-        //<editor-fold defaultstate="collapsed" desc="Shutdown flux propogation">
+        //<editor-fold defaultstate="collapsed" desc="Shutdown flux propogation (DISABLED)">
+        /*
         for(int x = 0; x<dims[0]; x++){
             for(int y = 0; y<dims[1]; y++){
                 for(int z = 0; z<dims[2]; z++){
@@ -347,7 +565,15 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                 }
             }
         }
+        */
 //</editor-fold>
+        optimizeHeatsinkSteps();
+        calculateHeatsinks();
+        initCells();
+        buildClusters();
+        calculateClusters();
+        calculateStats();
+        //also shutdown factor or whatever
     }
     //adjacents
     private int findSources(int x, int y, int z, boolean[] pathTest){
@@ -404,7 +630,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         sfr.forEachInternalPosition((x, y, z) -> {
             Block block = sfr.getBlock(x, y, z);
             NCPFElementDefinition definition = block==null?null:block.template.definition;
-            NCPFElementDefinition recipe = block.fuel==null?(block.irradiatorRecipe==null?null:block.irradiatorRecipe.definition):block.fuel.definition;
+            NCPFElementDefinition recipe = block==null?null:(block.fuel==null?(block.irradiatorRecipe==null?null:block.irradiatorRecipe.definition):block.fuel.definition);
             int b = -1;
             for(int i = 0; i<configuration.blockDefinition.length; i++){
                 if(configuration.blockDefinition[i].matches(definition)){
@@ -455,7 +681,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         OverhaulSFR sfr = new OverhaulSFR(configg, dims[0], dims[1], dims[2], coolantRecipe);
         sfr.forEachInternalPosition((x, y, z) -> {
             int block = blocks[x-1][y-1][z-1];
-            if(blockValid[x-1][y-1][z-1]+blockActive[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
+            if(moderatorValid[x-1][y-1][z-1]+blockActive[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : config.blocks){
@@ -485,8 +711,8 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     }
     @Override
     public Image getBlockTexture(int x, int y, int z){
-        if(blockValid==null||blockActive==null||blockEfficiency==null)return null;
-        if(blockValid[x][y][z]+blockActive[x][y][z]+blockEfficiency[x][y][z]<1)return null;
+        if(moderatorValid==null||blockActive==null||blockEfficiency==null)return null;
+        if(moderatorValid[x][y][z]+blockActive[x][y][z]+blockEfficiency[x][y][z]<1)return null;
         int block = blocks[x][y][z];
         return block>=0?configuration.blockTexture[block]:null;
     }
@@ -506,5 +732,202 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
             }
         }
         calculate();//fix vars
+    }
+    private Cluster getCluster(int x, int y, int z){
+        int block = blocks[x][y][z];
+        if(block<0)return null;
+        if(!canCluster(x, y, z))return null;
+        synchronized(clusters){
+            for(Cluster cluster : clusters){
+                if(cluster.contains(x, y, z))return cluster;
+            }
+        }
+        return new Cluster(x, y, z);
+    }
+    private boolean canCluster(int x, int y, int z){
+        int block = blocks[x][y][z];
+        if(blockActive[x][y][z]<=0)return configuration.blockConductor[block];
+        return configuration.blockConductor[block]||configuration.blockFuelCell[block]||configuration.blockIrradiator[block]||configuration.blockHeatsink[block]||configuration.blockShield[block];
+    }
+    private boolean contains(int x, int y, int z){
+        return x>=0&&y>=0&&z>=0&&x<dims[0]&&y<dims[1]&&z<dims[2];
+    }
+    @Override
+    public String getTooltip(){
+        int validClusters = 0;
+        for(Cluster c : clusters){
+            if(c.isValid())validClusters++;
+        }
+        return "Total output: "+totalOutput+" mb/t of whatever "+configuration.coolantRecipeDisplayName[coolantRecipe]+" gets turned into\n"
+                + "Total Heat: "+totalHeat+"H/t\n"
+                + "Total Cooling: "+totalCooling+"H/t\n"
+                + "Net Heat: "+netHeat+"H/t\n"
+                + "Overall Efficiency: "+MathUtil.percent(totalEfficiency, 0)+"\n"
+                + "Overall Heat Multiplier: "+MathUtil.percent(totalHeatMult, 0)+"\n"
+                + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
+                + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
+                + "Total Irradiation: "+totalIrradiation+"\n"
+                + "Shutdown Factor: "+MathUtil.percent(shutdownFactor, 2);
+    }
+    @Override
+    public void copyVarsFrom(LiteMultiblock<OverhaulSFR> other){
+        //TODO copy vars
+    }
+    @Override
+    public LiteGenerator<? extends LiteMultiblock<OverhaulSFR>>[] createGenerators(LiteMultiblock<OverhaulSFR> priorityMultiblock){
+        ArrayList<LiteGenerator<LiteOverhaulSFR>> gens = new ArrayList<>();
+        {
+            LiteGenerator<LiteOverhaulSFR> gen = new LiteGenerator<>();
+            gens.add(gen);
+        }
+        return gens.toArray(new LiteGenerator[gens.size()]);
+    }
+    @Override
+    public int getVariableCount(){
+        return 0;
+    }
+    @Override
+    public Variable getVariable(int i){
+        return null;
+    }
+    private class Cluster{
+        public ArrayList<BlockPos> blocks = new ArrayList<>();
+        public boolean isConnectedToWall = false;
+        public float totalOutput = 0;
+        public float efficiency;
+        public int totalHeat, totalCooling, netHeat;
+        public float heatMult, coolingPenaltyMult;
+        public int irradiation;
+        public Cluster(int x, int y, int z){
+            blocks.addAll(toList(getClusterBlocks(new BlockPos(x, y, z))));
+            isConnectedToWall = wallCheck(blocks);
+            if(!isConnectedToWall){
+                isConnectedToWall = wallCheck(toList(getClusterBlocks(new BlockPos(x, y, z))));
+            }
+        }
+        private Cluster(){}
+        private boolean isValid(){
+            return isConnectedToWall&&isCreated();
+        }
+        public boolean isCreated(){
+            for(BlockPos pos : blocks){
+                int block = LiteOverhaulSFR.this.blocks[pos.x][pos.y][pos.z];
+                if(configuration.blockFuelCell[block]||configuration.blockIrradiator[block]||configuration.blockShield[block])return true;
+            }
+            return false;
+        }
+        public boolean contains(Block block){
+            return blocks.contains(block);
+        }
+        public boolean contains(int x, int y, int z){
+            for(BlockPos b : blocks){
+                if(b.x==x&&b.y==y&&b.z==z)return true;
+            }
+            return false;
+        }
+        private boolean wallCheck(ArrayList<BlockPos> blocks){
+            for(BlockPos pos : blocks){
+                if(pos.x==1||pos.y==1||pos.z==1)return true;
+                if(pos.x==dims[0]-1||pos.y==dims[1]-1||pos.z==dims[2]-1)return true;
+            }
+            return false;
+        }
+        public String getTooltip(){
+            if(!isCreated())return "Invalid cluster!";
+            if(!isValid())return "Cluster is not connected to the casing!";
+            return "Total output: "+Math.round(totalOutput)+"\n"
+                + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
+                + "Total Heating: "+totalHeat+"H/t\n"
+                + "Total Cooling: "+totalCooling+"H/t\n"
+                + "Net Heating: "+netHeat+"H/t\n"
+                + "Heat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+                + "Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
+        }
+    }
+    /**
+     * Block search algorithm from my Tree Feller for Bukkit.
+     */
+    private HashMap<Integer, ArrayList<BlockPos>> getClusterBlocks(BlockPos start){
+        //layer zero
+        HashMap<Integer, ArrayList<BlockPos>>results = new HashMap<>();
+        ArrayList<BlockPos> zero = new ArrayList<>();
+        if(canCluster(start.x, start.y, start.z)){
+            zero.add(start);
+        }
+        results.put(0, zero);
+        //all the other layers
+        int maxDistance = dims[0]*dims[1]*dims[2];//the algorithm requires a max search distance. Rather than changing that, I'll just be lazy and give it a big enough number
+        for(int i = 0; i<maxDistance; i++){
+            ArrayList<BlockPos> layer = new ArrayList<>();
+            ArrayList<BlockPos> lastLayer = new ArrayList<>(results.get(i));
+            if(i==0&&lastLayer.isEmpty()){
+                lastLayer.add(start);
+            }
+            for(BlockPos block : lastLayer){
+                FOR:for(int j = 0; j<6; j++){
+                    int dx=0,dy=0,dz=0;
+                    switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
+                        case 0:
+                            dx = -1;
+                            break;
+                        case 1:
+                            dx = 1;
+                            break;
+                        case 2:
+                            dy = -1;
+                            break;
+                        case 3:
+                            dy = 1;
+                            break;
+                        case 4:
+                            dz = -1;
+                            break;
+                        case 5:
+                            dz = 1;
+                            break;
+                        default:
+                            throw new IllegalArgumentException("How did this happen?");
+                    }
+                    if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
+                    BlockPos newBlock = new BlockPos(block.x+dx,block.y+dy,block.z+dz);
+                    if(blocks[newBlock.x][newBlock.y][newBlock.z]<0)continue;
+                    if(!(canCluster(newBlock.x, newBlock.y, newBlock.z))){//that's not part of this bunch
+                        continue;
+                    }
+                    for(BlockPos oldbl : lastLayer){//if(lastLayer.contains(newBlock))continue;//if the new block is on the same layer, ignore
+                        if(oldbl.equals(newBlock)){
+                            continue FOR;
+                        }
+                    }
+                    if(i>0){
+                        for(BlockPos oldbl : results.get(i-1)){//if(i>0&&results.get(i-1).contains(newBlock))continue;//if the new block is on the previous layer, ignore
+                            if(oldbl.equals(newBlock)){
+                                continue FOR;
+                            }
+                        }
+                    }
+                    for(BlockPos oldbl : layer){//if(layer.contains(newBlock))continue;//if the new block is on the next layer, but already processed, ignore
+                        if(oldbl.equals(newBlock)){
+                            continue FOR;
+                        }
+                    }
+                    layer.add(newBlock);
+                }
+            }
+            if(layer.isEmpty())break;
+            results.put(i+1, layer);
+        }
+        return results;
+    }
+    /**
+     * Converts the tiered search returned by getBlocks into a list of blocks.<br>
+     * Also from my tree feller
+     */
+    private static ArrayList<BlockPos> toList(HashMap<Integer, ArrayList<BlockPos>> blocks){
+        ArrayList<BlockPos> list = new ArrayList<>();
+        for(int i : blocks.keySet()){
+            list.addAll(blocks.get(i));
+        }
+        return list;
     }
 }
