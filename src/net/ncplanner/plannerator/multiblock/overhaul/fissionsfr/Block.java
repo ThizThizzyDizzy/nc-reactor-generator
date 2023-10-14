@@ -362,7 +362,7 @@ public class Block extends AbstractBlock{
         return true;
     }
     @Override
-    public NCPFElement getTemplate(){
+    public BlockElement getTemplate(){
         return template;
     }
     @Override

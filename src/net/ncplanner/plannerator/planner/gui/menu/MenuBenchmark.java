@@ -133,7 +133,7 @@ public class MenuBenchmark extends LayoutMenu{
         }
     }
     public long benchmark(String name, Runnable r, Task task){
-        long duration = 60_000_000_000l;
+        long duration = 15_000_000_000l;
         long now = System.nanoTime();
         long count = 0;
         benchmark.addBenchmark(name);

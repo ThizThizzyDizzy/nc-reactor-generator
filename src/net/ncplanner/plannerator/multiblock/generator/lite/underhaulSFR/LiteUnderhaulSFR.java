@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR;
 import java.util.ArrayList;
-import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
@@ -28,7 +27,6 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -48,15 +46,6 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public int netHeat;
     private int power, heat, cooling, cells;
     private float powerf, heatf, efficiency, heatMult;
-    private static final int[][] directions = new int[6][];
-    static{
-        directions[0] = new int[]{1,0,0};
-        directions[1] = new int[]{0,1,0};
-        directions[2] = new int[]{0,0,1};
-        directions[3] = new int[]{-1,0,0};
-        directions[4] = new int[]{0,-1,0};
-        directions[5] = new int[]{0,0,-1};
-    }
     private int[] blockCount;
     private int[][] coolerCalculationStepIndicies;
     private Variable[] vars;
@@ -135,9 +124,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
             steps++;
         }
         coolerCalculationStepIndicies = new int[steps][];
-        for(int i = 0; i<steps; i++){
-            coolerCalculationStepIndicies[i] = newCCSIs[i];
-        }
+        System.arraycopy(newCCSIs, 0, coolerCalculationStepIndicies, 0, steps);
     }
     public void calculateCoolers(){
         int[] adjacents = new int[]{-2,-2,-2,-2,-2,-2};
@@ -232,32 +219,6 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         heatMult = (float)this.heat/cells/configuration.fuelHeat[fuel];
         efficiency = (float)this.power/cells/configuration.fuelPower[fuel];
     }
-    public UnderhaulSFR unpack(NCPFConfigurationContainer configg){
-        UnderhaulSFRConfiguration config = configg.getConfiguration(UnderhaulSFRConfiguration::new);
-        if(!configuration.matches(config))throw new IllegalArgumentException("Unable to unpack Underhaul SFR: Configuration does not match!");
-        UnderhaulSFR sfr = new UnderhaulSFR(configg, dims[0], dims[1], dims[2], config.fuels.get(fuel));
-        for(int x = 0; x<dims[0]; x++){
-            for(int y = 0; y<dims[1]; y++){
-                for(int z = 0; z<dims[2]; z++){
-                    int id = blocks[x][y][z];
-                    int bid = id;
-                    while(configuration.blockActive[bid]!=null&&configuration.blockActive[bid-1]!=null)bid--;
-                    Block block = new Block(configg, x+1, y+1, z+1, config.blocks.get(bid));
-                    if(configuration.blockActive[id]!=null){
-                        List<? extends NCPFElement> recipes = block.getTemplate().getBlockRecipes();
-                        for(NCPFElement element : recipes){
-                            if(element.definition.matches(configuration.blockActive[id])){
-                                block.setRecipe(element);
-                            }
-                        }
-                    }
-                    sfr.setBlock(x+1, y+1, z+1, block);
-                }
-            }
-        }
-        sfr.buildDefaultCasing();
-        return sfr;
-    }
     private int countAdjacents(int x, int y, int z, boolean[] endTest, boolean[] pathTest, int distance){
         int count = 0;
         for(int[] direction : directions){
@@ -291,9 +252,12 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         sfr.forEachInternalPosition((x, y, z) -> {
             Block block = sfr.getBlock(x, y, z);
             NCPFElementDefinition definition = block==null?null:block.template.definition;
+            NCPFElementDefinition recipe = block.recipe==null?null:block.recipe.definition;
             int b = -1;
             for(int i = 0; i<configuration.blockDefinition.length; i++){
-                if(configuration.blockDefinition[i].matches(definition))b = i;
+                if(configuration.blockDefinition[i].matches(definition)){
+                    if(recipe==null||configuration.blockActive[i].matches(recipe))b = i;
+                }
             }
             blocks[x-1][y-1][z-1] = b;
         });

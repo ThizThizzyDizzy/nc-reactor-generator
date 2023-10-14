@@ -36,8 +36,6 @@ public class CompiledUnderhaulSFRConfiguration{
     public int[] blockCooling;
     public boolean[] blockFuelCell;
     public boolean[] blockModerator;
-    public boolean[] blockCasing;
-    public boolean[] blockController;
     public NCPFElementDefinition[] blockActive;
     public Image[] blockTexture;
     public Image[] blockDisplayTexture;
@@ -46,8 +44,6 @@ public class CompiledUnderhaulSFRConfiguration{
     public int[] coolerIndicies;
     public int[] fuelCellIndicies;
     public int[] moderatorIndicies;
-    public int[] casingIndicies;
-    public int[] controllerIndicies;
     public int[][] coolerCalculationStepIndicies;
     public boolean hasRecursiveRules;
     public static CompiledUnderhaulSFRConfiguration compile(UnderhaulSFRConfiguration config){
@@ -69,7 +65,7 @@ public class CompiledUnderhaulSFRConfiguration{
         this.moderatorExtraHeat = moderatorExtraHeat;
         this.activeCoolerRate = activeCoolerRate;
     }
-    public void addFuel(Fuel fuel){
+    private void addFuel(Fuel fuel){
         rawFuels.add(fuel);
     }
     private void addBlock(BlockElement block){
@@ -105,14 +101,12 @@ public class CompiledUnderhaulSFRConfiguration{
         blockCooling = new int[rawBlocksWithRecipes.size()];
         blockFuelCell = new boolean[rawBlocksWithRecipes.size()];
         blockModerator = new boolean[rawBlocksWithRecipes.size()];
-        blockCasing = new boolean[rawBlocksWithRecipes.size()];
-        blockController = new boolean[rawBlocksWithRecipes.size()];
         blockActive = new NCPFElementDefinition[rawBlocksWithRecipes.size()];
         blockTexture = new Image[rawBlocksWithRecipes.size()];
         blockDisplayTexture = new Image[rawBlocksWithRecipes.size()];
         blockType = new String[rawBlocksWithRecipes.size()];
         blockPlacementRules = new CompiledPlacementRule[rawBlocksWithRecipes.size()][];
-        int numCoolers = 0, numCells = 0, numModerators = 0, numCasings = 0, numControllers = 0;
+        int numCoolers = 0, numCells = 0, numModerators = 0;
         for(int i = 0; i<rawBlocksWithRecipes.size(); i++){
             BlockAndRecipe raw = rawBlocksWithRecipes.get(i);
             BlockElement block = raw.block;
@@ -120,15 +114,11 @@ public class CompiledUnderhaulSFRConfiguration{
             if(block.cooler!=null||recipe!=null)numCoolers++;
             if(block.fuelCell!=null)numCells++;
             if(block.moderator!=null)numModerators++;
-            if(block.casing!=null)numCasings++;
-            if(block.controller!=null)numControllers++;
             blockDefinition[i] = block.definition;
             blockDisplayName[i] = block.names.displayName;
             blockCooling[i] = recipe!=null?recipe.stats.cooling*activeCoolerRate/20:(block.cooler==null?0:block.cooler.cooling);
             blockFuelCell[i] = block.fuelCell!=null;
             blockModerator[i] = block.moderator!=null;
-            blockCasing[i] = block.casing!=null;
-            blockController[i] = block.controller!=null;
             blockActive[i] = recipe==null?null:recipe.definition;
             blockTexture[i] = block.texture.texture;
             blockDisplayTexture[i] = block.texture.displayTexture;
@@ -148,13 +138,9 @@ public class CompiledUnderhaulSFRConfiguration{
         coolerIndicies = new int[numCoolers];
         fuelCellIndicies = new int[numCells];
         moderatorIndicies = new int[numModerators];
-        casingIndicies = new int[numCasings];
-        controllerIndicies = new int[numControllers];
         int coolerIndex = 0;
         int fuelCellIndex = 0;
         int moderatorIndex = 0;
-        int casingIndex = 0;
-        int controllerIndex = 0;
         for(int i = 0; i<blockDefinition.length; i++){
             if(blockCooling[i]!=0){
                 coolerIndicies[coolerIndex] = i;
@@ -167,14 +153,6 @@ public class CompiledUnderhaulSFRConfiguration{
             if(blockModerator[i]){
                 moderatorIndicies[moderatorIndex] = i;
                 moderatorIndex++;
-            }
-            if(blockCasing[i]){
-                casingIndicies[casingIndex] = i;
-                casingIndex++;
-            }
-            if(blockController[i]){
-                controllerIndicies[controllerIndex] = i;
-                controllerIndex++;
             }
         }
         ArrayList<Integer> remainingCoolers = new ArrayList<>();
@@ -214,11 +192,6 @@ public class CompiledUnderhaulSFRConfiguration{
                 coolerCalculationStepIndicies[i][j] = indicies.get(j);
             }
         }
-    }
-    public boolean matches(UnderhaulSFRConfiguration config){
-        return config!=null
-                &&config.fuels.size()==fuelDefinition.length
-                &&config.blocks.size()==rawBlocks.size();
     }
     private boolean usesCooler(CompiledPlacementRule[] rules){
         if(rules==null)return false;
