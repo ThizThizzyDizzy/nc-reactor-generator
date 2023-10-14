@@ -42,7 +42,7 @@ public class Main{
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
-        addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/joml-1.10.0.jar", "joml-1.10.0.jar");
+        addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/joml-1.10.5.jar", "joml-1.10.5.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.3.0/JDA-4.3.0_277-withDependencies-min.jar", "JDA-4.3.0_277-withDependencies-min.jar");
         }
@@ -108,121 +108,149 @@ public class Main{
         if(osName.contains("mac"))os = OS_MACOS;
         if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
         if(args.length<1||!args[0].equals("Skip Dependencies")){
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-assimp.jar", "lwjgl-3.2.3-assimp.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-glfw.jar", "lwjgl-3.2.3-glfw.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openal.jar", "lwjgl-3.2.3-openal.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-opengl.jar", "lwjgl-3.2.3-opengl.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-stb.jar", "lwjgl-3.2.3-stb.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl.jar", "lwjgl-3.2.3.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
-            if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-openvr.jar", "lwjgl-3.2.3-openvr.jar");
-            addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/jar/lwjgl-nfd.jar", "lwjgl-3.2.3-nfd.jar");
             if(os==OS_UNKNOWN){
                 throw new IllegalArgumentException("Unknown OS: "+osName);
             }
+            final int ARCH_UNKNOWN = -1;
+            final int ARCH_X86 = 0;
+            final int ARCH_X64 = 1;
+            final int ARCH_ARM32 = 3;
+            final int ARCH_ARM64 = 4;
+            int arch = ARCH_UNKNOWN;
+            String osArch = System.getProperty("os.arch");
+            if(osArch==null)osArch = "null";
+            osArch = osArch.toLowerCase(Locale.ROOT);
+            if(osArch.equals("amd64"))arch = ARCH_X64;
+            if(osArch.equals("x64"))arch = ARCH_X64;
+            if(osArch.equals("x86"))arch = ARCH_X86;
+            if(osArch.equals("arm32"))arch = ARCH_ARM32;
+            if(osArch.equals("arm64"))arch = ARCH_ARM64;
+            if(arch==ARCH_UNKNOWN){
+                System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
+                arch = ARCH_X64;
+            }
+            if((arch==ARCH_ARM32||arch==ARCH_ARM64)&&!novr){
+                System.err.println("OpenVR is not supported on arm! Excluding OpenVR libraries.");
+                novr = true;
+            }
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp.jar", "lwjgl-3.3.3-assimp.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw.jar", "lwjgl-3.3.3-glfw.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal.jar", "lwjgl-3.3.3-openal.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl.jar", "lwjgl-3.3.3-opengl.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb.jar", "lwjgl-3.3.3-stb.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3.jar", "lwjgl-3.3.3.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjglx-debug-1.0.0.jar", "lwjglx-debug-1.0.0.jar");
+            if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr.jar", "lwjgl-3.3.3-openvr.jar");
+            addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd.jar", "lwjgl-3.3.3-nfd.jar");
             switch(os){
                 case OS_WINDOWS:
                     {
-                        final int ARCH_UNKNOWN = -1;
-                        final int ARCH_X86 = 0;
-                        final int ARCH_X64 = 1;
-                        int arch = ARCH_UNKNOWN;
-                        String osArch = System.getProperty("os.arch");
-                        if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ROOT);
-                        if(osArch.equals("amd64"))arch = ARCH_X64;
-                        if(osArch.equals("x86"))arch = ARCH_X86;
                         System.out.println("OS: Windows");
-                        if(arch==ARCH_UNKNOWN){
-                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                            arch = ARCH_X64;
-                        }
                         switch(arch){
                             case ARCH_X86:
                                 System.out.println("OS Architecture: x86");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-assimp-natives-windows-x86.jar", "lwjgl-3.2.3-assimp-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-glfw-natives-windows-x86.jar", "lwjgl-3.2.3-glfw-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-natives-windows-x86.jar", "lwjgl-3.2.3-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openal-natives-windows-x86.jar", "lwjgl-3.2.3-openal-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-opengl-natives-windows-x86.jar", "lwjgl-3.2.3-opengl-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-stb-natives-windows-x86.jar", "lwjgl-3.2.3-stb-natives-windows-x86.jar");
-                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-openvr-natives-windows-x86.jar", "lwjgl-3.2.3-openvr-natives-windows-x86.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/x86/lwjgl-nfd-natives-windows-x86.jar", "lwjgl-3.2.3-nfd-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-windows-x86.jar", "lwjgl-3.3.3-assimp-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-windows-x86.jar", "lwjgl-3.3.3-glfw-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-windows-x86.jar", "lwjgl-3.3.3-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-windows-x86.jar", "lwjgl-3.3.3-openal-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-windows-x86.jar", "lwjgl-3.3.3-opengl-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-windows-x86.jar", "lwjgl-3.3.3-stb-natives-windows-x86.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr-natives-windows-x86.jar", "lwjgl-3.3.3-openvr-natives-windows-x86.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-windows-x86.jar", "lwjgl-3.3.3-nfd-natives-windows-x86.jar");
                                 break;
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-assimp-natives-windows.jar", "lwjgl-3.2.3-assimp-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-glfw-natives-windows.jar", "lwjgl-3.2.3-glfw-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-natives-windows.jar", "lwjgl-3.2.3-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openal-natives-windows.jar", "lwjgl-3.2.3-openal-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-opengl-natives-windows.jar", "lwjgl-3.2.3-opengl-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-stb-natives-windows.jar", "lwjgl-3.2.3-stb-natives-windows.jar");
-                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-openvr-natives-windows.jar", "lwjgl-3.2.3-openvr-natives-windows.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/windows/lwjgl-nfd-natives-windows.jar", "lwjgl-3.2.3-nfd-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-windows.jar", "lwjgl-3.3.3-assimp-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-windows.jar", "lwjgl-3.3.3-glfw-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-windows.jar", "lwjgl-3.3.3-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-windows.jar", "lwjgl-3.3.3-openal-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-windows.jar", "lwjgl-3.3.3-opengl-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-windows.jar", "lwjgl-3.3.3-stb-natives-windows.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr-natives-windows.jar", "lwjgl-3.3.3-openvr-natives-windows.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-windows.jar", "lwjgl-3.3.3-nfd-natives-windows.jar");
                                 break;
+                            case ARCH_ARM64:
+                                System.out.println("OS Architecture: arm64");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-windows-arm64.jar", "lwjgl-3.3.3-assimp-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-windows-arm64.jar", "lwjgl-3.3.3-glfw-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-windows-arm64.jar", "lwjgl-3.3.3-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-windows-arm64.jar", "lwjgl-3.3.3-openal-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-windows-arm64.jar", "lwjgl-3.3.3-opengl-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-windows-arm64.jar", "lwjgl-3.3.3-stb-natives-windows-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-windows-arm64.jar", "lwjgl-3.3.3-nfd-natives-windows-arm64.jar");
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
                         }
                     }
                     break;
                 case OS_MACOS:
-                    System.out.println("OS: Mac OS");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-assimp-natives-macos.jar", "lwjgl-3.2.3-assimp-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-glfw-natives-macos.jar", "lwjgl-3.2.3-glfw-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-natives-macos.jar", "lwjgl-3.2.3-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openal-natives-macos.jar", "lwjgl-3.2.3-openal-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-opengl-natives-macos.jar", "lwjgl-3.2.3-opengl-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-stb-natives-macos.jar", "lwjgl-3.2.3-stb-natives-macos.jar");
-                    if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-openvr-natives-macos.jar", "lwjgl-3.2.3-openvr-natives-macos.jar");
-                    addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/macos/lwjgl-nfd-natives-macos.jar", "lwjgl-3.2.3-nfd-natives-macos.jar");
-                    break;
-                case OS_LINUX:
                     {
-                        final int ARCH_UNKNOWN = -1;
-                        final int ARCH_X64 = 0;
-                        final int ARCH_ARM32 = 1;
-                        final int ARCH_ARM64 = 2;
-                        int arch = ARCH_UNKNOWN;
-                        String osArch = System.getProperty("os.arch");
-                        if(osArch==null)osArch = "null";
-                        osArch = osArch.toLowerCase(Locale.ROOT);
-                        if(osArch.equals("amd64"))arch = ARCH_X64;
-                        if(osArch.equals("x64"))arch = ARCH_X64;
-                        if(osArch.equals("arm32"))arch = ARCH_ARM32;
-                        if(osArch.equals("arm64"))arch = ARCH_ARM64;
-                        System.out.println("OS: Linux");
-                        if(arch==ARCH_UNKNOWN){
-                            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                            arch = ARCH_X64;
-                        }
+                        System.out.println("OS: Mac OS");
                         switch(arch){
                             case ARCH_X64:
                                 System.out.println("OS Architecture: x64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-assimp-natives-linux.jar", "lwjgl-3.2.3-assimp-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-glfw-natives-linux.jar", "lwjgl-3.2.3-glfw-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-natives-linux.jar", "lwjgl-3.2.3-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openal-natives-linux.jar", "lwjgl-3.2.3-openal-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-opengl-natives-linux.jar", "lwjgl-3.2.3-opengl-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-stb-natives-linux.jar", "lwjgl-3.2.3-stb-natives-linux.jar");
-                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-openvr-natives-linux.jar", "lwjgl-3.2.3-openvr-natives-linux.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/lwjgl-nfd-natives-linux.jar", "lwjgl-3.2.3-nfd-natives-linux.jar");
-                                break;
-                            case ARCH_ARM32:
-                                System.out.println("OS Architecture: arm32");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-assimp-natives-linux-arm32.jar", "lwjgl-3.2.3-assimp-natives-linux-arm32.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-glfw-natives-linux-arm32.jar", "lwjgl-3.2.3-glfw-natives-linux-arm32.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-natives-linux-arm32.jar", "lwjgl-3.2.3-natives-linux-arm32.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-openal-natives-linux-arm32.jar", "lwjgl-3.2.3-openal-natives-linux-arm32.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-opengl-natives-linux-arm32.jar", "lwjgl-3.2.3-opengl-natives-linux-arm32.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm32/lwjgl-stb-natives-linux-arm32.jar", "lwjgl-3.2.3-stb-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-macos.jar", "lwjgl-3.3.3-assimp-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-macos.jar", "lwjgl-3.3.3-glfw-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-macos.jar", "lwjgl-3.3.3-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-macos.jar", "lwjgl-3.3.3-openal-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-macos.jar", "lwjgl-3.3.3-opengl-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-macos.jar", "lwjgl-3.3.3-stb-natives-macos.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr-natives-macos.jar", "lwjgl-3.3.3-openvr-natives-macos.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-macos.jar", "lwjgl-3.3.3-nfd-natives-macos.jar");
                                 break;
                             case ARCH_ARM64:
                                 System.out.println("OS Architecture: arm64");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-assimp-natives-linux-arm64.jar", "lwjgl-3.2.3-assimp-natives-linux-arm64.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-glfw-natives-linux-arm64.jar", "lwjgl-3.2.3-glfw-natives-linux-arm64.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-natives-linux-arm64.jar", "lwjgl-3.2.3-natives-linux-arm64.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-openal-natives-linux-arm64.jar", "lwjgl-3.2.3-openal-natives-linux-arm64.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-opengl-natives-linux-arm64.jar", "lwjgl-3.2.3-opengl-natives-linux-arm64.jar");
-                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/thizzyz-games-launcher/raw/master/libraries/lwjgl-3.2.3/native/linux/arm64/lwjgl-stb-natives-linux-arm64.jar", "lwjgl-3.2.3-stb-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-macos-arm64.jar", "lwjgl-3.3.3-assimp-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-macos-arm64.jar", "lwjgl-3.3.3-glfw-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-macos-arm64.jar", "lwjgl-3.3.3-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-macos-arm64.jar", "lwjgl-3.3.3-openal-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-macos-arm64.jar", "lwjgl-3.3.3-opengl-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-macos-arm64.jar", "lwjgl-3.3.3-stb-natives-macos-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-macos-arm64.jar", "lwjgl-3.3.3-nfd-natives-macos-arm64.jar");
                                 break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
+                        }
+                    }
+                    break;
+                case OS_LINUX:
+                    {
+                        System.out.println("OS: Linux");
+                        switch(arch){
+                            case ARCH_X64:
+                                System.out.println("OS Architecture: x64");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-linux.jar", "lwjgl-3.3.3-assimp-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-linux.jar", "lwjgl-3.3.3-glfw-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-linux.jar", "lwjgl-3.3.3-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-linux.jar", "lwjgl-3.3.3-openal-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-linux.jar", "lwjgl-3.3.3-opengl-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-linux.jar", "lwjgl-3.3.3-stb-natives-linux.jar");
+                                if(!novr)addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openvr-natives-linux.jar", "lwjgl-3.3.3-openvr-natives-linux.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-linux.jar", "lwjgl-3.3.3-nfd-natives-linux.jar");
+                                break;
+                            case ARCH_ARM32:
+                                System.out.println("OS Architecture: arm32");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-linux-arm32.jar", "lwjgl-3.3.3-assimp-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-linux-arm32.jar", "lwjgl-3.3.3-glfw-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-linux-arm32.jar", "lwjgl-3.3.3-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-linux-arm32.jar", "lwjgl-3.3.3-openal-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-linux-arm32.jar", "lwjgl-3.3.3-opengl-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-linux-arm32.jar", "lwjgl-3.3.3-stb-natives-linux-arm32.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-linux-arm32.jar", "lwjgl-3.3.3-nfd-natives-linux-arm32.jar");
+                                break;
+                            case ARCH_ARM64:
+                                System.out.println("OS Architecture: arm64");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-assimp-natives-linux-arm64.jar", "lwjgl-3.3.3-assimp-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-glfw-natives-linux-arm64.jar", "lwjgl-3.3.3-glfw-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-natives-linux-arm64.jar", "lwjgl-3.3.3-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-openal-natives-linux-arm64.jar", "lwjgl-3.3.3-openal-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-opengl-natives-linux-arm64.jar", "lwjgl-3.3.3-opengl-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-stb-natives-linux-arm64.jar", "lwjgl-3.3.3-stb-natives-linux-arm64.jar");
+                                addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/v4/libraries/lwjgl-3.3.3-nfd-natives-linux-arm64.jar", "lwjgl-3.3.3-nfd-natives-linux-arm64.jar");
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported OS Architecture: "+osArch+" on "+osName);
                         }
                     }
                     break;
@@ -246,7 +274,7 @@ public class Main{
             }
             if(failed>0)throw new RuntimeException("Failed to download "+failed+" librar"+(failed==1?"y":"ies")+"!");
             System.out.println("Libraries OK");
-            String[] additionalClasspathElements = new String[requiredLibs.length+4];
+            String[] additionalClasspathElements = new String[requiredLibs.length];
             for(int i = 0; i<requiredLibs.length; i++){
                 additionalClasspathElements[i] = requiredLibs[i].getAbsolutePath();
             }
