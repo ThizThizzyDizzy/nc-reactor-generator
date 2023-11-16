@@ -16,4 +16,8 @@ public class EqualToOperator extends Operator{
         if(v1==StackNull.INSTANCE||v2==StackNull.INSTANCE)return new StackBool(v2==v1);
         return new StackBool(v1.getBaseValue().equals(v2.getBaseValue()));
     }
+    @Override
+    public String getOverload(){
+        return "eq";
+    }
 }

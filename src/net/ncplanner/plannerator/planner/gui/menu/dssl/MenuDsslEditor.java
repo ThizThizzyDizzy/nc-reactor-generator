@@ -522,6 +522,7 @@ public class MenuDsslEditor extends Menu{
         loadFile(file, false);
     }
     private void loadFile(File file, boolean library) {
+        if(file.isDirectory())return;
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
             String allTheText = "";
             String line;

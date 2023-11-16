@@ -8,7 +8,7 @@ public abstract class AbstractEqualsOperator extends Operator{
     }
     @Override
     public final StackObject evaluate(Script script, StackObject v1, StackObject v2){
-        StackVariable var = script.variables.get(v1.asLabel().getValue());
+        StackVariable var = v1.asLabel().getVariable();
         var.setValue(eval(var,v2).getBaseObject());
         return null;
     }

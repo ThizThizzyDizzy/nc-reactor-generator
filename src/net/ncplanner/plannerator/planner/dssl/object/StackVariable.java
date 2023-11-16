@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.dssl.object;
 public class StackVariable extends StackObject{
-    private final String name;
+    final String name;
     private StackObject value;
     public StackVariable(String name, StackObject value){
         this.name = name;
@@ -106,5 +106,8 @@ public class StackVariable extends StackObject{
     @Override
     public StackObject cast(StackObject obj){
         return obj.asVariable();
+    }
+    public StackVariable duplicateVariable(){
+        return new StackVariable(name, duplicate());
     }
 }

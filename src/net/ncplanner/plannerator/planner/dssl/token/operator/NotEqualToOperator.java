@@ -14,4 +14,8 @@ public class NotEqualToOperator extends Operator{
     public StackObject evaluate(Script script, StackObject v1, StackObject v2){
         return new StackBool(!v1.getBaseValue().equals(v2.getBaseValue()));
     }
+    @Override
+    public String getOverload(){
+        return "ne";
+    }
 }

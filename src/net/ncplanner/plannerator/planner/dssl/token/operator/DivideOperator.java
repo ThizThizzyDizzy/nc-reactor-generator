@@ -18,4 +18,8 @@ public class DivideOperator extends Operator{
         if(shouldInt&&(long)val==val)return new StackInt((long)val);
         return new StackFloat(val);
     }
+    @Override
+    public String getOverload(){
+        return "div";
+    }
 }

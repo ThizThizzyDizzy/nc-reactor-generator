@@ -29,7 +29,7 @@ public abstract class StackObject{
         return hash;
     }
     public static enum Type{
-        INT,FLOAT,CHAR,BOOL,STRING,FUNCTION,VAR,LABEL,COLLECTION,LBRACKET,RBRACKET,NULL,TYPE,FLOW;
+        INT,FLOAT,CHAR,BOOL,STRING,FUNCTION,VAR,LABEL,COLLECTION,LBRACKET,RBRACKET,NULL,TYPE,FLOW,MODULE,CLASS,CLASS_INSTANCE,MACRO;
         @Override
         public String toString(){
             return super.toString().toLowerCase();
@@ -60,6 +60,9 @@ public abstract class StackObject{
         return (StackVariable)this;
     }
     public StackLabel asLabel(){
+        return (StackLabel)this;
+    }
+    public StackLabel asModule(){
         return (StackLabel)this;
     }
     public StackCollection asCollection(){

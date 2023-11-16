@@ -1,8 +1,5 @@
 package net.ncplanner.plannerator.planner.dssl.object;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-
 public class StackString extends StackObject{
     private final String value;
     public StackString(String value){

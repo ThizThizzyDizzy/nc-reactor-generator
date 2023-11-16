@@ -19,4 +19,8 @@ public class PowerOperator extends Operator{
             return new StackFloat(Math.pow(v1.asNumber().getValue().doubleValue(), v2.asNumber().getValue().doubleValue()));
         }
     }
+    @Override
+    public String getOverload(){
+        return "pow";
+    }
 }

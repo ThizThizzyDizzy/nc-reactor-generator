@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.planner.dssl.token;
 import net.ncplanner.plannerator.planner.dssl.Script;
+import net.ncplanner.plannerator.planner.dssl.object.StackMacro;
 import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.ExecKeyword;
 public class IdentifierToken extends Token{
     public IdentifierToken(){
         super(name);
@@ -14,6 +16,12 @@ public class IdentifierToken extends Token{
     public void run(Script script){
         StackVariable var = script.variables.get(text);
         if(var==null)throw new NullPointerException("S'tack variable "+text+" does not exist!");
+        if(var instanceof StackMacro){
+            //run the macro immediately
+            script.push(var.getValue());
+            new ExecKeyword().run(script);
+            return;
+        }
         script.push(var.getValue());
     }
 }

@@ -14,6 +14,7 @@ import net.ncplanner.plannerator.planner.dssl.object.StackString;
 import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
 import net.ncplanner.plannerator.planner.dssl.token.Token;
 public class Script{
+    public static final String VAR_PREFIX_MAGIC = "$MAGIC$";
     public final Stack<StackObject> stack;
     public final HashMap<String, StackVariable> variables;
     public final ArrayList<Token> script;

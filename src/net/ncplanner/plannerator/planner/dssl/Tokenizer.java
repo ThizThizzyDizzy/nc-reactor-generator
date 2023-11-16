@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
+import net.ncplanner.plannerator.planner.dssl.token.ClassMemberReferenceToken;
 import net.ncplanner.plannerator.planner.dssl.token.CommentToken;
 import net.ncplanner.plannerator.planner.dssl.token.DecrementToken;
 import net.ncplanner.plannerator.planner.dssl.token.FloatValueToken;
@@ -16,6 +17,7 @@ import net.ncplanner.plannerator.planner.dssl.token.InvalidToken;
 import net.ncplanner.plannerator.planner.dssl.token.LBraceToken;
 import net.ncplanner.plannerator.planner.dssl.token.LBracketToken;
 import net.ncplanner.plannerator.planner.dssl.token.LabelToken;
+import net.ncplanner.plannerator.planner.dssl.token.ModuleToken;
 import net.ncplanner.plannerator.planner.dssl.token.RBraceToken;
 import net.ncplanner.plannerator.planner.dssl.token.RBracketToken;
 import net.ncplanner.plannerator.planner.dssl.token.StringValueToken;
@@ -26,6 +28,7 @@ import net.ncplanner.plannerator.planner.dssl.token.keyword.BoolKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.BreakKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.CastKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.CharKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.ClassKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.ClearKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.CloneKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.ContinueKeyword;
@@ -51,6 +54,7 @@ import net.ncplanner.plannerator.planner.dssl.token.keyword.HashKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IfElseKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IfKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.ImportKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.IncludeKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IndexKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.IntKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.InterpretKeyword;
@@ -58,7 +62,10 @@ import net.ncplanner.plannerator.planner.dssl.token.keyword.InvKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.KeysKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.ListKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.LoopKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.MacroKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.MagicKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.NegKeyword;
+import net.ncplanner.plannerator.planner.dssl.token.keyword.NewKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.NotKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.NullKeyword;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.PopKeyword;
@@ -130,7 +137,11 @@ public class Tokenizer{
         tokens.add(new LBracketToken());//l_bracket
         tokens.add(new RBracketToken());//r_bracket
         
+        tokens.add(new ClassKeyword());
         tokens.add(new DefKeyword());
+        tokens.add(new MacroKeyword());
+        tokens.add(new MagicKeyword());
+        tokens.add(new NewKeyword());
         
         tokens.add(new ExchKeyword());
         tokens.add(new PopKeyword());
@@ -253,6 +264,7 @@ public class Tokenizer{
         tokens.add(new InvKeyword());
         
         tokens.add(new ImportKeyword());
+        tokens.add(new IncludeKeyword());
         
         tokens.add(new IntValueToken());//int_value
         tokens.add(new BoolValueToken());//bool_value
@@ -262,6 +274,8 @@ public class Tokenizer{
         
         tokens.add(new LabelToken());//label
         tokens.add(new IdentifierToken());//indentifier
+        tokens.add(new ClassMemberReferenceToken());
+        tokens.add(new ModuleToken());
         
         tokens.add(new ArrayOrFieldAccessToken());
         

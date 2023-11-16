@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.planner.dssl.object;
-import java.util.Objects;
 public class StackType extends StackObject{
     public final StackObject internal;
     public StackType(StackObject obj){

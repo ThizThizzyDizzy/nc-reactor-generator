@@ -14,6 +14,7 @@ import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
+import net.ncplanner.plannerator.planner.dssl.token.ClassMemberReferenceToken;
 import net.ncplanner.plannerator.planner.dssl.token.CommentToken;
 import net.ncplanner.plannerator.planner.dssl.token.ESSLToken;
 import net.ncplanner.plannerator.planner.dssl.token.FloatValueToken;
@@ -158,6 +159,9 @@ public class DsslEditor extends Component{
                             ensureCache(cachedLabels, nam, tokens);
                             if(cachedLabels.contains(nam))col = Core.theme.getCodeIdentifierTextColor();
                             else underline = true;
+                        }
+                        if(token instanceof ClassMemberReferenceToken){
+                            col = Core.theme.getCodeIdentifierTextColor();
                         }
                         if(token instanceof InvalidToken){
                             col = Core.theme.getCodeInvalidTextColor();

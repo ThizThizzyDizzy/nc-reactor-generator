@@ -19,4 +19,8 @@ public class PlusOperator extends Operator{
             return new StackFloat(v1.asNumber().getValue().doubleValue()+v2.asNumber().getValue().doubleValue());
         }
     }
+    @Override
+    public String getOverload(){
+        return "add";
+    }
 }
