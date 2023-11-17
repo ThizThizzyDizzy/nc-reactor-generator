@@ -6,7 +6,8 @@ import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
 import net.ncplanner.plannerator.planner.dssl.token.CharValueToken;
-import net.ncplanner.plannerator.planner.dssl.token.ClassMemberReferenceToken;
+import net.ncplanner.plannerator.planner.dssl.token.ClassInstanceMemberReferenceToken;
+import net.ncplanner.plannerator.planner.dssl.token.ClassStaticMemberReferenceToken;
 import net.ncplanner.plannerator.planner.dssl.token.CommentToken;
 import net.ncplanner.plannerator.planner.dssl.token.DecrementToken;
 import net.ncplanner.plannerator.planner.dssl.token.FloatValueToken;
@@ -274,7 +275,8 @@ public class Tokenizer{
         
         tokens.add(new LabelToken());//label
         tokens.add(new IdentifierToken());//indentifier
-        tokens.add(new ClassMemberReferenceToken());
+        tokens.add(new ClassInstanceMemberReferenceToken());
+        tokens.add(new ClassStaticMemberReferenceToken());
         tokens.add(new ModuleToken());
         
         tokens.add(new ArrayOrFieldAccessToken());

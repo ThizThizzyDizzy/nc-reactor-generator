@@ -8,14 +8,14 @@ import net.ncplanner.plannerator.planner.dssl.object.StackObject;
 import net.ncplanner.plannerator.planner.dssl.object.StackVariable;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.ExecKeyword;
-public class ClassMemberReferenceToken extends Token{
+public class ClassInstanceMemberReferenceToken extends Token{
     public String identifier;
-    public ClassMemberReferenceToken(){
+    public ClassInstanceMemberReferenceToken(){
         super("."+name);
     }
     @Override
     public Token newInstance(){
-        return new ClassMemberReferenceToken();
+        return new ClassInstanceMemberReferenceToken();
     }
     @Override
     public void load(){
@@ -24,18 +24,6 @@ public class ClassMemberReferenceToken extends Token{
     @Override
     public void run(Script script){
         StackObject obj = script.pop().getBaseObject();
-        if(obj.getType()==StackObject.Type.CLASS){//static access
-            StackVariable var = ((StackClass)obj).script.variables.get(identifier);
-            if(var==null)throw new NullPointerException("S'tack variable "+text+" does not exist!");
-            if(var instanceof StackMacro){
-                //run the macro immediately
-                script.push(var.getValue());
-                new ExecKeyword().run(script);
-                return;
-            }
-            script.push(var.getValue());
-            return;
-        }
         if(obj.getType()==StackObject.Type.CLASS_INSTANCE){//instance access
             StackClassInstance instance = (StackClassInstance) obj;
             StackVariable var = instance.script.variables.get(identifier);
