@@ -16,7 +16,7 @@ public class PrintlnKeyword extends Keyword{
         if(obj.getBaseType()==StackObject.Type.CLASS_INSTANCE){
             StackClassInstance instance = (StackClassInstance)obj.getBaseValue();
             script.push(instance);
-            script.subscript(instance.script.variables.get(Script.VAR_PREFIX_MAGIC+"str").asMethod().getValue());
+            script.subscript(instance.castToString());
             script.subscript(() -> {
                 script.print(script.pop().getValue().toString()+"\n");
             });

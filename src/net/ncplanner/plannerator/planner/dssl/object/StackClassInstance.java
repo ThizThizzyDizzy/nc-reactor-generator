@@ -22,4 +22,7 @@ public class StackClassInstance extends StackObject{
     public StackObject duplicate(){
         return this;
     }
+    public Script castToString(){
+        return script.variables.get(Script.VAR_PREFIX_MAGIC+"str").asMethod().getValue();
+    }
 }
