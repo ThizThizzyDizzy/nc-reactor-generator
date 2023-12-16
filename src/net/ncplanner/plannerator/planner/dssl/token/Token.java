@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.dssl.token;
 import java.util.regex.Pattern;
-import net.ncplanner.plannerator.planner.dssl.Script;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.separator;
 public abstract class Token{
     public final String regex;
@@ -21,7 +20,6 @@ public abstract class Token{
         return token;
     }
     public void load(){}
-    public abstract void run(Script script);
     public Pattern getStartPattern(){
         if(pattern!=null)return pattern;
         return pattern = Pattern.compile("^"+regex);

@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.planner.dssl.token;
-import net.ncplanner.plannerator.planner.dssl.Script;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
 public class InvalidToken extends Token{
     public InvalidToken(){
@@ -8,9 +7,5 @@ public class InvalidToken extends Token{
     @Override
     public Token newInstance(){
         return new InvalidToken();
-    }
-    @Override
-    public void run(Script script){
-        throw new RuntimeException("Invalid token: "+text);
     }
 }

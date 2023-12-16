@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.planner.dssl.token.keyword;
-public class IfElseKeyword extends Keyword{
-    public IfElseKeyword(){
-        super("ifelse");
+public class IsKeyword extends Keyword{
+    public IsKeyword(){
+        super("is");
     }
     @Override
     public Keyword newInstance(){
-        return new IfElseKeyword();
+        return new IsKeyword();
     }
     @Override
     public KeywordFlavor getFlavor(){
-        return KeywordFlavor.FLOW;
+        return KeywordFlavor.TYPE;
     }
 }

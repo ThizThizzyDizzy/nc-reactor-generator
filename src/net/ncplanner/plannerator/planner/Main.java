@@ -42,6 +42,7 @@ public class Main{
         requiredLibraries.add(new String[]{url,filename});
     }
     private static void addRequiredLibraries(){
+        addRequiredLibrary("https://github.com/tomdodd4598/Dodd-Simple-Stack-Language/releases/download/3.0/dssl-3.0.jar", "dssl-3.0.jar");
         addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/overhaul/libraries/joml-1.10.5.jar", "joml-1.10.5.jar");
         if(isBot){
             addRequiredLibrary("https://github.com/DV8FromTheWorld/JDA/releases/download/v4.3.0/JDA-4.3.0_277-withDependencies-min.jar", "JDA-4.3.0_277-withDependencies-min.jar");

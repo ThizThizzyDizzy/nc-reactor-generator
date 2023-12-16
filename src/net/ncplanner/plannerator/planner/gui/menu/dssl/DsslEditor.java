@@ -1,15 +1,13 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.planner.dssl.Script;
+import net.ncplanner.plannerator.planner.dssl.DSSLProcessor;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
-import net.ncplanner.plannerator.planner.dssl.object.StackString;
 import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
 import net.ncplanner.plannerator.planner.dssl.token.BlankToken;
 import net.ncplanner.plannerator.planner.dssl.token.BoolValueToken;
@@ -34,7 +32,6 @@ import net.ncplanner.plannerator.planner.dssl.token.operator.Operator;
 import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
 public class DsslEditor extends Component{
-    public Script activeScript = null;
     public ArrayList<String> text = new ArrayList<String>(){
         @Override
         public String set(int index, String element){
@@ -75,8 +72,8 @@ public class DsslEditor extends Component{
     public Runnable onChange;
     public HashSet<Integer> breakpoints = new HashSet<>();
     public boolean debug;
-    public HashMap<String, HashSet<String>> libraries;
     public boolean essl = false;
+    public DSSLProcessor processor;
     public DsslEditor(String text){
         this(text, 20);
     }
@@ -121,7 +118,7 @@ public class DsslEditor extends Component{
                         if(token instanceof ImportKeyword&&i>1){
                             Token t = tokens.get(i-2);
                             if(t instanceof StringValueToken){
-                                cachedLabels.addAll(libraries.getOrDefault(((StringValueToken) t).value, new HashSet<>()));
+//                                cachedLabels.addAll(libraries.getOrDefault(((StringValueToken) t).value, new HashSet<>()));
                             }
                         }
                         if(token instanceof DefKeyword){
@@ -182,7 +179,7 @@ public class DsslEditor extends Component{
                                     else underline = true;
                                     textDisplay.addText(t.identifier, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
                                     for(Object o : t.accesses){
-                                        textDisplay.addText((o instanceof StackString)?".":"[", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+//                                        textDisplay.addText((o instanceof StackString)?".":"[", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
                                         if(o instanceof Long){
                                             textDisplay.addText(o.toString(), Core.theme.getCodeIntTextColor(), false, false, null, null);
                                         }else if(o instanceof String){
@@ -190,10 +187,10 @@ public class DsslEditor extends Component{
                                             ensureCache(cachedLabels, s, tokens);
                                             if(cachedLabels.contains(s))textDisplay.addText(s, Core.theme.getCodeIdentifierTextColor(), false, false, null, null);
                                             else textDisplay.addText(s, Core.theme.getCodeTextColor(), false, false, Core.theme.getCodeInvalidTextColor(), null);
-                                        }else if(o instanceof StackString){
-                                            textDisplay.addText(((StackString) o).getValue(), Core.theme.getCodeStringTextColor(), false, false, null, null);
+//                                        }else if(o instanceof StackString){
+//                                            textDisplay.addText(((StackString) o).getValue(), Core.theme.getCodeStringTextColor(), false, false, null, null);
                                         }
-                                        if(!(o instanceof StackString))textDisplay.addText("]", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+                                        /*if(!(o instanceof StackString))*/textDisplay.addText("]", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
                                     }
                                 }
                                 continue;
@@ -225,101 +222,49 @@ public class DsslEditor extends Component{
         for(int i : breakpoints){
             renderer.fillRect(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight);
         }
-        Script s = activeScript;
-        if(s!=null&&!s.isFinished()){
-            while(!s.subscripts.isEmpty()&&(s.subscripts.peek() instanceof Script)){
-                if(s.script.size()>=s.pos&&s.pos>0){
-                    Token token = s.script.get(s.pos-1);
-                    renderer.setColor(Core.theme.getCodeDebugMethodStackTextColor(), 0.5f);
-                    int startX = 0;
-                    int startY = 0;
-                    int pos = token.start;
-                    while(pos>0){
-                        startX++;
-                        String txt = text.get(startY);
-                        if(startX>=txt.length()){
-                            startY++;
-                            startX = 0;
-                            pos--;
-                        }
-                        if(!txt.isEmpty())pos--;
-                    }
-                    int endX = startX;
-                    int endY = startY;
-                    pos = token.text.length();
-                    while(pos>0){
-                        endX++;
-                        String txt = text.get(endY);
-                        if(endX>=txt.length()){
-                            endY++;
-                            endX = 0;
-                            pos--;
-                        }
-                        if(!txt.isEmpty())pos--;
-                    }
-                    for(int Y = startY; Y<=endY; Y++){
-                        if(text.size()<=Y)continue;
-                        float top = y+border+Y*textHeight;
-                        float bottom = y+border+(Y+1)*textHeight;
-                        float left = x+xOff+border*2;
-                        float right = x+xOff+border*2+text.get(Y).length()*textWidth;
-                        if(Y==endY)right = left+endX*textWidth;
-                        if(Y==startY)left += startX*textWidth;
-                        renderer.fillRect(left, top, right, bottom);
-                    }
+        if(processor!=null&&processor.isActive()){
+            Token token = processor.getCurrentToken();
+            renderer.setColor(Core.theme.getCodeDebugHighlightTextColor(), 0.5f);
+            int startX = 0;
+            int startY = 0;
+            int pos = token.start;
+            while(pos>0){
+                startX++;
+                String txt = text.get(startY);
+                if(startX>=txt.length()){
+                    startY++;
+                    startX = 0;
+                    pos--;
                 }
-                Script sc = s;
-                Object o = s.subscripts.peek();
-                if(o instanceof Script)s = (Script)o;
-                if(s==null){
-                    s = sc;
-                    break;
-                }
+                if(!txt.isEmpty())pos--;
             }
-            if(s.script.size()>s.pos&&s.subscripts.isEmpty()){
-                Token token = s.script.get(s.pos);
-                renderer.setColor(Core.theme.getCodeDebugHighlightTextColor(), 0.5f);
-                int startX = 0;
-                int startY = 0;
-                int pos = token.start;
-                while(pos>0){
-                    startX++;
-                    String txt = text.get(startY);
-                    if(startX>=txt.length()){
-                        startY++;
-                        startX = 0;
-                        pos--;
-                    }
-                    if(!txt.isEmpty())pos--;
+            int endX = startX;
+            int endY = startY;
+            pos = token.text.length();
+            while(pos>0){
+                endX++;
+                String txt = text.get(endY);
+                if(endX>=txt.length()){
+                    endY++;
+                    endX = 0;
+                    pos--;
                 }
-                int endX = startX;
-                int endY = startY;
-                pos = token.text.length();
-                while(pos>0){
-                    endX++;
-                    String txt = text.get(endY);
-                    if(endX>=txt.length()){
-                        endY++;
-                        endX = 0;
-                        pos--;
-                    }
-                    if(!txt.isEmpty())pos--;
-                }
-                for(int Y = startY; Y<=endY; Y++){
-                    if(text.size()<=Y)continue;
-                    float top = y+border+Y*textHeight;
-                    float bottom = y+border+(Y+1)*textHeight;
-                    float left = x+xOff+border*2;
-                    float right = x+xOff+border*2+text.get(Y).length()*textWidth;
-                    if(Y==endY)right = left+endX*textWidth;
-                    if(Y==startY)left += startX*textWidth;
-                    renderer.fillRect(left, top, right, bottom);
-                }
-                if(debug&&(startX!=lastDebugX||startY!=lastDebugY)){
-                    lastDebugX = cursorX = startX;
-                    lastDebugY = cursorY = startY;
-                    updateCursor();
-                }
+                if(!txt.isEmpty())pos--;
+            }
+            for(int Y = startY; Y<=endY; Y++){
+                if(text.size()<=Y)continue;
+                float top = y+border+Y*textHeight;
+                float bottom = y+border+(Y+1)*textHeight;
+                float left = x+xOff+border*2;
+                float right = x+xOff+border*2+text.get(Y).length()*textWidth;
+                if(Y==endY)right = left+endX*textWidth;
+                if(Y==startY)left += startX*textWidth;
+                renderer.fillRect(left, top, right, bottom);
+            }
+            if(debug&&(startX!=lastDebugX||startY!=lastDebugY)){
+                lastDebugX = cursorX = startX;
+                lastDebugY = cursorY = startY;
+                updateCursor();
             }
         }
         renderer.setColor(Core.theme.getCodeTextColor());
@@ -344,10 +289,10 @@ public class DsslEditor extends Component{
         if(button==0&&action==GLFW_PRESS){
             cursorY = Math.min(text.size()-1, (int)(y/textHeight));
             cursorX = Math.min(text.get(cursorY).length(), (int)Math.round(x/textWidth));
-        }
-        if(x<-border*2){
-            if(breakpoints.contains(cursorY))breakpoints.remove(cursorY);
-            else breakpoints.add(cursorY);
+            if(x<-border*2){
+                if(breakpoints.contains(cursorY))breakpoints.remove(cursorY);
+                else breakpoints.add(cursorY);
+            }
         }
     }
     @Override

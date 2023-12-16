@@ -1,6 +1,4 @@
 package net.ncplanner.plannerator.planner.dssl.token;
-import net.ncplanner.plannerator.planner.dssl.Script;
-import net.ncplanner.plannerator.planner.dssl.object.StackFloat;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
 public class FloatValueToken extends Token{
     public double value;
@@ -14,9 +12,5 @@ public class FloatValueToken extends Token{
     @Override
     public void load(){
         value = Double.parseDouble(text);
-    }
-    @Override
-    public void run(Script script){
-        script.push(new StackFloat(value));
     }
 }

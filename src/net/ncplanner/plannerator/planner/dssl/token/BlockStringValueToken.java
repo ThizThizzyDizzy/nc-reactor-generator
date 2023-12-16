@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.planner.dssl.token;
 import static net.ncplanner.plannerator.planner.dssl.token.Helpers.*;
-public class StringValueToken extends Token{
+public class BlockStringValueToken extends Token{
     public String value;
-    public StringValueToken(){
-        super(quote+s_char_sequence+quote);
+    public BlockStringValueToken(){
+        super(multi_quote+whitespace+"*"+eol+b_char_sequence+multi_quote);
     }
     @Override
     public Token newInstance(){
-        return new StringValueToken();
+        return new BlockStringValueToken();
     }
     @Override
     public void load(){

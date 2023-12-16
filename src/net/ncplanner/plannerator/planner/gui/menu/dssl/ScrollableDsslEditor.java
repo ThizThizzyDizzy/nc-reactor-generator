@@ -1,18 +1,13 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import net.ncplanner.plannerator.planner.gui.menu.component.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.dssl.Script;
 public class ScrollableDsslEditor extends Scrollable{
     boolean scrollUpdatePending = false;
     public DsslEditor editor;
     public boolean debug;
-    public Script script;
-    public HashMap<String, HashSet<String>> libraries;
     public ScrollableDsslEditor(float x, float y, float width, float height, float horizScrollbarHeight, float vertScrollbarWidth){
         super(x, y, width, height, horizScrollbarHeight, vertScrollbarWidth);
         scrollMagnitude = scrollWheelMagnitude = 20;
@@ -21,8 +16,6 @@ public class ScrollableDsslEditor extends Scrollable{
         if(this.editor!=null)components.remove(this.editor);
         scrollUpdatePending = true;
         if(editor==null)return;
-        editor.activeScript = script = null;
-        editor.libraries = libraries;
         this.editor = add(editor);
         editor.onScrollUpdate(() -> {scrollUpdatePending = true;});
     }
@@ -31,7 +24,6 @@ public class ScrollableDsslEditor extends Scrollable{
         Renderer renderer = new Renderer();
         if(editor!=null){
             editor.debug = debug;
-            editor.activeScript = script;
             ArrayList<FormattedText> lines = editor.textDisplay.splitLines();
             float xOff = (lines.size()+"").length()*editor.textWidth;
             renderer.setColor(Core.theme.getCodeLineMarkerColor());

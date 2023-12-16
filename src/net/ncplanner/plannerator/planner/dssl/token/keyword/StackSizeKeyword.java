@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.planner.dssl.token.keyword;
-public class IfElseKeyword extends Keyword{
-    public IfElseKeyword(){
-        super("ifelse");
+public class StackSizeKeyword extends Keyword{
+    public StackSizeKeyword(){
+        super("stacksize");
     }
     @Override
     public Keyword newInstance(){
-        return new IfElseKeyword();
+        return new StackSizeKeyword();
     }
     @Override
     public KeywordFlavor getFlavor(){
-        return KeywordFlavor.FLOW;
+        return KeywordFlavor.STACK;
     }
 }

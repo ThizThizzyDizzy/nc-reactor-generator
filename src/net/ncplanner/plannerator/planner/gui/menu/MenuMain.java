@@ -282,7 +282,7 @@ public class MenuMain extends Menu{
     });
     private ArrayList<Button> multiblockButtons = new ArrayList<>();
     private Button multiblockCancel = add(new Button("Cancel", true, true));
-    public static boolean enables = false;
+    public static boolean enables = true;
     private boolean adding = false;
     private double addingScale = 0;
     private final int addingTime = 3;
