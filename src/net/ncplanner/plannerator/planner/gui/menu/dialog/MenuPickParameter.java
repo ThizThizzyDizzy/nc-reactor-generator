@@ -29,7 +29,7 @@ public class MenuPickParameter<T extends LiteMultiblock> extends MenuDialog{
             new MenuInputDialog(gui, parent, "", "Choose Parameter Name").addButton("Cancel", true).addButton("Done", (name) -> {
                 Parameter setting = func.get();
                 setting.name = name;
-                onConfirm.accept(func.get());
+                onConfirm.accept(setting);
             }, true).open();
         }));
     }

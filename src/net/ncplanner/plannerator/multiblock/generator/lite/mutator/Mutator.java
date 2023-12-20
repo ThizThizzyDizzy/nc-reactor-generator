@@ -32,4 +32,5 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
     public abstract String getTooltip();
     public abstract void run(T multiblock, Random rand);
     public void setIndicies(T multiblock){}
+    public abstract void init(T multiblock);//do nothing other than ensure that it crashes when calling the wrong mutator
 }

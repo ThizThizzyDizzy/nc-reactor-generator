@@ -117,6 +117,7 @@ public class CompiledUnderhaulSFRConfiguration{
             if(block.moderator!=null)numModerators++;
             blockDefinition[i] = block.definition;
             blockDisplayName[i] = block.names==null?null:block.names.displayName;
+            if(blockDisplayName[i]==null)blockDisplayName[i] = block.definition.toString();
             blockCooling[i] = recipe!=null?recipe.stats.cooling*activeCoolerRate/20:(block.cooler==null?0:block.cooler.cooling);
             blockFuelCell[i] = block.fuelCell!=null;
             blockModerator[i] = block.moderator!=null;

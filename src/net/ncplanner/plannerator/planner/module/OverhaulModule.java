@@ -12,6 +12,8 @@ import net.ncplanner.plannerator.multiblock.editor.decal.CellFluxDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceLineDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDecal;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.ClearInvalidMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random.RandomBlockMutator;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
@@ -112,6 +114,9 @@ public class OverhaulModule extends Module<Object>{
         registerNCPFModule(InletModule::new);
         registerNCPFModule(OutletModule::new);
         registerNCPFModule(RecipeStatsModule::new);
+        
+        registerMutator(RandomBlockMutator::new);
+        registerMutator(ClearInvalidMutator::new);
     }
     @Override
     public void addTutorials(){

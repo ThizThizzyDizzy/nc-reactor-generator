@@ -148,6 +148,7 @@ public class CompiledOverhaulSFRConfiguration{
             BlockElement block = raw.block;
             blockDefinition[i] = block.definition;
             blockDisplayName[i] = block.names==null?null:block.names.displayName;
+            if(blockDisplayName[i]==null)blockDisplayName[i] = block.definition.toString();
             losTest[i] = true;
             if(block.conductor!=null){
                 blockConductor[i] = true;

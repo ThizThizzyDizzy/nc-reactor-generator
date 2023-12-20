@@ -1,19 +1,19 @@
-package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.random;
+package net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingSymmetry;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
+public class RandomBlockMutator extends Mutator<LiteOverhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
     public SettingSymmetry symmetry = new SettingSymmetry();
     public RandomBlockMutator(){
-        super("nuclearcraft:underhaul_sfr:random_block");
+        super("nuclearcraft:overhaul_sfr:random_block");
     }
-    public RandomBlockMutator(LiteUnderhaulSFR multiblock){
+    public RandomBlockMutator(LiteOverhaulSFR multiblock){
         this();
         setIndicies(multiblock);
     }
@@ -26,7 +26,7 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
         return "Changes a random block in the reactor to a random block from the list of allowed blocks";
     }
     @Override
-    public void run(LiteUnderhaulSFR multiblock, Random rand){
+    public void run(LiteOverhaulSFR multiblock, Random rand){
         int block = indicies.get()[rand.nextInt(indicies.get().length)]-1;
         symmetry.get().apply(rand.nextInt(multiblock.dims[0]), rand.nextInt(multiblock.dims[1]), rand.nextInt(multiblock.dims[2]), multiblock.dims[0], multiblock.dims[1], multiblock.dims[2], (x, y, z) -> {
             multiblock.blocks[x][y][z] = block;
@@ -52,9 +52,9 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
         ncpf.setDefinedNCPFObject("symmetry", symmetry.get());
     }
     @Override
-    public void setIndicies(LiteUnderhaulSFR multiblock){
+    public void setIndicies(LiteOverhaulSFR multiblock){
         indicies.init(multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture, "Air");
     }
     @Override
-    public void init(LiteUnderhaulSFR multiblock){}
+    public void init(LiteOverhaulSFR multiblock){}
 }

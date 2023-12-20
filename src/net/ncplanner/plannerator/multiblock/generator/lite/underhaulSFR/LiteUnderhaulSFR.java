@@ -33,7 +33,7 @@ import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
-public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
+public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
     public final CompiledUnderhaulSFRConfiguration configuration;
     public int[][][] cellEfficiency;
     public int[][][] blockEfficiency;
@@ -48,7 +48,6 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     private float powerf, heatf, efficiency, heatMult;
     private int[] blockCount;
     private int[][] coolerCalculationStepIndicies;
-    private Variable[] vars;
     public LiteUnderhaulSFR(CompiledUnderhaulSFRConfiguration configuration){
         this.configuration = configuration;
         blocks = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
@@ -278,8 +277,9 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 + (cells>0?"Fuel burn time: "+configuration.fuelTime[fuel]/cells+"\n":"")
                 + "Fuel cells: "+cells;
     }
-    private void genVariables(){
-        vars = new Variable[7+blockCount.length];
+    @Override
+    public Variable[] genVariables(){
+        Variable[] vars = new Variable[7+blockCount.length];
         vars[0] = new VariableInt("Net Heat"){
             @Override
             public int getValue(){
@@ -331,16 +331,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
                 }
             };
         }
-    }
-    @Override
-    public int getVariableCount(){
-        if(vars==null)genVariables();
-        return vars.length;
-    }
-    @Override
-    public Variable getVariable(int i){
-        if(vars==null)genVariables();
-        return vars[i];
+        return vars;
     }
     @Override
     public LiteUnderhaulSFR copy(){
@@ -352,7 +343,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
     public void copyFrom(LiteMultiblock<UnderhaulSFR> other){
         LiteUnderhaulSFR sfr = (LiteUnderhaulSFR)other;
         fuel = sfr.fuel;
-        dims[0] = sfr.dims[0];;
+        dims[0] = sfr.dims[0];
         dims[1] = sfr.dims[1];
         dims[2] = sfr.dims[2];
         for(int x = 0; x<dims[0]; x++){

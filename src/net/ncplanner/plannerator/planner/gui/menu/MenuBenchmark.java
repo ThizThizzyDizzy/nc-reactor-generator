@@ -3,8 +3,11 @@ import java.io.File;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.CompiledOverhaulSFRConfiguration;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
@@ -89,19 +92,16 @@ public class MenuBenchmark extends LayoutMenu{
                             lite.calculate();
                             System.out.println(lite.getTooltip());
                             benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
-                                LiteUnderhaulSFR liteCopy = new LiteUnderhaulSFR(compiledConfig);
-                                liteCopy.fuel = lite.fuel;
-                                liteCopy.dims[0] = lite.dims[0];
-                                liteCopy.dims[1] = lite.dims[1];
-                                liteCopy.dims[2] = lite.dims[2];
-                                for(int x = 0; x<lite.dims[0]; x++){
-                                    for(int y = 0; y<lite.dims[1]; y++){
-                                        for(int z = 0; z<lite.dims[2]; z++){
-                                            liteCopy.blocks[x][y][z] = lite.blocks[x][y][z];
-                                        }
-                                    }
-                                }
-                                liteCopy.calculate();
+                                lite.copy().calculate();
+                            });
+                        }else if(multiblock instanceof OverhaulSFR){
+                            System.out.println("Commencing test...");
+                            LiteOverhaulSFR lite = ((OverhaulSFR)multiblock).compile();
+                            CompiledOverhaulSFRConfiguration compiledConfig = lite.configuration;
+                            lite.calculate();
+                            System.out.println(lite.getTooltip());
+                            benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
+                                lite.copy().calculate();
                             });
                         }else new MenuMessageDialog("No lite model exists for "+multiblock.getDefinitionName()+"!").openAsync();
                         break;

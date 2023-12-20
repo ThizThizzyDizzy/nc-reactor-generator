@@ -14,9 +14,9 @@ public class MenuPickMutator<T extends LiteMultiblock> extends MenuDialog{
         super(gui, parent);
         minWidth = minHeight = 0;
         for(Supplier<Mutator> supplier : Mutator.registeredMutators.values()){
-            Mutator m = supplier.get();
             try{
                 Mutator<T> mutator = supplier.get();
+                mutator.init(multiblock);
                 mutator.setIndicies(multiblock);
                 buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
                     close();

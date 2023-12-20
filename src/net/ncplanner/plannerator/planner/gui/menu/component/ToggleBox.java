@@ -25,6 +25,7 @@ public class ToggleBox extends Component{
     }
     public ToggleBox(String label, boolean isToggledOn, boolean darker){
         super();
+        if(label==null)throw new IllegalArgumentException("Label cannot be null!");//realistically should be allowed, but this helps catch bugs
         this.isToggledOn = isToggledOn;
         this.text = label;
         this.darker = darker;
@@ -37,6 +38,7 @@ public class ToggleBox extends Component{
     }
     public ToggleBox(float x, float y, float width, float height, String label, boolean isToggledOn, boolean darker){
         super(x, y, width, height);
+        if(label==null)throw new IllegalArgumentException("Label cannot be null!");//realistically should be allowed, but this helps catch bugs
         this.isToggledOn = isToggledOn;
         this.text = label;
         this.darker = darker;

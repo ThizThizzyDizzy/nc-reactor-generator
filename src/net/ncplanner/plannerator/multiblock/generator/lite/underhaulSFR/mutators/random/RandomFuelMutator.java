@@ -46,4 +46,6 @@ public class RandomFuelMutator extends Mutator<LiteUnderhaulSFR>{
     public void setIndicies(LiteUnderhaulSFR multiblock){
         indicies.init(multiblock.configuration.fuelDisplayName, multiblock.configuration.fuelDisplayTexture);
     }
+    @Override
+    public void init(LiteUnderhaulSFR multiblock){}
 }
