@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import org.lwjgl.glfw.GLFW;
 public class EditorTabComponent extends Label{
     public final EditorTab tab;
-    public Runnable onClick = null;
+    private Runnable onClick = null;
     public EditorTabComponent(EditorTab tab){
         super(0, 0, 128, 32, tab.getName());
         this.tab = tab;
@@ -25,5 +25,10 @@ public class EditorTabComponent extends Label{
     public EditorTabComponent onClick(Runnable r){
         onClick = r;
         return this;
+    }
+    public void select(){
+        parent.focusedComponent = this;
+        isFocused = true;
+        onClick.run();
     }
 }

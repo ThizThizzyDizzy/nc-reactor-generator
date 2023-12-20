@@ -282,19 +282,34 @@ public class MenuDsslEditor extends Menu{
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){
-        super.onKeyEvent(key, scancode, action, mods);
         if(key==GLFW_KEY_S&&action==GLFW_PRESS&&Core.isControlPressed()){
             save(Core.isShiftPressed());
+            return;
         }
         if(key==GLFW_KEY_W&&action==GLFW_PRESS&&Core.isControlPressed()){
             close(currentTab);
+            return;
         }
         if(key==GLFW_KEY_N&&action==GLFW_PRESS&&Core.isControlPressed()){
             createNew();
+            return;
         }
         if(key==GLFW_KEY_O&&action==GLFW_PRESS&&Core.isControlPressed()){
             open();
+            return;
         }
+        if(key==GLFW_KEY_TAB&&action==GLFW_PRESS&&Core.isControlPressed()){
+            int direction = 1;
+            if(Core.isShiftPressed())direction = -1;
+            int tab = tabs.indexOf(currentTab);
+            int newTab = tab+direction;
+            if(newTab>=tabs.size())newTab = 0;
+            if(newTab<0)newTab = tabs.size()-1;
+            if(tabs.isEmpty())newTab = -1;
+            if(newTab!=-1)((EditorTabComponent)tabsList.components.get(newTab)).select();
+            return;
+        }
+        super.onKeyEvent(key, scancode, action, mods);
     }
     private void save(boolean as){
         save(as, null);
@@ -372,13 +387,13 @@ public class MenuDsslEditor extends Menu{
     private void createNew(){
         EditorTab tab;
         tabs.add(tab = new EditorTab("Untitled", ""));
-        tabsList.add(new EditorTabComponent(tab).onClick(()->{
+        EditorTabComponent comp;
+        tabsList.add(comp = new EditorTabComponent(tab).onClick(()->{
             resetOutput();
             currentTab = tab;
             editor.setEditor(tab.editor);
         }));
-        currentTab = tab;
-        editor.setEditor(tab.editor);
+        comp.select();
     }
     private void open(){
         try{
