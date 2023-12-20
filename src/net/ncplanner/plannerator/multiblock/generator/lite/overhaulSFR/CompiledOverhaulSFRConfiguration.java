@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -146,7 +147,7 @@ public class CompiledOverhaulSFRConfiguration{
             BlockAndRecipe raw = rawBlocksWithRecipes.get(i);
             BlockElement block = raw.block;
             blockDefinition[i] = block.definition;
-            blockDisplayName[i] = block.names.displayName;
+            blockDisplayName[i] = block.names==null?null:block.names.displayName;
             losTest[i] = true;
             if(block.conductor!=null){
                 blockConductor[i] = true;
@@ -200,7 +201,7 @@ public class CompiledOverhaulSFRConfiguration{
                 blockPlacementRules[i] = new CompiledPlacementRule[rules==null?0:rules.size()];
                 for(int j = 0; j<blockPlacementRules[i].length; j++){
                     NCPFPlacementRule rule = rules.get(j);
-                    blockPlacementRules[i][j] = CompiledPlacementRule.compile(rule, rawBlocks, CasingModule::new);
+                    blockPlacementRules[i][j] = CompiledPlacementRule.compile(rule, rawBlocksWithRecipes, CasingModule::new);
                 }
             }
             if(block.neutronSource!=null){
@@ -325,12 +326,16 @@ public class CompiledOverhaulSFRConfiguration{
         }
         return true;
     }
-    private static class BlockAndRecipe<T extends NCPFElement>{
+    private static class BlockAndRecipe<T extends NCPFElement> implements Supplier<NCPFElement>{
         public final BlockElement block;
         public final T recipe;
         public BlockAndRecipe(BlockElement block, T recipe){
             this.block = block;
             this.recipe = recipe;
+        }
+        @Override
+        public NCPFElement get(){
+            return block;
         }
     }
     private static class BlockAndFuel extends BlockAndRecipe<Fuel>{

@@ -32,7 +32,6 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     private final int[] dims;
     public final int[][][] blocks;
     
-    public int[][][] blockEfficiency;
     public float[][][] blockEfficiencyF;
     private final ArrayList<Cluster> clusters = new ArrayList<>();
     
@@ -56,7 +55,6 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     public LiteOverhaulSFR(CompiledOverhaulSFRConfiguration configuration){
         this.configuration = configuration;
         blocks = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
-        blockEfficiency = new int[configuration.maxSize][configuration.maxSize][configuration.maxSize];
         blockCount = new int[configuration.blockDefinition.length];//only initialized this early for variables
         for(int x = 0; x<configuration.maxSize; x++){
             for(int y = 0; y<configuration.maxSize; y++){
@@ -132,6 +130,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     }
     public void postFluxCalc(int x, int y, int z){
         if(neutronFlux[x][y][z]<configuration.blockCriticality[blocks[x][y][z]])return;
+        blockActive[x][y][z] = 1;
         for(int[] d : directions){
             int flux = 0;
             int length = 0;
@@ -191,6 +190,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                 if(configuration.blockIrradiator[block]){
                     if(length==0)break;
                     neutronFlux[X][Y][Z]+=flux;
+                    blockActive[X][Y][Z]++;
                     for(int j = 0; j<shieldFluxes.length; j++){
                         int bx = x+d[0]*j;
                         int by = y+d[1]*j;
@@ -241,56 +241,56 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                                 if(blocks[x][y][z]==c){
                                     if(x>0){
                                         adjacents[0] = blocks[x-1][y][z];
-                                        active[0] = blockEfficiency[x-1][y][z];
+                                        active[0] = blockActive[x-1][y][z];
                                     }else{
                                         adjacents[0] = -2;
                                         active[0] = 0;
                                     }
                                     if(y>0){
                                         adjacents[1] = blocks[x][y-1][z];
-                                        active[1] = blockEfficiency[x][y-1][z];
+                                        active[1] = blockActive[x][y-1][z];
                                     }else{
                                         adjacents[1] = -2;
                                         active[1] = 0;
                                     }
                                     if(z>0){
                                         adjacents[2] = blocks[x][y][z-1];
-                                        active[2] = blockEfficiency[x][y][z-1];
+                                        active[2] = blockActive[x][y][z-1];
                                     }else{
                                         adjacents[2] = -2;
                                         active[2] = 0;
                                     }
                                     if(x<dims[0]-1){
                                         adjacents[3] = blocks[x+1][y][z];
-                                        active[3] = blockEfficiency[x+1][y][z];
+                                        active[3] = blockActive[x+1][y][z];
                                     }else{
                                         adjacents[3] = -2;
                                         active[3] = 0;
                                     }
                                     if(y<dims[1]-1){
                                         adjacents[4] = blocks[x][y+1][z];
-                                        active[4] = blockEfficiency[x][y+1][z];
+                                        active[4] = blockActive[x][y+1][z];
                                     }else{
                                         adjacents[4] = -2;
                                         active[4] = 0;
                                     }
                                     if(z<dims[2]-1){
                                         adjacents[5] = blocks[x][y][z+1];
-                                        active[5] = blockEfficiency[x][y][z+1];
+                                        active[5] = blockActive[x][y][z+1];
                                     }else{
                                         adjacents[5] = -2;
                                         active[5] = 0;
                                     }
-                                    int was = blockEfficiency[x][y][z];
-                                    blockEfficiency[x][y][z] = 1;
+                                    int was = blockActive[x][y][z];
+                                    blockActive[x][y][z] = 1;
                                     for(CompiledPlacementRule rule : configuration.blockPlacementRules[c]){
                                         if(!rule.isValid(adjacents, active, configuration.blockType)){
-                                            blockEfficiency[x][y][z] = 0;
-                                            somethingChanged += was-blockEfficiency[x][y][z];
+                                            blockActive[x][y][z] = 0;
+                                            somethingChanged += was-blockActive[x][y][z];
                                             break B;
                                         }
                                     }
-                                    somethingChanged += blockEfficiency[x][y][z]-was;
+                                    somethingChanged += blockActive[x][y][z]-was;
                                     break;
                                 }
                             }
@@ -306,8 +306,20 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
                 for(int z = 0; z<dims[2]; z++){
                     int block = blocks[x][y][z];
                     if(block>=0&&configuration.blockFuelCell[block]){
-                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(configuration.blockFlux[block]-2*configuration.blockCriticality[block]))));
+                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(neutronFlux[x][y][z]-2*configuration.blockCriticality[block]))));
                         blockEfficiencyF[x][y][z] = configuration.blockEfficiency[block]*positionalEfficiency[x][y][z]*(sourceValid[x][y][z]>0?sourceEfficiency[x][y][z]:1)*criticalityModifier;
+                    }
+                }
+            }
+        }
+    }
+    public void initConductors(){
+        for(int x = 0; x<dims[0]; x++){
+            for(int y = 0; y<dims[1]; y++){
+                for(int z = 0; z<dims[2]; z++){
+                    int block = blocks[x][y][z];
+                    if(block>=0&&configuration.blockConductor[block]){
+                        blockActive[x][y][z] = 1;
                     }
                 }
             }
@@ -413,7 +425,6 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         positionalEfficiency = new float[dims[0]][dims[1]][dims[2]];
         moderatorValid = new int[dims[0]][dims[1]][dims[2]];
         blockActive = new int[dims[0]][dims[1]][dims[2]];
-        blockEfficiency = new int[dims[0]][dims[1]][dims[2]];
         blockEfficiencyF = new float[dims[0]][dims[1]][dims[2]];
         
         totalFuelCells = 0;
@@ -429,13 +440,14 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         sparsityMult = 0;
         shutdownFactor = 0;
         
+        countBlocks();
         //<editor-fold defaultstate="collapsed" desc="Base flux propogation">
         for(int x = 0; x<dims[0]; x++){
             for(int y = 0; y<dims[1]; y++){
                 for(int z = 0; z<dims[2]; z++){
                     if(blocks[x][y][z]>=0&&configuration.blockFuelCell[blocks[x][y][z]]){
                         sourceValid[x][y][z]+=findSources(x, y, z, configuration.losTest);
-                        sourceEfficiency[x][y][z]+=findSources(x, y, z, configuration.losTest);
+                        sourceEfficiency[x][y][z] = sourceValid[x][y][z]>0?1:0;//TODO let you choose neutron sources
                     }
                 }
             }
@@ -570,6 +582,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         optimizeHeatsinkSteps();
         calculateHeatsinks();
         initCells();
+        initConductors();
         buildClusters();
         calculateClusters();
         calculateStats();
@@ -681,7 +694,7 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
         OverhaulSFR sfr = new OverhaulSFR(configg, dims[0], dims[1], dims[2], coolantRecipe);
         sfr.forEachInternalPosition((x, y, z) -> {
             int block = blocks[x-1][y-1][z-1];
-            if(moderatorValid[x-1][y-1][z-1]+blockActive[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
+            if(moderatorValid[x-1][y-1][z-1]+blockActive[x-1][y-1][z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : config.blocks){
@@ -711,8 +724,8 @@ public class LiteOverhaulSFR implements LiteMultiblock<OverhaulSFR>{
     }
     @Override
     public Image getBlockTexture(int x, int y, int z){
-        if(moderatorValid==null||blockActive==null||blockEfficiency==null)return null;
-        if(moderatorValid[x][y][z]+blockActive[x][y][z]+blockEfficiency[x][y][z]<1)return null;
+        if(moderatorValid==null||blockActive==null)return null;
+        if(moderatorValid[x][y][z]+blockActive[x][y][z]<1)return null;
         int block = blocks[x][y][z];
         return block>=0?configuration.blockTexture[block]:null;
     }

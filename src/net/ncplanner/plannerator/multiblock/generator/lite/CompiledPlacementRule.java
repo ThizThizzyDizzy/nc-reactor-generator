@@ -28,7 +28,7 @@ public class CompiledPlacementRule{
         this.max = max;
         this.casing = casing.get().name;
     }
-    public static CompiledPlacementRule compile(NCPFPlacementRule rule, ArrayList<NCPFElement> blocks, Supplier<NCPFModule> casing){
+    public static CompiledPlacementRule compile(NCPFPlacementRule rule, ArrayList<? extends Supplier> blocks, Supplier<NCPFModule> casing){
         String blockType = null;
         int block = -1;
         if(!rule.rule.hasSubRules){
@@ -39,7 +39,7 @@ public class CompiledPlacementRule{
                 int idx = -1;
                 NCPFElementReference target = rule.target;
                 for(int i = 0; i<blocks.size(); i++){
-                    if(target.definition.matches(blocks.get(i).definition))idx = i;
+                    if(target.definition.matches(((Supplier<NCPFElement>)blocks.get(i)).get().definition))idx = i;
                 }
                 block = idx;
             }

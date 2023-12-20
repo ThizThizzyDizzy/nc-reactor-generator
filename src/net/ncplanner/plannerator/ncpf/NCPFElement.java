@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
-public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
+public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, Supplier<NCPFElement>{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
     public NCPFElementDefinition definition = new UnknownNCPFElement();
     public NCPFElement(){}
@@ -97,5 +97,9 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable{
     }
     public void removeModule(NCPFModule module){
         modules.removeModule(module);
+    }
+    @Override
+    public NCPFElement get(){
+        return this;
     }
 }

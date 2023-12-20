@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -115,7 +116,7 @@ public class CompiledUnderhaulSFRConfiguration{
             if(block.fuelCell!=null)numCells++;
             if(block.moderator!=null)numModerators++;
             blockDefinition[i] = block.definition;
-            blockDisplayName[i] = block.names.displayName;
+            blockDisplayName[i] = block.names==null?null:block.names.displayName;
             blockCooling[i] = recipe!=null?recipe.stats.cooling*activeCoolerRate/20:(block.cooler==null?0:block.cooler.cooling);
             blockFuelCell[i] = block.fuelCell!=null;
             blockModerator[i] = block.moderator!=null;
@@ -210,12 +211,16 @@ public class CompiledUnderhaulSFRConfiguration{
         }
         return true;
     }
-    private static class BlockAndRecipe{
+    private static class BlockAndRecipe implements Supplier<BlockElement>{
         private final BlockElement block;
         private final ActiveCoolerRecipe recipe;
         public BlockAndRecipe(BlockElement block, ActiveCoolerRecipe recipe){
             this.block = block;
             this.recipe = recipe;
+        }
+        @Override
+        public BlockElement get(){
+            return block;
         }
     }
 }
