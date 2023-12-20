@@ -252,7 +252,7 @@ public class LiteUnderhaulSFR implements LiteMultiblock<UnderhaulSFR>{
         sfr.forEachInternalPosition((x, y, z) -> {
             Block block = sfr.getBlock(x, y, z);
             NCPFElementDefinition definition = block==null?null:block.template.definition;
-            NCPFElementDefinition recipe = block.recipe==null?null:block.recipe.definition;
+            NCPFElementDefinition recipe = block==null||block.recipe==null?null:block.recipe.definition;
             int b = -1;
             for(int i = 0; i<configuration.blockDefinition.length; i++){
                 if(configuration.blockDefinition[i].matches(definition)){
