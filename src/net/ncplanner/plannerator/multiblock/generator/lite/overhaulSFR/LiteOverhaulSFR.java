@@ -370,6 +370,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
                 int y = b.y;
                 int z = b.z;
                 int block = blocks[b.x][b.y][b.z];
+                if(block==-1)continue;
                 if(configuration.blockFuelCell[block]&&blockActive[x][y][z]>0){
                     fuelCells++;
                     cluster.totalOutput+=configuration.blockHeat[block]*blockEfficiencyF[x][y][z];
@@ -765,8 +766,8 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
     @Override
     public String getTooltip(){
         int validClusters = 0;
-        for(Cluster c : clusters){
-            if(c.isValid())validClusters++;
+        for(int i = 0; i<clusters.size(); i++){
+            if(clusters.get(i).isValid())validClusters++;
         }
         return "Total output: "+totalOutput+" mb/t of whatever "+configuration.coolantRecipeDisplayName[coolantRecipe]+" gets turned into\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
@@ -1777,6 +1778,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
         public boolean isCreated(){
             for(BlockPos pos : blocks){
                 int block = LiteOverhaulSFR.this.blocks[pos.x][pos.y][pos.z];
+                if(block<0)continue;
                 if(configuration.blockFuelCell[block]||configuration.blockIrradiator[block]||configuration.blockShield[block])return true;
             }
             return false;
