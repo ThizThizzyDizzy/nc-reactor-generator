@@ -73,6 +73,7 @@ public class MenuDialog extends Menu{
     public void open(){
         gui.menu = this;
         onOpened();
+        content.focus();
     }
     private final ArrayList<Runnable> closeListeners = new ArrayList<>();
     public MenuDialog onClose(Runnable action){

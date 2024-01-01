@@ -188,4 +188,13 @@ public class Component{
         }
         return comps;
     }
+    public void focus(){
+        if(parent==null)return;
+        if(focusable){
+            if(parent.focusedComponent!=null)parent.focusedComponent.isFocused = false;
+            isFocused = true;
+            parent.focusedComponent = this;
+        }
+        parent.focus();
+    }
 }

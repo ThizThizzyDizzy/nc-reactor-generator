@@ -12,6 +12,10 @@ public class MenuInputDialog extends MenuDialog{
         setContent(inputField);
     }
     @Override
+    public void onOpened(){
+        inputField.focus();
+    }
+    @Override
     public MenuInputDialog addButton(String text){
         return (MenuInputDialog)super.addButton(text);
     }
