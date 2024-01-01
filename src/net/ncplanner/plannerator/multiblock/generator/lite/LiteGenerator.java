@@ -44,6 +44,7 @@ public class LiteGenerator<T extends LiteMultiblock> extends DefinedNCPFObject i
     public Queue<T> storedMultiblocks = new Queue<>();
     public Queue<Long> timestamps = new Queue<>();
     private final Object stageTransitioner = new Object();
+    private boolean expanded = true;
     public LiteGenerator(){}
     public LiteGenerator(String name){
         this.name.set(name);
@@ -168,5 +169,17 @@ public class LiteGenerator<T extends LiteMultiblock> extends DefinedNCPFObject i
     }
     public void setIndicies(T multiblock){
         for(GeneratorStage<T> stage : stages)stage.setIndicies(multiblock);
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Generator";
     }
 }

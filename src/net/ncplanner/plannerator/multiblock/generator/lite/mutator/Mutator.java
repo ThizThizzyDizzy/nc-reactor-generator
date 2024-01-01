@@ -25,6 +25,7 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
         }
         return map;
     }
+    private boolean expanded;
     public Mutator(String name){
         super(name);
     }
@@ -33,4 +34,16 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
     public abstract void run(T multiblock, Random rand);
     public void setIndicies(T multiblock){}
     public abstract void init(T multiblock);//do nothing other than ensure that it crashes when calling the wrong mutator
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Mutator";
+    }
 }

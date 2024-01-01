@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.setting;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Constant;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.operator.Operator;
@@ -58,7 +57,7 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
                 }).open();
             }));
         }else{
-            stageSettings.add(new Label(0, 0, 0, 24, value.getName()){
+            Label label = stageSettings.add(new Label(0, 0, 0, 24, value.getName()){
                 Button modify = add(new Button(0, 0, height, height, "?", true, true).addAction(() -> {
                     new MenuSelect<>(menu.gui, menu, vars, varNames, (var)->{
                         if(var==null){
@@ -77,7 +76,7 @@ public class SettingVariable<T> implements Setting<Variable<T>>{
                 }
             }.setTooltip(ttip));
             if(value instanceof Constant)((Constant)value).addSettings(stageSettings, menu);
-            if(value instanceof Operator)menu.addSettings((Operator)value);
+            if(value instanceof Operator)menu.addSettings(label, (Operator)value);
         }
     }
     private void selectConstant(MenuGenerator menu){

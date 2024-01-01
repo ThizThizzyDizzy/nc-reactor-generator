@@ -12,6 +12,7 @@ public class Symmetry extends DefinedNCPFObject implements ThingWithSettings{
     public SettingBoolean ry180 = new SettingBoolean("Y 180 Degree Rotational Symmetry", false).allowSliding();
     public SettingBoolean rz180 = new SettingBoolean("Z 180 Degree Rotational Symmetry", false).allowSliding();
     Setting[] settings = new Setting[]{mx,my,mz,rx180,ry180,rz180};
+    private boolean expanded;
     @Override
     public int getSettingCount(){
         return settings.length;
@@ -47,5 +48,17 @@ public class Symmetry extends DefinedNCPFObject implements ThingWithSettings{
         ncpf.setBoolean("rotate_180_x", rx180.get());
         ncpf.setBoolean("rotate_180_y", ry180.get());
         ncpf.setBoolean("rotate_180_z", rz180.get());
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Symmetry";
     }
 }

@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableLong
 import net.ncplanner.plannerator.ncpf.RegisteredNCPFObject;
 public abstract class Condition extends RegisteredNCPFObject implements ThingWithSettings, ThingWithVariables{
     public static final HashMap<String, Supplier<Condition>> registeredConditions = new HashMap<>();
+    public boolean expanded;
     public Variable[] vars = new Variable[]{new VariableLong("Hits"){
         @Override
         public long getValue(){
@@ -41,5 +42,17 @@ public abstract class Condition extends RegisteredNCPFObject implements ThingWit
     }
     public void reset(){
         hits = 0;
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Condition";
     }
 }

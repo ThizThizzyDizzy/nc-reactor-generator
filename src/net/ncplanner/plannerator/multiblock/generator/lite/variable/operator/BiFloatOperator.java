@@ -8,6 +8,7 @@ public abstract class BiFloatOperator extends VariableFloat implements Operator{
     public SettingVariable<Number> v1 = new SettingVariable(null, new ConstInt(0));
     public SettingVariable<Number> v2 = new SettingVariable(null, new ConstInt(0));
     private final String type;
+    private boolean expanded;
     public BiFloatOperator(String type, String name){
         super(name);
         this.type = type;
@@ -39,5 +40,17 @@ public abstract class BiFloatOperator extends VariableFloat implements Operator{
     @Override
     public final String getType(){
         return type;
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Operator";
     }
 }

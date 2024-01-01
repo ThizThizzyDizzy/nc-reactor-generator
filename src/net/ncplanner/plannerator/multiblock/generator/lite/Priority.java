@@ -18,6 +18,7 @@ public class Priority<T extends LiteMultiblock> extends DefinedNCPFObject implem
     public ArrayList<Condition> conditions = new ArrayList<>();
     public SettingVariable<Float> operator = new SettingVariable<>("Value", new OperatorSubtraction());
     public long hits;
+    private boolean expanded;
     @Override
     public int getVariableCount(){
         return vars.length;
@@ -49,5 +50,17 @@ public class Priority<T extends LiteMultiblock> extends DefinedNCPFObject implem
     public void convertToObject(NCPFObject ncpf){
         ncpf.setRegisteredNCPFList("conditions", conditions);
         ncpf.setVariable("operator", operator);
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Priority";
     }
 }

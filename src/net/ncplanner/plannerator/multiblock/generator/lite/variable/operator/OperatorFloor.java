@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class OperatorFloor extends VariableInt implements Operator{
     public SettingVariable<Number> v = new SettingVariable(null, new ConstInt(0));
+    private boolean expanded;
     public OperatorFloor(){
         super("Floor");
     }
@@ -32,5 +33,17 @@ public class OperatorFloor extends VariableInt implements Operator{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         ncpf.getVariable("v", v);
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Operator";
     }
 }

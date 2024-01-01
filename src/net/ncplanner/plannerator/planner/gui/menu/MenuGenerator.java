@@ -8,6 +8,7 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.action.GenerateAction;
+import net.ncplanner.plannerator.multiblock.generator.lite.Expandable;
 import net.ncplanner.plannerator.multiblock.generator.lite.GenerationThread;
 import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
@@ -192,8 +193,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                     rebuildGUI();
                 }).open();
             }));
-            stageSettings.add(new Label(0, 0, 0, 36, "Generator", true));
-            addSettings(generator, 1);
+            addSettings(stageSettings.add(new Label(0, 0, 0, 36, "Generator", true)), generator, 1);
             stageSettings.add(new Button(0, 0, 0, 32, "Customize", true).addAction(() -> {
                 customizing = true;
                 rebuildGUI();
@@ -230,7 +230,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             GeneratorStage<T> stage = generator.stages.get(currentStage);
             stageSettings.add(new Label(0, 0, 0, 36, "Mutators", true));
             for(GeneratorMutator<T> mutator : stage.steps){
-                stageSettings.add(new Label(0, 0, 0, 32, mutator.getTitle()){
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
                         stage.steps.remove(mutator);
                         rebuildGUI();
@@ -240,11 +240,11 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                         del.x = width-del.width;
                         super.draw(deltaTime);
                     }
-                }.setTooltip(mutator.getTooltip()));
-                addConditionSettings(mutator.conditions);
-                addSettings(mutator);
-                stageSettings.add(new Label(0, 0, 0, 30, mutator.mutator.getTitle()).setTooltip(mutator.mutator.getTooltip()));
-                addSettings(mutator.mutator);
+                }.setTooltip(mutator.getTooltip())), mutator)){
+                    addConditionSettings(mutator.conditions);
+                    addExpandedSettings(mutator);
+                    addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
+                }
             }
             stageSettings.add(new Button(0, 0, 0, 32, "Add Mutator", true).addAction(() -> {
                 new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
@@ -257,7 +257,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             stageSettings.add(new Label(0, 0, 0, 36, "Priorities", true));
             for(int i = 0; i<stage.priorities.size(); i++){
                 Priority<T> priority = stage.priorities.get(i);
-                stageSettings.add(new Label(0, 0, 0, 32, "Priority "+(i+1)){
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, "Priority "+(i+1)){
                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
                         stage.priorities.remove(priority);
                         rebuildGUI();
@@ -267,9 +267,10 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                         del.x = width-del.width;
                         super.draw(deltaTime);
                     }
-                });
-                addConditionSettings(priority.conditions);
-                addSettings(priority);
+                }), priority)){
+                    addConditionSettings(priority.conditions);
+                    addExpandedSettings(priority);
+                }
             }
             stageSettings.add(new Button(0, 0, 0, 32, "Add Priority", true).addAction(() -> {
                 stage.priorities.add(new Priority<>());
@@ -278,7 +279,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             stageSettings.add(new Label(0, 0, 0, 36, "Stage Transitions", true));
             for(int i = 0; i<stage.stageTransitions.size(); i++){
                 StageTransition<T> transition = stage.stageTransitions.get(i);
-                stageSettings.add(new Label(0, 0, 0, 32, "Transition "+(i+1)){
+                if(addSettings(stageSettings.add(new Label(0, 0, 0, 32, "Transition "+(i+1)){
                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
                         stage.stageTransitions.remove(transition);
                         rebuildGUI();
@@ -288,9 +289,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                         del.x = width-del.width;
                         super.draw(deltaTime);
                     }
-                });
-                addSettings(transition);
-                addConditionSettings(transition.conditions);
+                }), transition))addConditionSettings(transition.conditions);
             }
             stageSettings.add(new Button(0, 0, 0, 32, "Add Transition", true).addAction(() -> {
                 stage.stageTransitions.add(new StageTransition<>());
@@ -428,7 +427,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     public void addConditionSettings(ArrayList<Condition> conditions){
         stageSettings.add(new Label(0, 0, 0, 28, "Conditions", true));
         for(Condition condition : conditions){
-            stageSettings.add(new Label(0, 0, 0, 24, condition.getTitle()){
+            addSettings(stageSettings.add(new Label(0, 0, 0, 24, condition.getTitle()){
                 Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
                     conditions.remove(condition);
                     rebuildGUI();
@@ -438,8 +437,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                     del.x = width-del.width;
                     super.draw(deltaTime);
                 }
-            }.setTooltip(condition.getTooltip()));
-            addSettings(condition);
+            }.setTooltip(condition.getTooltip())), condition);
         }
         stageSettings.add(new Button(0, 0, 0, 28, "Add Condition", true).addAction(() -> {
             new MenuPickCondition(gui, this, (condition) -> {
@@ -448,16 +446,49 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             }).open();
         }));
     }
-    public void addSettings(ThingWithSettings thing){
-        addSettings(thing, 0);
+    public boolean addSettings(ThingWithSettings thing){
+        return addSettings(thing, 0);
     }
-    public void addSettings(ThingWithSettings thing, int trim){
-        if(thing.getSettingCount()>trim)stageSettings.add(new Label(0, 0, 0, 28, "Settings", true));
+    public boolean addSettings(ThingWithSettings thing, int trim){
+        if(thing.getSettingCount()>trim)return addSettings(stageSettings.add(new Label(0, 0, 0, 28, (thing.getSettingsPrefix()!=null?thing.getSettingsPrefix()+" ":"")+"Settings", true)), thing, trim);
+        return thing.isExpanded();
+    }
+    public boolean addSettings(Label label, ThingWithSettings thing){
+        return addSettings(label, thing, 0);
+    }
+    public boolean addSettings(Label label, ThingWithSettings thing, int trim){
+        if(thing.getSettingCount()>trim){
+            if(!expand(label, thing))return false;
+        }
         for(int i = trim; i<thing.getSettingCount(); i++){
             Setting setting = thing.getSetting(i);
             setting.addSettings(stageSettings, this);
         }
-    }    
+        return thing.isExpanded();
+    }
+    public void addExpandedSettings(ThingWithSettings thing){
+        addExpandedSettings(thing, 0);
+    }
+    public void addExpandedSettings(ThingWithSettings thing, int trim){
+        if(thing.getSettingCount()>trim){
+            stageSettings.add(new Label(0, 0, 0, 28, (thing.getSettingsPrefix()!=null?thing.getSettingsPrefix()+" ":"")+"Settings", true));
+        }
+        for(int i = trim; i<thing.getSettingCount(); i++){
+            Setting setting = thing.getSetting(i);
+            setting.addSettings(stageSettings, this);
+        }
+    }
+    private boolean expand(Label label, Expandable expandable){
+        label.add(new Button(0, 0, label.height, label.height, expandable.isExpanded()?"-":"+", true, !label.darker){
+            {
+                addAction(() -> {
+                    expandable.setExpanded(!expandable.isExpanded());
+                    rebuildGUI();
+                });
+            }
+        });
+        return expandable.isExpanded();
+    }
     public void getAllVariables(ArrayList<Variable> vars, ArrayList<String> names){
         for(int i = 0; i<generator.getSettingCount(); i++){
             Setting s = generator.getSetting(i);

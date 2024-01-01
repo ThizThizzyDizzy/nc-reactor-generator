@@ -40,6 +40,7 @@ public abstract class GeneratorMutator<T extends LiteMultiblock> extends Registe
     public long hits = 0;
     public Mutator<T> mutator;
     public ArrayList<Condition> conditions = new ArrayList<>();
+    private boolean expanded;
     public GeneratorMutator(String name){
         super(name);
     }
@@ -70,5 +71,17 @@ public abstract class GeneratorMutator<T extends LiteMultiblock> extends Registe
     }
     public void setIndicies(T multiblock){
         mutator.setIndicies(multiblock);
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Mutator Quantity";
     }
 }

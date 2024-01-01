@@ -22,6 +22,7 @@ public class StageTransition<T extends LiteMultiblock> extends DefinedNCPFObject
     public SettingBoolean stop = new SettingBoolean("Stop Generation", false);
     private Setting[] settings = new Setting[]{targetStage, store, consolidate, stop};
     public long hits;
+    private boolean expanded;
     @Override
     public int getVariableCount(){
         return vars.length;
@@ -59,5 +60,17 @@ public class StageTransition<T extends LiteMultiblock> extends DefinedNCPFObject
         ncpf.setBoolean("store", store.get());
         ncpf.setBoolean("consolidate", consolidate.get());
         ncpf.setBoolean("stop", stop.get());
+    }
+    @Override
+    public boolean isExpanded(){
+        return expanded;
+    }
+    @Override
+    public void setExpanded(boolean expanded){
+        this.expanded = expanded;
+    }
+    @Override
+    public String getSettingsPrefix(){
+        return "Transition";
     }
 }

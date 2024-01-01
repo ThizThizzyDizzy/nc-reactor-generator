@@ -504,7 +504,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10)));
                 stage.steps.add(mutator);
             }
             {
@@ -602,7 +602,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
@@ -703,7 +703,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
@@ -834,7 +834,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
@@ -938,7 +938,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/10)));
                 stage.steps.add(mutator);
             }
             {
@@ -1036,7 +1036,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
@@ -1137,7 +1137,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
@@ -1282,7 +1282,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                 rbm.indicies.set(indcs);
                 RandomQuantityMutator<LiteUnderhaulSFR> mutator = new RandomQuantityMutator();
                 mutator.mutator = rbm;
-                mutator.max.set(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100));
+                mutator.max.set(new ConstInt(Math.max(1,getDimension(0)*getDimension(1)*getDimension(2)/100)));
                 stage.steps.add(mutator);
             }
             {
