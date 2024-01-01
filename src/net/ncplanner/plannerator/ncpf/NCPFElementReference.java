@@ -35,6 +35,6 @@ public class NCPFElementReference extends DefinedNCPFObject{
         }
     }
     public String getDisplayName(){
-        return target==null?definition.getName():target.getDisplayName();
+        return target==null?definition.toString():target.getDisplayName();
     }
 }
