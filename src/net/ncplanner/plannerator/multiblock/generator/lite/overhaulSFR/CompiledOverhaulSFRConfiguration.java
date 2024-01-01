@@ -147,8 +147,7 @@ public class CompiledOverhaulSFRConfiguration{
             BlockAndRecipe raw = rawBlocksWithRecipes.get(i);
             BlockElement block = raw.block;
             blockDefinition[i] = block.definition;
-            blockDisplayName[i] = block.names==null?null:block.names.displayName;
-            if(blockDisplayName[i]==null)blockDisplayName[i] = block.definition.toString();
+            blockDisplayName[i] = raw.getDisplayName();
             losTest[i] = true;
             if(block.conductor!=null){
                 blockConductor[i] = true;
@@ -220,6 +219,12 @@ public class CompiledOverhaulSFRConfiguration{
                 if(module instanceof BlockFunctionModule)type = ((BlockFunctionModule)module).name;
             }
             blockType[i] = type;
+        }
+        for(int i = 0; i<blockDisplayTexture.length; i++){
+            if(blockDisplayTexture[i]==null)blockDisplayTexture[i] = blockTexture[i];
+        }
+        for(int i = 0; i<coolantRecipeDisplayTexture.length; i++){
+            if(coolantRecipeDisplayTexture[i]==null)coolantRecipeDisplayTexture[i] = coolantRecipeTexture[i];
         }
         conductorIndicies = new int[numConductors];
         fuelCellIndicies = new int[numCells];
@@ -337,6 +342,9 @@ public class CompiledOverhaulSFRConfiguration{
         @Override
         public NCPFElement get(){
             return block;
+        }
+        public String getDisplayName(){
+            return block.getDisplayName()+(recipe!=null?" ("+recipe.getDisplayName()+")":"");
         }
     }
     private static class BlockAndFuel extends BlockAndRecipe<Fuel>{

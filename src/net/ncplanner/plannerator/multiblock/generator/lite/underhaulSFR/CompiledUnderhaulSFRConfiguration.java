@@ -116,8 +116,7 @@ public class CompiledUnderhaulSFRConfiguration{
             if(block.fuelCell!=null)numCells++;
             if(block.moderator!=null)numModerators++;
             blockDefinition[i] = block.definition;
-            blockDisplayName[i] = block.names==null?null:block.names.displayName;
-            if(blockDisplayName[i]==null)blockDisplayName[i] = block.definition.toString();
+            blockDisplayName[i] = raw.getDisplayName();
             blockCooling[i] = recipe!=null?recipe.stats.cooling*activeCoolerRate/20:(block.cooler==null?0:block.cooler.cooling);
             blockFuelCell[i] = block.fuelCell!=null;
             blockModerator[i] = block.moderator!=null;
@@ -135,6 +134,12 @@ public class CompiledUnderhaulSFRConfiguration{
                 NCPFPlacementRule rule = rules.get(j);
                 blockPlacementRules[i][j] = CompiledPlacementRule.compile(rule, rawBlocks, CasingModule::new);
             }
+        }
+        for(int i = 0; i<blockDisplayTexture.length; i++){
+            if(blockDisplayTexture[i]==null)blockDisplayTexture[i] = blockTexture[i];
+        }
+        for(int i = 0; i<fuelDisplayTexture.length; i++){
+            if(fuelDisplayTexture[i]==null)fuelDisplayTexture[i] = fuelTexture[i];
         }
         rawBlocksWithRecipes.clear();
         coolerIndicies = new int[numCoolers];
@@ -222,6 +227,9 @@ public class CompiledUnderhaulSFRConfiguration{
         @Override
         public BlockElement get(){
             return block;
+        }
+        public String getDisplayName(){
+            return block.getDisplayName()+(recipe!=null?" ("+recipe.getDisplayName()+")":"");
         }
     }
 }
