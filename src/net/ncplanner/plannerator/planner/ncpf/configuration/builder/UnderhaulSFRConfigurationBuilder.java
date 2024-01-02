@@ -1,9 +1,11 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import java.util.Arrays;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
@@ -29,63 +31,91 @@ public class UnderhaulSFRConfigurationBuilder{
         configuration = new UnderhaulSFRConfiguration();
         configuration.metadata.name = name;
         configuration.metadata.version = version;
-        settings = configuration.settings;
+        settings = configuration.settings = new UnderhaulSFRSettingsModule();
     }
     public UnderhaulSFRConfiguration build(){
         return configuration;
     }
-    public BlockElement controller(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.controller = new ControllerModule();
-        return block;
+    public BlockBuilder block(String name, String displayName, String texture){
+        return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
-    public BlockElement casing(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.casing = new CasingModule();
-        return block;
-    }
-    public BlockElement fuelCell(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.fuelCell = new FuelCellModule();
-        return block;
-    }
-    public BlockElement block(String name, String displayName, String texture){
-        BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
+    public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
+        BlockElement block = new BlockElement(definition);
         block.names.displayName = displayName;
-        block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
-        return block;
+        return new BlockBuilder(block).legacy(displayName);
     }
-    public ActiveCoolerRecipe activeRecipe(int cooling, String liquid, String texture, NCPFPlacementRule... rules){
+    public class BlockBuilder{
+        public final BlockElement block;
+        public BlockBuilder(BlockElement block){
+            this.block = block;
+        }
+        public BlockBuilder blockstate(String key, Object value){
+            ((NCPFLegacyBlockElement)block.definition).blockstate.put(key, value);
+            return this;
+        }
+        public BlockBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = block.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
+        public BlockBuilder controller(){
+            block.controller = new ControllerModule();
+            return this;
+        }
+        public BlockBuilder casing(){
+            block.casing = new CasingModule();
+            return this;
+        }
+        public BlockBuilder cell(){
+            block.fuelCell = new FuelCellModule();
+            return this;
+        }
+        public BlockBuilder moderator(){
+            block.moderator = new ModeratorModule();
+            return this;
+        }
+        public BlockBuilder activeCooler(){
+            block.activeCooler = new ActiveCoolerModule();
+            activeCooler = block;
+            return this;
+        }
+        public BlockBuilder cooler(int cooling, NCPFPlacementRule... rules){
+            block.cooler = new CoolerModule();
+            block.cooler.cooling = cooling;
+            block.cooler.rules.addAll(Arrays.asList(rules));
+            return this;
+        }
+    }
+    public class ActiveCoolerRecipeBuilder{
+        public final ActiveCoolerRecipe recipe;
+        public ActiveCoolerRecipeBuilder(ActiveCoolerRecipe recipe){
+            this.recipe = recipe;
+        }
+        public ActiveCoolerRecipeBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = recipe.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
+        public ActiveCoolerRecipeBuilder texture(String texture){
+            recipe.texture.texture = TextureManager.getImage(texture);
+            return this;
+        }
+        public ActiveCoolerRecipeBuilder texture(String template, int tint){
+            recipe.texture.texture = TextureManager.generateTexture(template, new Color(tint|0xff000000));
+            return this;
+        }
+    }
+    public ActiveCoolerRecipeBuilder activeRecipe(int cooling, String liquid, String displayName, NCPFPlacementRule... rules){
         ActiveCoolerRecipe recipe = new ActiveCoolerRecipe(new NCPFLegacyFluidElement(liquid));
+        recipe.names.displayName = displayName;
         recipe.stats.cooling = cooling;
         for(NCPFPlacementRule r : rules){
             recipe.stats.rules.add(r);
         }
-        recipe.texture.texture = TextureManager.getImage(texture);
         activeCooler.activeCoolerRecipes.add(recipe);
-        return recipe;
-    }
-    public BlockElement activeCooler(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.activeCooler = new ActiveCoolerModule();
-        activeCooler = block;
-        return block;
-    }
-    public BlockElement cooler(String name, String displayName, int cooling, String texture, NCPFPlacementRule... rules){
-        BlockElement block = block(name, displayName, texture);
-        block.cooler = new CoolerModule();
-        block.cooler.cooling = cooling;
-        for(NCPFPlacementRule r : rules){
-            block.cooler.rules.add(r);
-        }
-        return block;
-    }
-    public BlockElement moderator(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.moderator = new ModeratorModule();
-        return block;
+        return new ActiveCoolerRecipeBuilder(recipe);
     }
     
     public NCPFPlacementRule atLeast(int min, Supplier<NCPFModule> block){
