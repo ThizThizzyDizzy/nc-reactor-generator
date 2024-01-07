@@ -54,6 +54,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
+import net.ncplanner.plannerator.planner.module.InternalModule;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.module.PrimeFuelModule;
@@ -129,7 +130,7 @@ public class MenuInit extends Menu{
         Task tm4 = tm.addSubtask("Adding Rainbow Factor Module");
         Task tm5 = tm.addSubtask("Adding Prime Fuel Module");
         Task tm6 = tm.addSubtask("Adding Quantum Traversed Efficiency Module");
-        Task tmX = tm.addSubtask("Adding [REDACTED] Modules");
+        Task tmX = tm.addSubtask("Adding Additional Modules");
         Task ts = init.addSubtask("Loading settings...");
         Task tmr = init.addSubtask("Refreshing modules...");
         Task tc = init.addSubtask("Initializing Nuclearcraft Configuration");
@@ -173,6 +174,7 @@ public class MenuInit extends Menu{
                 Core.modules.add(new QuantumTraversedEfficiencyModule());
                 tm6.finish();
                 Core.modules.add(new TiConModule());
+                Core.modules.add(new InternalModule());
                 tmX.finish();
                 System.out.println("Added Modules");
                 if(f.exists()){
@@ -236,6 +238,7 @@ public class MenuInit extends Menu{
                             if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
                                 try{
                                     Image other = TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", ""));
+                                    if(other==null)continue;
                                     Image texture = b.texture.texture;
                                     int left = Math.max(0,texture.getWidth()*5/16-1);
                                     int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);

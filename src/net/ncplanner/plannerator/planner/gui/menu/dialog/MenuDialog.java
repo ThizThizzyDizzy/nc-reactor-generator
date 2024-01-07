@@ -22,6 +22,7 @@ public class MenuDialog extends Menu{
     public int buttonHeight = 64;
     public int titleHeight = 48;
     public ArrayList<Button> buttons = new ArrayList<>();
+    private boolean isClosed;
     public MenuDialog(Menu parent){
         super(parent);
     }
@@ -31,6 +32,7 @@ public class MenuDialog extends Menu{
     float scrollBarWidth = 0;
     @Override
     public void render2d(double deltaTime){
+        if(isClosed&&gui.menu==this)gui.menu = parent;
         Renderer renderer = new Renderer();
         try{
             if(parent!=null)parent.render2d(deltaTime);
@@ -69,11 +71,16 @@ public class MenuDialog extends Menu{
     public void close(){
         gui.menu = parent;
         closeListeners.forEach(Runnable::run);
+        isClosed = true;
     }
     public void open(){
         gui.menu = this;
         onOpened();
         content.focus();
+    }
+    @Override
+    public void onOpened(){
+        super.onOpened();
     }
     private final ArrayList<Runnable> closeListeners = new ArrayList<>();
     public MenuDialog onClose(Runnable action){

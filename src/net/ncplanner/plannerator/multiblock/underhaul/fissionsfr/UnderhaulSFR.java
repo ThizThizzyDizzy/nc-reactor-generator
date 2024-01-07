@@ -52,7 +52,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         this(null);
     }
     public UnderhaulSFR(NCPFConfigurationContainer configuration){
-        this(configuration, 7, 5, 7, null);
+        this(configuration, configuration==null?0:configuration.getConfiguration(UnderhaulSFRConfiguration::new).boundSize(7), configuration==null?0:configuration.getConfiguration(UnderhaulSFRConfiguration::new).boundSize(5), configuration==null?0:configuration.getConfiguration(UnderhaulSFRConfiguration::new).boundSize(7), null);
     }
     public UnderhaulSFR(NCPFConfigurationContainer configuration, int x, int y, int z, Fuel fuel){
         super(configuration, x, y, z);

@@ -27,7 +27,6 @@ import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDeca
 import net.ncplanner.plannerator.multiblock.editor.decal.OverhaulModeratorLineDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.ReflectorAdjacentModeratorLineDecal;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.CompiledOverhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -114,7 +113,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         this(null);
     }
     public OverhaulSFR(NCPFConfigurationContainer configuration){
-        this(configuration, 7, 5, 7, null);
+        this(configuration, configuration==null?0:configuration.getConfiguration(OverhaulSFRConfiguration::new).boundSize(7), configuration==null?0:configuration.getConfiguration(OverhaulSFRConfiguration::new).boundSize(5), configuration==null?0:configuration.getConfiguration(OverhaulSFRConfiguration::new).boundSize(7), null);
     }
     public OverhaulSFR(NCPFConfigurationContainer configuration, int x, int y, int z, CoolantRecipe coolantRecipe){
         super(configuration, x, y, z);

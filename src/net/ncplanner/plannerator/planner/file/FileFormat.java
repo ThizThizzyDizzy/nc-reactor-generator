@@ -5,7 +5,7 @@ public enum FileFormat{
     BG_STRING("BG String", "Copy/Paste Building Gadget String (.txt)", "txt"),
     LEGACY_NCPF("Legacy NCPF", "Legacy NuclearCraft Planner File", "ncpf"),
     ALL_PLANNER_FORMATS("NuclearCraft Planner File", "NuclearCraft Planner File", "ncpf", "json"),
-    ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf", "cfg", "ncpf.json"),
+    ALL_CONFIGURATION_FORMATS("NuclearCraft Configuration File", "NuclearCraft Configuration File", "ncpf.json", "cfg", "ncpf"),
     DSSL("S'tack", "Dodd Simple S'tack Language Script File", "dssl");
     public final String name;
     public final String description;

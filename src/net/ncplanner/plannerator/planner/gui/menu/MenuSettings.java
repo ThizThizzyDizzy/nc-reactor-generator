@@ -136,8 +136,12 @@ public class MenuSettings extends SettingsMenu{
         rememberConfig.isToggledOn = Core.rememberConfig;
         currentConfigLabel.text = "Current Configuration: "+Core.project.getConfigName();
         int active = 0;
-        for(Module m : Core.modules)if(m.isActive())active++;
-        modules.text = "Modules ("+active+"/"+Core.modules.size()+" Active)";
+        int total = 0;
+        for(Module m : Core.modules){
+            if(m.isActive())active++;
+            if(m.unlocked||m.secretKey==null)total++;
+        }
+        modules.text = "Modules ("+active+"/"+total+" Active)";
     }
     @Override
     public void onClosed(){

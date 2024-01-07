@@ -366,7 +366,7 @@ public class Core{
         settings.set("imageExportCasingParts", imageExportCasingParts);
         settings.set("dssl", dssl);
         settings.set("rememberConfig", rememberConfig);
-        settings.set("lastLoadedConfig", lastLoadedConfig);
+        if(lastLoadedConfig!=null)settings.set("lastLoadedConfig", lastLoadedConfig);
         Config cursor = Config.newConfig();
         cursor.set("xMult", MenuCalibrateCursor.xMult);
         cursor.set("yMult", MenuCalibrateCursor.yMult);

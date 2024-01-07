@@ -48,7 +48,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                     NCPFFileWriter.write(ncpf, file, selectedFormat);
                     Core.saved = true;
                     if(onSaved!=null)onSaved.run();
-                }, FileFormat.LEGACY_NCPF.extensions);
+                }, new String[]{"ncpf."+selectedFormat.getExtension()});
             }catch(IOException ex){
                 Core.error("Failed to save file!", ex);
             }
@@ -69,7 +69,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                     if(onSaved!=null)onSaved.run();
                 }
             }
-        }).open();
+        }, true);
     }
     private void save(Project ncpf, File file, String filename){
         NCPFFileWriter.write(ncpf, file, selectedFormat);

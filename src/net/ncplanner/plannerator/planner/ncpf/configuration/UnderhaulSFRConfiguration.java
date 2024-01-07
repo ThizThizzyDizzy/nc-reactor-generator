@@ -61,4 +61,7 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
         blocks.forEach((t) -> t.makePartial(designs));
         makePartial(fuels, designs);
     }
+    public int boundSize(int size){
+        return Math.max(settings.minSize, Math.min(settings.maxSize, size));
+    }
 }

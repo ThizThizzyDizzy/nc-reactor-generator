@@ -61,4 +61,7 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
         blocks.forEach((t) -> t.makePartial(designs));
         makePartial(coolantRecipes, designs);
     }
+    public int boundSize(int size){
+        return Math.max(settings.minSize, Math.min(settings.maxSize, size));
+    }
 }

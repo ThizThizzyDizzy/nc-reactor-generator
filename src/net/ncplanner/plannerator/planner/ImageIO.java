@@ -15,6 +15,7 @@ import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryUtil;
 public class ImageIO{
     public static Image read(InputStream input) throws IOException{
+        if(input==null)return null;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int b;
         while((b = input.read())!=-1){
