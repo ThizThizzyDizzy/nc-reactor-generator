@@ -1,7 +1,11 @@
 package net.ncplanner.plannerator.planner.module;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.ClearInvalidMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.random.RandomBlockMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.random.RandomFuelMutator;
@@ -12,6 +16,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
@@ -60,13 +65,9 @@ public class UnderhaulModule extends Module<Object>{
     public void addConfigurations(Task task){
         task.addSubtask("PO3");
         task.addSubtask("E2E");
-        addConfiguration(new Configuration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/po3.ncpf");
-        })).addAlternative("PO3"));
+        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/po3.ncpf"))).addAlternative("PO3"));
         task.getCurrentSubtask().finish();
-        addConfiguration(new Configuration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/e2e.ncpf");
-        })).addAlternative("E2E"));
+        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/e2e.ncpf"))).addAlternative("E2E"));
         task.getCurrentSubtask().finish();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
@@ -80,5 +81,12 @@ public class UnderhaulModule extends Module<Object>{
     @Override
     public void getEditorOverlays(Multiblock multiblock, ArrayList overlays){
         if(multiblock instanceof UnderhaulSFR)overlays.add(activeModeratorOverlay);
+    }
+    @Override
+    public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){
+        if(multiblock instanceof LiteUnderhaulSFR){
+            generators.add(()-> Core.getInputStream("configurations/generators/underhaul_sfr/output.ncpf.json"));
+            generators.add(()-> Core.getInputStream("configurations/generators/underhaul_sfr/efficiency.ncpf.json"));
+        }
     }
 }

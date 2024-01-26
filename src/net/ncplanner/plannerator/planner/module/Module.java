@@ -1,9 +1,11 @@
 package net.ncplanner.plannerator.planner.module;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
@@ -26,6 +28,7 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
@@ -130,4 +133,5 @@ public abstract class Module<T>{
     }
     public void addTutorials(){}
     public void addConfigurations(Task task){}
+    public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){}
 }

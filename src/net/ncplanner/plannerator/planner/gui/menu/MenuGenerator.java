@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
@@ -27,6 +29,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -87,7 +90,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         super(gui, editor);
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();
-        gens = this.multiblock.createGenerators(priorityMultiblock);
+        gens = createGenerators(this.multiblock, priorityMultiblock);
         generator = gens[0];
         internalGens = gens.length;
         if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
@@ -155,7 +158,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 stageSettings.add(new Label(0, 0, 0, 36, ""){
                     Button reset = add(new Button(0, 0, ii<internalGens?height*2.5f:0, height, "Reset", true, true).addAction(() -> {
                         boolean flag = generator==gens[ii];
-                        gens[ii] = MenuGenerator.this.multiblock.createGenerators(priorityMultiblock)[ii];
+                        gens[ii] = createGenerators(MenuGenerator.this.multiblock, priorityMultiblock)[ii];
                         if(flag)generator = gens[ii];
                         currentStage = 0;
                         rebuildGUI();
@@ -306,6 +309,24 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 new MenuSaveDialog(gui, this, ncpf, null).open();
             }));
         }
+    }
+    private LiteGenerator<T>[] createGenerators(T multiblock, T priorityMultiblock) {
+        current = this;
+        ArrayList<Supplier<InputStream>> generators = new ArrayList<>();
+        for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+            if(m.isActive()){
+                m.getGenerators(multiblock, generators);
+            }
+        }
+        LiteGenerator<T>[] gens = new LiteGenerator[generators.size()];
+        for (int i = 0; i < generators.size(); i++) {
+            Supplier<InputStream> file = generators.get(i);
+            Project ncpf = FileReader.read(file);
+            gens[i] = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
+            todo finish
+            gens[i].setIndicies(multiblock);
+        }
+        return gens;
     }
     float rot = 0;
     private Animation nextAnim(float pos){
@@ -498,9 +519,37 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             Variable v = multiblock.getVariable(i);
             vars.add(v);names.add("multiblock."+v.getName());
         }
+        for(int i = 0; i<3; i++){
+            int j = i;
+            Variable v = new Variable(){
+                @Override
+                public String getName(){
+                    return "multiblock.dims["+j+"]";
+                }
+                @Override
+                public Object get(){
+                    return multiblock.getDimension(j);
+                }
+            };
+            vars.add(v);names.add("multiblock.dims["+j+"]");
+        }
         for(int i = 0; i<priorityMultiblock.getVariableCount(); i++){
             Variable v = priorityMultiblock.getVariable(i);
             vars.add(v);names.add("multiblock2."+v.getName());
+        }
+        for(int i = 0; i<3; i++){
+            int j = i;
+            Variable v = new Variable(){
+                @Override
+                public String getName(){
+                    return "multiblock2.dims["+j+"]";
+                }
+                @Override
+                public Object get(){
+                    return priorityMultiblock.getDimension(j);
+                }
+            };
+            vars.add(v);names.add("multiblock2.dims["+j+"]");
         }
         for(int i = 0; i<generator.getVariableCount(); i++){
             Variable v = generator.getVariable(i);
