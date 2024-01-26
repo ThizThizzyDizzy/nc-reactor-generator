@@ -97,6 +97,31 @@ public class ConfigNumberList extends ConfigBase{
         if(value==null) throw new IllegalArgumentException("Cannot set null values to a ConfigNumberList!");//Should never happen
         lst.add(value.longValue());
     }
+    public void add(int idx, Number value){
+        if(value==null){
+            throw new NullPointerException("Cannot add null to a ConfigNumberList!");
+        }else if(value instanceof Long||value instanceof Integer||value instanceof Short||value instanceof Byte){
+            doAdd(idx, value);
+        }else{
+            throw new IllegalArgumentException("ConfigNumberList can only take primitive integral types!");
+        }
+    }
+    public void add(int idx, long value){
+        add(idx, (Number)value);
+    }
+    public void add(int idx, int value){
+        add(idx, (Number)value);
+    }
+    public void add(int idx, short value){
+        add(idx, (Number)value);
+    }
+    public void add(int idx, byte value){
+        add(idx, (Number)value);
+    }
+    private void doAdd(int idx, Number value){
+        if(value==null) throw new IllegalArgumentException("Cannot set null values to a ConfigNumberList!");//Should never happen
+        lst.add(idx, value.longValue());
+    }
     @Override
     void write(DataOutputStream out) throws IOException{
         int sizeClass = 0;

@@ -655,6 +655,11 @@ public class MenuMain extends Menu{
                 gui.menu.onFilesDropped(files);
                 return;
             }
+            if(fil.endsWith(".config2")&&Core.recoveryMode){
+                gui.open(new MenuConfig2Editor(gui, this));
+                gui.menu.onFilesDropped(files);
+                return;
+            }
             toImport.add(new File(fil));
         }
         if(!toImport.isEmpty()){

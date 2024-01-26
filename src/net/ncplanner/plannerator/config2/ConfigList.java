@@ -244,4 +244,67 @@ public class ConfigList extends ConfigBase{
         if(b==null) throw new IllegalArgumentException("Cannot set null values to a config!");
         lst.add(b);
     }
+    public void add(int idx, Config value){
+        doAdd(idx, value);
+    }
+    public void add(int idx, String value){
+        doAdd(idx, new ConfigString(value));
+    }
+    public void add(int idx, int value){
+        doAdd(idx, new ConfigInteger(value));
+    }
+    public void add(int idx, boolean value){
+        doAdd(idx, new ConfigBoolean(value));
+    }
+    public void add(int idx, float value){
+        doAdd(idx, new ConfigFloat(value));
+    }
+    public void add(int idx, long value){
+        doAdd(idx, new ConfigLong(value));
+    }
+    public void add(int idx, double value){
+        doAdd(idx, new ConfigDouble(value));
+    }
+    public void add(int idx, byte value){
+        doAdd(idx, new ConfigByte(value));
+    }
+    public void add(int idx, short value){
+        doAdd(idx, new ConfigShort(value));
+    }
+    public void add(int idx, ConfigList value){
+        doAdd(idx, value);
+    }
+    public void add(int idx, ConfigNumberList value){
+        doAdd(idx, value);
+    }
+    public void add(int idx, Object value){
+        if(value==null){
+        }else if(value instanceof Config){
+            add(idx, (Config)value);
+        }else if(value instanceof String){
+            add(idx, (String)value);
+        }else if(value instanceof Integer){
+            add(idx, (int)value);
+        }else if(value instanceof Boolean){
+            add(idx, (boolean)value);
+        }else if(value instanceof Float){
+            add(idx, (float)value);
+        }else if(value instanceof Long){
+            add(idx, (long)value);
+        }else if(value instanceof Double){
+            add(idx, (double)value);
+        }else if(value instanceof Byte){
+            add(idx, (byte)value);
+        }else if(value instanceof Short){
+            add(idx, (short)value);
+        }else if(value instanceof ConfigList){
+            add(idx, (ConfigList)value);
+        }else if(value instanceof ConfigNumberList){
+            add(idx, (ConfigNumberList)value);
+        }
+    }
+    private void doAdd(int idx, ConfigBase b){
+        if(b==null) throw new IllegalArgumentException("Cannot set null values to a config!");
+        lst.add(idx, b);
+    }
 }

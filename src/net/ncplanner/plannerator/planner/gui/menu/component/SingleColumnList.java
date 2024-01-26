@@ -7,7 +7,6 @@ import net.ncplanner.plannerator.planner.gui.Component;
 public class SingleColumnList extends Scrollable{//TODO combine with ListLayout?
     private Supplier<Color> backgroundColor;
     private boolean enableSelection = true;
-    private Number componentHeight;
     public SingleColumnList(float scrollbarWidth){
         this(0, 0, 0, 0, scrollbarWidth);
     }

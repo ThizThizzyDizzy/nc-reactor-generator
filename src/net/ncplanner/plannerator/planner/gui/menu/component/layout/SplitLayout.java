@@ -13,6 +13,7 @@ public class SplitLayout extends Layout{
     private float borderSize;
     private Supplier<Color> borderColor;
     private boolean fitSize;
+    private boolean fitContent;
     public SplitLayout(int axis, float splitPos){
         this(axis, splitPos, 0, 0);
     }
@@ -22,9 +23,20 @@ public class SplitLayout extends Layout{
         this.minSize1 = minSize1;
         this.minSize2 = minSize2;
     }
+    public SplitLayout fitContent(){
+        fitContent = true;
+        return this;
+    }
     @Override
     public void arrangeComponents(){
         if(components.size()!=2)throw new RuntimeException("Split Layout must always have two components!");
+        if(fitContent){
+            if(axis==X_AXIS){
+                height = Math.max(components.get(0).height, components.get(1).height);
+            }else{
+                width = Math.max(components.get(0).width, components.get(1).width);
+            }
+        }
         float size = axis==X_AXIS?width:height;
         float actualSize = size;
         if(fitSize){

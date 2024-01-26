@@ -19,10 +19,10 @@ public class Label extends Component implements Searchable{
     private boolean alignLeft;
     private ArrayList<Image> images = new ArrayList<>();
     public Label(String label){
-        this(0, 0, 0, 0, label);
+        this(0, 0, 0, 32, label);
     }
     public Label(String label, boolean darker){
-        this(0, 0, 0, 0, label, darker);
+        this(0, 0, 0, 32, label, darker);
     }
     public Label(float x, float y, float width, float height, String label){
         this(x, y, width, height, label, false);
