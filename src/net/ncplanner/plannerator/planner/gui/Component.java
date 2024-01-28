@@ -133,6 +133,8 @@ public class Component{
                 }
             }
             if(mouseFocusedComponent!=null&&didEvent!=mouseFocusedComponent)mouseFocusedComponent.onMouseButton(x-mouseFocusedComponent.x, y-mouseFocusedComponent.y, button, action, mods);
+        }else if(action==GLFW_RELEASE&&focusedComponent!=null){
+            focusedComponent.onMouseButton(x-focusedComponent.x, y-focusedComponent.y, button, action, mods);
         }
     }
     public void onFocusGained(){}
