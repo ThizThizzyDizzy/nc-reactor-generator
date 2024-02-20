@@ -1153,7 +1153,7 @@ public class Bot extends ListenerAdapter{
             public void run(User user, MessageChannel channel, String args, boolean debug){
                 Game game = PlayBot.games.get(channel.getIdLong());
                 if(game!=null){
-                    if(!game.canAnyoneStop()&&user.getIdLong()!=210445638532333569l){
+                    if(!game.canAnyoneStop()&&!UserPriviliges.isThiz(user)){
                         channel.sendMessage("You can't stop that game!").queue();
                         return;
                     }
@@ -1379,7 +1379,7 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()==210445638532333569L){//it's thiz, check for more arguments
+                if(UserPriviliges.isThiz(user)){//it's thiz, check for more arguments
                     do{
                         args = args.trim();
                         if(args.isEmpty()){
@@ -1989,7 +1989,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("transferhut"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2069,7 +2069,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("delete"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2113,7 +2113,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("seteat"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2163,7 +2163,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("setsmores"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2210,7 +2210,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("setglowshrooms"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2257,7 +2257,7 @@ public class Bot extends ListenerAdapter{
         playCommands.add(new SecretCommand("setmaxgames", "setgamelimit"){
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(user.getIdLong()!=210445638532333569L)return;//not thiz
+                if(!UserPriviliges.isThiz(user))return;//not thiz
                 args = args.trim();
                 if(args.isEmpty()){
                     return;
@@ -2557,7 +2557,7 @@ public class Bot extends ListenerAdapter{
     }
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event){
-        if(event.getAuthor().getIdLong()!=210445638532333569l)return;//THIZ ONLY
+        if(!UserPriviliges.isThiz(event.getAuthor()))return;//THIZ ONLY
         if(playChannels.contains(event.getChannel().getIdLong())){
             String command = event.getMessage().getContentRaw();
             boolean hasPrefix = false;

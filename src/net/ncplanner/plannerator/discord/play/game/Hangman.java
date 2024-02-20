@@ -122,7 +122,7 @@ public class Hangman extends Game{
     }
     @Override
     public void onMessage(Message message){
-        if(message.getAuthor().getIdLong()==210445638532333569l&&message.getContentRaw().equals("hangman_dump")){
+        if(UserPriviliges.isThiz(message.getAuthor())&&message.getContentRaw().equals("hangman_dump")){
             message.getChannel().sendMessage("Basis configuration: "+ots(basis.getConfiguration())+" "+basis.configuration.toString()+"\n"+
                     "Current configuration: "+ots(current.getConfiguration())+" "+current.configuration.toString()+"\n"+
                     "This configuration: "+ots(config)+" "+config.toString()).queue();
