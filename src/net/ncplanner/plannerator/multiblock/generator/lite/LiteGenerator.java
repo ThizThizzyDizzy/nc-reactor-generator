@@ -157,13 +157,16 @@ public class LiteGenerator<T extends LiteMultiblock> extends DefinedNCPFObject i
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
+        if(MenuGenerator.current==null)return;//being loaded as part of a file, but not as a generator
         MenuGenerator.current.generator = this;
+        name.set(ncpf.getString("name"));
         parameters = ncpf.getRegisteredNCPFList("parameters", Parameter.registeredParameters);
         stages = new ArrayList<>();
         ncpf.getDefinedNCPFList("stages", stages, GeneratorStage<T>::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
+        ncpf.setString("name", name.get());
         ncpf.setRegisteredNCPFList("parameters", parameters);
         ncpf.setDefinedNCPFList("stages", stages);
     }

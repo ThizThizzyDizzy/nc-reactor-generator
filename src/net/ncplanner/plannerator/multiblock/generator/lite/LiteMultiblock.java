@@ -34,6 +34,5 @@ public abstract class LiteMultiblock<T extends Multiblock> implements ThingWithV
     public abstract int getDimension(int id);
     public abstract Image getBlockTexture(int x, int y, int z);
     public abstract float getCubeBounds(int x, int y, int z, int index);
-    public abstract LiteGenerator<? extends LiteMultiblock<T>> importGenerator(LiteGenerator gen);
     public abstract void clear();
 }

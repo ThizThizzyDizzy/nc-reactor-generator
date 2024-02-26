@@ -24,6 +24,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.anim.LayerSplitAnimat
 import net.ncplanner.plannerator.multiblock.generator.lite.anim.SpinAnimation;
 import net.ncplanner.plannerator.multiblock.generator.lite.condition.Condition;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
@@ -323,8 +324,12 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
             Supplier<InputStream> file = generators.get(i);
             Project ncpf = FileReader.read(file);
             gens[i] = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
-            todo finish
-            gens[i].setIndicies(multiblock);
+            for(GeneratorStage<T> stage : gens[i].stages){
+                for(GeneratorMutator<T> step : stage.steps){
+                    Mutator<T> mutator = step.mutator;
+                    mutator.importFrom(multiblock, ncpf.configuration);
+                }
+            }
         }
         return gens;
     }

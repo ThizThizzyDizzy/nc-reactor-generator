@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.ThingWithSettings;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.RegisteredNCPFObject;
 public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFObject implements ThingWithSettings{
     public static HashMap<String, Supplier<Mutator>> registeredMutators = new HashMap<>();
@@ -46,4 +47,5 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
     public String getSettingsPrefix(){
         return "Mutator";
     }
+    public void importFrom(T multiblock, NCPFConfigurationContainer container){}
 }

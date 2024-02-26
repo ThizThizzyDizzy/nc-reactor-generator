@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.generator.lite.CompiledConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
@@ -17,7 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
-public class CompiledOverhaulSFRConfiguration{
+public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
     public int minSize;
     public int maxSize;
     public int neutronReach;

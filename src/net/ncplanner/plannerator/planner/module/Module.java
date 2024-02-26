@@ -28,7 +28,6 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.Project;
 public abstract class Module<T>{
     private boolean active;
     public final String name;

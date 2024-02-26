@@ -1,12 +1,17 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.mutators.random;
+import java.util.ArrayList;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingSymmetry;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
     public SettingSymmetry symmetry = new SettingSymmetry();
@@ -57,4 +62,33 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     }
     @Override
     public void init(LiteUnderhaulSFR multiblock){}
+    @Override
+    public void importFrom(LiteUnderhaulSFR multiblock, NCPFConfigurationContainer container){
+        UnderhaulSFRConfiguration config = container.getConfiguration(UnderhaulSFRConfiguration::new);
+        ArrayList<BlockElement> templates = new ArrayList<>();
+        boolean hasAir = false;
+        for(int i : indicies.get()){
+            if(i==0){
+                hasAir = true;
+                continue;
+            }
+            templates.add(config.blocks.get(i-1));
+        }
+        setIndicies(multiblock);
+        ArrayList<Integer> idxs = new ArrayList<>();
+        if(hasAir)idxs.add(0);
+        for(int i = 0; i<multiblock.configuration.blockDefinition.length; i++){
+            for(BlockElement block : templates){
+                if((block.cooler!=null)==(multiblock.configuration.blockCooling[i]!=0)
+                        &&(block.fuelCell!=null)==(multiblock.configuration.blockFuelCell[i])
+                        &&(block.moderator!=null)==(multiblock.configuration.blockModerator[i])
+                        &&(block.activeCooler!=null)==(multiblock.configuration.blockActive[i]!=null)){
+                    idxs.add(i+1);
+                }
+            }
+        }
+        int[] indxs = new int[idxs.size()];
+        for(int i = 0; i<idxs.size(); i++)indxs[i] = idxs.get(i);
+        this.indicies.set(indxs);
+    }
 }
