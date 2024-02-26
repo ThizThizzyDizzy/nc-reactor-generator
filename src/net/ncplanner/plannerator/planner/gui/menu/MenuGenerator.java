@@ -92,8 +92,9 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         this.multiblock = multiblock.compile();
         priorityMultiblock = (T)this.multiblock.copy();
         gens = createGenerators(this.multiblock, priorityMultiblock);
-        generator = gens[0];
         internalGens = gens.length;
+        if(gens.length==0)gens = new LiteGenerator[]{new LiteGenerator()};
+        generator = gens[0];
         if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
         done.addAction(() -> {
             running = false;
