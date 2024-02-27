@@ -4,9 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
-import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -17,12 +15,10 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
-import net.ncplanner.plannerator.planner.gui.menu.configuration.tree.MenuPlacementRuleTree;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
 public class MenuSpecificConfiguration extends ConfigurationMenu{
@@ -60,21 +56,10 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                 }
             }
             boolean hasRuls = hasRules;
-            buttons.add(new Button("Add "+title, true, true){
-                @Override
-                public void render2d(double deltaTime){
-                    if(hasRuls&&Core.isShiftPressed())text = "View Placement Rule Tree";
-                    else text = "Add "+title;
-                    super.render2d(deltaTime);
-                }
-            }.addAction(() -> {
-                if(hasRuls&&Core.isShiftPressed()){
-                    gui.open(new MenuPlacementRuleTree(this, elems));
-                }else{
-                    NCPFElement elem = supplier.get().copyTo(supplier);
-                    elems.add(elem);
-                    gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
-                }
+            buttons.add(new Button("Add "+title, true, true).addAction(() -> {
+                NCPFElement elem = supplier.get().copyTo(supplier);
+                elems.add(elem);
+                gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
             }));
             if(hasRecipes){
                 buttons.add(new Button("Add Parent "+title, true, true).addAction(() -> {
