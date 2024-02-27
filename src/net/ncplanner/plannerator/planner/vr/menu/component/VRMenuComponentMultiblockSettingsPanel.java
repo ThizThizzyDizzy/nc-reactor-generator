@@ -1,10 +1,8 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
+import java.util.List;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
@@ -25,37 +23,12 @@ public class VRMenuComponentMultiblockSettingsPanel extends VRMenuComponent{
     public synchronized void refresh(){
         components.clear();
         Multiblock multiblock = editor.getMultiblock();
-        if(multiblock instanceof UnderhaulSFR){
-            float size = Math.min(depth, height/multiblock.getConfiguration().underhaul.fissionSFR.allFuels.size());
-            for(int i = 0; i<multiblock.getConfiguration().underhaul.fissionSFR.allFuels.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel fuel = multiblock.getConfiguration().underhaul.fissionSFR.allFuels.get(i);
-                add(new VRMenuComponentUnderFuel(editor, 0, height-size*(i+1), 0, width, size, depth, fuel));
-            }
-        }
-        if(multiblock instanceof OverhaulSFR){
-            float size = Math.min(depth, height/multiblock.getConfiguration().overhaul.fissionSFR.allCoolantRecipes.size());
-            for(int i = 0; i<multiblock.getConfiguration().overhaul.fissionSFR.allCoolantRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.CoolantRecipe recipe = multiblock.getConfiguration().overhaul.fissionSFR.allCoolantRecipes.get(i);
-                add(new VRMenuComponentCoolantRecipe(editor, 0, height-size*(i+1), 0, width, size, depth, recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulTurbine){
-            float size = Math.min(depth, height/multiblock.getConfiguration().overhaul.turbine.allRecipes.size());
-            for(int i = 0; i<multiblock.getConfiguration().overhaul.turbine.allRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.turbine.Recipe recipe = multiblock.getConfiguration().overhaul.turbine.allRecipes.get(i);
-                add(new VRMenuComponentTurbineRecipe(editor, 0, height-size*(i+1), 0, width, size, depth, recipe));
-            }
-        }
-        if(multiblock instanceof OverhaulFusionReactor){
-            float size = Math.min(depth, height/multiblock.getConfiguration().overhaul.fusion.allRecipes.size());
-            for(int i = 0; i<multiblock.getConfiguration().overhaul.fusion.allRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe recipe = multiblock.getConfiguration().overhaul.fusion.allRecipes.get(i);
-                add(new VRMenuComponentFusionRecipe(editor, 0, height-size*(i+1), 0, width/2, size, depth, recipe));
-            }
-            size = Math.min(depth, height/multiblock.getConfiguration().overhaul.fusion.allCoolantRecipes.size());
-            for(int i = 0; i<multiblock.getConfiguration().overhaul.fusion.allCoolantRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.CoolantRecipe recipe = multiblock.getConfiguration().overhaul.fusion.allCoolantRecipes.get(i);
-                add(new VRMenuComponentFusionCoolantRecipe(editor, width/2, height-size*(i+1), 0, width/2, size, depth, recipe));
+        List<NCPFElement>[] recipes = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+        for(int r = 0; r<recipes.length; r++){
+            float size = Math.min(depth, height/recipes[r].size());
+            for(int i = 0; i<recipes[r].size(); i++){
+                NCPFElement recipe = recipes[r].get(i);
+                add(new VRMenuComponentMultiblockRecipe(editor, width/recipes.length*r, height-size*(i+1), 0, width/recipes.length, size, depth, r, recipe));
             }
         }
         refreshNeeded = false;

@@ -191,23 +191,12 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             float Z = z*blockSize;
             float border = blockSize/16;
             if(block!=null){
-                for(int id : editor.editorTools.keySet()){
-                    boolean recipeMatches = false;
-                    if(multiblock instanceof OverhaulSFR){
-                        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulSFRBlockRecipe(id))recipeMatches = true;
-                    }
-                    if(multiblock instanceof OverhaulMSR){
-                        net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-                        if(bl.recipe!=null&&bl.recipe==editor.getSelectedOverhaulMSRBlockRecipe(id))recipeMatches = true;
-                    }
-                    if(multiblock instanceof OverhaulFusionReactor){
-                        net.ncplanner.plannerator.multiblock.overhaul.fusion.Block bl = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
-                        if(bl.breedingBlanketRecipe!=null&&bl.breedingBlanketRecipe==editor.getSelectedOverhaulFusionBlockRecipe(id))recipeMatches = true;
-                    }
-                    if(recipeMatches){
-                        renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
-                        renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null);
+                if(block.hasRecipes()){
+                    for(int id : editor.editorTools.keySet()){
+                        if(block.getRecipe()==editor.getSelectedBlockRecipe(id)){
+                            renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), resonatingAlpha);
+                            renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null);
+                        }
                     }
                 }
             }
@@ -293,19 +282,27 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         int blockY = mouseover[1];
         int blockZ = mouseover[2];
         if(pressed){
-            if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulSFR&&editor.isShiftPressed(device)&&((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
-                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block) multiblock.getBlock(blockX, blockY, blockZ);
-                if(b!=null){
-                    if(editor.isControlPressed(device))editor.action(new SFRAllShieldsAction(!b.isToggled), true);
-                    else editor.action(new SFRToggleAction(b), true);
+            boolean didSomething = false;
+            AbstractBlock block = multiblock.getBlock(blockX, blockY, blockZ);
+            if(editor.getSelectedTool(device).isEditTool()&&editor.isShiftPressed(device)&&block!=null){
+                if(multiblock instanceof OverhaulSFR){
+                    net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+                    if(b.template.toggled!=null||b.template.unToggled!=null){
+                        if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new SFRAllShieldsAction(!b.isToggled()), true);
+                        else editor.action(new SFRToggleAction(b), true);
+                        didSomething = true;
+                    }
                 }
-            }else if(editor.getSelectedTool(device).isEditTool()&&multiblock instanceof OverhaulMSR&&editor.isShiftPressed(device)&&((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ))!=null&&((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(blockX, blockY, blockZ)).template.shield){
-                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block) multiblock.getBlock(blockX, blockY, blockZ);
-                if(b!=null){
-                    if(editor.isControlPressed(device))editor.action(new MSRAllShieldsAction(!b.isToggled), true);
-                    else editor.action(new MSRToggleAction(b), true);
+                if(multiblock instanceof OverhaulMSR){
+                    net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+                    if(b.template.toggled!=null||b.template.unToggled!=null){
+                        if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new MSRAllShieldsAction(!b.isToggled()), true);
+                        else editor.action(new MSRToggleAction(b), true);
+                        didSomething = true;
+                    }
                 }
-            }else{
+            }
+            if(!didSomething){
                 //TODO VR: PICK BLOCK
                 editor.getSelectedTool(device).mousePressed(this, editorSpace, blockX, blockY, blockZ, mButton);
             }

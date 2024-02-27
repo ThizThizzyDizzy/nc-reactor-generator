@@ -1,34 +1,37 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.Recipe;
-import net.ncplanner.plannerator.multiblock.editor.action.SetFusionRecipeAction;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Matrix4f;
 import org.lwjgl.openvr.TrackedDevicePose;
 import org.lwjgl.openvr.VR;
-public class VRMenuComponentFusionRecipe extends VRMenuComponent{
+public class VRMenuComponentBlockRecipe extends VRMenuComponent{
     private final VRMenuEdit editor;
-    private final Recipe recipe;
+    private final NCPFElement recipe;
     private float textInset = 0;
     private float textOffset = .001f;//1mm
-    public VRMenuComponentFusionRecipe(VRMenuEdit editor, float x, float y, float z, float width, float height, float depth, Recipe recipe){
+    private final int id;
+    private final int recipeID;
+    public VRMenuComponentBlockRecipe(VRMenuEdit editor, int id, float x, float y, float z, float width, float height, float depth, NCPFElement recipe, int recipeID){
         super(x, y, z, width, height, depth, 0, 0, 0);
         this.editor = editor;
         this.recipe = recipe;
+        this.id = id;
+        this.recipeID = recipeID;
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
         renderer.drawCube(0, 0, 0, width, height, depth, null);
-        renderer.setColor(Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-        if(((OverhaulFusionReactor)editor.getMultiblock()).recipe.equals(recipe)){
-            renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
-        }
+        renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
+        NCPFElement r = editor.getSelectedBlockRecipe(id);
+        if(r!=null&&r.equals(recipe))renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(recipe.getInputDisplayName());
+        drawText(recipe.getDisplayName());
     }
     public void drawText(String text){
         Renderer renderer = new Renderer();
@@ -44,15 +47,19 @@ public class VRMenuComponentFusionRecipe extends VRMenuComponent{
         super.keyEvent(device, button, pressed);
         if(pressed){
             if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger){
-                editor.getMultiblock().action(new SetFusionRecipeAction(editor, recipe), true, true);
+                editor.selectedBlockRecipe.put(id, recipeID);
             }
         }
     }
     @Override    
     public String getTooltip(int device){
-        return "Efficiency: "+recipe.efficiency+"\n"
-             + "Base Heat: "+recipe.heat+"\n"
-             + "Fluxiness: "+recipe.fluxiness+"\n"
-             + "Base Time: "+recipe.time;
+        String ttp = "";
+        for(NCPFModule module : recipe.modules.modules.values()){
+            if(module instanceof ElementStatsModule){
+                ElementStatsModule stats = (ElementStatsModule)module;
+                ttp+="\n"+stats.getTooltip();
+            }
+        }
+        return ttp.trim();
     }
 }

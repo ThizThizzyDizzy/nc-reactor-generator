@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
+import java.util.List;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.vr.Multitool;
@@ -55,25 +58,12 @@ public class VRMenuComponentSpecialPanel extends VRMenuComponent{
         components.clear();
         if(activeTool<0)return;
         AbstractBlock b = editor.getSelectedBlock(activeTool);
-        if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block&&!((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.isEmpty()){
-            float size = Math.min(depth, height/((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.size());
-            for(int i = 0; i<((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe recipe = ((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template.allRecipes.get(i);
-                add(new VRMenuComponentFusionBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)b).template, recipe, i));
-            }
-        }
-        if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block&&!((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.isEmpty()){
-            float size = Math.min(depth, height/((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.size());
-            for(int i = 0; i<((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.get(i);
-                add(new VRMenuComponentOverhaulSFRBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template, recipe, i));
-            }
-        }
-        if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block&&!((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.isEmpty()){
-            float size = Math.min(depth, height/((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.size());
-            for(int i = 0; i<((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.size(); i++){
-                net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.get(i);
-                add(new VRMenuComponentOverhaulMSRBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template, recipe, i));
+        if(b.hasRecipes()){
+            List<? extends IBlockRecipe> recipes = b.getRecipes();
+            float size = Math.min(depth, height/recipes.size());
+            for(int i = 0; i<recipes.size(); i++){
+                NCPFElement recipe = (NCPFElement)recipes.get(i);
+                add(new VRMenuComponentBlockRecipe(editor, activeTool, 0, height-size*(i+1), 0, width, size, depth, recipe, i));
             }
         }
         refreshNeeded = false;

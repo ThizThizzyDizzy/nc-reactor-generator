@@ -21,6 +21,7 @@ import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -67,9 +68,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
     private HashMap<Integer, Integer> selectedTool = new HashMap<>();
     public HashMap<Integer, Integer> selectedBlock = new HashMap<>();
-    public HashMap<Integer, Integer> selectedFusionBlockRecipe = new HashMap<>();
-    public HashMap<Integer, Integer> selectedSFRBlockRecipe = new HashMap<>();
-    public HashMap<Integer, Integer> selectedMSRBlockRecipe = new HashMap<>();
+    public HashMap<Integer, Integer> selectedBlockRecipe = new HashMap<>();
     private VRMenuComponentToolPanel leftToolPanel  = add(new VRMenuComponentToolPanel(this, -.625f, 1, -1, .5f, .5f, .1f, 0, 0, 0));
     private VRMenuComponentToolPanel rightToolPanel  = add(new VRMenuComponentToolPanel(this, .125f, 1, -1, .5f, .5f, .1f, 0, 0, 0));
     private VRMenuComponentSpecialPanel leftSpecialPanel  = add(new VRMenuComponentSpecialPanel(this, -1, .625f, -.125f, .5f, 1, .1f, 0, 90, 0));
@@ -181,9 +180,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         tools.add(new RectangleTool(this, id));
         selectedTool.put(id, 2);//pencil
         selectedBlock.put(id, 0);
-        selectedFusionBlockRecipe.put(id, 0);
-        selectedSFRBlockRecipe.put(id, 0);
-        selectedMSRBlockRecipe.put(id, 0);
+        selectedBlockRecipe.put(id, 0);
         editorTools.put(id, tools);
         selection.put(id, new ArrayList<>());
         copy.put(id, new CopyTool(this, id));
@@ -220,15 +217,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         return !selection.get(id).isEmpty();
     }
     @Override
-    public void setCoolantRecipe(int idx){}
-    @Override
-    public void setUnderhaulFuel(int idx){}
-    @Override
-    public void setFusionCoolantRecipe(int idx){}
-    @Override
-    public void setFusionRecipe(int idx){}
-    @Override
-    public void setTurbineRecipe(int idx){}
+    public void setMultiblockRecipe(int recipeType, int idx){}
     @Override
     public void clearSelection(int id){
         action(new ClearSelectionAction(this, id), true);
@@ -319,23 +308,8 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                 }
             }
         }
-        if(set.block!=null&&multiblock instanceof OverhaulSFR){
-            net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
-                block.recipe = getSelectedOverhaulSFRBlockRecipe(id);
-            }
-        }
-        if(set.block!=null&&multiblock instanceof OverhaulMSR){
-            net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()||(block.template.parent!=null&&!block.template.parent.allRecipes.isEmpty())){
-                block.recipe = getSelectedOverhaulMSRBlockRecipe(id);
-            }
-        }
-        if(set.block!=null&&multiblock instanceof OverhaulFusionReactor){
-            net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)set.block;
-            if(!block.template.allRecipes.isEmpty()){
-                block.breedingBlanketRecipe = getSelectedOverhaulFusionBlockRecipe(id);
-            }
+        if(set.block!=null&&set.block.hasRecipes()){
+            set.block.setRecipe(getSelectedBlockRecipe(id));
         }
         action(set, true);
     }
@@ -503,16 +477,9 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         return Color.fromHSB(hue, color.getSaturation(), color.getBrightness());
     }//doesn't do alpha
     @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fusion.BlockRecipe getSelectedOverhaulFusionBlockRecipe(int id){
-        return ((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)getSelectedBlock(id)).template.allRecipes.get(selectedFusionBlockRecipe.get(id));
-    }
-    @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe getSelectedOverhaulSFRBlockRecipe(int id){
-        return ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedSFRBlockRecipe.get(id));
-    }
-    @Override
-    public net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe getSelectedOverhaulMSRBlockRecipe(int id){
-        return ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.isEmpty()?null:((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)getSelectedBlock(id)).template.allRecipes.get(selectedMSRBlockRecipe.get(id));
+    public NCPFElement getSelectedBlockRecipe(int id){
+        AbstractBlock block = getSelectedBlock(id);
+        return (NCPFElement)(block.hasRecipes()?block.getRecipes().get(selectedBlockRecipe.get(id)):null);
     }
     public VRMenu alreadyOpen(){
         openProgress = openTime;

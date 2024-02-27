@@ -27,7 +27,7 @@ public interface Editor{
     public void copySelection(int id, int x, int y, int z);
     public void cutSelection(int id, int x, int y, int z);
     public AbstractBlock getSelectedBlock(int id);
-    public void setblocks(int id, SetblocksAction set);
+    public void setblocks(int id, SetblocksAction set);//TODO combine MenuEdit and VRMenuEdit implementations, they are the same
     public ArrayList<ClipboardEntry> getClipboard(int id);
     public void selectGroup(int id, int x, int y, int z);
     public void deselectGroup(int id, int x, int y, int z);

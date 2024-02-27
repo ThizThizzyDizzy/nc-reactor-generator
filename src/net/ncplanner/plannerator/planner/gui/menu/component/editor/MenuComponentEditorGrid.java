@@ -354,7 +354,7 @@ public class MenuComponentEditorGrid extends Component{
             AbstractBlock block = multiblock.getBlock(bx, by, bz);
             boolean didSomething = false;
             if(editor.getSelectedTool(0).isEditTool()&&Core.isShiftPressed()&&block!=null){
-                if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulSFR&&Core.isShiftPressed()){
+                if(multiblock instanceof OverhaulSFR){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
                     if(b.template.toggled!=null||b.template.unToggled!=null){
                         if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new SFRAllShieldsAction(!b.isToggled()), true);
@@ -379,7 +379,7 @@ public class MenuComponentEditorGrid extends Component{
                         }
                     }
                 }
-                if(editor.getSelectedTool(0).isEditTool()&&multiblock instanceof OverhaulMSR&&Core.isShiftPressed()){
+                if(multiblock instanceof OverhaulMSR){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block) block;
                     if(b.template.toggled!=null||b.template.unToggled!=null){
                         if(Core.isControlPressed()&&b.template.neutronShield!=null)editor.action(new MSRAllShieldsAction(!b.isToggled()), true);
