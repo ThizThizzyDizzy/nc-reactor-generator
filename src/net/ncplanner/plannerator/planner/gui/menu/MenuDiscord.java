@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.planner.gui.menu;
-import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
