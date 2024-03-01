@@ -474,7 +474,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 block.set("connector", true);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.connector.rules){
-                    ruls.add(savePlacementRule(rule, turbine, overhaulMSRBlockTypes));
+                    ruls.add(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
                 }
                 block.set("rules", ruls);
             }
@@ -494,7 +494,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             }
             if(b.stator!=null){
                 Config bladeCfg = Config.newConfig();
-                bladeCfg.set("efficiency", 0);
+                bladeCfg.set("efficiency", 0f);
                 bladeCfg.set("expansion", b.stator.expansion);
                 bladeCfg.set("stator", true);
                 block.set("blade", bladeCfg);
@@ -505,7 +505,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 block.set("coil", coilCfg);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.coil.rules){
-                    ruls.add(savePlacementRule(rule, turbine, overhaulMSRBlockTypes));
+                    ruls.add(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
                 }
                 block.set("rules", ruls);
             }
