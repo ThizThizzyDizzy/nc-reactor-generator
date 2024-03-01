@@ -2,13 +2,10 @@ package net.ncplanner.plannerator.discord;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Random;
-import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -24,17 +21,14 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.ncplanner.plannerator.config2.Config;
-import net.ncplanner.plannerator.discord.keyword.KeywordBlind;
 import net.ncplanner.plannerator.discord.keyword.KeywordBlockRange;
 import net.ncplanner.plannerator.discord.keyword.KeywordConfiguration;
 import net.ncplanner.plannerator.discord.keyword.KeywordCube;
@@ -42,49 +36,20 @@ import net.ncplanner.plannerator.discord.keyword.KeywordCuboid;
 import net.ncplanner.plannerator.discord.keyword.KeywordFormat;
 import net.ncplanner.plannerator.discord.keyword.KeywordFuel;
 import net.ncplanner.plannerator.discord.keyword.KeywordMultiblock;
-import net.ncplanner.plannerator.discord.keyword.KeywordOverhaul;
 import net.ncplanner.plannerator.discord.keyword.KeywordPriority;
-import net.ncplanner.plannerator.discord.keyword.KeywordSmores;
 import net.ncplanner.plannerator.discord.keyword.KeywordSymmetry;
-import net.ncplanner.plannerator.discord.keyword.KeywordUnderhaul;
-import net.ncplanner.plannerator.discord.play.Action;
 import net.ncplanner.plannerator.discord.play.Game;
 import net.ncplanner.plannerator.discord.play.PlayBot;
 import net.ncplanner.plannerator.discord.play.SmoreBot;
-import net.ncplanner.plannerator.discord.play.action.SmoreAction;
-import net.ncplanner.plannerator.discord.play.action.SmoreLordAction;
-import net.ncplanner.plannerator.discord.play.action.SnoozeAction;
-import net.ncplanner.plannerator.discord.play.game.Hangman;
-import net.ncplanner.plannerator.discord.play.game.HeatsinkBattle;
-import net.ncplanner.plannerator.discord.play.game.StopReason;
-import net.ncplanner.plannerator.discord.play.smivilization.Hut;
-import net.ncplanner.plannerator.discord.play.smivilization.HutBunch;
-import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
-import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
-import net.ncplanner.plannerator.discord.play.smivilization.HutType;
-import net.ncplanner.plannerator.discord.play.smivilization.Placement;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.Range;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.PartialConfiguration;
-import net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel;
-import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
-import net.ncplanner.plannerator.multiblock.editor.ppe.PostProcessingEffect;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.AxialSymmetry;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.CoilSymmetry;
-import net.ncplanner.plannerator.multiblock.editor.symmetry.Symmetry;
-import net.ncplanner.plannerator.multiblock.generator.CoreBasedGenerator;
-import net.ncplanner.plannerator.multiblock.generator.MultiblockGenerator;
-import net.ncplanner.plannerator.multiblock.generator.OverhaulTurbineStandardGenerator;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
-import net.ncplanner.plannerator.multiblock.generator.StandardGenerator;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Core.BufferRenderer;
@@ -92,7 +57,11 @@ import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class Bot extends ListenerAdapter{
     public static boolean debug = false;
     private static ArrayList<String> prefixes = new ArrayList<>();
@@ -104,10 +73,10 @@ public class Bot extends ListenerAdapter{
     private static JDA jda;
     private static final ArrayList<Command> botCommands = new ArrayList<>();
     private static final ArrayList<Command> playCommands = new ArrayList<>();
-    private static MultiblockGenerator generator;
+    private static MenuGenerator generator;
     private static Message generateMessage;
     private static Guild guild = null;
-    public static final ArrayList<LegacyNCPFFile> storedMultiblocks = new ArrayList<>();
+    public static final ArrayList<Project> storedMultiblocks = new ArrayList<>();
     static{
 //        botCommands.add(new Command("debug"){
 //            @Override
@@ -158,7 +127,7 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, String args, boolean debug){
-                if(generator!=null)generator.stopAllThreads();
+                if(generator!=null)generator.running = false;
                 else{
                     channel.sendMessage("Generator is not running!").queue();
                 }
@@ -196,8 +165,6 @@ public class Bot extends ListenerAdapter{
                     channel.sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
                     return;
                 }
-                boolean underhaul = false;
-                boolean overhaul = false;
                 KeywordMultiblock multiblockKeyword = null;
                 Configuration configuration = null;
                 ArrayList<Range<String>> stringRanges = new ArrayList<>();
@@ -208,11 +175,7 @@ public class Bot extends ListenerAdapter{
                 int x = 0, y = 0, z = 0;
                 //<editor-fold defaultstate="collapsed" desc="Keyword Scanning">
                 for(Keyword keyword : keywords){
-                    if(keyword instanceof KeywordOverhaul){
-                        overhaul = true;
-                    }else if(keyword instanceof KeywordUnderhaul){
-                        underhaul = true;
-                    }else if(keyword instanceof KeywordConfiguration){
+                    if(keyword instanceof KeywordConfiguration){
                         if(configuration!=null){
                             channel.sendMessage("Please choose no more than one configuration!").queue();
                             return;
@@ -260,31 +223,19 @@ public class Bot extends ListenerAdapter{
                 if(x==0||y==0||z==0){
                     x = y = z = 3;
                 }
-                if(!(underhaul||overhaul))underhaul = true;
                 if(configuration==null)configuration = Configuration.configurations.get(0);
-                if(underhaul&&overhaul){
-                    channel.sendMessage("Please choose either `underhaul` or `overhaul`, not both!").queue();
-                    return;
-                }
-                if(configuration.underhaul==null&&underhaul){
-                    channel.sendMessage("`"+configuration.name+" doesn't have an Underhaul configuration!").queue();
-                    return;
-                }
-                if(configuration.overhaul==null&&overhaul){
-                    channel.sendMessage("`"+configuration.name+" doesn't have an Overhaul configuration!").queue();
-                    return;
-                }
+                Core.setConfiguration(configuration);
                 Multiblock multiblock = null;
                 if(multiblockKeyword==null){
                     multiblockKeyword = new KeywordMultiblock();
                     multiblockKeyword.read("SFR");
                 }
-                Multiblock template = multiblockKeyword.getMultiblock(overhaul);
+                Multiblock template = multiblockKeyword.getMultiblock();
                 if(template==null){
-                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
+                    channel.sendMessage("Unknown multiblock: `"+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
                     return;
                 }
-                multiblock = template.newInstance(configuration);
+                multiblock = template.newInstance(Core.project.conglomeration);
                 ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
                 if(multiblock instanceof CuboidalMultiblock){
                     CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
@@ -309,119 +260,57 @@ public class Bot extends ListenerAdapter{
                     channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
                     return;
                 }
-                net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel theFuel = null;
-                ArrayList blockRecipes = null;
-                if(multiblock instanceof UnderhaulSFR){
-                    net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel fuel = null;
-                    FUEL:for(String str : fuelStrings){
-                        for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                            for(String nam : f.getLegacyNames()){
+                HashMap<Integer, NCPFElement> theMultiblockRecipes = new HashMap<>();
+                List<NCPFElement>[] multiblockRecipes = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+                for(int i = 0; i<multiblockRecipes.length; i++){
+                    NCPFElement recipe = null;
+                    RECIPE:for(String str : fuelStrings){
+                        for(NCPFElement r : multiblockRecipes[i]){
+                            for(String nam : r.getLegacyNames()){
                                 if(nam.equalsIgnoreCase(str)){
-                                    if(fuel!=null){
-                                        channel.sendMessage("Underhaul SFRs can only have one fuel!").queue();
+                                    if(recipe!=null){
+                                        channel.sendMessage("You can only pick one multiblock recipe!").queue();
                                         return;
                                     }
-                                    fuel = f;
-                                    continue FUEL;
+                                    recipe = r;
+                                    continue RECIPE;
                                 }
                             }
                         }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
+                        channel.sendMessage("Unknown multiblock recipe: "+str).queue();
                         return;
                     }
-                    if(fuel==null)fuel = configuration.underhaul.fissionSFR.allFuels.get(0);
-                    theFuel = fuel;
+                    if(recipe==null)recipe = multiblockRecipes[i].get(0);
+                    theMultiblockRecipes.put(i, recipe);
                 }
-                if(multiblock instanceof OverhaulSFR){
-                    ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe defaultRecipe = null;
+                ArrayList<NCPFElement> blockRecipes = new ArrayList<>();
+                NCPFElement defaultRecipe = null;
+                for(AbstractBlock b : availableBlocks){
+                    if(b.hasRecipes()&&defaultRecipe==null)defaultRecipe = (NCPFElement)b.getRecipes().get(0);
+                }
+                RECIPE:for(String str : fuelStrings){
                     for(AbstractBlock b : availableBlocks){
-                        if(((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.fuelCell&&defaultRecipe==null)defaultRecipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes.get(0);
-                    }
-                    FUEL:for(String str : fuelStrings){
-                        for(AbstractBlock b : availableBlocks){
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
-                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
-                                    sfrRecipes.add(recipe);
-                                    continue FUEL;
-                                }
-                                for(String s : recipe.getLegacyNames()){
-                                    if(s.equalsIgnoreCase(str)){
-                                        sfrRecipes.add(recipe);
-                                        continue FUEL;
-                                    }
+                        if(!b.hasRecipes())continue;
+                        for(IBlockRecipe recip : b.getRecipes()){
+                            NCPFElement recipe = (NCPFElement)recip;
+                            if(recip.getDisplayName().equalsIgnoreCase(str)){
+                                blockRecipes.add(recipe);
+                                continue RECIPE;
+                            }
+                            for(String s : recipe.getLegacyNames()){
+                                if(s.equalsIgnoreCase(str)){
+                                    blockRecipes.add(recipe);
+                                    continue RECIPE;
                                 }
                             }
                         }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
-                        return;
                     }
-                    if(sfrRecipes.isEmpty())sfrRecipes.add(defaultRecipe);
-                    blockRecipes = sfrRecipes;
+                    channel.sendMessage("Unknown block recipe: "+str).queue();
+                    return;
                 }
-                if(multiblock instanceof OverhaulMSR){
-                    ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
-                    net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe defaultRecipe = null;
-                    for(AbstractBlock b : availableBlocks){
-                        if(((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.fuelVessel&&defaultRecipe==null)defaultRecipe = ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes.get(0);
-                    }
-                    FUEL:for(String str : fuelStrings){
-                        for(AbstractBlock b : availableBlocks){
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
-                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
-                                    msrRecipes.add(recipe);
-                                    continue FUEL;
-                                }
-                                for(String s : recipe.getLegacyNames()){
-                                    if(s.equalsIgnoreCase(str)){
-                                        msrRecipes.add(recipe);
-                                        continue FUEL;
-                                    }
-                                }
-                            }
-                        }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
-                        return;
-                    }
-                    if(msrRecipes.isEmpty())msrRecipes.add(defaultRecipe);
-                    blockRecipes = msrRecipes;
-                }
-                Priority.Preset priority = null;
-                ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
-                ArrayList<Priority.Preset> presets = multiblock.getGenerationPriorityPresets(priorities);
-                for(Priority.Preset preset : presets){
-                    for(String str : priorityStrings){
-                        for(String alternative : (ArrayList<String>)preset.alternatives){
-                            if(str.equalsIgnoreCase(alternative)){
-                                if(priority!=null){
-                                    channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
-                                    return;
-                                }
-                                priority = preset;
-                            }
-                        }
-                    }
-                }
-                if(priority==null)priority = presets.get(0);
 //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
-                ArrayList<Symmetry> symmetries = new ArrayList<>();
-                ArrayList<Symmetry> availableSymmetries = multiblock.getSymmetries();
-                for(Symmetry symmetry : availableSymmetries){
-                    for(String sym : symmetryStrings){
-                        if(symmetry instanceof AxialSymmetry){
-                            if(((AxialSymmetry)symmetry).matches(sym)){
-                                symmetries.add(symmetry);
-                            }
-                        }else if(symmetry instanceof CoilSymmetry){
-                            if(((CoilSymmetry)symmetry).matches(sym)){
-                                symmetries.add(symmetry);
-                            }
-                        }else{
-                            if(symmetry.name.equalsIgnoreCase(sym))symmetries.add(symmetry);
-                        }
-                    }
-                }
+                if(!symmetryStrings.isEmpty())channel.sendMessage("TODO symmetry configuration").queue();//TODO symmetry configuration
                 ArrayList<FormatWriter> formats = new ArrayList<>();
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
@@ -434,146 +323,55 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 if(formats.isEmpty()){
-                    if(!overhaul)formats.add(FileWriter.HELLRAGE);
+                    if(multiblock.getDefinitionName().contains("Underhaul"))formats.add(FileWriter.HELLRAGE);
                     formats.add(FileWriter.LEGACY_NCPF);
+                    formats.add(FileWriter.NCPF);
                 }
                 formats.add(FileWriter.PNG);
-                Multiblock multiblockInstance = multiblock.newInstance(configuration,x,y,z);
-                if(multiblockInstance instanceof UnderhaulSFR){
-                    ((UnderhaulSFR)multiblockInstance).fuel = (Fuel)theFuel;
+                Multiblock multiblockInstance = multiblock.newInstance(Core.project.conglomeration,x,y,z);
+                for(int i : theMultiblockRecipes.keySet()){
+                    multiblockInstance.setMultiblockRecipe(i, theMultiblockRecipes.get(i));
                 }
-                if(multiblockInstance instanceof OverhaulSFR){
-                    ArrayList<Range<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe>> validRecipes = new ArrayList<>();
-                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe r : (ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe>)blockRecipes){
-                        validRecipes.add(new Range(r, 0));
-                    }
-                    ((OverhaulSFR)multiblockInstance).setValidRecipes(validRecipes);
-                }
-                if(multiblockInstance instanceof OverhaulMSR){
-                    ArrayList<Range<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe>> validRecipes = new ArrayList<>();
-                    for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe r : (ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe>)blockRecipes){
-                        validRecipes.add(new Range(r, 0));
-                    }
-                    ((OverhaulMSR)multiblockInstance).setValidRecipes(validRecipes);
-                }
+                if(!blockRecipes.isEmpty())channel.sendMessage("TODO block recipes filtering").queue();//TODO block recipes filtering
 //</editor-fold>
-                try{
-                    generator = MultiblockGenerator.getGenerators(multiblock).get(0).newInstance(multiblockInstance);
-                }catch(IndexOutOfBoundsException ex){
-                    throw new IllegalArgumentException("No generators available for multiblock!", ex);
-                }
-                if(generator instanceof StandardGenerator){
-                    //<editor-fold defaultstate="collapsed" desc="StandardGenerator">
-                    StandardGenerator gen = (StandardGenerator)generator;
-                    gen.workingMultiblockCount.setValue(1);
-                    gen.timeout.setValue(10);
-                    priority.set(priorities);
-                    gen.priorities.setValue(priorities);
-                    gen.symmetries.setValue(symmetries);
-                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
-                    ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
-                    for(PostProcessingEffect ppe : ppes){
-                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            selectedPPEs.add(ppe);
+                generator = Core.gui.open(new MenuGenerator(Core.gui, null, multiblock));
+                LiteGenerator gen = null;
+                for(String str : priorityStrings){
+                    for(LiteGenerator g : generator.gens){
+                        if(g.name.get().equalsIgnoreCase(str)){
+                            if(gen!=null){
+                                channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
+                                return;
+                            }
+                            gen = g;
                         }
                     }
-                    gen.postProcessingEffects.setValue(selectedPPEs);
-                    gen.changeChance.setValue(.01);
-                    gen.variableRate.setValue(true);
-                    gen.lockCore.setValue(false);
-                    gen.fillAir.setValue(true);
-//</editor-fold>
-                }else if(generator instanceof OverhaulTurbineStandardGenerator){
-                    //<editor-fold defaultstate="collapsed" desc="OverhaulTurbineStandardGenerator">
-                    OverhaulTurbineStandardGenerator gen = (OverhaulTurbineStandardGenerator)generator;
-                    gen.workingMultiblockCount.setValue(1);
-                    gen.timeout.setValue(10);
-                    priority.set(priorities);
-                    gen.priorities.setValue(priorities);
-                    gen.symmetries.setValue(symmetries);
-                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
-                    ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
-                    for(PostProcessingEffect ppe : ppes){
-                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            selectedPPEs.add(ppe);
-                        }
-                    }
-                    gen.postProcessingEffects.setValue(selectedPPEs);
-                    gen.changeChance.setValue(.01);
-                    gen.variableRate.setValue(true);
-                    gen.lockCore.setValue(false);
-                    gen.fillAir.setValue(true);
-//</editor-fold>
-                }else if(generator instanceof CoreBasedGenerator){
-                    //<editor-fold defaultstate="collapsed" desc="CoreBasedGenerator">
-                    CoreBasedGenerator gen = (CoreBasedGenerator)generator;
-                    gen.finalMultiblockCount.setValue(1);
-                    gen.workingMultiblockCount.setValue(1);;
-                    gen.workingCoreCount.setValue(1);
-                    gen.finalCoreCount.setValue(1);
-                    gen.timeout.setValue(10);
-                    priority.set(priorities);
-                    ArrayList<Priority> corePriorities = new ArrayList<>();
-                    ArrayList<Priority> finalPriorities = new ArrayList<>();
-                    for(Priority p : priorities){
-                        if(p.isCore())corePriorities.add(p);
-                        if(p.isFinal())finalPriorities.add(p);
-                    }
-                    gen.corePriorities.setValue(corePriorities);
-                    gen.finalPriorities.setValue(finalPriorities);
-                    gen.symmetries.setValue(symmetries);
-                    ArrayList<PostProcessingEffect> selectedPPEs = new ArrayList<>();
-                    ArrayList<PostProcessingEffect> ppes = multiblock.getPostProcessingEffects();
-                    for(PostProcessingEffect ppe : ppes){
-                        if(ppe instanceof ClearInvalid||ppe.name.contains("Smart Fill")){
-                            selectedPPEs.add(ppe);
-                        }
-                    }
-                    gen.postProcessingEffects.setValue(selectedPPEs);
-                    gen.changeChance.setValue(.01);
-                    gen.morphChance.setValue(.0001);
-                    gen.variableRate.setValue(true);
-                    gen.fillAir.setValue(true);
-//</editor-fold>
-                }else{
-                    throw new IllegalArgumentException("I don't know how to use this generator: "+generator.getClass().getName());
                 }
-                ArrayList<Range<AbstractBlock>> allowedBlocks = new ArrayList<>();
-                for(Range<AbstractBlock> range : blockRanges){
-                    if(range.min==0&&range.max==0)continue;
-                    allowedBlocks.add(range);
-                }
-                FOR:for(AbstractBlock b : availableBlocks){
-                    for(Range<AbstractBlock> range : blockRanges){
-                        if(range.obj==b)continue FOR;
-                    }
-                    if(b.defaultEnabled())allowedBlocks.add(new Range(b, 0));
-                }
-                generator.setAllowedBlocks(allowedBlocks);
-                Core.configuration = configuration;
+                if(gen!=null)generator.generator = gen;
+                if(generator.generator==null)throw new IllegalArgumentException("No generators available for multiblock!");
+                if(!blockRanges.isEmpty())channel.sendMessage("TODO block ranges").queue();//TODO block ranges
                 //<editor-fold defaultstate="collapsed" desc="Generation">
                 Thread t = new Thread(() -> {
-                    generator.startThread();
+                    generator.start();
                     synchronized(storedMultiblocks){
-                        for(LegacyNCPFFile file : storedMultiblocks){
-                            for(Multiblock m : file.multiblocks){
-                                if(m.getDefinitionName().equals(generator.multiblock.getDefinitionName())){
-                                    try{
-                                        generator.importMultiblock(m);
-                                    }catch(Exception ex){
-                                        System.err.println("Failed to import multiblock: "+m.getName());
+                        IMPORT:for(Project file : storedMultiblocks){
+                            for(Design d : file.designs){
+                                if(d instanceof MultiblockDesign){
+                                    Multiblock m = ((MultiblockDesign)d).toMultiblock();
+                                    if(m.getDefinitionName().equals(multiblockInstance.getDefinitionName())){
+                                        channel.sendMessage("TODO import multiblocks");//TODO import multiblocks
+                                        break IMPORT;
                                     }
                                 }
                             }
                         }
                     }
-                    String configName = Core.configuration.getShortName();
-                    generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName(), generator.getMainMultiblockBotTooltip(), false).build()).complete();
+                    String configName = Core.project.getConfigName();
+                    generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip(), false).build()).complete();
                     int time = 0;
-                    int interval = 1000;//1 sec
-                    int maxTime = 60000;//60 sec
-                    int timeout = 10000;//10 sec
-                    while(time<maxTime){
+                    int interval = 1500;//1.5 sec
+                    int timeout = 300000;//5 minutes
+                    while(true){
                         try{
                             Thread.sleep(interval);
                         }catch(InterruptedException ex){
@@ -581,18 +379,17 @@ public class Bot extends ListenerAdapter{
                             break;
                         }
                         time+=interval;
-                        if(!generator.isRunning())break;
-                        Multiblock main = generator.getMainMultiblock();
-                        generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()+"s...").addField(generator.multiblock.getGeneralName(), generator.getMainMultiblockBotTooltip(), false).build()).queue();
-                        if(main!=null&&main.millisSinceLastChange()<maxTime&&main.millisSinceLastChange()>timeout)break;
+                        if(!generator.running)break;
+                        generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip(), false).build()).queue();
+                        if(time>timeout)break;
                     }
-                    generator.stopAllThreads();
-                    Multiblock finalMultiblock = generator.getMainMultiblock();
+                    generator.running = false;
+                    Multiblock finalMultiblock = generator.multiblock.export(Core.project.conglomeration);
                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                        generateMessage.editMessage(createEmbed("No "+generator.multiblock.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
+                        generateMessage.editMessage(createEmbed("No "+multiblockInstance.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
                     }else{
-                        generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+generator.multiblock.getGeneralName()).addField(generator.multiblock.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
-                        LegacyNCPFFile ncpf = new LegacyNCPFFile();
+                        generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()).addField(multiblockInstance.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
+                        Project ncpf = new Project();
                         String name = UUID.randomUUID().toString();
                         ncpf.metadata.put("Author", "S'plodo-Bot");
                         ncpf.metadata.put("Name", name);
@@ -602,12 +399,12 @@ public class Bot extends ListenerAdapter{
                         String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
                         ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
                         ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
-                        ncpf.multiblocks.add(finalMultiblock);
-                        ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
+                        ncpf.designs.add(finalMultiblock.toDesign());
+                        ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
                         for(FormatWriter writer : formats){
                             if(writer.isMultiblockSupported(finalMultiblock)){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+generator.multiblock.getDimensionsStr()+" "+generator.multiblock.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
                                 try{
                                     writer.write(ncpf, stream);
                                 }catch(Exception ex){
@@ -630,8 +427,6 @@ public class Bot extends ListenerAdapter{
             public void addKeywords(){
                 addKeyword(new KeywordCuboid());
                 addKeyword(new KeywordCube());
-                addKeyword(new KeywordUnderhaul());
-                addKeyword(new KeywordOverhaul());
                 addKeyword(new KeywordSymmetry());
                 addKeyword(new KeywordConfiguration());
                 addKeyword(new KeywordFormat());
@@ -641,6 +436,7 @@ public class Bot extends ListenerAdapter{
                 addKeyword(new KeywordBlockRange());
             }
         });
+        /*
         botCommands.add(new KeywordCommand("find", "search"){
             @Override
             public String getHelpText(){
@@ -2284,6 +2080,7 @@ public class Bot extends ListenerAdapter{
         };
         botCommands.add(cookie);
         playCommands.add(cookie);
+        */
     }
     private static String nick(Member member){
         if(member==null)return ":shrug:";
@@ -2369,7 +2166,7 @@ public class Bot extends ListenerAdapter{
                 }
             }
             try{
-                LegacyNCPFFile ncpf = FileReader.read(() -> {
+                Project ncpf = FileReader.read(() -> {
                     try{
                         return att.retrieveInputStream().get();
                     }catch(InterruptedException|ExecutionException ex){
@@ -2587,12 +2384,10 @@ public class Bot extends ListenerAdapter{
             }
         }
     }
-    public static void printErrorMessage(MessageChannel channel, String message, Exception ex){
+    public static void printErrorMessage(MessageChannel channel, String message, Throwable ex){
         String trace = "";
         StackTraceElement[] stackTrace = ex.getStackTrace();
         for(StackTraceElement e : stackTrace){
-            if(e.getClassName().startsWith("net."))continue;
-            if(e.getClassName().startsWith("com."))continue;
             String[] splitClassName = e.getClassName().split("\\Q.");
             String filename = splitClassName[splitClassName.length-1]+".java";
             String nextLine = "\nat "+e.getClassName()+"."+e.getMethodName()+"("+filename+":"+e.getLineNumber()+")";
@@ -2602,6 +2397,8 @@ public class Bot extends ListenerAdapter{
             }else trace+=nextLine;
         }
         channel.sendMessage(createEmbed(message).addField(ex.getClass().getName()+": "+ex.getMessage(), trace.trim(), false).build()).queue();
+        Throwable t = ex.getCause();
+        if(t!=null)printErrorMessage(channel, "Caused by: "+t.getClass().getName(), t);
     }
     private static int imgWidth, imgHeight;
     private static BufferRenderer pendingImage = null;

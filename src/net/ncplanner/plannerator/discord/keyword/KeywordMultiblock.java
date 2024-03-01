@@ -9,17 +9,20 @@ public class KeywordMultiblock extends Keyword{
     public KeywordMultiblock(){
         super("Multiblock");
     }
-    public Multiblock getMultiblock(boolean overhaul){
-        String fullMultiblockName = (overhaul?"Overhaul ":"Underhaul ")+text.toUpperCase(Locale.ROOT);
+    public Multiblock getMultiblock(){
         Multiblock multiblock = null;
         for(Multiblock m : Core.multiblockTypes){
-            if(m.getDefinitionName().equalsIgnoreCase(fullMultiblockName))multiblock = m;
+            if(m.getDefinitionName().equalsIgnoreCase(text))multiblock = m;
         }
         return multiblock;
     }
     @Override
     public boolean doRead(String input){
-        text = input.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("reactor", "").replace("solidfueled", "sfr").replace("moltensalt", "msr");
+        text = input.replaceFirst("((?<!pre[ -])(?<!pre)overhaul)", "Overhaul")
+                    .replaceFirst("(pre[ -]?over|under)haul", "Underhaul");
+        text = text.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("reactor", "").replace("solidfueled", "sfr").replace("moltensalt", "msr");
+        if(!text.startsWith("Underhaul")&&!text.startsWith("Overhaul"))text = "Underhaul"+text;
+        text = text.replaceFirst("haul", "haul ");
         return true;
     }
     @Override
@@ -28,7 +31,7 @@ public class KeywordMultiblock extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "turbine|(sfr|msr|solid[ -]?fueled|molten[ -]?salt)( ?reactor)?|(reactor)";
+        return "(((pre[ -]?)?over|under)haul )?(turbine|(sfr|msr|solid[ -]?fueled|molten[ -]?salt)( ?reactor)?|(reactor))";
     }
     @Override
     public Keyword newInstance(){

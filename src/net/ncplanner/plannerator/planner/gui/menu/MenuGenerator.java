@@ -80,7 +80,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private float setScrollTo = -1;
     private int threads = 1;
     private int currentStage;
-    private boolean running;
+    public boolean running;
     private final Animation blank = new BlankAnimation();
     private Animation anim = blank;
     private boolean wasRunning;
@@ -96,6 +96,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         if(gens.length==0)gens = new LiteGenerator[]{new LiteGenerator()};
         generator = gens[0];
         if(generator.stages.isEmpty())generator.stages.add(new GeneratorStage<>());
+        done.enabled = editor!=null;//editor is null for the discord bot
         done.addAction(() -> {
             running = false;
             editor.multiblock.action(new GenerateAction(this.multiblock.export(editor.multiblock.configuration)), true, false);
@@ -592,8 +593,9 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         }
     }
     private ArrayList<GenerationThread> generationThreads = new ArrayList<>();
-    private void start(){
+    public void start(){
         generator.reset();
+        running = true;
         Thread thread = new Thread(() -> {
             while(running){
                 try{

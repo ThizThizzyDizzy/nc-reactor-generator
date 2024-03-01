@@ -1,8 +1,9 @@
 package net.ncplanner.plannerator.discord.keyword;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 public class KeywordConfiguration extends Keyword{
     public Configuration config;
     public KeywordConfiguration(){
@@ -26,7 +27,10 @@ public class KeywordConfiguration extends Keyword{
     }
     @Override
     public String getRegex(){
-        return "po3|e2e|aapn|sf4";
+        ArrayList<String> options = new ArrayList<>();
+        for(Configuration c : Configuration.configurations)options.addAll(c.alternatives);
+        if(options.isEmpty())return null;
+        return String.join("|", options);
     }
     @Override
     public Keyword newInstance(){
