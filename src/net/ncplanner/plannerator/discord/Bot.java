@@ -60,6 +60,7 @@ import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
+import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
@@ -335,8 +336,6 @@ public class Bot extends ListenerAdapter{
                     }
                 }
                 if(formats.isEmpty()){
-                    if(multiblock.getDefinitionName().contains("Underhaul"))formats.add(FileWriter.HELLRAGE);
-                    formats.add(FileWriter.LEGACY_NCPF);
                     ncpfFormats.add(NCPFFileWriter.formats.get(0));
                 }
                 formats.add(FileWriter.PNG);
@@ -419,6 +418,8 @@ public class Bot extends ListenerAdapter{
                             CircularStream stream = new CircularStream(1024*1024);//1MB
                             CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+".ncpf."+writer.getExtension()).submit();
                             try{
+                                NCPFWriter.format = writer;
+                                FileWriter.write(ncpf, stream, FileWriter.NCPF);
                                 writer.write(pureNCPF, stream);
                             }catch(Exception ex){
                                 printErrorMessage(channel, "Failed to write file", ex);

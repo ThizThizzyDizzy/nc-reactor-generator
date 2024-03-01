@@ -381,7 +381,7 @@ public class MenuMain extends Menu{
             changelog = ex.getClass().getName()+": "+ex.getMessage();
         }
     }
-    private void imprt(Project project, FormatWriter writer, File file, String filename){
+    private void exprt(Project project, FormatWriter writer, File file, String filename){
         FileWriter.write(project, file, writer);
         new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
     }
@@ -626,8 +626,8 @@ public class MenuMain extends Menu{
                 }else{
                     Core.filename = filename;
                     File file = new File(filename+"."+extensions[0]);
-                    if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> imprt(ncpf, writer, file, filename+"."+extensions[0]), true).open();
-                    else imprt(ncpf, writer, file, filename+"."+extensions[0]);
+                    if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> exprt(ncpf, writer, file, filename+"."+extensions[0]), true).open();
+                    else exprt(ncpf, writer, file, filename+"."+extensions[0]);
                 }
             }).open();
         };
