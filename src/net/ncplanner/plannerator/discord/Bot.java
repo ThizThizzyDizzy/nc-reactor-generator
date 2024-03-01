@@ -378,7 +378,7 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     String configName = Core.project.getConfigName();
-                    generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip(), false).build()).complete();
+                    generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).complete();
                     int time = 0;
                     int interval = 1500;//1.5 sec
                     int timeout = 300000;//5 minutes
@@ -391,7 +391,7 @@ public class Bot extends ListenerAdapter{
                         }
                         time+=interval;
                         if(!generator.running)break;
-                        generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip(), false).build()).queue();
+                        generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).queue();
                         if(time>timeout)break;
                     }
                     generator.running = false;
@@ -399,7 +399,7 @@ public class Bot extends ListenerAdapter{
                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
                         generateMessage.editMessage(createEmbed("No "+multiblockInstance.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
                     }else{
-                        generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()).addField(multiblockInstance.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
+                        generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()).addField(multiblockInstance.getGeneralName(), finalMultiblock.getBotTooltip()+"\n"+generator.generator.getStatus().split("\\|")[1], false).build()).queue();
                         Project ncpf = new Project();
                         String name = UUID.randomUUID().toString();
                         ncpf.metadata.put("Author", "S'plodo-Bot");
