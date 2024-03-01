@@ -21,7 +21,7 @@ public class KeywordMultiblock extends Keyword{
         text = input.replaceFirst("((?<!pre[ -])(?<!pre)overhaul)", "Overhaul")
                     .replaceFirst("(pre[ -]?over|under)haul", "Underhaul");
         text = text.toLowerCase(Locale.ROOT).replace(" ", "").replace("-", "").replace("reactor", "").replace("solidfueled", "sfr").replace("moltensalt", "msr");
-        if(!text.startsWith("Underhaul")&&!text.startsWith("Overhaul"))text = "Underhaul"+text;
+        if(!text.startsWith("underhaul")&&!text.startsWith("overhaul"))text = "Underhaul"+text;
         text = text.replaceFirst("haul", "haul ");
         return true;
     }
