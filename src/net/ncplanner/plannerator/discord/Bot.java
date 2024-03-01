@@ -2,10 +2,15 @@ package net.ncplanner.plannerator.discord;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -21,14 +26,17 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.discord.keyword.KeywordBlind;
 import net.ncplanner.plannerator.discord.keyword.KeywordBlockRange;
 import net.ncplanner.plannerator.discord.keyword.KeywordConfiguration;
 import net.ncplanner.plannerator.discord.keyword.KeywordCube;
@@ -37,10 +45,24 @@ import net.ncplanner.plannerator.discord.keyword.KeywordFormat;
 import net.ncplanner.plannerator.discord.keyword.KeywordFuel;
 import net.ncplanner.plannerator.discord.keyword.KeywordMultiblock;
 import net.ncplanner.plannerator.discord.keyword.KeywordPriority;
+import net.ncplanner.plannerator.discord.keyword.KeywordSmores;
 import net.ncplanner.plannerator.discord.keyword.KeywordSymmetry;
+import net.ncplanner.plannerator.discord.play.Action;
 import net.ncplanner.plannerator.discord.play.Game;
 import net.ncplanner.plannerator.discord.play.PlayBot;
 import net.ncplanner.plannerator.discord.play.SmoreBot;
+import net.ncplanner.plannerator.discord.play.action.SmoreAction;
+import net.ncplanner.plannerator.discord.play.action.SmoreLordAction;
+import net.ncplanner.plannerator.discord.play.action.SnoozeAction;
+import net.ncplanner.plannerator.discord.play.game.Hangman;
+import net.ncplanner.plannerator.discord.play.game.HeatsinkBattle;
+import net.ncplanner.plannerator.discord.play.game.StopReason;
+import net.ncplanner.plannerator.discord.play.smivilization.Hut;
+import net.ncplanner.plannerator.discord.play.smivilization.HutBunch;
+import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
+import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
+import net.ncplanner.plannerator.discord.play.smivilization.HutType;
+import net.ncplanner.plannerator.discord.play.smivilization.Placement;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
@@ -82,17 +104,17 @@ public class Bot extends ListenerAdapter{
     private static Guild guild = null;
     public static final ArrayList<Design> storedDesigns = new ArrayList<>();
     static{
-//        botCommands.add(new Command("debug"){
-//            @Override
-//            public String getHelpText(){
-//                return "Toggles Debug Mode";
-//            }
-//            @Override
-//            public void run(User user, MessageChannel channel, String args, boolean debug){
-//                Bot.debug = !Bot.debug;
-//                channel.sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
-//            }
-//        });
+        botCommands.add(new Command("debug"){
+            @Override
+            public String getHelpText(){
+                return "Toggles Debug Mode";
+            }
+            @Override
+            public void run(User user, MessageChannel channel, String args, boolean debug){
+                Bot.debug = !Bot.debug;
+                channel.sendMessage("Debug mode **"+(Bot.debug?"Enabled":"Disabled")+"**").queue();
+            }
+        });
         botCommands.add(new Command("help"){
             @Override
             public String getHelpText(){
@@ -460,398 +482,30 @@ public class Bot extends ListenerAdapter{
                 addKeyword(new KeywordBlockRange());
             }
         });
-        /*
-        botCommands.add(new KeywordCommand("find", "search"){
-            @Override
-            public String getHelpText(){
-                return "Searches for a stored reactor that matches the given specifics. Uses same syntax as -generate";
-            }
-            @Override
-            public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
-                boolean underhaul = false;
-                boolean overhaul = false;
-                KeywordMultiblock multiblockKeyword = null;
-                Configuration configuration = null;
-                ArrayList<Range<String>> stringRanges = new ArrayList<>();
-                ArrayList<String> fuelStrings = new ArrayList<>();
-                ArrayList<String> priorityStrings = new ArrayList<>();
-                ArrayList<String> symmetryStrings = new ArrayList<>();
-                ArrayList<String> formatStrings = new ArrayList<>();
-                int x = 0, y = 0, z = 0;
-                //<editor-fold defaultstate="collapsed" desc="Keyword Scanning">
-                for(Keyword keyword : keywords){
-                    if(keyword instanceof KeywordOverhaul){
-                        overhaul = true;
-                    }else if(keyword instanceof KeywordUnderhaul){
-                        underhaul = true;
-                    }else if(keyword instanceof KeywordConfiguration){
-                        if(configuration!=null){
-                            channel.sendMessage("Please choose no more than one configuration!").queue();
-                            return;
-                        }
-                        configuration = ((KeywordConfiguration)keyword).config;
-                    }else if(keyword instanceof KeywordMultiblock){
-                        if(multiblockKeyword!=null){
-                            channel.sendMessage("Please choose no more than one multiblock type!").queue();
-                            return;
-                        }
-                        multiblockKeyword = (KeywordMultiblock)keyword;
-                    }else if(keyword instanceof KeywordCube){
-                        KeywordCube cube = (KeywordCube)keyword;
-                        if(x==0&&y==0&&z==0){
-                            x = y = z = cube.size;
-                        }else{
-                            channel.sendMessage("You may only choose one size!").queue();
-                            return;
-                        }
-                    }else if(keyword instanceof KeywordCuboid){
-                        KeywordCuboid cuboid = (KeywordCuboid)keyword;
-                        if(x==0&&y==0&&z==0){
-                            x = cuboid.x;
-                            y = cuboid.y;
-                            z = cuboid.z;
-                        }else{
-                            channel.sendMessage("You may only choose one size!").queue();
-                            return;
-                        }
-                    }else if(keyword instanceof KeywordBlockRange){
-                        KeywordBlockRange range = (KeywordBlockRange)keyword;
-                        stringRanges.add(new Range(range.block, range.min, range.max));
-                    }else if(keyword instanceof KeywordFuel){
-                        fuelStrings.add(((KeywordFuel)keyword).fuel);
-                    }else if(keyword instanceof KeywordPriority){
-                        priorityStrings.add(((KeywordPriority)keyword).input);
-                    }else if(keyword instanceof KeywordSymmetry){
-                        symmetryStrings.add(((KeywordSymmetry)keyword).input);
-                    }else if(keyword instanceof KeywordFormat){
-                        formatStrings.add(((KeywordFormat)keyword).input);
-                    }
-                }
-//</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="Validation">
-                if(!(underhaul||overhaul))underhaul = true;
-                if(configuration==null)configuration = Configuration.configurations.get(0);
-                if(underhaul&&overhaul){
-                    channel.sendMessage("Please choose either `underhaul` or `overhaul`, not both!").queue();
-                    return;
-                }
-                if(configuration.underhaul==null&&underhaul){
-                    channel.sendMessage("`"+configuration.name+" doesn't have an Underhaul configuration!").queue();
-                    return;
-                }
-                if(configuration.overhaul==null&&overhaul){
-                    channel.sendMessage("`"+configuration.name+" doesn't have an Overhaul configuration!").queue();
-                    return;
-                }
-                Multiblock multiblock = null;
-                if(multiblockKeyword==null){
-                    multiblockKeyword = new KeywordMultiblock();
-                    multiblockKeyword.read("SFR");
-                }
-                Multiblock template = multiblockKeyword.getMultiblock(overhaul);
-                if(template==null){
-                    channel.sendMessage("Unknown multiblock: `"+(overhaul?"Overhaul ":"Underhaul ")+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
-                    return;
-                }
-                multiblock = template.newInstance(configuration);
-                ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
-                if(multiblock.getDefinitionName().contains("Turbine"))z+=2;
-                if(x==0&&y==0&&z==0){
-                    //this is fine.
-                }else{
-                    if(multiblock instanceof CuboidalMultiblock){
-                        CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
-                        if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
-                            channel.sendMessage("Too small! Minimum size: "+cm.getMinX()+"x"+cm.getMinY()+"x"+cm.getMinZ()).queue();
-                            return;
-                        }
-                        if(x>cm.getMaxX()||y>cm.getMaxY()||z>cm.getMaxZ()){
-                            channel.sendMessage("Too big! Maximum size: "+cm.getMaxX()+"x"+cm.getMaxY()+"x"+cm.getMaxZ()).queue();
-                            return;
-                        }
-                    }
-                }
-                ArrayList<AbstractBlock> availableBlocks = new ArrayList<>();
-                multiblock.getAvailableBlocks(availableBlocks);
-                FOR:for(Range<String> range : stringRanges){
-                    for(AbstractBlock block : availableBlocks){
-                        if(block.roughMatch(range.obj)){
-                            blockRanges.add(new Range(block, range.min, range.max));
-                            continue FOR;
-                        }
-                    }
-                    channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
-                    return;
-                }
-                Object fuels = null;
-                ArrayList blockRecipes = null;
-                if(multiblock instanceof UnderhaulSFR){
-                    ArrayList<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel> underFuels = new ArrayList<>();
-                    FUEL:for(String str : fuelStrings){
-                        for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel f : configuration.underhaul.fissionSFR.allFuels){
-                            for(String nam : f.getLegacyNames()){
-                                if(nam.equalsIgnoreCase(str)){
-                                    underFuels.add(f);
-                                    continue FUEL;
-                                }
-                            }
-                        }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
-                        return;
-                    }
-                    fuels = underFuels.isEmpty()?null:underFuels;
-                }
-                if(multiblock instanceof OverhaulSFR){
-                    ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe> sfrRecipes = new ArrayList<>();
-                    FUEL:for(String str : fuelStrings){
-                        for(AbstractBlock b : availableBlocks){
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.allRecipes){
-                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
-                                    sfrRecipes.add(recipe);
-                                    continue FUEL;
-                                }
-                                for(String s : recipe.getLegacyNames()){
-                                    if(s.equalsIgnoreCase(str)){
-                                        sfrRecipes.add(recipe);
-                                        continue FUEL;
-                                    }
-                                }
-                            }
-                        }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
-                        return;
-                    }
-                    blockRecipes = sfrRecipes.isEmpty()?null:sfrRecipes;
-                }
-                if(multiblock instanceof OverhaulMSR){
-                    ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe> msrRecipes = new ArrayList<>();
-                    FUEL:for(String str : fuelStrings){
-                        for(AbstractBlock b : availableBlocks){
-                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe recipe : ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.allRecipes){
-                                if(recipe.getInputDisplayName().equalsIgnoreCase(str)){
-                                    msrRecipes.add(recipe);
-                                    continue FUEL;
-                                }
-                                for(String s : recipe.getLegacyNames()){
-                                    if(s.equalsIgnoreCase(str)){
-                                        msrRecipes.add(recipe);
-                                        continue FUEL;
-                                    }
-                                }
-                            }
-                        }
-                        channel.sendMessage("Unknown fuel: "+str).queue();
-                        return;
-                    }
-                    blockRecipes = msrRecipes.isEmpty()?null:msrRecipes;
-                }
-                Priority.Preset priority = null;
-                ArrayList<Priority> priorities = multiblock.getGenerationPriorities();
-                ArrayList<Priority.Preset> presets = multiblock.getGenerationPriorityPresets(priorities);
-                for(Priority.Preset preset : presets){
-                    for(String str : priorityStrings){
-                        for(String alternative : (ArrayList<String>)preset.alternatives){
-                            if(str.equalsIgnoreCase(alternative)){
-                                if(priority!=null){
-                                    channel.sendMessage("You can only target one priority at a time!").queue();
-                                    return;
-                                }
-                                priority = preset;
-                            }
-                        }
-                    }
-                }
-                if(priority==null)priority = presets.get(0);
-                priority.set(priorities);
-//</editor-fold>
-                //<editor-fold defaultstate="collapsed" desc="pre-calculations">
-                ArrayList<Symmetry> symmetries = new ArrayList<>();
-                ArrayList<Symmetry> availableSymmetries = multiblock.getSymmetries();
-                for(Symmetry symmetry : availableSymmetries){
-                    for(String sym : symmetryStrings){
-                        if(symmetry instanceof AxialSymmetry){
-                            if(((AxialSymmetry)symmetry).matches(sym)){
-                                symmetries.add(symmetry);
-                            }
-                        }else if(symmetry instanceof CoilSymmetry){
-                            if(((CoilSymmetry)symmetry).matches(sym)){
-                                symmetries.add(symmetry);
-                            }
-                        }else{
-                            if(symmetry.name.equalsIgnoreCase(sym))symmetries.add(symmetry);
-                        }
-                    }
-                }
-                ArrayList<FormatWriter> formats = new ArrayList<>();
-                for(String format : formatStrings){
-                    for(FormatWriter writer : FileWriter.formats){
-                        for(String extention : writer.getFileFormat().extensions){
-                            if(format.toLowerCase(Locale.ROOT).contains(extention)){
-                                formats.add(writer);
-                                break;
-                            }
-                        }
-                    }
-                }
-                if(formats.isEmpty()){
-                    formats.add(FileWriter.HELLRAGE);
-                    formats.add(FileWriter.LEGACY_NCPF);
-                }
-                formats.add(FileWriter.PNG);
-//</editor-fold>
-                final Multiblock mb = multiblock;
-                final Configuration cfg = configuration;
-                final int X = x;
-                final int Y = y;
-                final int Z = z;
-                final Object feuls = fuels;
-                //<editor-fold defaultstate="collapsed" desc="Searching">
-                Thread t = new Thread(() -> {
-                    String configName = cfg.getShortName();
-                    Multiblock finalMultiblock = null;
-                    int total = 0;
-                    synchronized(storedMultiblocks){
-                        for(LegacyNCPFFile ncpf : storedMultiblocks){
-                            MULTIBLOCK:for(Multiblock m : ncpf.multiblocks){
-                                if(ncpf.configuration==null){
-                                    m = m.copy();
-                                    try{
-                                        m.convertTo(cfg);
-                                    }catch(Exception ex){
-                                        continue;
-                                    }
-                                }
-                                if(!m.getConfiguration().nameMatches(cfg))continue;//wrong configuration
-                                m = m.copy();
-                                try{
-                                    m.convertTo(cfg);
-                                }catch(Exception ex){
-                                    continue;
-                                }
-                                if(!m.getDefinitionName().equals(mb.getDefinitionName()))continue;//wrong multiblock type
-                                if(X!=0&&Y!=0&&Z!=0){
-                                    if(m instanceof CuboidalMultiblock){
-                                        CuboidalMultiblock cm = (CuboidalMultiblock)m;
-                                        if(cm.getInternalWidth()!=X||cm.getInternalHeight()!=Y||cm.getInternalDepth()!=Z)continue;//wrong size
-                                    }
-                                }
-                                for(Symmetry sym : symmetries){
-                                    if(!sym.check(m))continue MULTIBLOCK;//symmetry doesn't match
-                                }
-                                if(feuls!=null){
-                                    if(m instanceof UnderhaulSFR){
-                                        boolean yay = false;
-                                        for(net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel f : (ArrayList<net.ncplanner.plannerator.multiblock.configuration.underhaul.fissionsfr.Fuel>)feuls){
-                                            if(((UnderhaulSFR)m).fuel.equals(f))yay = true;
-                                        }
-                                        if(!yay)continue;
-                                    }
-                                    if(m instanceof OverhaulSFR){
-                                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe fuel : ((OverhaulSFR)m).getRecipeCounts().keySet()){
-                                            boolean yay = false;
-                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe f : (ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionsfr.BlockRecipe>)feuls){
-                                                if(fuel.equals(f))yay = true;
-                                            }
-                                            if(!yay)continue MULTIBLOCK;
-                                        }
-                                    }
-                                    if(m instanceof OverhaulMSR){
-                                        for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe fuel : ((OverhaulMSR)m).getRecipeCounts().keySet()){
-                                            boolean yay = false;
-                                            for(net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe f : (ArrayList<net.ncplanner.plannerator.multiblock.configuration.overhaul.fissionmsr.BlockRecipe>)feuls){
-                                                if(fuel.equals(f))yay = true;
-                                            }
-                                            if(!yay)continue MULTIBLOCK;
-                                        }
-                                    }
-                                }
-                                for(Range<AbstractBlock> range : blockRanges){
-                                    int count = m.count(range.obj);
-                                    if(count<range.min)continue MULTIBLOCK;
-                                    if(count>range.max)continue MULTIBLOCK;
-                                }
-                                m.recalculate();
-                                if(finalMultiblock==null||m.isBetterThan(finalMultiblock, priorities))finalMultiblock = m;
-                            }
-                        }
-                    }
-                    if(finalMultiblock==null||finalMultiblock.isEmpty()){
-                        channel.sendMessage(createEmbed("No "+mb.getGeneralName().toLowerCase(Locale.ROOT)+" was found. try `-generate` to make a new "+mb.getGeneralName().toLowerCase(Locale.ROOT)+".").build()).queue();
-                    }else{
-                        LegacyNCPFFile ncpf = new LegacyNCPFFile();
-                        ncpf.multiblocks.add(finalMultiblock);
-                        ncpf.configuration = PartialConfiguration.generate(finalMultiblock.getConfiguration(), ncpf.multiblocks);
-                        channel.sendMessage(createEmbed("Found "+(configName==null?"":configName+" ")+mb.getGeneralName()).addField(mb.getGeneralName(), finalMultiblock.getBotTooltip(), false).build()).queue();
-                        for(FormatWriter writer : formats){
-                            if(writer.isMultiblockSupported(finalMultiblock)){
-                                CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+finalMultiblock.getDimensionsStr()+" "+mb.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
-                                try{
-                                    writer.write(ncpf, stream);
-                                }catch(Exception ex){
-                                    printErrorMessage(channel, "Failed to write file", ex);
-                                    submit.cancel(true);
-                                    stream.close();
-                                }
-                            }
-                        }
-                    }
-                });
-                t.setDaemon(true);
-                t.setName("Discord Bot Search Thread");
-                t.start();
-//</editor-fold>
-            }
-            @Override
-            public void addKeywords(){
-                addKeyword(new KeywordCuboid());
-                addKeyword(new KeywordCube());
-                addKeyword(new KeywordUnderhaul());
-                addKeyword(new KeywordOverhaul());
-                addKeyword(new KeywordSymmetry());
-                addKeyword(new KeywordConfiguration());
-                addKeyword(new KeywordFormat());
-                addKeyword(new KeywordPriority());
-                addKeyword(new KeywordMultiblock());
-                addKeyword(new KeywordFuel());
-                addKeyword(new KeywordBlockRange());
-            }
-        });
         //game commands
         playCommands.add(new KeywordCommand("hangman"){
             @Override
             public void addKeywords(){
-                addKeyword(new KeywordUnderhaul());
-                addKeyword(new KeywordOverhaul());
                 addKeyword(new KeywordConfiguration());
                 addKeyword(new KeywordMultiblock());
                 addKeyword(new KeywordBlind());
             }
             @Override
             public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
-                boolean underhaul = false;
-                boolean overhaul = false;
                 boolean blind = false;
                 ArrayList<KeywordMultiblock> multiKeywords = new ArrayList<>();
                 for(Keyword k :keywords){
-                    if(k instanceof KeywordUnderhaul)underhaul = true;
-                    if(k instanceof KeywordOverhaul)overhaul = true;
                     if(k instanceof KeywordMultiblock)multiKeywords.add((KeywordMultiblock)k);
                     if(k instanceof KeywordBlind)blind = true;
                 }
-                if(!underhaul&&!overhaul){
-                    underhaul = overhaul = true;
-                }
                 Set<Multiblock> allowedMultiblocks = new HashSet<>();
                 for(KeywordMultiblock mk : multiKeywords){
-                    if(overhaul==true)allowedMultiblocks.add(mk.getMultiblock(true));
-                    if(underhaul==true)allowedMultiblocks.add(mk.getMultiblock(false));
+                    allowedMultiblocks.add(mk.getMultiblock());
                 }
                 allowedMultiblocks.remove(null);
                 if(allowedMultiblocks.isEmpty()){
                     for(Multiblock m : Core.multiblockTypes){
-                        if(m.getDefinitionName().contains("Overhaul")&&overhaul)allowedMultiblocks.add(m);
-                        if(m.getDefinitionName().contains("Underhaul")&&underhaul)allowedMultiblocks.add(m);
+                        allowedMultiblocks.add(m);
                     }
                 }
                 PlayBot.play(channel, new Hangman(blind, new ArrayList<>(allowedMultiblocks)));
@@ -860,20 +514,10 @@ public class Bot extends ListenerAdapter{
             public String getHelpText(){
                 return "Play some Hangman";
             }
-//            @Override
-//            public String getHelpText(){
-//                return "Play some Hangman";
-//            }
-//            @Override
-//            public void run(User user, MessageChannel channel, String args, boolean debug){
-//                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
-//            }
         });
         playCommands.add(new KeywordCommand("battle", "heatsinkbattle", "coolingbattle", "heatingbattle", "heaterbattle", "coolerbattle", "heatbattle"){
             @Override
             public void addKeywords(){
-                addKeyword(new KeywordUnderhaul());
-                addKeyword(new KeywordOverhaul());
                 addKeyword(new KeywordConfiguration());
                 addKeyword(new KeywordMultiblock());
                 addKeyword(new KeywordSmores());
@@ -884,29 +528,20 @@ public class Bot extends ListenerAdapter{
                 if(game instanceof HeatsinkBattle){
                     ((HeatsinkBattle)game).addPlayer(user);
                 }else{
-                    boolean underhaul = false;
-                    boolean overhaul = false;
                     ArrayList<KeywordMultiblock> multiKeywords = new ArrayList<>();
                     int smores = 0;
                     for(Keyword k :keywords){
-                        if(k instanceof KeywordUnderhaul)underhaul = true;
-                        if(k instanceof KeywordOverhaul)overhaul = true;
                         if(k instanceof KeywordMultiblock)multiKeywords.add((KeywordMultiblock)k);
                         if(k instanceof KeywordSmores)smores = ((KeywordSmores)k).numSmores;
                     }
-                    if(!underhaul&&!overhaul){
-                        underhaul = overhaul = true;
-                    }
                     Set<Multiblock> allowedMultiblocks = new HashSet<>();
                     for(KeywordMultiblock mk : multiKeywords){
-                        if(overhaul==true)allowedMultiblocks.add(mk.getMultiblock(true));
-                        if(underhaul==true)allowedMultiblocks.add(mk.getMultiblock(false));
+                        allowedMultiblocks.add(mk.getMultiblock());
                     }
                     allowedMultiblocks.remove(null);
                     if(allowedMultiblocks.isEmpty()){
                         for(Multiblock m : Core.multiblockTypes){
-                            if(m.getDefinitionName().contains("Overhaul")&&overhaul)allowedMultiblocks.add(m);
-                            if(m.getDefinitionName().contains("Underhaul")&&underhaul)allowedMultiblocks.add(m);
+                            allowedMultiblocks.add(m);
                         }
                     }
                     HeatsinkBattle battle = new HeatsinkBattle(new ArrayList<>(allowedMultiblocks)).setSmores(smores);
@@ -918,14 +553,6 @@ public class Bot extends ListenerAdapter{
             public String getHelpText(){
                 return "Play some Hangman";
             }
-//            @Override
-//            public String getHelpText(){
-//                return "Play some Hangman";
-//            }
-//            @Override
-//            public void run(User user, MessageChannel channel, String args, boolean debug){
-//                PlayBot.play(channel, new Hangman(args.trim().equalsIgnoreCase("blind")));
-//            }
         });
         //smore commands
         playCommands.add(new Command("help", "smelp"){
@@ -2104,7 +1731,6 @@ public class Bot extends ListenerAdapter{
         };
         botCommands.add(cookie);
         playCommands.add(cookie);
-        */
     }
     private static String nick(Member member){
         if(member==null)return ":shrug:";

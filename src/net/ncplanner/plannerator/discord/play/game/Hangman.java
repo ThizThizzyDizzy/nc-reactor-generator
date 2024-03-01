@@ -12,35 +12,35 @@ import net.ncplanner.plannerator.discord.play.Game;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
-import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class Hangman extends Game{
     public Multiblock basis;
     public Multiblock current;
     public ArrayList<AbstractBlock> guesses = new ArrayList<>();
     public int badGuesses;
-    private final Configuration config;
     private final int maxGuesses;
     private boolean usesActive = false;
     private final boolean blind;
     public HashSet<AbstractBlock> silent = new HashSet<>();
+    private NCPFConfigurationContainer config;
     public Hangman(boolean blind, ArrayList<Multiblock> allowedMultiblocks){
         super("Hangman");
         this.blind = blind;
         ArrayList<Multiblock> multis = new ArrayList<>();
-        synchronized(Bot.storedMultiblocks){
-            for(LegacyNCPFFile ncpf : Bot.storedMultiblocks){
-                multis.addAll(ncpf.multiblocks);
+        synchronized(Bot.storedDesigns){
+            for(Design d : Bot.storedDesigns){
+                multis.add(((MultiblockDesign)d).toMultiblock());
             }
         }
         for(Iterator<Multiblock> it = multis.iterator(); it.hasNext();){
@@ -56,14 +56,17 @@ public class Hangman extends Game{
             if(!isAllowed)it.remove();
         }
         if(multis.isEmpty()){
-            config = null;
             maxGuesses = 0;
             return;
         }
         basis = multis.get(new Random().nextInt(multis.size())).copy();
         this.config = basis.configuration;
         basis.recalculate();
-        new ClearInvalid().apply(basis, null);
+        basis.forEachPosition((x, y, z) -> {
+            AbstractBlock b = basis.getBlock(x, y, z);
+            if(b==null)return;
+            if(!b.isValid())basis.setBlock(x, y, z, null);
+        });
         if(basis instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)basis).buildDefaultCasing();
         }
@@ -123,9 +126,9 @@ public class Hangman extends Game{
     @Override
     public void onMessage(Message message){
         if(message.getAuthor().getIdLong()==210445638532333569l&&message.getContentRaw().equals("hangman_dump")){
-            message.getChannel().sendMessage("Basis configuration: "+ots(basis.getConfiguration())+" "+basis.configuration.toString()+"\n"+
-                    "Current configuration: "+ots(current.getConfiguration())+" "+current.configuration.toString()+"\n"+
-                    "This configuration: "+ots(config)+" "+config.toString()).queue();
+            message.getChannel().sendMessage("Basis configuration: "+basis.getConfiguration()+" "+basis.configuration.toString()+"\n"+
+                    "Current configuration: "+current.getConfiguration()+" "+current.configuration.toString()+"\n"+
+                    "This configuration: "+config+" "+config.toString()).queue();
             String dump = "";
             ArrayList<AbstractBlock> blocks = new ArrayList<>();
             basis.getAvailableBlocks(blocks);
@@ -149,20 +152,18 @@ public class Hangman extends Game{
             guess(message.getChannel(), searched.get(0));
         }
     }
-    private void guess(MessageChannel channel, IBlockTemplate b){
+    private void guess(MessageChannel channel, NCPFElement b){
         guess(channel, findBlock(b), false);
     }
-    private void silentGuess(MessageChannel channel, IBlockTemplate b){
+    private void silentGuess(MessageChannel channel, NCPFElement b){
         guess(channel, findBlock(b), true);
     }
-    private AbstractBlock findBlock(IBlockTemplate template){
-        if(template==null)return null;
+    private AbstractBlock findBlock(NCPFElement element){
+        if(element==null)return null;
         ArrayList<AbstractBlock> blocks = new ArrayList<>();
         basis.getAvailableBlocks(blocks);
         for(AbstractBlock b : blocks){
-            if(b instanceof ITemplateAccess){
-                if(((ITemplateAccess)b).getTemplate()==template)return b;
-            }
+            if(b.getTemplate().definition.matches(element.definition))return b;
         }
         return null;
     }
@@ -176,12 +177,24 @@ public class Hangman extends Game{
         if(b==null)return;//ignore null blocks
         if(!silent){
             if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
-                silentGuess(channel, ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.port);
-                silentGuess(channel, ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template.parent);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement template = ((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)b).template;
+                if(template.recipePorts!=null){
+                    silentGuess(channel, template.recipePorts.input.block);
+                    silentGuess(channel, template.recipePorts.output.block);
+                }
+                silentGuess(channel, template.parent);
+                silentGuess(channel, template.toggled);
+                silentGuess(channel, template.unToggled);
             }
             if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block){
-                silentGuess(channel, ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.port);
-                silentGuess(channel, ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template.parent);
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement template = ((net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)b).template;
+                if(template.recipePorts!=null){
+                    silentGuess(channel, template.recipePorts.input.block);
+                    silentGuess(channel, template.recipePorts.output.block);
+                }
+                silentGuess(channel, template.parent);
+                silentGuess(channel, template.toggled);
+                silentGuess(channel, template.unToggled);
             }
         }
         update();
@@ -236,10 +249,7 @@ public class Hangman extends Game{
             if(!blind&&!silent)exportPng(generateNCPF(current), channel);
         }
     }
-    private void exportPng(LegacyNCPFFile ncpf, MessageChannel channel){
-        for(Multiblock m : ncpf.multiblocks){
-            m.recalculate();
-        }
+    private void exportPng(Project ncpf, MessageChannel channel){
         FormatWriter format = FileWriter.PNG;
         CircularStream stream = new CircularStream(1024*1024);//1MB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), "hangman."+format.getExtensions()[0]).submit();
@@ -251,18 +261,16 @@ public class Hangman extends Game{
             stream.close();
         }
     }
-    private LegacyNCPFFile generateNCPF(Multiblock multi){
-        LegacyNCPFFile file = new LegacyNCPFFile();
+    private Project generateNCPF(Multiblock multi){
+        multi.recalculate();
+        Project file = new Project();
         multi.showDetails = false;
-        file.configuration = config;
-        file.multiblocks.add(multi);
+        file.configuration = file.conglomeration = config;
+        file.designs.add(multi.toDesign());
         return file;
     }
     @Override
     public boolean canAnyoneStop(){
         return true;
-    }
-    private String ots(Configuration config){
-        return config.getClass().getName()+"#"+config.hashCode();
     }
 }

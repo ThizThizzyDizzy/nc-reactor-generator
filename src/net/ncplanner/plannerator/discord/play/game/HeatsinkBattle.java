@@ -16,22 +16,21 @@ import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.configuration.Configuration;
-import net.ncplanner.plannerator.multiblock.configuration.IBlockTemplate;
-import net.ncplanner.plannerator.multiblock.configuration.ITemplateAccess;
-import net.ncplanner.plannerator.multiblock.editor.ppe.ClearInvalid;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Searchable;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
-import net.ncplanner.plannerator.planner.file.LegacyNCPFFile;
+import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class HeatsinkBattle extends Game{
     public Multiblock basis;
     public Multiblock current;
-    private final Configuration config;
     public boolean started = false;
     private ArrayList<Long> players = new ArrayList<>();
     private ArrayList<String> playernames = new ArrayList<>();
@@ -44,17 +43,14 @@ public class HeatsinkBattle extends Game{
     private long smorePool = 0;
     private boolean splodoHasDonated = false;
     private int initialHeat;
+    private NCPFConfigurationContainer config;
     public HeatsinkBattle(ArrayList<Multiblock> allowedMultiblocks){
         super("Heatsink Battle");
         timeout = 600_000;//10 minutes
         ArrayList<Multiblock> multis = new ArrayList<>();
-        HashMap<Multiblock, Configuration> configs = new HashMap<>();
-        synchronized(Bot.storedMultiblocks){
-            for(LegacyNCPFFile ncpf : Bot.storedMultiblocks){
-                for(Multiblock multi : ncpf.multiblocks){
-                    configs.put(multi, ncpf.configuration);
-                }
-                multis.addAll(ncpf.multiblocks);
+        synchronized(Bot.storedDesigns){
+            for(Design d : Bot.storedDesigns){
+                multis.add(((MultiblockDesign)d).toMultiblock());
             }
         }
         for(Iterator<Multiblock> it = multis.iterator(); it.hasNext();){
@@ -70,10 +66,13 @@ public class HeatsinkBattle extends Game{
             return;
         }
         basis = multis.get(new Random().nextInt(multis.size())).copy();
-        this.config = configs.get(basis);
-        basis.configuration = config;//why is this here...?
+        this.config = basis.configuration;
         basis.recalculate();
-        new ClearInvalid().apply(basis, null);
+        basis.forEachPosition((x, y, z) -> {
+            AbstractBlock b = basis.getBlock(x, y, z);
+            if(b==null)return;
+            if(!b.isValid())basis.setBlock(x, y, z, null);
+        });
         if(basis instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)basis).buildDefaultCasing();
         }
@@ -265,10 +264,7 @@ public class HeatsinkBattle extends Game{
             }catch(NumberFormatException ex){}
         }
     }
-    private void exportPng(LegacyNCPFFile ncpf, MessageChannel channel){
-        for(Multiblock m : ncpf.multiblocks){
-            m.recalculate();
-        }
+    private void exportPng(Project ncpf, MessageChannel channel){
         FormatWriter format = FileWriter.PNG;
         CircularStream stream = new CircularStream(1024*1024);//1MB
         CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), "battle."+format.getExtensions()[0]).submit();
@@ -280,11 +276,12 @@ public class HeatsinkBattle extends Game{
             stream.close();
         }
     }
-    private LegacyNCPFFile generateNCPF(Multiblock multi){
-        LegacyNCPFFile file = new LegacyNCPFFile();
+    private Project generateNCPF(Multiblock multi){
+        multi.recalculate();
+        Project file = new Project();
         multi.showDetails = false;
-        file.configuration = config;
-        file.multiblocks.add(multi);
+        file.configuration = file.conglomeration = config;
+        file.designs.add(multi.toDesign());
         return file;
     }
     private void nextTurn(MessageChannel channel){
@@ -318,7 +315,7 @@ public class HeatsinkBattle extends Game{
     }
     private boolean isHeatsink(AbstractBlock b){
         if(b instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
-            if(((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)b).template.active!=null)return false;//no active allowed here
+            if(((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)b).template.activeCooler!=null)return false;//no active allowed here
             if(((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)b).isCooler())return true;
         }
         if(b instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
@@ -342,14 +339,14 @@ public class HeatsinkBattle extends Game{
         return -1;
     }
     private int countRainbowCredit(HashMap<BlockPos, Integer> credit, int i){
-        HashSet<IBlockTemplate> templates = new HashSet<>();
+        HashSet<NCPFElement> templates = new HashSet<>();
         for(BlockPos pos : credit.keySet()){
             if(credit.get(pos)!=i)continue;//that's for a different player
             if(!current.contains(pos.x, pos.y, pos.z))continue;//not in the reactor
             AbstractBlock b = current.getBlock(pos.x, pos.y, pos.z);
             if(b==null)continue;//air
             if(!b.isValid())continue;//not valid
-            templates.add(((ITemplateAccess)b).getTemplate());
+            templates.add(b.getTemplate());
         }
         return templates.size();
     }
