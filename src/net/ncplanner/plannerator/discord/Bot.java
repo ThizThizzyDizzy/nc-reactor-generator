@@ -266,7 +266,7 @@ public class Bot extends ListenerAdapter{
                 }
                 HashMap<Integer, NCPFElement> theMultiblockRecipes = new HashMap<>();
                 List<NCPFElement>[] multiblockRecipes = multiblock.getSpecificConfiguration().getMultiblockRecipes();
-                for(int i = 0; i<multiblockRecipes.length; i++){
+                MBR:for(int i = 0; i<multiblockRecipes.length; i++){
                     NCPFElement recipe = null;
                     RECIPE:for(String str : fuelStrings){
                         for(NCPFElement r : multiblockRecipes[i]){
@@ -282,7 +282,7 @@ public class Bot extends ListenerAdapter{
                             }
                         }
                         channel.sendMessage("Unknown multiblock recipe: "+str).queue();
-                        return;
+                        break MBR;
                     }
                     if(recipe==null)recipe = multiblockRecipes[i].get(0);
                     theMultiblockRecipes.put(i, recipe);
@@ -310,7 +310,7 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                     channel.sendMessage("Unknown block recipe: "+str).queue();
-                    return;
+                    break;
                 }
 //</editor-fold>
                 //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
@@ -345,7 +345,7 @@ public class Bot extends ListenerAdapter{
                 }
                 if(!blockRecipes.isEmpty())channel.sendMessage("TODO block recipes filtering").queue();//TODO block recipes filtering
 //</editor-fold>
-                generator = Core.gui.open(new MenuGenerator(Core.gui, null, multiblock));
+                generator = Core.gui.open(new MenuGenerator(Core.gui, null, multiblockInstance));
                 LiteGenerator gen = null;
                 for(String str : priorityStrings){
                     for(LiteGenerator g : generator.gens){
@@ -381,7 +381,7 @@ public class Bot extends ListenerAdapter{
                     generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).complete();
                     int time = 0;
                     int interval = 1500;//1.5 sec
-                    int timeout = 300000;//5 minutes
+                    int timeout = 600000;//10 minutes
                     while(true){
                         try{
                             Thread.sleep(interval);
