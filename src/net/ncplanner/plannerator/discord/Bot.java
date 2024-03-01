@@ -80,7 +80,7 @@ public class Bot extends ListenerAdapter{
     private static MenuGenerator generator;
     private static Message generateMessage;
     private static Guild guild = null;
-    public static final ArrayList<Project> storedMultiblocks = new ArrayList<>();
+    public static final ArrayList<Design> storedDesigns = new ArrayList<>();
     static{
 //        botCommands.add(new Command("debug"){
 //            @Override
@@ -364,15 +364,13 @@ public class Bot extends ListenerAdapter{
                 //<editor-fold defaultstate="collapsed" desc="Generation">
                 Thread t = new Thread(() -> {
                     generator.start();
-                    synchronized(storedMultiblocks){
-                        IMPORT:for(Project file : storedMultiblocks){
-                            for(Design d : file.designs){
-                                if(d instanceof MultiblockDesign){
-                                    Multiblock m = ((MultiblockDesign)d).toMultiblock();
-                                    if(m.getDefinitionName().equals(multiblockInstance.getDefinitionName())){
-                                        channel.sendMessage("TODO import multiblocks");//TODO import multiblocks
-                                        break IMPORT;
-                                    }
+                    synchronized(storedDesigns){
+                        for(Design d : storedDesigns){
+                            if(d instanceof MultiblockDesign){
+                                Multiblock m = ((MultiblockDesign)d).toMultiblock();
+                                if(m.getDefinitionName().equals(multiblockInstance.getDefinitionName())){
+                                    channel.sendMessage("TODO import multiblocks");//TODO import multiblocks
+                                    break;
                                 }
                             }
                         }
@@ -2200,26 +2198,12 @@ public class Bot extends ListenerAdapter{
                     }
                 });
                 if(ncpf!=null){
-                    if(ncpf.configuration!=null){
-                        if(!ncpf.configuration.nameMatches(Configuration.configurations.get(0))){
-                            System.err.println("Configuration "+ncpf.configuration.name+" does not match! Skipping "+att.getFileName());
-                            continue;
-                        }
-                        if(!ncpf.configuration.addons.isEmpty()){
-                            System.err.println("Configuration "+ncpf.configuration.getFullName()+" has addons! Skipping "+att.getFileName());
-                            continue;
-                        }
-                    }
-                    ncpf.configuration = Configuration.configurations.get(0);
-                    for(Multiblock m : ncpf.multiblocks){
-                        m.convertTo(ncpf.configuration);
-                    }
-                    synchronized(storedMultiblocks){
-                        ncpf.metadata.put("Original Source", message.getJumpUrl());
-                        for(Multiblock m : ncpf.multiblocks){
-                            m.metadata.put("Original Source", message.getJumpUrl());
-                        }
-                        storedMultiblocks.add(ncpf);
+                    for(Design d : ncpf.designs){
+                        if(!ncpf.isConfigEmpty())d.file = Core.project;
+                        MultiblockDesign design = (MultiblockDesign)d; 
+                        if(!ncpf.isConfigEmpty())((MultiblockDesign)d).convertElements();
+                        design.metadata.metadata.put("Original Source", message.getJumpUrl());
+                        storedDesigns.add(design);
                     }
                 }
             }catch(Exception ex){

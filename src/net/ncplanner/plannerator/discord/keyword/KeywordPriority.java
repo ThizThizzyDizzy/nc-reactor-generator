@@ -1,9 +1,6 @@
 package net.ncplanner.plannerator.discord.keyword;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.discord.Keyword;
 import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.planner.Core;
 public class KeywordPriority extends Keyword{
     public KeywordPriority(){
@@ -11,16 +8,7 @@ public class KeywordPriority extends Keyword{
     }
     @Override
     public boolean doRead(String input){
-        for(Multiblock m : Core.multiblockTypes){
-            ArrayList<Priority.Preset> presets = new ArrayList<>();
-            m.getGenerationPriorityPresets(m.getGenerationPriorities(), presets);
-            for(Priority.Preset preset : presets){
-                for(String s : (ArrayList<String>)preset.alternatives){
-                    if(input.equalsIgnoreCase(s))return true;
-                }
-            }
-        }
-        return false;
+        return true;
     }
     @Override
     public Color getColor(){
