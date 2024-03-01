@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -500,7 +501,7 @@ public class Core{
         
         int[] imgRGBData = new int[width*height];
         byte[] imgData = new byte[width*height*4];
-        imageBuffer.rewind();
+        ((Buffer)imageBuffer).rewind();
         imageBuffer.get(imgData);
         Image img = new Image(width, height);
         for(int i=0;i<imgRGBData.length;i++){
@@ -800,7 +801,7 @@ public class Core{
             byte[] data = output.toByteArray();
             ByteBuffer buffer = BufferUtils.createByteBuffer(data.length);
             buffer.put(data);
-            buffer.flip();
+            ((Buffer)buffer).flip();
             return buffer;
         }catch(IOException ex){
             throw new RuntimeException(ex);

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import net.ncplanner.plannerator.graphics.image.Color;
@@ -26,7 +27,7 @@ public class ImageIO{
         byte[] data = output.toByteArray();
         ByteBuffer buffer = BufferUtils.createByteBuffer(data.length);
         buffer.put(data);
-        buffer.flip();
+        ((Buffer)buffer).flip();
         IntBuffer width = BufferUtils.createIntBuffer(1);;
         IntBuffer height = BufferUtils.createIntBuffer(1);;
         ByteBuffer imageData = STBImage.stbi_load_from_memory(buffer, width, height, BufferUtils.createIntBuffer(1), 4);
@@ -44,7 +45,7 @@ public class ImageIO{
     }
     public static void write(Image image, OutputStream output) throws IOException{
         ByteBuffer imageData = BufferUtils.createByteBuffer(image.getWidth()*image.getHeight()*4);
-        imageData.mark();
+        ((Buffer)imageData).mark();
         for(int y = 0; y<image.getHeight(); y++){
             for(int x = 0; x<image.getWidth(); x++){
                 imageData.put((byte)image.getRed(x, y));
@@ -53,7 +54,7 @@ public class ImageIO{
                 imageData.put((byte)image.getAlpha(x, y));
             }
         }
-        imageData.reset();
+        ((Buffer)imageData).reset();
 //        File file = new File("temp.png");
 //        if(!STBImageWrite.stbi_write_png(file.getAbsolutePath(), image.getWidth(), image.getHeight(), 4, imageData, 0))throw new IOException("Failed to write image!");
 //        FileInputStream in = new FileInputStream(file);

@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.graphics.image;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Base64;
 import net.ncplanner.plannerator.planner.ImageIO;
@@ -88,7 +89,7 @@ public class Image{
                 data.put((byte)getAlpha(x, y));
             }
         }
-        data.rewind();
+        ((Buffer)data).rewind();
         return data;
     }
     public Image copy(){
