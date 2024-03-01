@@ -271,7 +271,7 @@ public class HeatsinkBattle extends Game{
         }
         FormatWriter format = FileWriter.PNG;
         CircularStream stream = new CircularStream(1024*1024);//1MB
-        CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), "battle."+format.getFileFormat().extensions[0]).submit();
+        CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), "battle."+format.getExtensions()[0]).submit();
         try{
             format.write(ncpf, stream);
         }catch(Exception ex){

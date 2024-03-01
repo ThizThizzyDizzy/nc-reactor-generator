@@ -17,6 +17,10 @@ public class NCPFWriter extends FormatWriter{
         return null;
     }
     @Override
+    public String[] getExtensions(){
+        return new String[]{format.getExtension()};
+    }
+    @Override
     public void write(Project ncpf, OutputStream stream){
         ncpf = ncpf.copyTo(Project::new);
         ncpf.makePartial();

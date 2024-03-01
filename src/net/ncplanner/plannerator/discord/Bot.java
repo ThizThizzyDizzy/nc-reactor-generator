@@ -50,6 +50,7 @@ import net.ncplanner.plannerator.multiblock.Range;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Core.BufferRenderer;
@@ -57,6 +58,8 @@ import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
+import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
+import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
@@ -312,9 +315,10 @@ public class Bot extends ListenerAdapter{
                 //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
                 if(!symmetryStrings.isEmpty())channel.sendMessage("TODO symmetry configuration").queue();//TODO symmetry configuration
                 ArrayList<FormatWriter> formats = new ArrayList<>();
+                ArrayList<NCPFFormatWriter> ncpfFormats = new ArrayList<>();
                 for(String format : formatStrings){
                     for(FormatWriter writer : FileWriter.formats){
-                        for(String extention : writer.getFileFormat().extensions){
+                        for(String extention : writer.getExtensions()){
                             if(format.toLowerCase(Locale.ROOT).contains(extention)){
                                 formats.add(writer);
                                 break;
@@ -322,10 +326,18 @@ public class Bot extends ListenerAdapter{
                         }
                     }
                 }
+                for(String format : formatStrings){
+                    for(NCPFFormatWriter writer : NCPFFileWriter.formats){
+                        if(format.toLowerCase(Locale.ROOT).contains(writer.getExtension())){
+                            ncpfFormats.add(writer);
+                            break;
+                        }
+                    }
+                }
                 if(formats.isEmpty()){
                     if(multiblock.getDefinitionName().contains("Underhaul"))formats.add(FileWriter.HELLRAGE);
                     formats.add(FileWriter.LEGACY_NCPF);
-                    formats.add(FileWriter.NCPF);
+                    ncpfFormats.add(NCPFFileWriter.formats.get(0));
                 }
                 formats.add(FileWriter.PNG);
                 Multiblock multiblockInstance = multiblock.newInstance(Core.project.conglomeration,x,y,z);
@@ -401,10 +413,23 @@ public class Bot extends ListenerAdapter{
                         ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
                         ncpf.designs.add(finalMultiblock.toDesign());
                         ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
+                        NCPFObject pureNCPF = new NCPFObject();
+                        ncpf.convertToObject(pureNCPF);
+                        for(NCPFFormatWriter writer : ncpfFormats){
+                            CircularStream stream = new CircularStream(1024*1024);//1MB
+                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+".ncpf."+writer.getExtension()).submit();
+                            try{
+                                writer.write(pureNCPF, stream);
+                            }catch(Exception ex){
+                                printErrorMessage(channel, "Failed to write file", ex);
+                                submit.cancel(true);
+                                stream.close();
+                            }
+                        }
                         for(FormatWriter writer : formats){
                             if(writer.isMultiblockSupported(finalMultiblock)){
                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+"."+writer.getFileFormat().extensions[0]).submit();
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+"."+writer.getExtensions()[0]).submit();
                                 try{
                                     writer.write(ncpf, stream);
                                 }catch(Exception ex){

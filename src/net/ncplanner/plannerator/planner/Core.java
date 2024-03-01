@@ -414,6 +414,7 @@ public class Core{
             });
         }
         gui.render2d(deltaTime);
+        if(Main.isBot)Bot.render2D();
     }
     public static long getFPS(){
         return FPStracker.size()/5;

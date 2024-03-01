@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 public abstract class FormatWriter{
     public abstract FileFormat getFileFormat();
+    public String[] getExtensions(){
+        return getFileFormat().extensions;
+    }
     public abstract void write(Project ncpf, OutputStream stream);
     public abstract boolean isMultiblockSupported(Multiblock multi);
     public void openExportSettings(Project ncpf, Runnable onExport){

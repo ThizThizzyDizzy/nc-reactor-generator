@@ -18,6 +18,5 @@ public class MenuDiscord extends Menu{
         super.drawBackground(deltaTime);
         exit.width = gui.getWidth();
         exit.height = gui.getHeight();
-        Bot.render2D();
     }
 }
