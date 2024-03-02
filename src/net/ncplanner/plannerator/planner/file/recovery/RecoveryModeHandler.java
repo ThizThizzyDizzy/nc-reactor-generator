@@ -38,6 +38,8 @@ public class RecoveryModeHandler implements RecoveryHandler{
         List<T> list = null;
         List<T> fallbackList = null;
         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement fallback = Core.project.getConfiguration(OverhaulSFRConfiguration::new).getElement(block.definition);
+        if(block.parent!=null)block = block.parent;
+        if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
         if(block.fuelCell!=null){
             list = (List<T>)block.fuels;
             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
@@ -57,6 +59,8 @@ public class RecoveryModeHandler implements RecoveryHandler{
         List<T> list = null;
         List<T> fallbackList = null;
         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement fallback = Core.project.getConfiguration(OverhaulMSRConfiguration::new).getElement(block.definition);
+        if(block.parent!=null)block = block.parent;
+        if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
         if(block.fuelVessel!=null){
             list = (List<T>)block.fuels;
             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;

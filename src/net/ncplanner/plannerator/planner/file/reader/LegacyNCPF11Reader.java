@@ -273,6 +273,7 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int y = 0; y<overhaulMSR.design[x].length; y++){
                 for(int z = 0; z<overhaulMSR.design[x][y].length; z++){
                     net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = overhaulMSR.design[x][y][z];
+                    if(block==null)continue;
                     if(!block.fuels.isEmpty()){
                         int rid = (int)blockRecipes.get(recipeIndex);
                         if(rid!=0)overhaulMSR.fuels[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
