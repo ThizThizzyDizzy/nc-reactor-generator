@@ -23,6 +23,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.ncpf.design.NCPFUnderhaulSFRDesign;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
@@ -138,11 +139,11 @@ public class LegacyNCPFWriter extends FormatWriter{
         ConfigList blocks = new ConfigList();
         for(BlockElement b : sfr.blocks){
             Config block = Config.newConfig();
-            block.set("name", b.definition.toString());
+            block.set("name", convertElementDefinition(b.definition));
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
             if(b.cooler!=null)block.set("cooling", b.cooler.cooling);
             if(b.activeCooler!=null){
-                block.set("active", b.activeCoolerRecipes.get(0).definition.toString());
+                block.set("active", convertElementDefinition(b.activeCoolerRecipes.get(0).definition));
                 block.set("cooling", b.activeCoolerRecipes.get(0).stats.cooling);
             }
             if(b.cooler!=null||b.activeCooler!=null){
@@ -164,7 +165,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         ConfigList fuels = new ConfigList();
         for(Fuel f : sfr.fuels){
             Config fuel = Config.newConfig();
-            fuel.set("name", f.definition.toString());//toString formats legacy metadata and whatnot
+            fuel.set("name", convertElementDefinition(f.definition));//toString formats legacy metadata and whatnot
             if(f.names.displayName!=null)fuel.set("displayName", f.names.displayName);
             fuel.set("power", f.stats.power);
             fuel.set("heat", f.stats.heat);
@@ -188,7 +189,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             if(b.port!=null)continue;//don't save ports, because UGH
             if(b.unToggled!=null)continue;//don't save output vents, because UGGGHHHH
             Config block = Config.newConfig();
-            block.set("name", b.definition.toString());
+            block.set("name", convertElementDefinition(b.definition));
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
             block.set("cluster", b.heatsink!=null||b.neutronShield!=null||b.conductor!=null||b.fuelCell!=null||b.irradiator!=null);
             block.set("createCluster", b.fuelCell!=null||b.irradiator!=null||b.neutronShield!=null);
@@ -211,7 +212,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", f.definition.toString());
+                    inputCfg.set("name", convertElementDefinition(f.definition));
                     if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     fuel.set("input", inputCfg);
@@ -235,7 +236,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 for( IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", r.definition.toString());
+                    inputCfg.set("name", convertElementDefinition(r.definition));
                     if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
@@ -298,7 +299,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement out = b.recipePorts.output.block;
-                portCfg.set("name", in.definition.toString());
+                portCfg.set("name", convertElementDefinition(in.definition));
                 if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
                 if(out.names.displayName!=null)portCfg.set("outputDisplayName", out.names.displayName);
@@ -312,7 +313,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         for(CoolantRecipe r : sfr.coolantRecipes){
             Config recipe = Config.newConfig();
             Config inputCfg = Config.newConfig();
-            inputCfg.set("name", r.definition.toString());
+            inputCfg.set("name", convertElementDefinition(r.definition));
             if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
@@ -336,7 +337,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : msr.blocks){
             if(b.port!=null)continue;//don't save ports, because UGH
             Config block = Config.newConfig();
-            block.set("name", b.definition.toString());
+            block.set("name", convertElementDefinition(b.definition));
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
             block.set("cluster", b.heater!=null||b.neutronShield!=null||b.conductor!=null||b.fuelVessel!=null||b.irradiator!=null);
             block.set("createCluster", b.fuelVessel!=null||b.irradiator!=null||b.neutronShield!=null);
@@ -353,7 +354,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", f.definition.toString());
+                    inputCfg.set("name", convertElementDefinition(f.definition));
                     if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
                     inputCfg.set("rate", 1);
@@ -378,7 +379,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", r.definition.toString());
+                    inputCfg.set("name", convertElementDefinition(r.definition));
                     if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
                     recipe.set("input", inputCfg);
@@ -441,7 +442,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement out = b.recipePorts.output.block;
-                portCfg.set("name", in.definition.toString());
+                portCfg.set("name", convertElementDefinition(in.definition));
                 if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
                 if(out.names.displayName!=null)portCfg.set("outputDisplayName", out.names.displayName);
@@ -466,7 +467,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         ConfigList blocks = new ConfigList();
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b : turbine.blocks){
             Config block = Config.newConfig();
-            block.set("name", b.definition.toString());
+            block.set("name", convertElementDefinition(b.definition));
             if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
             if(b.bearing!=null)block.set("bearing", true);
             if(b.shaft!=null)block.set("shaft", true);
@@ -517,7 +518,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         for(Recipe r : turbine.recipes){
             Config recipe = Config.newConfig();
             Config inputCfg = Config.newConfig();
-            inputCfg.set("name", r.definition.toString());
+            inputCfg.set("name", convertElementDefinition(r.definition));
             if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
             recipe.set("input", inputCfg);
@@ -759,5 +760,11 @@ public class LegacyNCPFWriter extends FormatWriter{
             config.set("recipe", cfg.recipes.indexOf(turbine.recipe));
         }
         return config;
+    }
+    private String convertElementDefinition(NCPFElementDefinition definition){
+        String str = definition.toString();
+        if(str.contains("["))str = str.substring(0, str.indexOf('['));
+        if(str.contains("{"))str = str.substring(0, str.indexOf('{'));
+        return str;
     }
 }
