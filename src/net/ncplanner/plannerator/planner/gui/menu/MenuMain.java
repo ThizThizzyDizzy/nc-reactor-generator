@@ -304,8 +304,8 @@ public class MenuMain extends Menu{
         saveFile.addAction(() -> {
             new MenuSaveDialog(gui, this).open();
         });
-        loadFile.addAction(new MenuLoad(gui, this, this::onOpened)::open);
-        importFile.addAction(new MenuImport(gui, this, this::onOpened)::open);
+        loadFile.addAction(()->new MenuLoad(gui, this, this::onOpened).open());
+        importFile.addAction(()->new MenuImport(gui, this, this::onOpened).open());
         for(FormatWriter writer : FileWriter.formats){
             FileFormat format = writer.getFileFormat();
             exportMultiblock.add(new Button(format.name, true, true).setTooltip(format.description)).addAction(() -> {
