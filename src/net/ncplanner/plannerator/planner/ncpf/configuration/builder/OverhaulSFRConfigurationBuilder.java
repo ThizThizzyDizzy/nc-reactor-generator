@@ -34,7 +34,7 @@ public class OverhaulSFRConfigurationBuilder{
         configuration = new OverhaulSFRConfiguration();
         configuration.metadata.name = name;
         configuration.metadata.version = version;
-        settings = configuration.settings;
+        settings = configuration.settings = new OverhaulSFRSettingsModule();
     }
     public OverhaulSFRConfiguration build(){
         return configuration;
