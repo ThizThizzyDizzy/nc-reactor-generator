@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
@@ -29,13 +31,17 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule
 public class OverhaulMSRConfigurationBuilder{
     private final OverhaulMSRConfiguration configuration;
     public OverhaulMSRSettingsModule settings;
+    private HashMap<HeaterModule, ArrayList<String>> pendingRules = new HashMap<>();
     public OverhaulMSRConfigurationBuilder(String name, String version){
         configuration = new OverhaulMSRConfiguration();
         configuration.metadata.name = name;
         configuration.metadata.version = version;
-        settings = configuration.settings;
+        settings = configuration.settings = new OverhaulMSRSettingsModule();
     }
     public OverhaulMSRConfiguration build(){
+        for(HeaterModule heater : pendingRules.keySet()){
+            for(String rule : pendingRules.get(heater))heater.rules.add(parsePlacementRule(rule).copyTo(NCPFPlacementRule::new));
+        }
         return configuration;
     }
     public BlockElement block(String name, String displayName, String texture){
@@ -82,7 +88,8 @@ public class OverhaulMSRConfigurationBuilder{
     public BlockElement heater(String name, String displayName, String texture, String rules){
         BlockElement block = block(name, displayName, texture);
         block.heater = new HeaterModule();
-        block.heater.rules.add(parsePlacementRule(rules).copyTo(NCPFPlacementRule::new));
+        if(!pendingRules.containsKey(block.heater))pendingRules.put(block.heater, new ArrayList<>());
+        pendingRules.get(block.heater).add(rules);
         return block;
     }
     public HeaterRecipe heaterRecipe(BlockElement block, String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){

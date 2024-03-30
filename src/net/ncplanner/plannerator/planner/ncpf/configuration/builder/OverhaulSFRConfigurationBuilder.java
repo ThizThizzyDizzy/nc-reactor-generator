@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
@@ -30,6 +32,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule
 public class OverhaulSFRConfigurationBuilder{
     private final OverhaulSFRConfiguration configuration;
     public OverhaulSFRSettingsModule settings;
+    private HashMap<HeatsinkModule, ArrayList<String>> pendingRules = new HashMap<>();
     public OverhaulSFRConfigurationBuilder(String name, String version){
         configuration = new OverhaulSFRConfiguration();
         configuration.metadata.name = name;
@@ -37,6 +40,9 @@ public class OverhaulSFRConfigurationBuilder{
         settings = configuration.settings = new OverhaulSFRSettingsModule();
     }
     public OverhaulSFRConfiguration build(){
+        for(HeatsinkModule sink : pendingRules.keySet()){
+            for(String rule : pendingRules.get(sink))sink.rules.add(parsePlacementRule(rule));
+        }
         return configuration;
     }
     public BlockElement block(String name, String displayName, String texture){
@@ -93,7 +99,8 @@ public class OverhaulSFRConfigurationBuilder{
         BlockElement block = block(name, displayName, texture);
         block.heatsink = new HeatsinkModule();
         block.heatsink.cooling = cooling;
-        block.heatsink.rules.add(parsePlacementRule(rules));
+        if(!pendingRules.containsKey(block.heatsink))pendingRules.put(block.heatsink, new ArrayList<>());
+        pendingRules.get(block.heatsink).add(rules);
         return block;
     }
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement cell(String name, String displayName, String texture){

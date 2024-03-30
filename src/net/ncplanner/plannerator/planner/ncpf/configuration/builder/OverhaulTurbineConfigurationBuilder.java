@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
@@ -23,13 +25,21 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModul
 public class OverhaulTurbineConfigurationBuilder{
     private final OverhaulTurbineConfiguration configuration;
     public OverhaulTurbineSettingsModule settings;
+    private HashMap<CoilModule, ArrayList<String>> pendingCoilRules = new HashMap<>();
+    private HashMap<ConnectorModule, ArrayList<String>> pendingConnectorRules = new HashMap<>();
     public OverhaulTurbineConfigurationBuilder(String name, String version){
         configuration = new OverhaulTurbineConfiguration();
         configuration.metadata.name = name;
         configuration.metadata.version = version;
-        settings = configuration.settings;
+        settings = configuration.settings = new OverhaulTurbineSettingsModule();
     }
     public OverhaulTurbineConfiguration build(){
+        for(CoilModule coil : pendingCoilRules.keySet()){
+            for(String rule : pendingCoilRules.get(coil))coil.rules.add(parsePlacementRule(rule));
+        }
+        for(ConnectorModule connector : pendingConnectorRules.keySet()){
+            for(String rule : pendingConnectorRules.get(connector))connector.rules.add(parsePlacementRule(rule));
+        }
         return configuration;
     }
     public BlockElement block(String name, String displayName, String texture){
@@ -65,7 +75,8 @@ public class OverhaulTurbineConfigurationBuilder{
         BlockElement coil = block(name, displayName, texture);
         coil.coil = new CoilModule();
         coil.coil.efficiency = efficiency;
-        coil.coil.rules.add(parsePlacementRule(rules));
+        if(!pendingCoilRules.containsKey(coil.coil))pendingCoilRules.put(coil.coil, new ArrayList<>());
+        pendingCoilRules.get(coil.coil).add(rules);
         return coil;
     }
     public BlockElement bearing(String name, String displayName, String texture){
@@ -76,7 +87,8 @@ public class OverhaulTurbineConfigurationBuilder{
     public BlockElement connector(String name, String displayName, String texture, String rules){
         BlockElement connector = block(name, displayName, texture);
         connector.connector = new ConnectorModule();
-        connector.connector.rules.add(parsePlacementRule(rules));
+        if(!pendingConnectorRules.containsKey(connector.connector))pendingConnectorRules.put(connector.connector, new ArrayList<>());
+        pendingConnectorRules.get(connector.connector).add(rules);
         return connector;
     }
     public BlockElement blade(String name, String displayName, String texture, float efficiency, float expansion){
