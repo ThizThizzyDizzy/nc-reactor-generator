@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
@@ -46,7 +47,10 @@ public class OverhaulSFRConfigurationBuilder{
         return configuration;
     }
     public BlockElement block(String name, String displayName, String texture){
-        BlockElement block = new BlockElement(new NCPFLegacyBlockElement(name));
+        return block(new NCPFLegacyBlockElement(name), displayName, texture);
+    }
+    public BlockElement block(NCPFElementDefinition definition, String displayName, String texture){
+        BlockElement block = new BlockElement(definition);
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
@@ -75,9 +79,11 @@ public class OverhaulSFRConfigurationBuilder{
     }
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture){
         BlockElement in = block(name, displayName, texture);
+        ((NCPFLegacyBlockElement)in.definition).blockstate.put("active", false);
         in.port = new PortModule();
         in.parent = parent;
         BlockElement out = block(name, outputDisplayName, outputTexture);
+        ((NCPFLegacyBlockElement)out.definition).blockstate.put("active", true);
         out.port = new PortModule();
         out.port.output = true;
         out.parent = parent;
@@ -134,10 +140,12 @@ public class OverhaulSFRConfigurationBuilder{
     }
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement shield(String name, String displayName, String texture, String closedTexture, int heatPerFlux, float efficiency){
         BlockElement block = block(name, displayName, texture);
+        ((NCPFLegacyBlockElement)block.definition).blockstate.put("active", false);
         block.neutronShield = new NeutronShieldModule();
         block.neutronShield.heatPerFlux = heatPerFlux;
         block.neutronShield.efficiency = efficiency;
         BlockElement closed = block(name, displayName, closedTexture);
+        ((NCPFLegacyBlockElement)closed.definition).blockstate.put("active", true);
         block.toggled = closed;
         closed.unToggled = block;
         block.neutronShield.closed = new BlockReference(closed);
