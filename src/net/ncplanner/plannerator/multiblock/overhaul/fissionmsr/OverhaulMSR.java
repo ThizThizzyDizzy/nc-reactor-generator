@@ -48,6 +48,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfigura
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
 public class OverhaulMSR extends CuboidalMultiblock<Block>{
@@ -1384,6 +1385,12 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     }
                 }
                 for(IrradiatorRecipe r : b.irradiatorRecipes){
+                    int i = getRecipeCount(r);
+                    if(i>0){
+                        txt+="\n"+r.getDisplayName()+": "+i;
+                    }
+                }
+                for(HeaterRecipe r : b.heaterRecipes){
                     int i = getRecipeCount(r);
                     if(i>0){
                         txt+="\n"+r.getDisplayName()+": "+i;
