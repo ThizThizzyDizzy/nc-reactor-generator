@@ -10,4 +10,8 @@ public class CoolerModule extends BlockRulesModule{
     public String getFunctionName(){
         return "Cooler";
     }
+    @Override
+    public String getStatsTooltip(){
+        return "Cooling: "+cooling+"H/t";
+    }
 }

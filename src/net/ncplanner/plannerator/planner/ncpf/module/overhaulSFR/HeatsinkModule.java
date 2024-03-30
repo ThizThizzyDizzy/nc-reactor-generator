@@ -10,4 +10,8 @@ public class HeatsinkModule extends BlockRulesModule{
     public String getFunctionName(){
         return "Heatsink";
     }
+    @Override
+    public String getStatsTooltip(){
+        return "Cooling: "+cooling+"H/t";
+    }
 }
