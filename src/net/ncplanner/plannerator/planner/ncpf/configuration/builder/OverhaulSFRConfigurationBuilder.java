@@ -140,6 +140,7 @@ public class OverhaulSFRConfigurationBuilder{
         BlockElement closed = block(name, displayName, closedTexture);
         block.toggled = closed;
         closed.unToggled = block;
+        block.neutronShield.closed = new BlockReference(closed);
         return block;
     }
     

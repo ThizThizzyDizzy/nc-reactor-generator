@@ -134,7 +134,9 @@ public abstract class NCPFSettingsModule extends NCPFModule{
                     ncpf.setNCPFList(setting, list);
                     break;
                 case REFERENCE:
-                    ncpf.setDefinedNCPFObject(setting, ((Supplier<NCPFElementReference>)get).get());
+                    NCPFElementReference ref = ((Supplier<NCPFElementReference>)get).get();
+                    if(ref==null)throw new IllegalArgumentException("Cannot set null setting in class: "+getClass().getName());
+                    ncpf.setDefinedNCPFObject(setting, ref);
                     break;
             }
         }
