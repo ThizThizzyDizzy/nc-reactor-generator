@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
@@ -46,121 +47,141 @@ public class OverhaulSFRConfigurationBuilder{
         }
         return configuration;
     }
-    public BlockElement block(String name, String displayName, String texture){
+    public BlockBuilder block(String name, String displayName, String texture){
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
-    public BlockElement block(NCPFElementDefinition definition, String displayName, String texture){
+    public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
         BlockElement block = new BlockElement(definition);
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
-        return block;
+        return new BlockBuilder(block).legacy(displayName);
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement controller(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.controller = new ControllerModule();
-        block.casing = new CasingModule();
-        return block;
+    public class BlockBuilder{
+        public final BlockElement block;
+        public BlockBuilder(BlockElement block){
+            this.block = block;
+        }
+        public BlockBuilder blockstate(String key, Object value){
+            ((NCPFLegacyBlockElement)block.definition).blockstate.put(key, value);
+            return this;
+        }
+        public BlockBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = block.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
+        public BlockBuilder controller(){
+            block.controller = new ControllerModule();
+            block.casing = new CasingModule();
+            return this;
+        }
+        public BlockBuilder casing(boolean edge){
+            block.casing = new CasingModule(edge);
+            return this;
+        }
+        public BlockBuilder toggled(BlockBuilder toggled){
+            block.toggled = toggled.block;
+            toggled.block.unToggled = block;
+            return this;
+        }
+        public BlockBuilder source(float efficiency){
+            block.casing = new CasingModule();
+            block.neutronSource = new NeutronSourceModule();
+            block.neutronSource.efficiency = efficiency;
+            return this;
+        }
+        public BlockBuilder heatsink(int cooling, String rules){
+            block.heatsink = new HeatsinkModule();
+            block.heatsink.cooling = cooling;
+            if(!pendingRules.containsKey(block.heatsink))pendingRules.put(block.heatsink, new ArrayList<>());
+            pendingRules.get(block.heatsink).add(rules);
+            return this;
+        }
+        public BlockBuilder cell(){
+            block.fuelCell = new FuelCellModule();
+            return this;
+        }
+        public BlockBuilder irradiator(){
+            block.irradiator = new IrradiatorModule();
+            return this;
+        }
+        public BlockBuilder conductor(){
+            block.conductor = new ConductorModule();
+            return this;
+        }
+        public BlockBuilder moderator(int flux, float efficiency){
+            block.moderator = new ModeratorModule();
+            block.moderator.flux = flux;
+            block.moderator.efficiency = efficiency;
+            return this;
+        }
+        public BlockBuilder reflector(float efficiency, float reflectivity){
+            block.reflector = new ReflectorModule();
+            block.reflector.efficiency = efficiency;
+            block.reflector.reflectivity = reflectivity;
+            return this;
+        }
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement casing(String name, String displayName, String texture, boolean edge){
-        BlockElement block = block(name, displayName, texture);
-        block.casing = new CasingModule(edge);
-        return block;
+    public void coolantVent(String name, String displayName, String texture, String outputDisplayName, String outputTexture){
+        BlockBuilder in = block(name, displayName, texture).casing(false);
+        in.blockstate("active", false);
+        in.block.coolantVent = new CoolantVentModule();
+        BlockBuilder out = block(name, outputDisplayName, outputTexture);
+        out.blockstate("active", true);
+        out.block.coolantVent = new CoolantVentModule();
+        out.block.coolantVent.output = true;
+        in.toggled(out);
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement coolantVent(String name, String displayName, String texture, String outputDisplayName, String outputTexture){
-        BlockElement block = block(name, displayName, texture);
-        block.casing = new CasingModule();
-        block.coolantVent = new CoolantVentModule();
-        BlockElement out = block(name, outputDisplayName, outputTexture);
-        out.unToggled = block;
-        block.toggled = out;
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture){
-        BlockElement in = block(name, displayName, texture);
-        ((NCPFLegacyBlockElement)in.definition).blockstate.put("active", false);
-        in.port = new PortModule();
-        in.parent = parent;
-        BlockElement out = block(name, outputDisplayName, outputTexture);
-        ((NCPFLegacyBlockElement)out.definition).blockstate.put("active", true);
-        out.port = new PortModule();
-        out.port.output = true;
-        out.parent = parent;
-        in.toggled = out;
-        out.unToggled = in;
+    public void port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture){
+        BlockBuilder in = block(name, displayName, texture);
+        in.blockstate("active", false);
+        in.block.port = new PortModule();
+        in.block.parent = parent;
+        BlockBuilder out = block(name, outputDisplayName, outputTexture);
+        out.blockstate("active", true);
+        out.block.port = new PortModule();
+        out.block.port.output = true;
+        out.block.parent = parent;
+        in.toggled(out);
         parent.recipePorts = new RecipePortsModule();
-        parent.recipePorts.input = new BlockReference(in);
-        parent.recipePorts.output = new BlockReference(out);
-        return in;
+        parent.recipePorts.input = new BlockReference(in.block);
+        parent.recipePorts.output = new BlockReference(out.block);
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement source(String name, String displayName, String texture, float efficiency){
-        BlockElement block = block(name, StringUtil.superRemove(displayName, " Neutron Source"), texture);
-        block.casing = new CasingModule();
-        block.neutronSource = new NeutronSourceModule();
-        block.neutronSource.efficiency = efficiency;
-        return block;
+    public void shield(String name, String type, String displayName, String texture, String closedTexture, int heatPerFlux, float efficiency){
+        BlockBuilder block = block(name, displayName, texture);
+        block.blockstate("type", type);
+        block.blockstate("active", false);
+        block.block.neutronShield = new NeutronShieldModule();
+        block.block.neutronShield.heatPerFlux = heatPerFlux;
+        block.block.neutronShield.efficiency = efficiency;
+        BlockBuilder closed = block(name, displayName, closedTexture);
+        closed.blockstate("type", type);
+        closed.blockstate("active", true);
+        block.toggled(closed);
+        block.block.neutronShield.closed = new BlockReference(closed.block);
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement heatsink(String name, String displayName, int cooling, String texture, String rules){
-        BlockElement block = block(name, displayName, texture);
-        block.heatsink = new HeatsinkModule();
-        block.heatsink.cooling = cooling;
-        if(!pendingRules.containsKey(block.heatsink))pendingRules.put(block.heatsink, new ArrayList<>());
-        pendingRules.get(block.heatsink).add(rules);
-        return block;
+    public class IrradiatorRecipeBuilder{
+        public final IrradiatorRecipe recipe;
+        public IrradiatorRecipeBuilder(IrradiatorRecipe recipe){
+            this.recipe = recipe;
+        }
+        public IrradiatorRecipeBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = recipe.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
     }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement cell(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.fuelCell = new FuelCellModule();
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement irradiator(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.irradiator = new IrradiatorModule();
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement conductor(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.conductor = new ConductorModule();
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement moderator(String name, String displayName, String texture, int flux, float efficiency){
-        BlockElement block = block(name, displayName, texture);
-        block.moderator = new ModeratorModule();
-        block.moderator.flux = flux;
-        block.moderator.efficiency = efficiency;
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement reflector(String name, String displayName, String texture, float efficiency, float reflectivity){
-        BlockElement block = block(name, displayName, texture);
-        block.reflector = new ReflectorModule();
-        block.reflector.efficiency = efficiency;
-        block.reflector.reflectivity = reflectivity;
-        return block;
-    }
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement shield(String name, String displayName, String texture, String closedTexture, int heatPerFlux, float efficiency){
-        BlockElement block = block(name, displayName, texture);
-        ((NCPFLegacyBlockElement)block.definition).blockstate.put("active", false);
-        block.neutronShield = new NeutronShieldModule();
-        block.neutronShield.heatPerFlux = heatPerFlux;
-        block.neutronShield.efficiency = efficiency;
-        BlockElement closed = block(name, displayName, closedTexture);
-        ((NCPFLegacyBlockElement)closed.definition).blockstate.put("active", true);
-        block.toggled = closed;
-        closed.unToggled = block;
-        block.neutronShield.closed = new BlockReference(closed);
-        return block;
-    }
-    
-    public IrradiatorRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
-        IrradiatorRecipe recipe = new IrradiatorRecipe(new NCPFLegacyItemElement(inputName));
+    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
+        IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
         for(BlockElement b : configuration.blocks)if(b.irradiator!=null)b.irradiatorRecipes.add(recipe);
-        return recipe;
+        return new IrradiatorRecipeBuilder(recipe);
     }
     public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         Fuel fuel = new Fuel(new NCPFLegacyItemElement(inputName));
@@ -183,6 +204,7 @@ public class OverhaulSFRConfigurationBuilder{
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
+        configuration.coolantRecipes.add(recipe);
         return recipe;
     }
     private NCPFPlacementRule parsePlacementRule(String rules){
