@@ -80,8 +80,9 @@ public class Image{
         return sub;
     }
     public ByteBuffer getGLData(){
+        //flip the texture vertically when feeding to openGL (would have STBI do this, but I need the texture data upright in Image so it can save to NCPF correctly)
         ByteBuffer data = BufferUtils.createByteBuffer(width*height*4);
-        for(int y = 0; y<height; y++){
+        for(int y = height-1; y>=0; y--){
             for(int x = 0; x<width; x++){
                 data.put((byte)getRed(x, y));
                 data.put((byte)getGreen(x, y));

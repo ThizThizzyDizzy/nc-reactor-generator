@@ -272,7 +272,6 @@ public class Core{
             error("Uncaught Exception in Thread "+t.getName()+"!", e);
         });
         
-        stbi_set_flip_vertically_on_load(true);
         Renderer renderer = new Renderer();
         gui.initInput();
         while(true){
