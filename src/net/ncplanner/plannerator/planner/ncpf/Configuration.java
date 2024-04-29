@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -10,8 +11,16 @@ import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule
 public class Configuration{
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
     public static final ArrayList<Addon> internalAddons = new ArrayList<>();
+    @Deprecated
+    public static final HashSet<Addon> legacyAddons = new HashSet<>();
     public static final HashMap<Addon, String> internalAddonLinks = new HashMap<>();
     public static Configuration NUCLEARCRAFT;
+    @Deprecated
+    public static void addLegacyInternalAddon(Addon addon, String link){
+        internalAddons.add(addon);
+        internalAddonLinks.put(addon, link);
+        legacyAddons.add(addon);
+    }
     public static void addInternalAddon(Addon addon, String link){
         internalAddons.add(addon);
         internalAddonLinks.put(addon, link);

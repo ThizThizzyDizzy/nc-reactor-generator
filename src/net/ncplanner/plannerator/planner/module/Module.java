@@ -86,8 +86,12 @@ public abstract class Module<T>{
         c.path = "modules/"+name+"/"+c.getName();
         ownConfigs.add(c);
     }
+    @Deprecated //this is just to mark addons that haven't been updated to ncpf.json yet
+    public final void addLegacyAddon(Addon addon, String link){
+        Configuration.addLegacyInternalAddon(addon, link);
+    }
     public final void addAddon(Addon addon, String link){
-        Configuration.addInternalAddon(addon, link);
+        Configuration.addLegacyInternalAddon(addon, link);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);

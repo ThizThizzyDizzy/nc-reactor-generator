@@ -8,6 +8,16 @@ public class MenuComponentInternalAddon extends Component{
     float textInset = 4;
     public final Button add;
     private final Addon addon;
+    @Deprecated
+    private boolean legacy;
+    @Deprecated
+    public MenuComponentInternalAddon(Addon addon, Runnable addAction, boolean legacy){
+        super(0, 0, 0, 48);
+        this.addon = addon;
+        add = add(new Button("Add", true, true).setTooltip("Load this addon"));
+        add.addAction(addAction);
+        this.legacy = legacy;
+    }
     public MenuComponentInternalAddon(Addon addon, Runnable addAction){
         super(0, 0, 0, 48);
         this.addon = addon;
@@ -34,5 +44,9 @@ public class MenuComponentInternalAddon extends Component{
         Renderer renderer = new Renderer();
         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
+        if(legacy){
+            renderer.setColor(Core.theme.getDeleteButtonTextColor());
+            renderer.drawText(add.x-textInset-renderer.getStringWidth("Legacy NCPF", height-textInset*2), y+textInset, x+width, y+height-textInset, "Legacy NCPF");
+        }
     }
 }

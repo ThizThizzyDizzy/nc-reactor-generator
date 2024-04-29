@@ -132,7 +132,7 @@ public class MenuConfiguration extends ConfigurationMenu{
             addonsList.add(new MenuComponentInternalAddon(addon, () -> {
                 configuration.addAddon(addon.copyTo(Addon::new));
                 onOpened();
-            }));
+            }, Configuration.legacyAddons.contains(addon)));
         }
     }
     @Override
