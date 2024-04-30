@@ -49,27 +49,32 @@ public class NCPFObject extends HashMap<String, Object>{
     }
     
     public <T extends DefinedNCPFObject> void getDefined3DArray(String name, T[][][] array, List<T> indicies){
-        NCPFList list = getNCPFList(name);
-        int i = 0;
+        NCPFList list3 = getNCPFList(name);
         for(int x = 0; x<array.length; x++){
+            NCPFList list2 = list3.getNCPFList(x);
             for(int y = 0; y<array[x].length; y++){
+                NCPFList list = list2.getNCPFList(y);
                 for(int z = 0; z<array[x][y].length; z++){
-                    int idx = list.getInteger(i++);
+                    int idx = list.getInteger(z);
                     if(idx>=0)array[x][y][z] = indicies.get(idx);
                 }
             }
         }
     }
     public <T extends NCPFElement> void setDefined3DArray(String name, T[][][] array, List<T> indicies){
-        NCPFList<Integer> list = new NCPFList<>();
+        NCPFList<NCPFList<NCPFList<Integer>>> list3 = new NCPFList<>();
         for(int x = 0; x<array.length; x++){
+            NCPFList<NCPFList<Integer>> list2 = new NCPFList<>();
             for(int y = 0; y<array[x].length; y++){
+                NCPFList<Integer> list = new NCPFList<>();
                 for(int z = 0; z<array[x][y].length; z++){
                     list.add(indexof(array[x][y][z], indicies));
                 }
+                list2.add(list);
             }
+            list3.add(list2);
         }
-        setNCPFList(name, list);
+        setNCPFList(name, list3);
     }
     
     public <T extends RegisteredNCPFObject> T getRegisteredNCPFObject(String key, HashMap<String, Supplier<T>> registry){
@@ -111,13 +116,30 @@ public class NCPFObject extends HashMap<String, Object>{
     }
     
     public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
-        NCPFList list = getNCPFList(name);
-        int r = -1;
+        NCPFList list3 = getNCPFList(name);
+        int X = -1;
+        int lastX = -1;
         for(int x = 0; x<design.length; x++){
+            int Y = -1;
+            int lastY = -1;
             for(int y = 0; y<design[x].length; y++){
+                int Z = -1;
+                int lastZ = -1;
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
-                        int idx = list.getInteger(++r);
+                        if(x!=lastX){
+                            lastX = x;
+                            X++;
+                        }
+                        if(y!=lastY){
+                            lastY = y;
+                            Y++;
+                        }
+                        if(z!=lastZ){
+                            lastZ = z;
+                            Z++;
+                        }
+                        int idx = list3.getNCPFList(X).getNCPFList(Y).getInteger(Z);
                         if(idx>-1)array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
                     }
                 }
@@ -125,17 +147,21 @@ public class NCPFObject extends HashMap<String, Object>{
         }
     }
     public <T extends DefinedNCPFModularObject> void setRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
-        NCPFList list = new NCPFList();
+        NCPFList<NCPFList<NCPFList<Integer>>> list3 = new NCPFList();
         for(int x = 0; x<design.length; x++){
+            NCPFList<NCPFList<Integer>> list2 = new NCPFList<>();
             for(int y = 0; y<design[x].length; y++){
+                NCPFList<Integer> list = new NCPFList<>();
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         list.add(indexof(array[x][y][z], design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes));
                     }
                 }
+                if(!list.isEmpty())list2.add(list);
             }
+            if(!list2.isEmpty())list3.add(list2);
         }
-        setNCPFList(name, list);
+        setNCPFList(name, list3);
     }
     
     public void getVariable(String key, SettingVariable setting){
