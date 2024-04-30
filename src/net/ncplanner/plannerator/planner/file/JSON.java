@@ -314,7 +314,6 @@ public class JSON{
                 if(json.peek()=='['){
                     //it's an array!
                     if(debug)System.out.println("Found new array!");
-                    json.dequeue();
                     JSONArray newArray = new JSONArray(json);
                     add(newArray);
                 }else if(json.peek()==']'){

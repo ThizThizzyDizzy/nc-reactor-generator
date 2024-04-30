@@ -22,7 +22,7 @@ public class JSONNCPFReader implements NCPFFormatReader{
         NCPFList ncpf = new NCPFList();
         for(Object value : json){//TODO reject multiple types in a list! (and maybe return a typed list?)
             if(value instanceof JSON.JSONObject)value = toNCPF((JSON.JSONObject)value);
-            if(value instanceof JSON.JSONArray)value = toNCPF((JSON.JSONObject)value);
+            if(value instanceof JSON.JSONArray)value = toNCPF((JSON.JSONArray)value);
             ncpf.add(value);
         }
         return ncpf;

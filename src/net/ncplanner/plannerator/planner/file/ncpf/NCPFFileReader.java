@@ -20,7 +20,7 @@ public class NCPFFileReader{
             try{
                 ncpf = reader.read(provider.get());
                 break;
-            }catch(Throwable t){}
+            }catch(Throwable t){}//TODO properly separate error handling and incorrect format
         }
         if(ncpf==null)throw new IllegalArgumentException("Unknown file format!");
         project.convertFromObject(ncpf);
