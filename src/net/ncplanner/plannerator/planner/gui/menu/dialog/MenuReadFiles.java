@@ -8,39 +8,33 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-public class MenuReadFiles extends MenuDialog{
-    private final Task loadTask = new Task("Loading Files");
+public class MenuReadFiles extends MenuTaskDialog{
     private boolean running = true;
     private final List<Project> loadedFiles = new ArrayList<>();
+    private final List<File> files;
     public MenuReadFiles(GUI gui, Menu parent, List<File> files, Consumer<List<Project>> onRead){
-        super(gui, parent);
-        for(File f : files)loadTask.addSubtask(new Task(f.getName()));
-        setContent(new ProgressBar(0, 0, 400, 0){
-            @Override
-            public Task getTask(){
-                return loadTask;
-            }
-        });
+        super(gui, parent, new Task("Loading Files"));
+        this.files = files;
+        for(File f : files)task.addSubtask(new Task(f.getName()));
+        onClose(()->onRead.accept(loadedFiles));
         addButton("Cancel", () -> {
             running = false;
         }, true);
-        new Thread(() -> {
-            for(File file : files){
-                try{
-                    Project loaded = FileReader.read(file);
-                    loadedFiles.add(loaded);
-                }catch(Exception ex){
-                    close();
-                    running = false;
-                    Core.warning("Failed to read file "+file.getName()+"!", ex);
-                }
-                loadTask.getCurrentSubtask().finish();
-                if(!running)return;
+    }
+    @Override
+    public void runTask(){
+        for(File file : files){
+            try{
+                Project loaded = FileReader.read(file);
+                loadedFiles.add(loaded);
+            }catch(Exception ex){
+                close();
+                running = false;
+                Core.warning("Failed to read file "+file.getName()+"!", ex);
             }
-            close();
-            onRead.accept(loadedFiles);
-        }, "File Reading Thread").start();
+            task.getCurrentSubtask().finish();
+            if(!running)return;
+        }
     }
 }

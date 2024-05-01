@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
@@ -14,7 +15,9 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.MenuConfiguration;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuReadFiles;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTaskDialog;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -106,13 +109,17 @@ public class MenuSettings extends SettingsMenu{
         load.addAction(() -> {
             try{
                 Core.createFileChooser((file) -> {
-                    Thread t = new Thread(() -> {
-                        Configuration config = new Configuration(FileReader.read(file), null);
-                        Core.setConfigurationAndConvertMultiblocks(config);
-                        onOpened();
-                    }, "File Loading Thread");
-                    t.setDaemon(true);
-                    t.start();
+                    new MenuReadFiles(gui, this, Arrays.asList(file), (loadedFiles) -> {
+                        if(loadedFiles.size()!=1)throw new RuntimeException("Tried to load one file, found "+loadedFiles.size()+"!");
+                        new MenuTaskDialog(gui, this, new Task("Importing Configuration")){
+                            @Override
+                            public void runTask(){
+                                Configuration config = new Configuration(loadedFiles.get(0), null);
+                                Core.setConfigurationAndConvertMultiblocks(config);
+                                MenuSettings.this.onOpened();
+                            }
+                        }.open();
+                    }).open();
                 }, FileFormat.ALL_CONFIGURATION_FORMATS, "configuration");
             }catch(IOException ex){
                 Core.error("Failed to load configuration!", ex);
