@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -37,6 +38,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuModifyElementDefinition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
@@ -77,19 +79,21 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             definitionHeader.add(new TextBox(element.getOrCreateModule(DisplayNameModule::new).displayName, true, "Display Name").onChange((t) -> {
                 element.getOrCreateModule(DisplayNameModule::new).displayName = t;
             }));
-            if(element.definition instanceof NCPFSettingsElement){
+            if(element.definition instanceof NCPFSettingsElement){//TODO this is a mess... Replace this with the fancy new dialog you're about to make for lists
                 NCPFSettingsElement def = (NCPFSettingsElement)element.definition;
                 String blockstate = null;
                 String metadata = null;
+                String elementList = null;
                 for(String key : def.types.keySet()){
                     Type type = def.types.get(key);
                     if(type==Type.METADATA)metadata = key;
                     if(type==Type.BLOCKSTATE)blockstate = key;
+                    if(type==Type.ELEMENT_LIST)elementList = key;
                 }
                 SplitLayout definitionFields = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, blockstate==null?1:0.7f));
                 ListLayout defFields = definitionFields.add(new ListLayout(48));
                 for(String setting : def.settings){
-                    if(def.types.get(setting)==Type.METADATA||def.types.get(setting)==Type.BLOCKSTATE)continue;
+                    if(def.types.get(setting).special)continue;
                     Supplier<String> get = def.gets.get(setting);
                     Consumer<String> set = def.sets.get(setting);
                     TextBox box = new TextBox(get.get(), true, def.titles.get(setting)).onChange((s) -> {
@@ -112,6 +116,44 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                         metadata = null;
                     }else defFields.add(box);
                 }
+                if(defFields.components.isEmpty()&&elementList!=null)definitionFields.components.remove(defFields);
+                if(elementList!=null){
+                    Supplier<ArrayList<NCPFElementDefinition>> getState = def.gets.get(elementList);
+                    Consumer<ArrayList<NCPFElementDefinition>> setState = def.sets.get(elementList);
+                    BorderLayout elementsPanel = definitionFields.add(new BorderLayout());
+                    elementsPanel.add(new Label("Elements", true), BorderLayout.TOP, 40);
+                    SingleColumnList elementsList = elementsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
+                    ArrayList<NCPFElementDefinition> list = getState.get();
+                    onOpen(() -> {
+                        elementsList.components.clear();
+                        for(NCPFElementDefinition elem : list){
+                            LayeredLayout stateComp = elementsList.add(new LayeredLayout());
+                            stateComp.height = 48;
+                            stateComp.add(new Label(elem.toString(), true));
+                            ListButtonsLayout buttons = stateComp.add(new ListButtonsLayout());
+                            buttons.add(new IconButton("delete", true).addAction(() -> {
+                                list.remove(elem);
+                                setState.accept(list);
+                                refresh();
+                            }));
+                            buttons.add(new IconButton("pencil", true).addAction(() -> {
+                                new MenuModifyElementDefinition(gui, this, elem, ()->{
+                                    refresh();
+                                },null).open();
+                            }));
+                        }
+                    });
+                    GridLayout buttons = elementsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
+                    buttons.add(new Button("Add Element", true).addAction(() -> {
+                        new MenuPickElementDefinition(gui, this, (newDef) -> {
+                            new MenuModifyElementDefinition(gui, this, newDef, ()->{
+                                list.add(newDef);
+                                setState.accept(list);
+                                refresh();
+                            }, null).open();
+                        }).open();
+                    }));
+                };
                 if(blockstate!=null){
                     Supplier<HashMap<String, Object>> getState = def.gets.get(blockstate);
                     Consumer<HashMap<String, Object>> setState = def.sets.get(blockstate);

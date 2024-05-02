@@ -37,6 +37,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFItemTagElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
@@ -75,6 +76,7 @@ public class CoreModule<T> extends Module<T>{
         registerNCPFElement(NCPFBlockTagElement::new);
         registerNCPFElement(NCPFItemTagElement::new);
         registerNCPFElement(NCPFFluidTagElement::new);
+        registerNCPFElement(NCPFListElement::new);
         registerNCPFElement(NCPFModuleElement::new);
         
         registerNCPFModule(NCPFBlockRecipesModule::new);

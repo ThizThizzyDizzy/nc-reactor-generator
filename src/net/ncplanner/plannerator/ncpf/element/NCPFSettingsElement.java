@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public abstract class NCPFSettingsElement extends NCPFElementDefinition{
     public final ArrayList<String> settings = new ArrayList<>();
@@ -23,6 +25,13 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         gets.put(name, get);
         sets.put(name, set);
         types.put(name, Type.BLOCKSTATE);
+        titles.put(name, title);
+    }
+    public void addElementsList(String name, Supplier<ArrayList<NCPFElementDefinition>> get, Consumer<ArrayList<NCPFElementDefinition>> set, String title){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.ELEMENT_LIST);
         titles.put(name, title);
     }
     public void addMetadata(Supplier<Integer> get, Consumer<Integer> set){
@@ -65,6 +74,19 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                 case TAG:
                     ((Consumer<String>)set).accept(ncpf.getString(setting));
                     break;
+                case ELEMENT_LIST:
+                    NCPFList list = ncpf.getNCPFList("elements");
+                    ArrayList<NCPFElementDefinition> definitions = new ArrayList<>();
+                    for(int i = 0; i<list.size(); i++){
+                        NCPFObject obj = list.getNCPFObject(i);
+                        NCPFElementDefinition definition = NCPFElement.recognizedElements.getOrDefault(obj.getString("type"), UnknownNCPFElement::new).get();
+                        definition.convertFromObject(obj);
+                        definitions.add(definition);
+                    }
+                    ((Consumer<ArrayList<NCPFElementDefinition>>)set).accept(definitions);
+                    break;
+                default:
+                    throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
             }
         }
     }
@@ -91,6 +113,18 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                 case TAG:
                     ncpf.setString(setting, ((Supplier<String>)get).get());
                     break;
+                case ELEMENT_LIST:
+                    NCPFList<NCPFObject> list = new NCPFList();
+                    for(NCPFElementDefinition def : ((Supplier<ArrayList<NCPFElementDefinition>>)get).get()){
+                        NCPFObject obj = new NCPFObject();
+                        obj.set("type", def.type);
+                        def.convertToObject(obj);
+                        list.add(obj);
+                    }
+                    ncpf.set("elements", list);
+                    break;
+                default:
+                    throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
             }
         }
     }
@@ -116,6 +150,13 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         return "["+s.substring(1)+"]";
     }
     public static enum Type{
-        NAMESPACED_NAME,NAME,NBT,BLOCKSTATE,METADATA,TAG,OREDICT;
+        NAMESPACED_NAME,NAME,NBT,BLOCKSTATE(true),METADATA(true),TAG,OREDICT,ELEMENT_LIST(true);
+        public final boolean special;
+        private Type(){
+            this(false);
+        }
+        private Type(boolean special){
+            this.special = special;
+        }
     }
 }
