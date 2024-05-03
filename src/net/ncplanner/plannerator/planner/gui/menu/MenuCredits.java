@@ -320,6 +320,9 @@ public class MenuCredits extends Menu{
         gap(2);
         text("LWJGL", 1.125);
         gap(2);
+        text("DSSL", 1.125);
+        text("by tomdodd4598");
+        gap(2);
         text("NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
         text("(a fork of Simplelibrary by computerneek)");
         divider();
