@@ -9,6 +9,8 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class Configuration{
+    @Deprecated
+    public static final HashSet<Configuration> legacyConfigurations = new HashSet<>();
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
     public static final ArrayList<Addon> internalAddons = new ArrayList<>();
     @Deprecated

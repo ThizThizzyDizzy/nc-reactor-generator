@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
@@ -40,63 +40,112 @@ public class OverhaulMSRConfigurationBuilder{
         settings = configuration.settings = new OverhaulMSRSettingsModule();
     }
     public OverhaulMSRConfiguration build(){
+        for(BlockElement b : configuration.blocks){
+            b.withModule(LegacyNamesModule::new, (legacy)->{
+                for(int i = 0; i<legacy.legacyNames.size(); i++){
+                    for(int j = i+1; j<legacy.legacyNames.size(); j++){
+                        if(legacy.legacyNames.get(j).equals(legacy.legacyNames.get(i)))legacy.legacyNames.remove(j);
+                    }
+                }
+            });
+        }
         for(HeaterModule heater : pendingRules.keySet()){
             for(String rule : pendingRules.get(heater))heater.rules.add(parsePlacementRule(rule).copyTo(NCPFPlacementRule::new));
         }
         return configuration;
     }
-    public BlockElement block(String name, String displayName, String texture){
+    public BlockBuilder block(String name, String displayName, String texture){
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
-    public BlockElement block(NCPFElementDefinition definition, String displayName, String texture){
+    public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
         BlockElement block = new BlockElement(definition);
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
-        return block;
+        return new BlockBuilder(block).legacy(displayName);
     }
-    public BlockElement controller(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.controller = new ControllerModule();
-        block.casing = new CasingModule();
-        return block;
+    public class BlockBuilder{
+        public final BlockElement block;
+        public BlockBuilder(BlockElement block){
+            this.block = block;
+        }
+        public BlockBuilder blockstate(String key, Object value){
+            ((NCPFLegacyBlockElement)block.definition).blockstate.put(key, value);
+            return this;
+        }
+        public BlockBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = block.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
+        public BlockBuilder controller(){
+            block.controller = new ControllerModule();
+            block.casing = new CasingModule();
+            return this;
+        }
+        public BlockBuilder casing(boolean edge){
+            block.casing = new CasingModule(edge);
+            return this;
+        }
+        public BlockBuilder toggled(BlockBuilder toggled){
+            block.toggled = toggled.block;
+            toggled.block.unToggled = block;
+            return this;
+        }
+        public BlockBuilder source(float efficiency){
+            block.casing = new CasingModule();
+            block.neutronSource = new NeutronSourceModule();
+            block.neutronSource.efficiency = efficiency;
+            return this;
+        }
+        public BlockBuilder heater(String rules){
+            block.heater = new HeaterModule();
+            if(!pendingRules.containsKey(block.heater))pendingRules.put(block.heater, new ArrayList<>());
+            pendingRules.get(block.heater).add(rules);
+            return this;
+        }
+        public BlockBuilder vessel(){
+            block.fuelVessel = new FuelVesselModule();
+            return this;
+        }
+        public BlockBuilder irradiator(){
+            block.irradiator = new IrradiatorModule();
+            return this;
+        }
+        public BlockBuilder conductor(){
+            block.conductor = new ConductorModule();
+            return this;
+        }
+        public BlockBuilder moderator(int flux, float efficiency){
+            block.moderator = new ModeratorModule();
+            block.moderator.flux = flux;
+            block.moderator.efficiency = efficiency;
+            return this;
+        }
+        public BlockBuilder reflector(float efficiency, float reflectivity){
+            block.reflector = new ReflectorModule();
+            block.reflector.efficiency = efficiency;
+            block.reflector.reflectivity = reflectivity;
+            return this;
+        }
     }
-    public BlockElement casing(String name, String displayName, String texture, boolean edge){
-        BlockElement block = block(name, displayName, texture);
-        block.casing = new CasingModule(edge);
-        return block;
-    }
-    public BlockElement port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture){
-        BlockElement in = block(name, displayName, texture);
-        ((NCPFLegacyBlockElement)in.definition).blockstate.put("active", false);
-        in.port = new PortModule();
-        in.parent = parent;
-        BlockElement out = block(name, outputDisplayName, outputTexture);
-        ((NCPFLegacyBlockElement)out.definition).blockstate.put("active", true);
-        out.port = new PortModule();
-        out.port.output = true;
-        out.parent = parent;
-        in.toggled = out;
-        out.unToggled = in;
+    public void port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture, String type){
+        BlockBuilder in = block(name, displayName, texture);
+        in.blockstate("active", false);
+        if(type!=null)in.blockstate("type", type);
+        in.block.port = new PortModule();
+        in.block.parent = parent;
+        BlockBuilder out = block(name, outputDisplayName, outputTexture);
+        out.blockstate("active", true);
+        if(type!=null)out.blockstate("type", type);
+        out.block.port = new PortModule();
+        out.block.port.output = true;
+        out.block.parent = parent;
+        in.toggled(out);
         parent.recipePorts = new RecipePortsModule();
-        parent.recipePorts.input = new BlockReference(in);
-        parent.recipePorts.output = new BlockReference(out);
-        return in;
-    }
-    public BlockElement source(String name, String displayName, String texture, float efficiency){
-        BlockElement block = block(name, StringUtil.superRemove(displayName, " Neutron Source"), texture);
-        block.casing = new CasingModule();
-        block.neutronSource = new NeutronSourceModule();
-        block.neutronSource.efficiency = efficiency;
-        return block;
-    }
-    public BlockElement heater(String name, String displayName, String texture, String rules){
-        BlockElement block = block(name, displayName, texture);
-        block.heater = new HeaterModule();
-        if(!pendingRules.containsKey(block.heater))pendingRules.put(block.heater, new ArrayList<>());
-        pendingRules.get(block.heater).add(rules);
-        return block;
+        parent.recipePorts.input = new BlockReference(in.block);
+        parent.recipePorts.output = new BlockReference(out.block);
     }
     public HeaterRecipe heaterRecipe(BlockElement block, String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
         HeaterRecipe recipe = new HeaterRecipe(new NCPFLegacyFluidElement(inputName));
@@ -107,58 +156,39 @@ public class OverhaulMSRConfigurationBuilder{
         block.heaterRecipes.add(recipe);
         return recipe;
     }
-    public BlockElement vessel(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.fuelVessel = new FuelVesselModule();
-        return block;
+    public void shield(String name, String type, String displayName, String texture, String closedTexture, int heatPerFlux, float efficiency){
+        BlockBuilder block = block(name, displayName, texture);
+        block.blockstate("type", type);
+        block.blockstate("active", false);
+        block.block.neutronShield = new NeutronShieldModule();
+        block.block.neutronShield.heatPerFlux = heatPerFlux;
+        block.block.neutronShield.efficiency = efficiency;
+        BlockBuilder closed = block(name, displayName, closedTexture);
+        closed.blockstate("type", type);
+        closed.blockstate("active", true);
+        block.toggled(closed);
+        block.block.neutronShield.closed = new BlockReference(closed.block);
     }
-    public BlockElement irradiator(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.irradiator = new IrradiatorModule();
-        return block;
+    public class IrradiatorRecipeBuilder{
+        public final IrradiatorRecipe recipe;
+        public IrradiatorRecipeBuilder(IrradiatorRecipe recipe){
+            this.recipe = recipe;
+        }
+        public IrradiatorRecipeBuilder legacy(String... legacyNames){
+            LegacyNamesModule module = recipe.getOrCreateModule(LegacyNamesModule::new);
+            module.legacyNames.addAll(Arrays.asList(legacyNames));
+            return this;
+        }
     }
-    public BlockElement conductor(String name, String displayName, String texture){
-        BlockElement block = block(name, displayName, texture);
-        block.conductor = new ConductorModule();
-        return block;
-    }
-    public BlockElement moderator(String name, String displayName, String texture, int flux, float efficiency){
-        BlockElement block = block(name, displayName, texture);
-        block.moderator = new ModeratorModule();
-        block.moderator.flux = flux;
-        block.moderator.efficiency = efficiency;
-        return block;
-    }
-    public BlockElement reflector(String name, String displayName, String texture, float efficiency, float reflectivity){
-        BlockElement block = block(name, displayName, texture);
-        block.reflector = new ReflectorModule();
-        block.reflector.efficiency = efficiency;
-        block.reflector.reflectivity = reflectivity;
-        return block;
-    }
-    public BlockElement shield(String name, String displayName, String texture, String closedTexture, int heatPerFlux, float efficiency){
-        BlockElement block = block(name, displayName, texture);
-        ((NCPFLegacyBlockElement)block.definition).blockstate.put("active", false);
-        block.neutronShield = new NeutronShieldModule();
-        block.neutronShield.heatPerFlux = heatPerFlux;
-        block.neutronShield.efficiency = efficiency;
-        BlockElement closed = block(name, displayName, closedTexture);
-        ((NCPFLegacyBlockElement)closed.definition).blockstate.put("active", true);
-        block.toggled = closed;
-        closed.unToggled = block;
-        block.neutronShield.closed = new BlockReference(closed);
-        return block;
-    }
-    
-    public IrradiatorRecipe irradiatorRecipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
-        IrradiatorRecipe recipe = new IrradiatorRecipe(new NCPFLegacyItemElement(inputName));
+    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, float efficiency, float heat){
+        IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
         for(BlockElement b : configuration.blocks)if(b.irradiator!=null)b.irradiatorRecipes.add(recipe);
-        return recipe;
+        return new IrradiatorRecipeBuilder(recipe);
     }
     public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         Fuel fuel = new Fuel(new NCPFLegacyFluidElement(inputName));

@@ -65,9 +65,9 @@ public class UnderhaulModule extends Module<Object>{
     public void addConfigurations(Task task){
         task.addSubtask("PO3");
         task.addSubtask("E2E");
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/po3.ncpf"))).addAlternative("PO3"));
+        addLegacyConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/po3.ncpf"))).addAlternative("PO3"));
         task.getCurrentSubtask().finish();
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/e2e.ncpf"))).addAlternative("E2E"));
+        addLegacyConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/e2e.ncpf"))).addAlternative("E2E"));
         task.getCurrentSubtask().finish();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){

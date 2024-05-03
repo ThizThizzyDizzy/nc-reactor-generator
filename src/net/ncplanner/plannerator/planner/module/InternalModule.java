@@ -17,7 +17,7 @@ public class InternalModule extends Module{
     }
     @Override
     public void addConfigurations(Task t){
-        t.addSubtask("Spicy Heat Sinks (Unstable)");
+        t.addSubtask("INTERNAL");
         addConfiguration(new Configuration(FileReader.read(() -> {
             return Core.getInputStream("configurations/internal.ncpf.json");
         })));

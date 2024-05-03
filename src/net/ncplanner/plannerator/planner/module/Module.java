@@ -81,6 +81,11 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
+    @Deprecated
+    public final void addLegacyConfiguration(Configuration c){
+        addConfiguration(c);
+        Configuration.legacyConfigurations.add(c);
+    }
     public final void addConfiguration(Configuration c){
         Configuration.configurations.add(c);
         c.path = "modules/"+name+"/"+c.getName();
@@ -91,7 +96,7 @@ public abstract class Module<T>{
         Configuration.addLegacyInternalAddon(addon, link);
     }
     public final void addAddon(Addon addon, String link){
-        Configuration.addLegacyInternalAddon(addon, link);
+        Configuration.addInternalAddon(addon, link);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);

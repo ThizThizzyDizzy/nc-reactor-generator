@@ -65,7 +65,8 @@ public class MenuSettings extends SettingsMenu{
         });
         theme = addToSidebar(new Button(0, 0, 0, 48, "Change Theme", true));
         for(Configuration config : Configuration.configurations){
-            Button b = new Button(0, 0, 0, 48, "Load "+config.toString(), true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
+            Button b = new Button(0, 0, 0, 48, "Load "+config.toString()+(Configuration.legacyConfigurations.contains(config)?" (Legacy NCPF)":""), true).setTooltip("Replace the current configuration with "+config.toString()+"\nAll multiblocks will be converted to the new configuration");
+            if(Configuration.legacyConfigurations.contains(config))b.setTextColor(Core.theme::getDeleteButtonTextColor);
             b.addAction(() -> {
                 if(config.path!=null)Core.lastLoadedConfig = config.path;
                 Core.setConfigurationAndConvertMultiblocks(config);

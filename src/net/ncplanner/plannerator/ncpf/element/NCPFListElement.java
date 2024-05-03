@@ -6,6 +6,10 @@ public class NCPFListElement extends NCPFSettingsElement{
         super("list");
         addElementsList("elements", ()->elements, (elems)->elements = elems, "Elements");
     }
+    public NCPFListElement(NCPFElementDefinition... definitions){
+        this();
+        for(NCPFElementDefinition definition : definitions)elements.add(definition);
+    }
     @Override
     public String getName(){
         ArrayList<String> strs = new ArrayList<>();

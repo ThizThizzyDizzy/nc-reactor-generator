@@ -149,9 +149,9 @@ public class OverhaulModule extends Module<Object>{
         t.addSubtask("Alloy Heat Sinks");
         t.addSubtask("Spicy Heat Sinks (Stable)");
         t.addSubtask("Spicy Heat Sinks (Unstable)");
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/aapn.ncpf"))).addAlternative("AAPN"));
+        addLegacyConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/aapn.ncpf"))).addAlternative("AAPN"));
         t.getCurrentSubtask().finish();
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/quanta.ncpf"))));
+        addLegacyConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/quanta.ncpf"))));
         t.getCurrentSubtask().finish();
         addLegacyAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/extreme_reactors.ncpf")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
         t.getCurrentSubtask().finish();

@@ -42,6 +42,15 @@ public class OverhaulSFRConfigurationBuilder{
         settings = configuration.settings = new OverhaulSFRSettingsModule();
     }
     public OverhaulSFRConfiguration build(){
+        for(BlockElement b : configuration.blocks){
+            b.withModule(LegacyNamesModule::new, (legacy)->{
+                for(int i = 0; i<legacy.legacyNames.size(); i++){
+                    for(int j = i+1; j<legacy.legacyNames.size(); j++){
+                        if(legacy.legacyNames.get(j).equals(legacy.legacyNames.get(i)))legacy.legacyNames.remove(j);
+                    }
+                }
+            });
+        }
         for(HeatsinkModule sink : pendingRules.keySet()){
             for(String rule : pendingRules.get(sink))sink.rules.add(parsePlacementRule(rule));
         }
@@ -173,7 +182,7 @@ public class OverhaulSFRConfigurationBuilder{
             return this;
         }
     }
-    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, float heat){
+    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, float efficiency, float heat){
         IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
