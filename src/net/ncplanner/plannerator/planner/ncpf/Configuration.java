@@ -30,7 +30,7 @@ public class Configuration{
     public static void initNuclearcraftConfiguration(){
         if(NUCLEARCRAFT!=null)return;//already done m8
         NUCLEARCRAFT = new Configuration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/nuclearcraft.ncpf");
+            return Core.getInputStream("configurations/nuclearcraft.ncpf.json");
         }), "default").addAlternative("").addAlternative("SF4");
         configurations.add(0, NUCLEARCRAFT);
     }
