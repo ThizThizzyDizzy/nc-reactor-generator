@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 public class UnderhaulHellrage2Reader implements FormatReader{
@@ -24,6 +25,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         JSON.JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");
         String fuelName = usedFuel.getString("Name");
+        if(fuelName==null) fuelName = usedFuel.getString("name");//leu-235 compatibility
         UnderhaulSFRDesign sfr = new UnderhaulSFRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
         sfr.fuel = recovery.recoverUnderhaulSFRFuel(fuelName, usedFuel.getFloat("BaseHeat"), usedFuel.getFloat("BasePower"));
         JSON.JSONObject compressedReactor = hellrage.getJSONObject("CompressedReactor");
@@ -36,6 +38,11 @@ public class UnderhaulHellrage2Reader implements FormatReader{
                 int y = blokLoc.getInt("Y");
                 int z = blokLoc.getInt("Z");
                 sfr.design[x][y][z] = block;
+                if(!block.activeCoolerRecipes.isEmpty()){
+                    for(ActiveCoolerRecipe recipe : block.activeCoolerRecipes){
+                        if(recipe.getLegacyNames().contains(name))sfr.recipes[x][y][z] = recipe;
+                    }
+                }
             }
         }
         Project file = new Project();

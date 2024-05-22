@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
@@ -135,6 +136,19 @@ public class RecoveryModeHandler implements RecoveryHandler{
             if(module!=null){
                 for(String legacy : module.legacyNames){
                     if(nameProcessor.apply(legacy))return t;
+                }
+            }
+        }
+        for(T t : list){
+            NCPFBlockRecipesModule recipes = t.getModule(NCPFBlockRecipesModule::new);
+            if(recipes!=null){
+                for(NCPFElement recipe : recipes.recipes){
+                    LegacyNamesModule names = recipe.getModule(LegacyNamesModule::new);
+                    if(names!=null){
+                        for(String legacy : names.legacyNames){
+                            if(nameProcessor.apply(legacy))return t;
+                        }
+                    }
                 }
             }
         }
