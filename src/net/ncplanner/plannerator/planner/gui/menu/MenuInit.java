@@ -193,7 +193,6 @@ public class MenuInit extends Menu{
                         }
                     }
                     for(Module m : Core.modules){
-                        moduleStates.put(m, true);
                         if(!moduleStates.containsKey(m))continue;
                         if(m.isActive()){
                             if(!moduleStates.get(m))m.deactivate(false);
