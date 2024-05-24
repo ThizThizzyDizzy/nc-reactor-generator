@@ -32,7 +32,10 @@ public class MenuDialog extends Menu{
     float scrollBarWidth = 0;
     @Override
     public void render2d(double deltaTime){
-        if(isClosed&&gui.menu==this)gui.menu = parent;
+        if(isClosed&&gui.menu==this){
+            gui.menu = parent;
+            closeListeners.forEach(Runnable::run);
+        }
         Renderer renderer = new Renderer();
         try{
             if(parent!=null)parent.render2d(deltaTime);
@@ -69,8 +72,10 @@ public class MenuDialog extends Menu{
         super.render3d(deltaTime);
     }
     public void close(){
-        if(gui.menu==this)gui.menu = parent;
-        closeListeners.forEach(Runnable::run);
+        if(gui.menu==this){
+            gui.menu = parent;
+            closeListeners.forEach(Runnable::run);
+        }
         isClosed = true;
     }
     public void open(){

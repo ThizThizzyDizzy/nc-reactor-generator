@@ -85,6 +85,10 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
             fuels = parent.fuels;
             irradiatorRecipes = parent.irradiatorRecipes;
         }
+        if(recipePorts!=null){
+            if(recipePorts.input!=null)recipePorts.input.block.fuels = fuels;
+            if(recipePorts.output!=null)recipePorts.output.block.fuels = fuels;
+        }
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
