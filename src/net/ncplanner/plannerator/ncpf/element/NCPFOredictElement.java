@@ -1,5 +1,4 @@
 package net.ncplanner.plannerator.ncpf.element;
-import java.util.ArrayList;
 public class NCPFOredictElement extends NCPFSettingsElement{
     public String oredict = "";
     public NCPFOredictElement(){
