@@ -69,7 +69,7 @@ public class MenuDialog extends Menu{
         super.render3d(deltaTime);
     }
     public void close(){
-        gui.menu = parent;
+        if(gui.menu==this)gui.menu = parent;
         closeListeners.forEach(Runnable::run);
         isClosed = true;
     }
@@ -82,7 +82,7 @@ public class MenuDialog extends Menu{
     public void onOpened(){
         super.onOpened();
     }
-    private final ArrayList<Runnable> closeListeners = new ArrayList<>();
+    protected final ArrayList<Runnable> closeListeners = new ArrayList<>();
     public MenuDialog onClose(Runnable action){
         closeListeners.add(action);
         return this;

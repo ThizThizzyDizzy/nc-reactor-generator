@@ -30,8 +30,9 @@ public class MenuReadFiles extends MenuTaskDialog{
                 loadedFiles.add(loaded);
             }catch(Exception ex){
                 close();
+                closeListeners.clear();
                 running = false;
-                Core.warning("Failed to read file "+file.getName()+"!", ex);
+                Core.error("Failed to read file "+file.getName()+"!", ex);
             }
             task.getCurrentSubtask().finish();
             if(!running)return;
