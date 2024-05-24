@@ -9,7 +9,6 @@ import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.file.FileFormat;
-import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuGenerateTexture;
 import static org.lwjgl.glfw.GLFW.*;
 public class TextureButton extends Button{

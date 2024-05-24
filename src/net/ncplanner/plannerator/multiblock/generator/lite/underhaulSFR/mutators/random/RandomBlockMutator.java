@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.Symmetry;
 import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.CompiledUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;

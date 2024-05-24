@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
 import net.ncplanner.plannerator.planner.gui.Component;

@@ -1,12 +1,7 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.generator.lite.CompiledConfiguration;
 import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule;
-import net.ncplanner.plannerator.multiblock.generator.lite.GeneratorStage;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
-import net.ncplanner.plannerator.multiblock.generator.lite.mutator.GeneratorMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloat;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableInt;
