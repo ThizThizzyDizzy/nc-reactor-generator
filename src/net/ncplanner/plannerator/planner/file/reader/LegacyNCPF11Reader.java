@@ -605,6 +605,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             cfg.metadata.name = name;
             cfg.metadata.version = version;
         });
+        if(!overhaulSFRAdditionalBlocks.isEmpty())addon.configuration.getConfiguration(OverhaulSFRConfiguration::new).blocks.addAll(overhaulSFRAdditionalBlocks);
+        if(!overhaulMSRAdditionalBlocks.isEmpty())addon.configuration.getConfiguration(OverhaulMSRConfiguration::new).blocks.addAll(overhaulMSRAdditionalBlocks);
         //the addon was loading addon addons, but those were never a thing? so I deleted it. If you're reading this, it was probably important. sorry :(
         return addon;
     }
