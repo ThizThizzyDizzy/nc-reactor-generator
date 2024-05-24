@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
@@ -21,4 +23,7 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
         return getName();
     }
     public abstract String getTypeName();
+    public ArrayList<String> getLegacyNames(){
+        return new ArrayList<>(Arrays.asList(toString()));
+    }
 }

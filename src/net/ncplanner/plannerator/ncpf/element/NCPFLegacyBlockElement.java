@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
 import java.util.HashMap;
 public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     public String name = "";
@@ -36,5 +37,11 @@ public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     @Override
     public String getTypeName(){
         return "Legacy Block";
+    }
+    @Override
+    public ArrayList<String> getLegacyNames(){
+        ArrayList<String> names = super.getLegacyNames();
+        if((nbt!=null||!blockstate.isEmpty())&&metadata!=null)names.add(name+":"+metadata);
+        return names;
     }
 }

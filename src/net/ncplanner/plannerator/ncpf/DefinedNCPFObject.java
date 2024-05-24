@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 public abstract class DefinedNCPFObject{
     public abstract void convertFromObject(NCPFObject ncpf);
     public abstract void convertToObject(NCPFObject ncpf);
@@ -147,6 +148,9 @@ public abstract class DefinedNCPFObject{
         if(element==null)return null;
         for(T elem : list){
             if(element.definition.matches(elem.definition))return elem;
+        }
+        for(T elem : list){
+            if(element.getLegacyNames().contains(elem.definition.toString())||elem.getLegacyNames().contains(element.definition.toString()))return elem;
         }
         return null;
     }

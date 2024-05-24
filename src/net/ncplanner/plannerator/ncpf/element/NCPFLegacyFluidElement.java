@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
 public class NCPFLegacyFluidElement extends NCPFSettingsElement{
     public String name = "";
     public NCPFLegacyFluidElement(){

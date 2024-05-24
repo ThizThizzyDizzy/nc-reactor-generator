@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;

@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class UnknownNCPFElement extends NCPFElementDefinition{
     public NCPFObject ncpf = new NCPFObject();

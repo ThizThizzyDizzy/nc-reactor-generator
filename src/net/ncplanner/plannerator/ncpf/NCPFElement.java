@@ -74,6 +74,7 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, S
     public ArrayList<String> getLegacyNames(){
         ArrayList<String> nams = new ArrayList<>();
         nams.add(getDisplayName());
+        nams.addAll(definition.getLegacyNames());
         withModule(LegacyNamesModule::new, (names)-> nams.addAll(names.legacyNames));
         return nams;
     }

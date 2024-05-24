@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.ncpf.element;
+import java.util.ArrayList;
 public class NCPFLegacyItemElement extends NCPFSettingsElement{
     public String name = "";
     public Integer metadata;
@@ -29,5 +30,11 @@ public class NCPFLegacyItemElement extends NCPFSettingsElement{
     @Override
     public String getTypeName(){
         return "Legacy Item";
+    }
+    @Override
+    public ArrayList<String> getLegacyNames(){
+        ArrayList<String> names = super.getLegacyNames();
+        if(nbt!=null&&metadata!=null)names.add(name+":"+metadata);
+        return names;
     }
 }
