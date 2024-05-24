@@ -155,7 +155,6 @@ public class NCPFObject extends HashMap<String, Object>{
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
                         int idx = indexof(array[x][y][z], design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes);
-                        if(idx==-1&&array[x][y][z]!=null)throw new IllegalArgumentException("Unable to save recipe array: Element "+array[x][y][z].toString()+" is not a valid recipe of "+design[x][y][z].toString()+"!");
                         list.add(idx);
                     }
                 }
