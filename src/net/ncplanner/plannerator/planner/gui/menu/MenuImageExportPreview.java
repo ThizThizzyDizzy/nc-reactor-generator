@@ -82,6 +82,6 @@ public class MenuImageExportPreview extends Menu{
         if(Core.imageExport3DView){
             buttons.components.add(3, includeCasing3D);
         }
-        this.image = img.get().flip();
+        this.image = img.get();
     }
 }
