@@ -137,7 +137,7 @@ public class OverhaulSFRConfigurationBuilder{
         BlockBuilder in = block(name, displayName, texture).casing(false);
         in.blockstate("active", false);
         in.block.coolantVent = new CoolantVentModule();
-        BlockBuilder out = block(name, outputDisplayName, outputTexture);
+        BlockBuilder out = block(name, outputDisplayName, outputTexture).casing(false);
         out.blockstate("active", true);
         out.block.coolantVent = new CoolantVentModule();
         out.block.coolantVent.output = true;
