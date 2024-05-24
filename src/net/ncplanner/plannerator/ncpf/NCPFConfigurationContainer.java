@@ -12,6 +12,9 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
     public HashMap<String, NCPFConfiguration> configurations = new HashMap<>();
+    public static boolean isRecognized(Supplier<NCPFConfiguration> config){
+        return recognizedConfigurations.containsKey(config.get().name);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){
@@ -34,6 +37,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     }
     public void setConfiguration(NCPFConfiguration config){
         if(config==null)return;
+        if(!recognizedConfigurations.containsKey(config.name))throw new IllegalArgumentException("Cannot set unrecognized configuration: "+config.name+"!");
         configurations.put(config.name, config);
     }
     public <T extends NCPFConfiguration> void withConfiguration(Supplier<T> config, Consumer<T> func){

@@ -612,7 +612,7 @@ public class LegacyNCPF11Reader implements FormatReader {
     protected void loadUnderhaulBlocks(NCPFConfigurationContainer project, Config config, boolean loadSettings) {
         if(config.hasProperty("underhaul")){
             Config underhaul = config.getConfig("underhaul");
-            if(underhaul.hasProperty("fissionSFR")){
+            if(underhaul.hasProperty("fissionSFR")&&NCPFConfigurationContainer.isRecognized(UnderhaulSFRConfiguration::new)){
                 UnderhaulSFRConfiguration configuration = new UnderhaulSFRConfiguration();
                 Config fissionSFR = underhaul.getConfig("fissionSFR");
                 ConfigList blocks = fissionSFR.getConfigList("blocks");
@@ -691,7 +691,7 @@ public class LegacyNCPF11Reader implements FormatReader {
     }
 
     protected void loadOverhaulSFRBlocks(NCPFConfigurationContainer parent, NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> additionalBlocks) {
-        if(overhaul.hasProperty("fissionSFR")){
+        if(overhaul.hasProperty("fissionSFR")&&NCPFConfigurationContainer.isRecognized(OverhaulSFRConfiguration::new)){
             OverhaulSFRConfiguration configuration = new OverhaulSFRConfiguration();
             Config fissionSFR = overhaul.getConfig("fissionSFR");
             if(loadSettings){
@@ -886,7 +886,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
     }
     protected void loadOverhaulMSRBlocks(NCPFConfigurationContainer parent, NCPFConfigurationContainer project, Config overhaul, boolean loadSettings, boolean loadingAddon, boolean isAddon, List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> additionalBlocks) {
-        if(overhaul.hasProperty("fissionMSR")){
+        if(overhaul.hasProperty("fissionMSR")&&NCPFConfigurationContainer.isRecognized(OverhaulMSRConfiguration::new)){
             OverhaulMSRConfiguration configuration = new OverhaulMSRConfiguration();
             Config fissionMSR = overhaul.getConfig("fissionMSR");
             if(loadSettings){
@@ -1055,7 +1055,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
     }
     protected void loadOverhaulTurbineBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings) {
-        if(overhaul.hasProperty("turbine")){
+        if(overhaul.hasProperty("turbine")&&NCPFConfigurationContainer.isRecognized(OverhaulTurbineConfiguration::new)){
             OverhaulTurbineConfiguration configuration = new OverhaulTurbineConfiguration();
             Config turbine = overhaul.getConfig("turbine");
             if(loadSettings){
@@ -1140,7 +1140,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
     }
     protected void loadOverhaulFusionGeneratorBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings) {
-        if(overhaul.hasProperty("fusion")){
+        if(overhaul.hasProperty("fusion")&&NCPFConfigurationContainer.isRecognized(OverhaulFusionConfiguration::new)){
             OverhaulFusionConfiguration configuration = new OverhaulFusionConfiguration();
             Config fusion = overhaul.getConfig("fusion");
             if(loadSettings){
