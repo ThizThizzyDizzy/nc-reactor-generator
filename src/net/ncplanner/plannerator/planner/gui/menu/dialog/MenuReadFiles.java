@@ -29,8 +29,8 @@ public class MenuReadFiles extends MenuTaskDialog{
                 Project loaded = FileReader.read(file);
                 loadedFiles.add(loaded);
             }catch(Exception ex){
-                close();
                 closeListeners.clear();
+                close();
                 running = false;
                 Core.error("Failed to read file "+file.getName()+"!", ex);
             }

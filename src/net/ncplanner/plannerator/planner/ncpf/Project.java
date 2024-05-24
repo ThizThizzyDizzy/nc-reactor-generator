@@ -42,7 +42,7 @@ public class Project extends NCPFFile{
         conglomeration = configuration.copyTo(NCPFConfigurationContainer::new);
         for(Addon addon : addons){
             try{
-                conglomeration.conglomerate(addon.configuration);
+                conglomeration.conglomerate(addon.configuration.copyTo(NCPFConfigurationContainer::new));
             }catch(ConglomerationError err){
                 throw new ConglomerationError("Failed to conglomerate addon "+addon.getName()+"!", err);
             }
