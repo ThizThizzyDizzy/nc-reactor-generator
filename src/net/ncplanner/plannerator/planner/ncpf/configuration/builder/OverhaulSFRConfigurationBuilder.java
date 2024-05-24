@@ -162,12 +162,14 @@ public class OverhaulSFRConfigurationBuilder{
         BlockBuilder block = block(name, displayName, texture);
         block.blockstate("type", type);
         block.blockstate("active", false);
+        block.legacy(name+"[active=false]");
         block.block.neutronShield = new NeutronShieldModule();
         block.block.neutronShield.heatPerFlux = heatPerFlux;
         block.block.neutronShield.efficiency = efficiency;
         BlockBuilder closed = block(name, displayName, closedTexture);
         closed.blockstate("type", type);
         closed.blockstate("active", true);
+        closed.legacy(name+"[active=true]");
         block.toggled(closed);
         block.block.neutronShield.closed = new BlockReference(closed.block);
     }
