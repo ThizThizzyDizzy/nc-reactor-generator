@@ -19,6 +19,7 @@ import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import static net.ncplanner.plannerator.planner.file.FileWriter.botRunning;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
@@ -59,7 +60,9 @@ public class PNGWriter extends ImageFormatWriter{
                             ||part.name.toLowerCase(Locale.ROOT).contains("outlet"))it.remove();
                 }
             }
-            FormattedText s = mb.getSaveTooltip();
+            String configString = mb.getSpecificConfiguration().getNameAndVersion();
+            for(Addon addon : ncpf.addons)configString+="\n + "+addon.configuration.getNameAndVersion();
+            FormattedText s = new FormattedText(configString).addText(mb.getSaveTooltip());
             ArrayList<FormattedText> strs = s.split("\n");
             int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
             float textWidth = 0;

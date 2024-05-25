@@ -20,6 +20,7 @@ import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryExce
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
+import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -590,6 +591,7 @@ public class MenuMain extends Menu{
         focusedComponent = null;
         Project ncpf = new Project();
         ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
+        if(writer instanceof ImageFormatWriter)ncpf.addons = Core.project.addons;
         Multiblock multi = getSelectedMultiblock();
         ncpf.designs.add((Design)multi.toDesign());
         String name = Core.filename;

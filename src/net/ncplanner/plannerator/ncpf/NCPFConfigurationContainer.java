@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
@@ -66,5 +67,19 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             NCPFConfiguration cfg = configurations.get(key);
             cfg.makePartial(designs);
         }
+    }
+    public String getNameAndVersion(){
+        for(String key : NCPFConfigurationContainer.configOrder){
+            if(configurations.containsKey(key)){
+                NCPFConfiguration cfg = configurations.get(key);
+                ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
+                if(module!=null&&module.name!=null)return module.name+" "+module.version;
+            }
+        }
+        for(NCPFConfiguration cfg : configurations.values()){
+            ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
+            if(module!=null&&module.name!=null)return module.name+" "+module.version;
+        }
+        return "Unknown Configuration";
     }
 }

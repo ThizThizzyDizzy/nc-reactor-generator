@@ -193,7 +193,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return s;
     }
     public FormattedText getSaveTooltip(){
-        FormattedText s = new FormattedText("TODO configuration details");
+        FormattedText s = new FormattedText();
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s.addText(metadata.get(key)+"\n");
@@ -212,7 +212,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return s.addText(getTooltip(true));
     }
     public String getBotTooltip(){
-        String s = "TODO configuration details";
+        String s = "";
         for(String key : metadata.keySet()){
             if(key.equalsIgnoreCase("name")){
                 s+=metadata.get(key)+"\n";
