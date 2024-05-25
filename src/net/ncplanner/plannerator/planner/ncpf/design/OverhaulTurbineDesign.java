@@ -33,7 +33,7 @@ public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineD
         super.convertToObject(ncpf);
     }
     @Override
-    public OverhaulTurbine toMultiblock(){
+    public OverhaulTurbine convertToMultiblock(){
         OverhaulTurbine turbine = new OverhaulTurbine(file.conglomeration, design.length-2, design[0][0].length-2, recipe);
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){

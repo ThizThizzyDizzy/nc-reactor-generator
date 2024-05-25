@@ -7,6 +7,11 @@ public abstract class MultiblockDesign<Definition extends NCPFDesignDefinition, 
     public MultiblockDesign(NCPFFile file){
         super(file);
     }
-    public abstract T toMultiblock();
+    public T toMultiblock(){
+        T mb = convertToMultiblock();
+        if(metadata!=null)mb.metadata.putAll(metadata.metadata);
+        return mb;
+    }
+    public abstract T convertToMultiblock();
     public abstract void convertElements();
 }

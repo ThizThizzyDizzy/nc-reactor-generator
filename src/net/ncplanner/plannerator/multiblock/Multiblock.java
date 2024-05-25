@@ -32,6 +32,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
+import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.joml.Vector2f;
@@ -790,7 +791,15 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return null;
     }
     public abstract <T extends LiteMultiblock> T compile();
-    public abstract <T extends MultiblockDesign> T toDesign();
+    public <T extends MultiblockDesign> T toDesign(){
+        T design = convertToDesign();
+        if(!metadata.isEmpty()){
+            if(design.metadata==null)design.metadata = new MetadataModule();
+            design.metadata.metadata.putAll(metadata);
+        }
+        return design;
+    }
+    public abstract <T extends MultiblockDesign> T convertToDesign();
     public NCPFElement[] getMultiblockRecipes(){
         return new NCPFElement[0];
     }

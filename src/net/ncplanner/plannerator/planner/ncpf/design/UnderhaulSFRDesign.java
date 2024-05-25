@@ -52,7 +52,7 @@ public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign,
         return block.hasModule(module);
     }
     @Override
-    public UnderhaulSFR toMultiblock(){
+    public UnderhaulSFR convertToMultiblock(){
         UnderhaulSFR sfr = new UnderhaulSFR(file.conglomeration, design.length-2, design[0].length-2, design[0][0].length-2, fuel);
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){

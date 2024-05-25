@@ -464,7 +464,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         return null;
     }
     @Override
-    public MultiblockDesign toDesign(){
+    public MultiblockDesign convertToDesign(){
         return null;
     }
 }

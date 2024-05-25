@@ -633,7 +633,7 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block> {
         return sfr;
     }
     @Override
-    public UnderhaulSFRDesign toDesign(){
+    public UnderhaulSFRDesign convertToDesign(){
         UnderhaulSFRDesign design = new UnderhaulSFRDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

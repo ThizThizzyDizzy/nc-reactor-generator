@@ -821,7 +821,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return getLocationCategory(x, y, z)==LocationCategory.TOROID;
     }
     @Override
-    public OverhaulFusionDesign toDesign(){
+    public OverhaulFusionDesign convertToDesign(){
         OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

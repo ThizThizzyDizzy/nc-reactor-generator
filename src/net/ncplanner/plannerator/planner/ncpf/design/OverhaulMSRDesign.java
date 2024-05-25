@@ -58,7 +58,7 @@ public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, O
         return block.hasModule(module)||block.parent!=null&&block.parent.hasModule(module);
     }
     @Override
-    public OverhaulMSR toMultiblock(){
+    public OverhaulMSR convertToMultiblock(){
         OverhaulMSR msr = new OverhaulMSR(file.conglomeration, design.length-2, design[0].length-2, design[0][0].length-2);
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){

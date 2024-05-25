@@ -2209,7 +2209,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return null;
     }
     @Override
-    public OverhaulMSRDesign toDesign(){
+    public OverhaulMSRDesign convertToDesign(){
         OverhaulMSRDesign design = new OverhaulMSRDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

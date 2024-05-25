@@ -65,7 +65,7 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
         return liningThickness*2+coreSize+2;
     }
     @Override
-    public OverhaulFusionReactor toMultiblock(){
+    public OverhaulFusionReactor convertToMultiblock(){
         OverhaulFusionReactor reactor = new OverhaulFusionReactor(file.conglomeration, innerRadius, coreSize, toroidWidth, liningThickness, recipe, coolantRecipe);
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){

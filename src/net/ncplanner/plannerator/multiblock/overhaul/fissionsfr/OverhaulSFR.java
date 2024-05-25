@@ -1865,7 +1865,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return sfr;
     }
     @Override
-    public OverhaulSFRDesign toDesign(){
+    public OverhaulSFRDesign convertToDesign(){
         OverhaulSFRDesign design = new OverhaulSFRDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

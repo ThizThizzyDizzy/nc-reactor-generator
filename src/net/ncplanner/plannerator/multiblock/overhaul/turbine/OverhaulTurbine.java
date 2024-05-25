@@ -836,7 +836,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return bbox;
     }
     @Override
-    public OverhaulTurbineDesign toDesign(){
+    public OverhaulTurbineDesign convertToDesign(){
         OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
         forEachPosition((x, y, z) -> {
             Block block = getBlock(x, y, z);

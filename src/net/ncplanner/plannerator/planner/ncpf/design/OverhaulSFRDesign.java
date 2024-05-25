@@ -57,7 +57,7 @@ public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, O
         return block.hasModule(module)||block.parent!=null&&block.parent.hasModule(module);
     }
     @Override
-    public OverhaulSFR toMultiblock(){
+    public OverhaulSFR convertToMultiblock(){
         OverhaulSFR sfr = new OverhaulSFR(file.conglomeration, design.length-2, design[0].length-2, design[0][0].length-2, coolantRecipe);
         for(int x = 0; x<design.length; x++){
             for(int y = 0; y<design[x].length; y++){
