@@ -992,12 +992,14 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     that.moderatorLines++;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.template.moderator!=null)f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     f = 0;
                     for(int j = i-1; j>=1; j--){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux*block.template.reflector.reflectivity;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.template.moderator!=null)f+=b.template.moderator.flux*block.template.reflector.reflectivity;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
