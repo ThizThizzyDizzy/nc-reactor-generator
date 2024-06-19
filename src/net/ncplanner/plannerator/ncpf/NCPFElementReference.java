@@ -6,7 +6,8 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class NCPFElementReference extends DefinedNCPFObject{
     public NCPFElementDefinition definition;
     public NCPFElement target;
-    public NCPFElementReference(){}
+    public NCPFElementReference(){
+    }
     public NCPFElementReference(NCPFElementDefinition definition){
         this.definition = definition;
     }
@@ -28,7 +29,11 @@ public class NCPFElementReference extends DefinedNCPFObject{
     @Override
     public void setReferences(List<NCPFElement> elements){
         for(NCPFElement elem : elements){
-            if(elem.definition.matches(definition)){
+            boolean isMatch = elem.definition.matches(definition);
+            for(String legacy : elem.definition.getLegacyNames()){
+                isMatch |= legacy.equals(definition.toString());
+            }
+            if(isMatch){
                 if(target!=null)throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
                 target = elem;
             }
