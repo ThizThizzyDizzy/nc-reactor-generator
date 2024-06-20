@@ -295,7 +295,7 @@ public class Block extends AbstractBlock{
         if(template.parent!=null&&template.parent.heater!=null)return null;//remove heater ports
         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement newTemplate = null;
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement elem : getConfiguration().getConfiguration(OverhaulSFRConfiguration::new).blocks){
-            if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "salt", "solid", "vessel", "cell", "heater", "sink")))newTemplate = elem;
+            if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "salt", "solid", "vessel", "cell", "heater", "sink", "standard", "water")))newTemplate = elem;
         }
         if(newTemplate==null)return null;
         net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(getConfiguration(), x, y, z, newTemplate);

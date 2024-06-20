@@ -276,7 +276,7 @@ public class Block extends AbstractBlock{
         if(template.coolantVent!=null)return null;//remove vents
         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement newTemplate = null;
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement elem : getConfiguration().getConfiguration(OverhaulMSRConfiguration::new).blocks){
-            if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "solid", "salt", "cell", "vessel", "sink", "heater")))newTemplate = elem;
+            if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "solid", "salt", "cell", "vessel", "sink", "heater", "water", "standard")))newTemplate = elem;
         }
         if(newTemplate==null)return null;
         net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block(getConfiguration(), x, y, z, newTemplate);
