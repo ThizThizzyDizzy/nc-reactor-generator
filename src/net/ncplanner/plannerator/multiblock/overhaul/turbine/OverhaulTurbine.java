@@ -343,7 +343,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                         idealExpansion[i] = MathUtil.pow(recipe.stats.coefficient, (i+.5f)/blades.length);
                         actualExpansion[i] = expansionSoFar*Math.sqrt(expansion);
                         expansionSoFar*=expansion;
-                        rotorEfficiency+=blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
+                        rotorEfficiency+=blades[i].blade==null?0:blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
                     }
                     rotorEfficiency/=numberOfBlades;
                     maxInput = numBlades*getSpecificConfiguration().settings.fluidPerBlade;
