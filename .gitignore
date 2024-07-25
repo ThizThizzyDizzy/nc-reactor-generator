@@ -1,7 +1,6 @@
 /.idea
 /*.iml
 /out
-/nbproject
 
 /errors
 /crash-reports
@@ -21,7 +20,5 @@
 /dssl.jar
 /patrons-list.txt
 
-/build.xml
-/manifest.mf
 /dist/
 /build/
