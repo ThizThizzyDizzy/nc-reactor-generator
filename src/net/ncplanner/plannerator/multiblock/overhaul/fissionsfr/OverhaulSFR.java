@@ -1747,7 +1747,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public boolean canBePlacedInCasingEdge(Block b){
-        return b.isCasing()&&b.template.casing.edge;
+        return b.isCasing()&&b.template.casing!=null&&b.template.casing.edge;
     }
     @Override
     public boolean canBePlacedInCasingFace(Block b){
