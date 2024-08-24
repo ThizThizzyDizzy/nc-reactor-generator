@@ -101,7 +101,7 @@ margin 0 0
 text .525 Fuel Cell
 text .525 Heavy Water
 text .525 Beryllium-Carbon
-text .525 Neutron Irradiator
+text .525 Neutron
 text .525 Boron-Silver
 text .525 Water Heat Sink
 text .525 Conductor
@@ -110,7 +110,7 @@ skip
 skip
 text .525 Moderator
 text .525 Reflector
-skip
+text .525 Irradiator
 text .525 Neutron Shield
 skip
 columns 1
