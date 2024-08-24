@@ -1081,6 +1081,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     length++;
                     continue;
                 }
+                if(block.isHeater()){
+                    length++;
+                    continue;
+                }
                 if(block.isShield()){
                     efficiency+=block.template.neutronShield.efficiency;
                     length++;
@@ -1094,7 +1098,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1109,12 +1114,14 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     that.vesselGroup.moderatorLines++;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     f = 0;
                     for(int j = i-1; j>=1; j--){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux*block.template.reflector.reflectivity;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux*block.template.reflector.reflectivity;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1128,7 +1135,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.stats.efficiency;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1160,6 +1168,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     length++;
                     continue;
                 }
+                if(block.isHeater()){
+                    length++;
+                    continue;
+                }
                 if(block.isShield()){
                     efficiency+=block.template.neutronShield.efficiency;
                     length++;
@@ -1172,7 +1184,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1187,12 +1200,14 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     that.vesselGroup.moderatorLines++;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     f = 0;
                     for(int j = i-1; j>=1; j--){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux*block.template.reflector.reflectivity;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux*block.template.reflector.reflectivity;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1206,7 +1221,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.stats.efficiency;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f+=getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
+                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        if(b.isModerator())f+=b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1235,6 +1251,11 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     length++;
                     flux+=block.template.moderator.flux;
                     if(i==1)toActivate.enqueue(block);
+                    toValidate.enqueue(block);
+                    skip = true;
+                }
+                if(block.isHeater()){
+                    length++;
                     toValidate.enqueue(block);
                     skip = true;
                 }
