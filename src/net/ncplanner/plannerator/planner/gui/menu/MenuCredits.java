@@ -39,7 +39,7 @@ public class MenuCredits extends Menu{
     private Random rand = new Random();
     private float backgroundElemRotSpeedMult = 1;
     private float backgroundElemSpeedMult = 5;
-    private float backgroundElemChance = 0.125f;
+    private float backgroundElemChance = 0.03f;
     private static float backgroundElementScale = .375f;
     public static final ArrayList<String> patrons = new ArrayList<>();
     public static final String patronsLink = "https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/patrons.txt";
@@ -323,7 +323,7 @@ public class MenuCredits extends Menu{
         text("DSSL", 1.125);
         text("by tomdodd4598");
         gap(2);
-        text("NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
+        text("Legacy NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
         text("(a fork of Simplelibrary by computerneek)");
         divider();
         text("Early Concept Art", 1.25);
@@ -495,11 +495,13 @@ public class MenuCredits extends Menu{
             if(e.y>gui.getHeight()*e.z)it.remove();
             if(e.threeD)e.rot+=creditsSpeed*deltaTime*20*backgroundElemRotSpeedMult;
         }
-        if(rand.nextDouble()<backgroundElemChance){
-            backgroundElements.enqueue(elem = possibleBackgroundElements.get(rand.nextInt(possibleBackgroundElements.size())).copy());
-            elem.z = (float)rand.nextDouble()*3+1;
-            elem.x = (float)(rand.nextDouble()*3-1)*elem.z*gui.getWidth();
-            elem.y = -gui.getHeight()*elem.z;
+        for(int i = 0; i<creditsSpeed; i++){
+            if(rand.nextDouble()<backgroundElemChance){
+                backgroundElements.enqueue(elem = possibleBackgroundElements.get(rand.nextInt(possibleBackgroundElements.size())).copy());
+                elem.z = (float)rand.nextDouble()*3+1;
+                elem.x = (float)(rand.nextDouble()*3-1)*elem.z*gui.getWidth();
+                elem.y = -gui.getHeight()*elem.z;
+            }
         }
         Renderer renderer = new Renderer();
         for(Component c : offsets.keySet()){
@@ -533,9 +535,10 @@ public class MenuCredits extends Menu{
         Renderer renderer = new Renderer();
         renderer.setColor(Core.theme.getCreditsImageColor());
         for(BackgroundElement element : backgroundElements){
-            renderer.setModel(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/4), -element.z)
+            renderer.pushModel(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/4), -element.z)
                     .rotate((float)((element.rot+(element.threeD?((creditsSpeed*backgroundElemRotSpeedMult)*(float)deltaTime*20):0))*Math.PI/180), 0, 1, 0));
             element.render(deltaTime);
+            renderer.popModel();
         }
     }
     private static class BackgroundElement{
