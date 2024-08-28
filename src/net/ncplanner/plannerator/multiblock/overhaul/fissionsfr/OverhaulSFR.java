@@ -419,7 +419,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelCells;
                         totalHeatMult+=cluster.heatMult*fuelCells;
                         totalIrradiation+=cluster.irradiation;
-                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         calcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }
@@ -655,7 +654,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelCells;
                         totalHeatMult+=cluster.heatMult*fuelCells;
                         totalIrradiation+=cluster.irradiation;
-                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         shutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }
@@ -890,7 +888,6 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         totalEfficiency+=cluster.efficiency*fuelCells;
                         totalHeatMult+=cluster.heatMult*fuelCells;
                         totalIrradiation+=cluster.irradiation;
-                        if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         partialShutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
                 }
