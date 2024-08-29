@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -135,7 +136,22 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
             if(!other.type.equals(type))return false;
             if(settings.size()!=other.settings.size())return false;
             for(String key : settings){
-                if(!Objects.equals(gets.get(key).get(), other.gets.get(key).get()))return false;
+                Object val1 = gets.get(key).get();
+                Object val2 = other.gets.get(key).get();
+                boolean equal = Objects.equals(val1, val2);
+                if(val1 instanceof List && val2 instanceof List){
+                    List l1 = (List)val1;
+                    List l2 = (List)val2;
+                    equal = l1.size()==l2.size();
+                    for(int i = 0; i<l1.size(); i++){
+                        Object elem1 = l1.get(i);
+                        Object elem2 = l2.get(i);
+                        if(elem1 instanceof NCPFElementDefinition && elem2 instanceof NCPFElementDefinition){
+                            equal &= ((NCPFElementDefinition)elem1).matches((NCPFElementDefinition)elem2);
+                        }else equal = false;
+                    }
+                }
+                if(!equal)return false;
             }
             return true;
         }
