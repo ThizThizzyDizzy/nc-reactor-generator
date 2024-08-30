@@ -610,19 +610,39 @@ public class Core{
         try{
             switch(Main.os){
                 case Main.OS_WINDOWS:
-                    rt.exec("rundll32 url.dll,FileProtocolHandler "+link);
+                    rt.exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", link});
                     return true;
                 case Main.OS_MACOS:
-                    rt.exec("open "+link);
+                    rt.exec(new String[]{"open", link});
                     return true;
                 case Main.OS_LINUX:
-                    rt.exec("xdg-open "+link);
+                    rt.exec(new String[]{"xdg-open", link});
                     return true;
                 default:
                     throw new RuntimeException("Failed to open webpage: Unknown OS\n"+link);
             }
         }catch(IOException ex){
             throw new RuntimeException("Failed to open webpage\n"+link, ex);
+        }
+    }
+    public static boolean openFolder(File dir){
+        Runtime rt = Runtime.getRuntime();
+        try{
+            switch(Main.os){
+                case Main.OS_WINDOWS:
+                    rt.exec(new String[]{"explorer", dir.getAbsolutePath()});
+                    return true;
+                case Main.OS_MACOS:
+                    rt.exec(new String[]{"open", dir.getAbsolutePath()});
+                    return true;
+                case Main.OS_LINUX:
+                    rt.exec(new String[]{"xdg-open", dir.getAbsolutePath()});
+                    return true;
+                default:
+                    throw new RuntimeException("Failed to open folder: Unknown OS\n"+dir.getAbsolutePath());
+            }
+        }catch(IOException ex){
+            throw new RuntimeException("Failed to open folder\n"+dir.getAbsolutePath(), ex);
         }
     }
     public static String getCrashReportData(){

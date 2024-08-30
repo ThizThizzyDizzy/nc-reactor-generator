@@ -72,7 +72,7 @@ public class MenuSaveDialog extends MenuInputDialog{
     }
     private void save(Project ncpf, File file, String filename){
         NCPFFileWriter.write(ncpf, file, selectedFormat);
-        new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
+        new MenuOKMessageDialog(gui, this, "Saved as "+filename).addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true).open();
         Core.saved = true;
     }
     private static String genName(Project ncpf){

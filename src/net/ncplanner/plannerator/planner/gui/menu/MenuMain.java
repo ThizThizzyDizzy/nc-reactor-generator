@@ -384,7 +384,7 @@ public class MenuMain extends Menu{
     }
     private void exprt(Project project, FormatWriter writer, File file, String filename){
         FileWriter.write(project, file, writer);
-        new MenuOKMessageDialog(gui, this, "Saved as "+filename).open();
+        new MenuOKMessageDialog(gui, this, "Saved as "+filename).addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true).open();
     }
     @Override
     public void drawBackground(double deltaTime){
