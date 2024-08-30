@@ -628,9 +628,20 @@ public abstract class Multiblock<T extends AbstractBlock>{
         }
     }
     protected abstract void getExtraParts(ArrayList<PartCount> parts);
+    /**
+     * Checks if a block's placement rules are valid in a specific location.
+     * <strong>Returns false for blocks without placement rules.</strong>
+     * @param block The block to check
+     * @param x the X position to check
+     * @param y the Y position to check
+     * @param z the Z position to check
+     * @return true if the block has rules, and all rules are valid at the specified position
+     */
     public boolean isValid(AbstractBlock block, int x, int y, int z){
         AbstractBlock b = block.newInstance(x, y, z);
-        for(NCPFPlacementRule rule : b.getRules()){
+        List<NCPFPlacementRule> rules = b.getRules();
+        if(rules.isEmpty())return false;
+        for(NCPFPlacementRule rule : rules){
             if(!rule.isValid(b, this)){
                 return false;
             }

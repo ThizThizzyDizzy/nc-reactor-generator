@@ -1262,7 +1262,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                     return b==null||Core.hasAlpha(b.getBaseTexture());
                 });
             }
-            if(isControlPressed(0)){
+            if(isControlPressed(0)&&getSelectedTool(0).isEditTool()){
                 if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
                     for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
                         if(space.isSpaceValid(getSelectedBlock(0), x, y, z)&&multiblock.isValid(getSelectedBlock(0), x, y, z)){

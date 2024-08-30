@@ -146,7 +146,7 @@ public class MenuComponentEditorGrid extends Component{
                     renderer.setWhite();
                     renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma"), X, Y, X+blockSize, Y+blockSize);
                 }
-                if(Core.isControlPressed()){
+                if(Core.isControlPressed()&&editor.getSelectedTool(0).isEditTool()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
                         if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), bx, by, bz)&&multiblock.isValid(editor.getSelectedBlock(0), bx, by, bz)){
                             editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha, multiblock);

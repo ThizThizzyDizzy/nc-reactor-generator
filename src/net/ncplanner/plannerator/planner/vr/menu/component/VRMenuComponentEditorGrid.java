@@ -208,7 +208,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 });
             }
             for(int id : editor.editorTools.keySet()){
-                if(editor.isControlPressed(id)){
+                if(editor.isControlPressed(id)&&editor.getSelectedTool(id).isEditTool()){
                     if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
                         if(editorSpace.isSpaceValid(editor.getSelectedBlock(id), x, y, z)&&multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
                             editor.getSelectedBlock(id).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, null, (t) -> {
