@@ -528,8 +528,25 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2]
+                                    "type": "nuclearcraft:overhaul_sfr:random_cell",
+                                    "indicies": [1, 2, 3, 4, 5],
+                                    "add_moderators": true,
+                                    "use_reflectors": true,
+                                    "additional_cells": true
+                                },
+                                "type": "single"
+                            }, {
+                                "mutator": {
+                                    "symmetry": {
+                                        "rotate_180_z": false,
+                                        "mirror_y": true,
+                                        "mirror_x": true,
+                                        "mirror_z": true,
+                                        "rotate_180_y": false,
+                                        "rotate_180_x": false
+                                    },
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 1, 2, 3, 4, 5]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -695,8 +712,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -952,10 +969,37 @@
                                         },
                                         "type": "greater_or_equal"
                                     }]
+                            }, {
+                                "target_stage": 0,
+                                "consolidate": false,
+                                "stop": false,
+                                "store": false,
+                                "conditions": [{
+                                        "v1": {
+                                            "variable": "generator.stages[2]{Stage 3}.Hits",
+                                            "type": "variable"
+                                        },
+                                        "v2": {
+                                            "constant": "int",
+                                            "type": "constant",
+                                            "value": 10000
+                                        },
+                                        "type": "greater_or_equal"
+                                    }, {
+                                        "v1": {
+                                            "variable": "generator.Last Update Nanos",
+                                            "type": "variable"
+                                        },
+                                        "v2": {
+                                            "variable": "generator.settings.Timeout (ms)",
+                                            "type": "variable"
+                                        },
+                                        "type": "greater_or_equal"
+                                    }]
                             }],
                         "steps": [{
                                 "mutator": {
-                                    "type": "nuclearcraft:underhaul_sfr:clear_invalid"
+                                    "type": "nuclearcraft:overhaul_sfr:clear_invalid"
                                 },
                                 "type": "single"
                             }, {
@@ -968,8 +1012,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -1170,7 +1214,7 @@
                             }],
                         "steps": [{
                                 "mutator": {
-                                    "type": "nuclearcraft:underhaul_sfr:clear_invalid"
+                                    "type": "nuclearcraft:overhaul_sfr:clear_invalid"
                                 },
                                 "type": "single"
                             }, {
@@ -1183,8 +1227,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]

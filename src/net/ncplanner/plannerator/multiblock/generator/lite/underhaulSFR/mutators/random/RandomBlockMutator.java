@@ -17,10 +17,6 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     public RandomBlockMutator(){
         super("nuclearcraft:underhaul_sfr:random_block");
     }
-    public RandomBlockMutator(LiteUnderhaulSFR multiblock){
-        this();
-        setIndicies(multiblock);
-    }
     @Override
     public String getTitle(){
         return "Random Block Mutator";

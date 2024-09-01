@@ -16,6 +16,7 @@ public class NCPFObject extends HashMap<String, Object>{
     public <T extends DefinedNCPFObject> T getDefinedNCPFObject(String key, Supplier<T> supplier){
         T object = supplier.get();
         NCPFObject ncpf = getNCPFObject(key);
+        if(ncpf==null)return null;
         object.convertFromObject(ncpf);
         return object;
     }

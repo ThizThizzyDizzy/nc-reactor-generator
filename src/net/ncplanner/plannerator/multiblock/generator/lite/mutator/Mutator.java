@@ -33,8 +33,16 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
     public abstract String getTitle();
     public abstract String getTooltip();
     public abstract void run(T multiblock, Random rand);
-    public void setIndicies(T multiblock){}
-    public abstract void init(T multiblock);//do nothing other than ensure that it crashes when calling the wrong mutator
+    public void setIndicies(T multiblock){
+    }
+    /**
+     * Initialize the mutator in the configuration menu. This method should do
+     * nothing; It is here solely to ensure that it crashes when calling the
+     * wrong mutator
+     *
+     * @param multiblock The multiblock to initialize with
+     */
+    public abstract void init(T multiblock);
     @Override
     public boolean isExpanded(){
         return expanded;
@@ -47,5 +55,6 @@ public abstract class Mutator<T extends LiteMultiblock> extends RegisteredNCPFOb
     public String getSettingsPrefix(){
         return "Mutator";
     }
-    public void importFrom(T multiblock, NCPFConfigurationContainer container){}
+    public void importFrom(T multiblock, NCPFConfigurationContainer container){
+    }
 }

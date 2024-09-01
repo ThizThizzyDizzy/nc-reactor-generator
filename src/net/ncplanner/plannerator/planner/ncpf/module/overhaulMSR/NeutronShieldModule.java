@@ -22,7 +22,7 @@ public class NeutronShieldModule extends BlockFunctionModule implements ElementS
     }
     @Override
     public void setLocalReferences(DefinedNCPFModularObject parentObject){
-        if(closed.block!=null){
+        if(closed!=null&&closed.block!=null){
             ((BlockElement)parentObject).toggled = closed.block;
             closed.block.unToggled = (BlockElement)parentObject;
         }

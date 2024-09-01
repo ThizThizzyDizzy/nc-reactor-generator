@@ -10,10 +10,6 @@ public class RandomCoolantRecipeMutator extends Mutator<LiteOverhaulSFR>{
     public RandomCoolantRecipeMutator(){
         super("nuclearcraft:overhaul_sfr:random_coolant_recipe");
     }
-    public RandomCoolantRecipeMutator(LiteOverhaulSFR multiblock){
-        this();
-        setIndicies(multiblock);
-    }
     @Override
     public String getTitle(){
         return "Random Coolant Recipe Mutator";

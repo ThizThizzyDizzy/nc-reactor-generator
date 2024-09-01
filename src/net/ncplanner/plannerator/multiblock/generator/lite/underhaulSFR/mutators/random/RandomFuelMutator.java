@@ -10,10 +10,6 @@ public class RandomFuelMutator extends Mutator<LiteUnderhaulSFR>{
     public RandomFuelMutator(){
         super("nuclearcraft:underhaul_sfr:random_fuel");
     }
-    public RandomFuelMutator(LiteUnderhaulSFR multiblock){
-        this();
-        setIndicies(multiblock);
-    }
     @Override
     public String getTitle(){
         return "Random Fuel Mutator";

@@ -397,7 +397,7 @@
         "plannerator:metadata": {},
         "plannerator:generator_settings": {
             "settings": {
-                "name": "Efficiency",
+                "name": "Output",
                 "stages": [{
                         "priorities": [{
                                 "conditions": [],
@@ -436,11 +436,11 @@
                                 "operator": {
                                     "v1": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock2.Total Output",
+                                            "variable": "multiblock2.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
@@ -448,29 +448,15 @@
                                     },
                                     "v2": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock.Total Output",
+                                            "variable": "multiblock.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
                                         "operator": "min"
-                                    },
-                                    "type": "operator",
-                                    "operator": "subtract"
-                                }
-                            }, {
-                                "conditions": [],
-                                "operator": {
-                                    "v1": {
-                                        "variable": "multiblock2.Total Efficiency",
-                                        "type": "variable"
-                                    },
-                                    "v2": {
-                                        "variable": "multiblock.Total Efficiency",
-                                        "type": "variable"
                                     },
                                     "type": "operator",
                                     "operator": "subtract"
@@ -484,6 +470,20 @@
                                     },
                                     "v2": {
                                         "variable": "multiblock.Total Output",
+                                        "type": "variable"
+                                    },
+                                    "type": "operator",
+                                    "operator": "subtract"
+                                }
+                            }, {
+                                "conditions": [],
+                                "operator": {
+                                    "v1": {
+                                        "variable": "multiblock2.Total Efficiency",
+                                        "type": "variable"
+                                    },
+                                    "v2": {
+                                        "variable": "multiblock.Total Efficiency",
                                         "type": "variable"
                                     },
                                     "type": "operator",
@@ -528,8 +528,25 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2]
+                                    "type": "nuclearcraft:overhaul_sfr:random_cell",
+                                    "indicies": [1, 2, 3, 4, 5],
+                                    "add_moderators": true,
+                                    "use_reflectors": true,
+                                    "additional_cells": true
+                                },
+                                "type": "single"
+                            }, {
+                                "mutator": {
+                                    "symmetry": {
+                                        "rotate_180_z": false,
+                                        "mirror_y": true,
+                                        "mirror_x": true,
+                                        "mirror_z": true,
+                                        "rotate_180_y": false,
+                                        "rotate_180_x": false
+                                    },
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 1, 2, 3, 4, 5]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -571,11 +588,11 @@
                                 "operator": {
                                     "v1": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock2.Total Output",
+                                            "variable": "multiblock2.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
@@ -583,11 +600,11 @@
                                     },
                                     "v2": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock.Total Output",
+                                            "variable": "multiblock.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
@@ -600,11 +617,11 @@
                                 "conditions": [],
                                 "operator": {
                                     "v1": {
-                                        "variable": "multiblock2.Total Efficiency",
+                                        "variable": "multiblock2.Total Output",
                                         "type": "variable"
                                     },
                                     "v2": {
-                                        "variable": "multiblock.Total Efficiency",
+                                        "variable": "multiblock.Total Output",
                                         "type": "variable"
                                     },
                                     "type": "operator",
@@ -646,11 +663,11 @@
                                 "conditions": [],
                                 "operator": {
                                     "v1": {
-                                        "variable": "multiblock2.Total Output",
+                                        "variable": "multiblock2.Total Efficiency",
                                         "type": "variable"
                                     },
                                     "v2": {
-                                        "variable": "multiblock.Total Output",
+                                        "variable": "multiblock.Total Efficiency",
                                         "type": "variable"
                                     },
                                     "type": "operator",
@@ -695,8 +712,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -770,11 +787,11 @@
                                 "operator": {
                                     "v1": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock2.Total Output",
+                                            "variable": "multiblock2.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
@@ -782,29 +799,15 @@
                                     },
                                     "v2": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock.Total Output",
+                                            "variable": "multiblock.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
                                         "operator": "min"
-                                    },
-                                    "type": "operator",
-                                    "operator": "subtract"
-                                }
-                            }, {
-                                "conditions": [],
-                                "operator": {
-                                    "v1": {
-                                        "variable": "multiblock2.Total Efficiency",
-                                        "type": "variable"
-                                    },
-                                    "v2": {
-                                        "variable": "multiblock.Total Efficiency",
-                                        "type": "variable"
                                     },
                                     "type": "operator",
                                     "operator": "subtract"
@@ -827,30 +830,12 @@
                                 "conditions": [],
                                 "operator": {
                                     "v1": {
-                                        "v1": {
-                                            "constant": "int",
-                                            "type": "constant",
-                                            "value": 0
-                                        },
-                                        "v2": {
-                                            "variable": "multiblock.Net Heat",
-                                            "type": "variable"
-                                        },
-                                        "type": "operator",
-                                        "operator": "max"
+                                        "variable": "multiblock2.Total Efficiency",
+                                        "type": "variable"
                                     },
                                     "v2": {
-                                        "v1": {
-                                            "constant": "int",
-                                            "type": "constant",
-                                            "value": 0
-                                        },
-                                        "v2": {
-                                            "variable": "multiblock2.Net Heat",
-                                            "type": "variable"
-                                        },
-                                        "type": "operator",
-                                        "operator": "max"
+                                        "variable": "multiblock.Total Efficiency",
+                                        "type": "variable"
                                     },
                                     "type": "operator",
                                     "operator": "subtract"
@@ -952,10 +937,37 @@
                                         },
                                         "type": "greater_or_equal"
                                     }]
+                            }, {
+                                "target_stage": 0,
+                                "consolidate": false,
+                                "stop": false,
+                                "store": false,
+                                "conditions": [{
+                                        "v1": {
+                                            "variable": "generator.stages[2]{Stage 3}.Hits",
+                                            "type": "variable"
+                                        },
+                                        "v2": {
+                                            "constant": "int",
+                                            "type": "constant",
+                                            "value": 10000
+                                        },
+                                        "type": "greater_or_equal"
+                                    }, {
+                                        "v1": {
+                                            "variable": "generator.Last Update Nanos",
+                                            "type": "variable"
+                                        },
+                                        "v2": {
+                                            "variable": "generator.settings.Timeout (ms)",
+                                            "type": "variable"
+                                        },
+                                        "type": "greater_or_equal"
+                                    }]
                             }],
                         "steps": [{
                                 "mutator": {
-                                    "type": "nuclearcraft:underhaul_sfr:clear_invalid"
+                                    "type": "nuclearcraft:overhaul_sfr:clear_invalid"
                                 },
                                 "type": "single"
                             }, {
@@ -968,8 +980,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -1043,11 +1055,11 @@
                                 "operator": {
                                     "v1": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock2.Total Output",
+                                            "variable": "multiblock2.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
@@ -1055,29 +1067,15 @@
                                     },
                                     "v2": {
                                         "v1": {
-                                            "variable": "generator.settings.Min Output",
+                                            "variable": "generator.settings.Min Efficiency",
                                             "type": "variable"
                                         },
                                         "v2": {
-                                            "variable": "multiblock.Total Output",
+                                            "variable": "multiblock.Total Efficiency",
                                             "type": "variable"
                                         },
                                         "type": "operator",
                                         "operator": "min"
-                                    },
-                                    "type": "operator",
-                                    "operator": "subtract"
-                                }
-                            }, {
-                                "conditions": [],
-                                "operator": {
-                                    "v1": {
-                                        "variable": "multiblock2.Total Efficiency",
-                                        "type": "variable"
-                                    },
-                                    "v2": {
-                                        "variable": "multiblock.Total Efficiency",
-                                        "type": "variable"
                                     },
                                     "type": "operator",
                                     "operator": "subtract"
@@ -1100,30 +1098,12 @@
                                 "conditions": [],
                                 "operator": {
                                     "v1": {
-                                        "v1": {
-                                            "constant": "int",
-                                            "type": "constant",
-                                            "value": 0
-                                        },
-                                        "v2": {
-                                            "variable": "multiblock.Net Heat",
-                                            "type": "variable"
-                                        },
-                                        "type": "operator",
-                                        "operator": "max"
+                                        "variable": "multiblock2.Total Efficiency",
+                                        "type": "variable"
                                     },
                                     "v2": {
-                                        "v1": {
-                                            "constant": "int",
-                                            "type": "constant",
-                                            "value": 0
-                                        },
-                                        "v2": {
-                                            "variable": "multiblock2.Net Heat",
-                                            "type": "variable"
-                                        },
-                                        "type": "operator",
-                                        "operator": "max"
+                                        "variable": "multiblock.Total Efficiency",
+                                        "type": "variable"
                                     },
                                     "type": "operator",
                                     "operator": "subtract"
@@ -1170,7 +1150,7 @@
                             }],
                         "steps": [{
                                 "mutator": {
-                                    "type": "nuclearcraft:underhaul_sfr:clear_invalid"
+                                    "type": "nuclearcraft:overhaul_sfr:clear_invalid"
                                 },
                                 "type": "single"
                             }, {
@@ -1183,8 +1163,8 @@
                                         "rotate_180_y": false,
                                         "rotate_180_x": false
                                     },
-                                    "type": "nuclearcraft:underhaul_sfr:random_block",
-                                    "indicies": [0, 1, 2, 3]
+                                    "type": "nuclearcraft:overhaul_sfr:random_block",
+                                    "indicies": [0, 6]
                                 },
                                 "type": "random_quantity"
                             }]
@@ -1194,9 +1174,9 @@
                         "type": "int",
                         "value": 4
                     }, {
-                        "name": "Min Output",
-                        "type": "int",
-                        "value": 1
+                        "name": "Min Efficiency",
+                        "type": "percent",
+                        "value": 4.0
                     }, {
                         "name": "Core Timeout (ms)",
                         "type": "int",

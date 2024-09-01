@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.planner.module;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
@@ -12,8 +14,11 @@ import net.ncplanner.plannerator.multiblock.editor.decal.CellFluxDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceLineDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDecal;
+import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.ClearInvalidMutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random.RandomBlockMutator;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random.RandomCellMutator;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
@@ -117,6 +122,7 @@ public class OverhaulModule extends Module<Object>{
         
         registerMutator(RandomBlockMutator::new);
         registerMutator(ClearInvalidMutator::new);
+        registerMutator(RandomCellMutator::new);
     }
     @Override
     public void addTutorials(){
@@ -590,5 +596,12 @@ public class OverhaulModule extends Module<Object>{
             overlays.add(msrFluxOverlay);
         }
         if(multiblock instanceof OverhaulTurbine)overlays.add(validCoilOverlay);
+    }
+    @Override
+    public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){
+        if(multiblock instanceof LiteOverhaulSFR){
+            generators.add(()-> Core.getInputStream("configurations/generators/overhaul_sfr/output.ncpf.json"));
+            generators.add(()-> Core.getInputStream("configurations/generators/overhaul_sfr/efficiency.ncpf.json"));
+        }
     }
 }
