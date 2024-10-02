@@ -282,6 +282,32 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
                 stage.priorities.add(new Priority<>());
                 rebuildGUI();
             }));
+            stageSettings.add(new Label(0, 0, 0, 36, "Post-Processing Mutators", true));
+            for(GeneratorMutator<T> mutator : stage.postProcessing){
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        stage.postProcessing.remove(mutator);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                }.setTooltip(mutator.getTooltip())), mutator)){
+                    addConditionSettings(mutator.conditions);
+                    addExpandedSettings(mutator);
+                    addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
+                }
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "Add Post-Processing Mutator", true).addAction(() -> {
+                new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
+                    new MenuPickGeneratorMutator<>(gui, this, mutator, (genMutator)->{
+                        stage.postProcessing.add(genMutator);
+                        rebuildGUI();
+                    }).open();
+                }).open();
+            }));
             stageSettings.add(new Label(0, 0, 0, 36, "Stage Transitions", true));
             for(int i = 0; i<stage.stageTransitions.size(); i++){
                 StageTransition<T> transition = stage.stageTransitions.get(i);

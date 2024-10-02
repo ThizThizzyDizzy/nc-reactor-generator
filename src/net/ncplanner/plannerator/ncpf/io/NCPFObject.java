@@ -25,7 +25,7 @@ public class NCPFObject extends HashMap<String, Object>{
         object.convertToObject(ncpf);
         setNCPFObject(key, ncpf);
     }
-    
+
     public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFList(String key, Supplier<T> objectSupplier){
         return (V)getDefinedNCPFList(key, new ArrayList<>(), objectSupplier);
     }
@@ -48,7 +48,7 @@ public class NCPFObject extends HashMap<String, Object>{
         }
         setNCPFList(key, ncpf);
     }
-    
+
     public <T extends DefinedNCPFObject> void getDefined3DArray(String name, T[][][] array, List<T> indicies){
         NCPFList list3 = getNCPFList(name);
         for(int x = 0; x<array.length; x++){
@@ -77,28 +77,31 @@ public class NCPFObject extends HashMap<String, Object>{
         }
         setNCPFList(name, list3);
     }
-    
+
     public <T extends RegisteredNCPFObject> T getRegisteredNCPFObject(String key, HashMap<String, Supplier<T>> registry){
         String type = getNCPFObject(key).getString("type");
         Supplier<T> supplier = registry.get(type);
-        if(supplier==null)throw new IllegalArgumentException("Cannot load unregistered object: "+type+"!");
+        if(supplier==null)
+            throw new IllegalArgumentException("Cannot load unregistered object: "+type+"!");
         return getDefinedNCPFObject(key, supplier);
     }
     public void setRegisteredNCPFObject(String key, RegisteredNCPFObject object){
         setDefinedNCPFObject(key, object);
         getNCPFObject(key).setString("type", object.type);
     }
-    
+
     public <T extends RegisteredNCPFObject, V extends List<T>> V getRegisteredNCPFList(String key, HashMap<String, Supplier<T>> registry){
         return (V)getRegisteredNCPFList(key, new ArrayList<>(), registry);
     }
     public <T extends RegisteredNCPFObject, V extends List<T>> V getRegisteredNCPFList(String key, V list, HashMap<String, Supplier<T>> registry){
         NCPFList ncpf = getNCPFList(key);
+        if(ncpf==null)return list;
         for(int i = 0; i<ncpf.size(); i++){
             NCPFObject obj = ncpf.getNCPFObject(i);
             String type = obj.getString("type");
             Supplier<T> supplier = registry.get(type);
-            if(supplier==null)throw new IllegalArgumentException("Cannot load unregistered object: "+type+"!");
+            if(supplier==null)
+                throw new IllegalArgumentException("Cannot load unregistered object: "+type+"!");
             T object = supplier.get();
             list.add(object);
             object.convertFromObject(obj);
@@ -115,7 +118,7 @@ public class NCPFObject extends HashMap<String, Object>{
         }
         setNCPFList(key, ncpf);
     }
-    
+
     public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
         NCPFList list3 = getNCPFList(name);
         int X = -1;
@@ -141,7 +144,8 @@ public class NCPFObject extends HashMap<String, Object>{
                             Z++;
                         }
                         int idx = list3.getNCPFList(X).getNCPFList(Y).getInteger(Z);
-                        if(idx>-1)array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
+                        if(idx>-1)
+                            array[x][y][z] = design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
                     }
                 }
             }
@@ -165,27 +169,27 @@ public class NCPFObject extends HashMap<String, Object>{
         }
         setNCPFList(name, list3);
     }
-    
+
     public void getVariable(String key, SettingVariable setting){
         setting.set(setting.convertFromObject(getNCPFObject(key)));
     }
     public void setVariable(String key, SettingVariable setting){
         setNCPFObject(key, setting.convertToObject());
     }
-    
+
     public int[] getIntArray(String key){
         NCPFList list = getNCPFList(key);
         int[] arr = new int[list.size()];
         for(int i = 0; i<arr.length; i++)arr[i] = list.getInteger(i);
         return arr;
     }
-    
+
     public void setIntArray(String key, int[] value){
         NCPFList<Integer> list = new NCPFList<>();
         for(int i : value)list.add(i);
         setNCPFList(key, list);
     }
-    
+
     public NCPFObject getNCPFObject(String key){
         Object o = get(key);
         if(o instanceof NCPFObject)return (NCPFObject)o;
@@ -231,7 +235,7 @@ public class NCPFObject extends HashMap<String, Object>{
         if(value==null)return remove(key);//never hold nulls!
         return put(key, value);
     }
-    
+
     //just so I don't change types accidentally
     public void setNCPFObject(String key, NCPFObject value){
         set(key, value);
@@ -274,7 +278,8 @@ public class NCPFObject extends HashMap<String, Object>{
     }
     public NCPFElementReference getDefinedModuleOrElementReference(String block){
         NCPFElementReference reference = getDefinedNCPFObject(block, NCPFElementReference::new);
-        if(reference.definition.typeMatches(NCPFModuleElement::new))return reference.copyTo(NCPFModuleReference::new);
+        if(reference.definition.typeMatches(NCPFModuleElement::new))
+            return reference.copyTo(NCPFModuleReference::new);
         return reference;
     }
 }

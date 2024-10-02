@@ -81,6 +81,7 @@ public class LiteGenerator<T extends LiteMultiblock> extends DefinedNCPFObject i
                     condition.hits++;
                     if(!condition.check(rand))continue TRANSITION;
                 }
+                currentStage.runPostProcessing(multiblock, rand);
                 transition.hits++;
                 lastUpdate = System.nanoTime();
                 if(transition.store.get()){

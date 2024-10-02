@@ -18,9 +18,20 @@ public class GeneratorStage<T extends LiteMultiblock> extends DefinedNCPFObject 
     public ArrayList<GeneratorMutator<T>> steps = new ArrayList<>();
     public ArrayList<StageTransition<T>> stageTransitions = new ArrayList<>();
     public ArrayList<Priority<T>> priorities = new ArrayList<>();
+    public ArrayList<GeneratorMutator<T>> postProcessing = new ArrayList<>();
     public void run(T multiblock, Random rand){
         hits++;
         STEP:for(GeneratorMutator<T> mutator : steps){
+            for(Condition c : mutator.conditions){
+                c.hits++;
+                if(!c.check(rand))continue STEP;
+            }
+            mutator.hits++;
+            mutator.run(multiblock, rand);
+        }
+    }
+    public void runPostProcessing(T multiblock, Random rand){
+        STEP:for(GeneratorMutator<T> mutator : postProcessing){
             for(Condition c : mutator.conditions){
                 c.hits++;
                 if(!c.check(rand))continue STEP;
@@ -48,20 +59,26 @@ public class GeneratorStage<T extends LiteMultiblock> extends DefinedNCPFObject 
         for(Priority<T> priority : priorities){
             priority.reset();
         }
+        for(GeneratorMutator<T> step : postProcessing){
+            step.reset();
+        }
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         steps = ncpf.getRegisteredNCPFList("steps", GeneratorMutator.getRegisteredMutators());
         stageTransitions = ncpf.getDefinedNCPFList("stage_transitions", StageTransition<T>::new);
         priorities = ncpf.getDefinedNCPFList("priorities", Priority<T>::new);
+        postProcessing = ncpf.getRegisteredNCPFList("post_processing", GeneratorMutator.getRegisteredMutators());
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setRegisteredNCPFList("steps", steps);
         ncpf.setDefinedNCPFList("stage_transitions", stageTransitions);
         ncpf.setDefinedNCPFList("priorities", priorities);
+        ncpf.setRegisteredNCPFList("post_processing", postProcessing);
     }
     public void setIndicies(T multiblock){
         for(GeneratorMutator<T> step : steps)step.setIndicies(multiblock);
+        for(GeneratorMutator<T> step : postProcessing)step.setIndicies(multiblock);
     }
 }

@@ -26,22 +26,6 @@ public class ClearInvalidMutator extends Mutator<LiteOverhaulSFR>{
                 }
             }
         }
-        //now check for fully-insulated fuel cells.
-        for(int x = 0; x<multiblock.dims[0]; x++){
-            for(int y = 0; y<multiblock.dims[1]; y++){
-                for(int z = 0; z<multiblock.dims[2]; z++){
-                    if(!multiblock.configuration.blockFuelCell[multiblock.blocks[x][y][z]])continue;//check for fuel cells only
-                    int adjacentSpaces = 6;
-                    if(x==0)adjacentSpaces--;
-                    if(y==0)adjacentSpaces--;
-                    if(z==0)adjacentSpaces--;
-                    if(x==multiblock.dims[0]-1)adjacentSpaces--;
-                    if(y==multiblock.dims[1]-1)adjacentSpaces--;
-                    if(z==multiblock.dims[2]-1)adjacentSpaces--;
-                    if(multiblock.moderatorLines[x][y][z]>=adjacentSpaces)multiblock.blocks[x][y][z] = -1;
-                }
-            }
-        }
     }
     @Override
     public int getSettingCount(){
