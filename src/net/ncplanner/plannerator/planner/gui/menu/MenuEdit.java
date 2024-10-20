@@ -307,11 +307,11 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
         }
         refreshOverlays();
+        toggle3D.isToggledOn = Core.editor3dView&&!Core.recoveryMode;
     }
     private boolean recalculateOnOpen = true;
     @Override
     public synchronized void onOpened(){
-        toggle3D.isToggledOn = Core.editor3dView&&!Core.recoveryMode;
         Core.delCircle = true;
         Core.circleSize = CELL_SIZE;
         editMetadata.text = multiblock.getName().isEmpty()?"Edit Metadata":(multiblock.getName()+" | Edit Metadata");
