@@ -300,7 +300,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 Queue<Decal> fluxDecals = new Queue<>();
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    propogateNeutronFlux(group, false, fluxDecals);
+                    propogateNeutronFlux(group, false, fluxDecals, true);
                     propogateFlux.progress = i/(double)vesselGroups.size();
                 }
                 for(Block block : blocks){
@@ -327,7 +327,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 fluxDecals = new Queue<>();
                 for(int i = 0; i<blocks.size(); i++){
                     Block block = blocks.get(i);//why not vessel groups...?
-                    rePropogateNeutronFlux(block, false, fluxDecals);
+                    propogateNeutronFlux(block, false, fluxDecals, false);
                     rePropogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : blocks){
@@ -570,7 +570,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 fluxDecals = new Queue<>();
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals);
+                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals, true);
                     shutdownPropogateFlux.progress = i/(double)vesselGroups.size();
                 }
                 for(Block block : allBlocks){
@@ -597,7 +597,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);//why not vessel groups...?
-                    rePropogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals);
+                    propogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals, false);
                     shutdownRePropogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : allBlocks){
@@ -837,7 +837,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 fluxDecals = new Queue<>();
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals);
+                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals, true);
                     partialShutdownPropogateFlux.progress = i/(double)vesselGroups.size();
                 }
                 for(Block block : allBlocks){
@@ -865,7 +865,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 fluxDecals = new Queue<>();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);//why not vessel groups...?
-                    rePropogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals);
+                    propogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals, false);
                     partialShutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
@@ -1051,17 +1051,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 throw new IllegalStateException("Invalid calculation step: "+calcStep+"!");
         }
     }
-    public void propogateNeutronFlux(VesselGroup group, boolean force, Queue<Decal> fluxDecals){
+    public void propogateNeutronFlux(VesselGroup group, boolean force, Queue<Decal> fluxDecals, boolean initialPropogation){
+        if(!initialPropogation&&!group.wasActive)return;
         for(Block b : group.blocks){
-            propogateNeutronFlux(b, force, fluxDecals);
+            propogateNeutronFlux(b, force, fluxDecals, initialPropogation);
         }
     }
-    public void rePropogateNeutronFlux(VesselGroup group, boolean force, Queue<Decal> fluxDecals){
-        for(Block b : group.blocks){
-            rePropogateNeutronFlux(b, force, fluxDecals);
-        }
-    }
-    public void propogateNeutronFlux(Block that, boolean force, Queue<Decal> fluxDecals){
+    public void propogateNeutronFlux(Block that, boolean force, Queue<Decal> fluxDecals, boolean initialPropogation){
         if(!that.isFuelVessel())return;
         if(that.fuel==null)return;
         if(!force&&!that.vesselGroup.isPrimed()&&that.vesselGroup.neutronFlux<that.vesselGroup.criticality)return;
@@ -1103,93 +1099,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    propogateNeutronFlux(block.vesselGroup, false, fluxDecals);
-                    break;
-                }
-                if(block.isReflector()){
-                    if(length==0)break;
-                    if(length>getSpecificConfiguration().settings.neutronReach/2)break;
-                    that.vesselGroup.neutronFlux+=flux*2*block.template.reflector.reflectivity;
-                    if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.template.reflector.efficiency;
-                    that.vesselGroup.moderatorLines++;
-                    int f = 0;
-                    for(int j = 1; j<i; j++){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                    }
-                    f = 0;
-                    for(int j = i-1; j>=1; j--){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux*block.template.reflector.reflectivity;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
-                    }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    fluxDecals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
-                    break;
-                }
-                if(block.isIrradiator()){
-                    if(length==0)break;
-                    if(block.irradiatorRecipe==null)break;
-                    that.vesselGroup.moderatorLines++;
-                    if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.stats.efficiency;
-                    int f = 0;
-                    for(int j = 1; j<i; j++){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                    }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    fluxDecals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
-                    break;
-                }
-                break;
-            }
-        }
-    }
-    public void rePropogateNeutronFlux(Block that, boolean force, Queue<Decal> fluxDecals){
-        if(!that.isFuelVessel())return;
-        if(that.fuel==null)return;
-        if(!that.vesselGroup.wasActive)return;
-        if(!force&&!that.vesselGroup.isPrimed()&&that.vesselGroup.neutronFlux<that.vesselGroup.criticality)return;
-        if(that.hasPropogated)return;
-        that.hasPropogated = true;
-        for(Direction d : Direction.values()){
-            int flux = 0;
-            int length = 0;
-            float efficiency = 0;
-            for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
-                if(!contains(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i))break;
-                Block block = getBlock(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i);
-                if(block==null)break;
-                if(block.isModerator()){
-                    flux+=block.template.moderator.flux;
-                    efficiency+=block.template.moderator.efficiency;
-                    length++;
-                    continue;
-                }
-                if(block.isHeater()){
-                    length++;
-                    continue;
-                }
-                if(block.isShield()){
-                    efficiency+=block.template.neutronShield.efficiency;
-                    length++;
-                }
-                if(block.isFuelVessel()){
-                    if(length==0)break;
-                    if(block.fuel==null)break;
-                    block.vesselGroup.neutronFlux+=flux;
-                    block.vesselGroup.moderatorLines++;
-                    if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
-                    int f = 0;
-                    for(int j = 1; j<i; j++){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
-                    }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    rePropogateNeutronFlux(block.vesselGroup, false, fluxDecals);
+                    propogateNeutronFlux(block.vesselGroup, false, fluxDecals, initialPropogation);
                     break;
                 }
                 if(block.isReflector()){
