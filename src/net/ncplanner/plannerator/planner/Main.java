@@ -126,6 +126,8 @@ public class Main{
             if(osArch.equals("x86"))arch = ARCH_X86;
             if(osArch.equals("arm32"))arch = ARCH_ARM32;
             if(osArch.equals("arm64"))arch = ARCH_ARM64;
+            if(osArch.equals("aarch32"))arch = ARCH_ARM32;
+            if(osArch.equals("aarch64"))arch = ARCH_ARM64;
             if(arch==ARCH_UNKNOWN){
                 System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
                 arch = ARCH_X64;
