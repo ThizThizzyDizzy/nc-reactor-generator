@@ -108,32 +108,34 @@ public class Main{
         if(osName.contains("win"))os = OS_WINDOWS;
         if(osName.contains("mac"))os = OS_MACOS;
         if(osName.contains("nix")||osName.contains("nux")||osName.contains("aix"))os = OS_LINUX;
+        if(os==OS_UNKNOWN){
+            throw new IllegalArgumentException("Unknown OS: "+osName);
+        }
+        final int ARCH_UNKNOWN = -1;
+        final int ARCH_X86 = 0;
+        final int ARCH_X64 = 1;
+        final int ARCH_ARM32 = 3;
+        final int ARCH_ARM64 = 4;
+        int arch = ARCH_UNKNOWN;
+        String osArch = System.getProperty("os.arch");
+        if(osArch==null)osArch = "null";
+        osArch = osArch.toLowerCase(Locale.ROOT);
+        if(osArch.equals("amd64"))arch = ARCH_X64;
+        if(osArch.equals("x64"))arch = ARCH_X64;
+        if(osArch.equals("x86"))arch = ARCH_X86;
+        if(osArch.equals("arm32"))arch = ARCH_ARM32;
+        if(osArch.equals("arm64"))arch = ARCH_ARM64;
+        if(osArch.equals("aarch32"))arch = ARCH_ARM32;
+        if(osArch.equals("aarch64"))arch = ARCH_ARM64;
+        if(arch==ARCH_UNKNOWN){
+            System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
+            arch = ARCH_X64;
+        }
+        if((arch==ARCH_ARM32||arch==ARCH_ARM64)&&!novr){
+            System.err.println("OpenVR is not supported on arm! Excluding OpenVR libraries.");
+            novr = true;
+        }
         if(args.length<1||!args[0].equals("Skip Dependencies")){
-            if(os==OS_UNKNOWN){
-                throw new IllegalArgumentException("Unknown OS: "+osName);
-            }
-            final int ARCH_UNKNOWN = -1;
-            final int ARCH_X86 = 0;
-            final int ARCH_X64 = 1;
-            final int ARCH_ARM32 = 3;
-            final int ARCH_ARM64 = 4;
-            int arch = ARCH_UNKNOWN;
-            String osArch = System.getProperty("os.arch");
-            if(osArch==null)osArch = "null";
-            osArch = osArch.toLowerCase(Locale.ROOT);
-            if(osArch.equals("amd64"))arch = ARCH_X64;
-            if(osArch.equals("x64"))arch = ARCH_X64;
-            if(osArch.equals("x86"))arch = ARCH_X86;
-            if(osArch.equals("arm32"))arch = ARCH_ARM32;
-            if(osArch.equals("arm64"))arch = ARCH_ARM64;
-            if(arch==ARCH_UNKNOWN){
-                System.err.println("Unknown Architecture: "+osArch+"!\nAssuming x64 architecture...");
-                arch = ARCH_X64;
-            }
-            if((arch==ARCH_ARM32||arch==ARCH_ARM64)&&!novr){
-                System.err.println("OpenVR is not supported on arm! Excluding OpenVR libraries.");
-                novr = true;
-            }
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/overhaul/libraries/lwjgl-3.3.3-assimp.jar", "lwjgl-3.3.3-assimp.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/overhaul/libraries/lwjgl-3.3.3-glfw.jar", "lwjgl-3.3.3-glfw.jar");
             addRequiredLibrary("https://github.com/ThizThizzyDizzy/nc-reactor-generator/raw/overhaul/libraries/lwjgl-3.3.3-openal.jar", "lwjgl-3.3.3-openal.jar");
