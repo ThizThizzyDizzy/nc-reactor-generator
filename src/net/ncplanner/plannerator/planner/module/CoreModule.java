@@ -50,6 +50,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
@@ -88,6 +89,7 @@ public class CoreModule<T> extends Module<T>{
         registerNCPFModule(DisplayNameModule::new);
         registerNCPFModule(TextureModule::new);
         registerNCPFModule(LegacyNamesModule::new);
+        registerNCPFModule(TagsModule::new);
         
         registerNCPFModule(AirModule::new);
         
