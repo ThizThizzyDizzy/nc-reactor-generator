@@ -13,20 +13,24 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet()){
-            modules.put(key, ncpf.getDefinedNCPFObject(key, recognizedModules.getOrDefault(key, UnknownNCPFModule::new)));
+            NCPFModule module = ncpf.getDefinedNCPFObject(key, recognizedModules.getOrDefault(key, UnknownNCPFModule::new));
+            if(!module.exists())continue;
+            modules.put(key, module);
         }
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         for(String key : modules.keySet()){
-            ncpf.setDefinedNCPFObject(key, modules.get(key));
+            NCPFModule module = modules.get(key);
+            if(!module.exists())continue;
+            ncpf.setDefinedNCPFObject(key, module);
         }
     }
     public <T extends NCPFModule> boolean hasModule(Supplier<T> module){
         return modules.containsKey(module.get().name);
     }
     public <T extends NCPFModule> T getModule(Supplier<T> module){
-        return (T) modules.get(module.get().name);
+        return (T)modules.get(module.get().name);
     }
     public void setModule(NCPFModule module){
         if(module==null)return;
@@ -53,7 +57,8 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
             NCPFModule addonModule = addon.modules.get(key);
             if(modules.containsKey(key)){
                 modules.get(key).conglomerate(addonModule);
-            }else modules.put(key, addonModule);
+            }else
+                modules.put(key, addonModule);
         }
     }
     @Override

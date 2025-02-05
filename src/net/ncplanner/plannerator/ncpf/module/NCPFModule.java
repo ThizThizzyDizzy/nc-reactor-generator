@@ -11,4 +11,7 @@ public abstract class NCPFModule extends DefinedNCPFObject{
     public String getFriendlyName(){
         return name;
     }
+    public boolean exists(){
+        return true;
+    }
 }

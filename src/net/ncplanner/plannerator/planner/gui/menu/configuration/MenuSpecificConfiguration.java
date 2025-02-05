@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -18,25 +20,28 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
 public class MenuSpecificConfiguration extends ConfigurationMenu{
     public MenuSpecificConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config){
         super(parent, configuration, config.getName().replace(" Configuration", ""), new SplitLayout(SplitLayout.Y_AXIS, 0).fitSize());
-        NCPFSettingsModule settings = null;
+        List<List<NCPFElement>> elements = new ArrayList<>(Arrays.asList(config.getElements()));
+        List<Supplier<NCPFElement>> suppliers = new ArrayList<>(Arrays.asList(config.getElementSuppliers()));
         for(NCPFModule module : config.modules.modules.values()){
             if(module instanceof NCPFSettingsModule){
-                settings = (NCPFSettingsModule)module;
+                addSettings((NCPFSettingsModule)module);
+            }
+            if(module instanceof GlobalElementsModule){
+                elements.add(((GlobalElementsModule)module).elements);
+                suppliers.add(NCPFElement::new);
             }
         }
-        addSettings(settings);
         GridLayout lists = add(new GridLayout(0, 1));
-        List<NCPFElement>[] elements = config.getElements();
-        Supplier<NCPFElement>[] suppliers = config.getElementSuppliers();
-        for(int i = 0; i<elements.length; i++){
-            Supplier<NCPFElement> supplier = suppliers[i];
+        for(int i = 0; i<elements.size(); i++){
+            Supplier<NCPFElement> supplier = suppliers.get(i);
             String title = supplier.get().getTitle();
-            List<NCPFElement> elems = elements[i];
+            List<NCPFElement> elems = elements.get(i);
             BorderLayout list = lists.add(new BorderLayout());
             Label label = list.add(new Label(title+"s"), BorderLayout.TOP, 48);
             SingleColumnList lst = list.add(new SingleColumnList(16), BorderLayout.CENTER);
@@ -91,6 +96,12 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
             });
         }
         //TODO placement rule tree
+        if(!config.hasModule(GlobalElementsModule::new)){
+            sidebar.addToBottom(new Button("Add Global Elements", true).addAction(() -> {
+                config.getOrCreateModule(GlobalElementsModule::new);
+                gui.open(new MenuSpecificConfiguration(parent, cnfg, configuration, config));
+            }));
+        }
     }
     private void addSettings(NCPFSettingsModule settings){
         if(settings==null){
@@ -118,7 +129,7 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
                     });
                     break;
             }
-            onOpen(()->{
+            onOpen(() -> {
                 box.text = get.get()+"";
             });
         }
