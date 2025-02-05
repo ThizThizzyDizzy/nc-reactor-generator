@@ -14,6 +14,8 @@ public abstract class NCPFSettingsModule extends NCPFModule{
     public final HashMap<String, Type> types = new HashMap<>();
     public final HashMap<String, Supplier> gets = new HashMap<>();
     public final HashMap<String, Consumer> sets = new HashMap<>();
+    public final HashMap<String, Consumer<NCPFElementReference>> setBaseReferences = new HashMap<>();
+    public final HashMap<String, Supplier<? extends NCPFElementReference>> referenceTypes = new HashMap<>();
     public final HashMap<String, String> titles = new HashMap<>();
     public final HashMap<String, String> tooltips = new HashMap<>();
     public NCPFSettingsModule(String name){
@@ -74,13 +76,15 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         titles.put(name, title);
         tooltips.put(name, tooltip);
     }
-    public void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, String title){
-        addReference(name, get, set, title, null);
+    public <T extends NCPFElementReference> void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, Supplier<T> newReference, Consumer<T> setBase, String title){
+        addReference(name, get, set, newReference, setBase, title, null);
     }
-    public void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, String title, String tooltip){
+    public <T extends NCPFElementReference> void addReference(String name, Supplier<? extends NCPFElementReference> get, Consumer<NCPFElement> set, Supplier<T> newReference, Consumer<T> setBase, String title, String tooltip){
         settings.add(name);
         gets.put(name, get);
         sets.put(name, set);
+        referenceTypes.put(name, newReference);
+        setBaseReferences.put(name, (s)->setBase.accept((T)s));
         types.put(name, Type.REFERENCE);
         titles.put(name, title);
         tooltips.put(name, tooltip);
@@ -107,6 +111,9 @@ public abstract class NCPFSettingsModule extends NCPFModule{
                     NCPFList list = ncpf.getNCPFList(setting);
                     for(int i = 0; i<list.size(); i++)lst.add(list.getString(i));
                     ((Consumer<List<String>>)set).accept(lst);
+                    break;
+                case REFERENCE:
+                    setBaseReferences.get(setting).accept(ncpf.getDefinedNCPFObject(setting, referenceTypes.get(setting)));
                     break;
             }
         }
@@ -165,22 +172,22 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         for(String setting : settings){
             switch(types.get(setting)){
                 case BOOLEAN:
-                    if(((Supplier<Boolean>)gets.get(setting)).get())ttp+=titles.get(setting)+"\n";
+                    if(((Supplier<Boolean>)gets.get(setting)).get())ttp += titles.get(setting)+"\n";
                     break;
                 case FLOAT:
-                    ttp+=titles.get(setting)+": "+((Supplier<Float>)gets.get(setting)).get()+"\n";
+                    ttp += titles.get(setting)+": "+((Supplier<Float>)gets.get(setting)).get()+"\n";
                     break;
                 case DOUBLE:
-                    ttp+=titles.get(setting)+": "+((Supplier<Double>)gets.get(setting)).get()+"\n";
+                    ttp += titles.get(setting)+": "+((Supplier<Double>)gets.get(setting)).get()+"\n";
                     break;
                 case INTEGER:
-                    ttp+=titles.get(setting)+": "+((Supplier<Integer>)gets.get(setting)).get()+"\n";
+                    ttp += titles.get(setting)+": "+((Supplier<Integer>)gets.get(setting)).get()+"\n";
                     break;
             }
         }
         return ttp.trim();
     }
     public static enum Type{
-        INTEGER,FLOAT,DOUBLE,BOOLEAN,STRING_LIST,REFERENCE;
+        INTEGER, FLOAT, DOUBLE, BOOLEAN, STRING_LIST, REFERENCE;
     }
 }

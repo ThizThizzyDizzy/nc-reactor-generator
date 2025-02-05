@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public final String name;
     public NCPFConfiguration(String name){
@@ -20,6 +21,13 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
                 }
             }
         }
+        withModule(GlobalElementsModule::new, (m) -> {
+            for(List<NCPFElement> elems : elements){
+                for(NCPFElement elem : elems){
+                    elem.setReferences(m.elements);
+                }
+            }
+        });
     }
     public abstract List<NCPFElement>[] getElements();
     public Supplier<NCPFElement>[] getElementSuppliers(){
@@ -40,7 +48,8 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     }
     public abstract void makePartial(List<Design> designs);
     public abstract String getName();
-    public void init(boolean isAddon){}
+    public void init(boolean isAddon){
+    }
     public String getNameAndVersion(){
         ConfigurationMetadataModule module = getModule(ConfigurationMetadataModule::new);
         if(module!=null&&module.name!=null)return module.name+" "+module.version;

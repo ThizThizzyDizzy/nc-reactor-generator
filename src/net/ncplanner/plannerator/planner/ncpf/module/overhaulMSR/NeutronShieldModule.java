@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
@@ -13,12 +12,7 @@ public class NeutronShieldModule extends BlockFunctionModule implements ElementS
         super("nuclearcraft:overhaul_msr:neutron_shield");
         addInteger("heat_per_flux", ()->heatPerFlux, (v)->heatPerFlux = v, "Heat Per Flux");
         addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
-        addReference("closed", ()->closed, (v)->closed = BlockReference.create((BlockElement)v), "Closed");
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-        closed = ncpf.getDefinedNCPFObject("closed", BlockReference::new);
+        addReference("closed", ()->closed, (v)->closed = BlockReference.create((BlockElement)v), BlockReference::new, (r)->closed = r, "Closed");
     }
     @Override
     public void setLocalReferences(DefinedNCPFModularObject parentObject){

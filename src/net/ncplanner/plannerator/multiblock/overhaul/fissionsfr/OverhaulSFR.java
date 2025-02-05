@@ -1161,7 +1161,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     text.addText(" "+missingOutputPorts.get(key).getDisplayName()+" - "+key.getDisplayName(), Core.theme.getTooltipInvalidTextColor());
                 }
             }
-            text.addText("Total output: "+totalOutput+" mb/t of whatever "+coolantRecipe.getDisplayName()+" gets turned into\n"
+            text.addText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.stats.outputElement.getDisplayName()+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"

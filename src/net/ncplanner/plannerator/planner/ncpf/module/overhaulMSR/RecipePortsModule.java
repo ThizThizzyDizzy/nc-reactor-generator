@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
@@ -10,13 +9,8 @@ public class RecipePortsModule extends NCPFSettingsModule{
     public BlockReference output;
     public RecipePortsModule(){
         super("nuclearcraft:overhaul_msr:recipe_ports");
-        addReference("input", ()->input, (v)->input = BlockReference.create((BlockElement)v), "Input");
-        addReference("output", ()->output, (v)->output = BlockReference.create((BlockElement)v), "Output");
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        input = ncpf.getDefinedNCPFObject("input", BlockReference::new);
-        output = ncpf.getDefinedNCPFObject("output", BlockReference::new);
+        addReference("input", () -> input, (v) -> input = BlockReference.create((BlockElement)v), BlockReference::new, (r) -> input = r, "Input");
+        addReference("output", () -> output, (v) -> output = BlockReference.create((BlockElement)v), BlockReference::new, (r) -> output = r, "Output");
     }
     @Override
     public void setLocalReferences(DefinedNCPFModularObject parentObject){

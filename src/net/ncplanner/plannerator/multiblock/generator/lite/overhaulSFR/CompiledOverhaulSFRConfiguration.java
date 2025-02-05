@@ -30,6 +30,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
     private final ArrayList<BlockAndRecipe> rawBlocksWithRecipes = new ArrayList<>();
     public NCPFElementDefinition[] coolantRecipeDefinition;
     public String[] coolantRecipeDisplayName;
+    public String[] coolantRecipeOutputDisplayName;
     public int[] coolantRecipeHeat;
     public float[] coolantRecipeOutputRatio;
     public Image[] coolantRecipeTexture;
@@ -98,11 +99,13 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
         rawBlocks.add(block);
         if(block.fuelCell!=null)for(Fuel fuel : block.fuels)rawBlocksWithRecipes.add(new BlockAndFuel(block, fuel));
         else if(block.irradiator!=null)for(IrradiatorRecipe recipe : block.irradiatorRecipes)rawBlocksWithRecipes.add(new BlockAndIrrecipe(block, recipe));
-        else rawBlocksWithRecipes.add(new BlockAndRecipe(block, null));
+        else
+            rawBlocksWithRecipes.add(new BlockAndRecipe(block, null));
     }
     private void compile(){
         coolantRecipeDefinition = new NCPFElementDefinition[rawCoolantRecipes.size()];
         coolantRecipeDisplayName = new String[rawCoolantRecipes.size()];
+        coolantRecipeOutputDisplayName = new String[rawCoolantRecipes.size()];
         coolantRecipeHeat = new int[rawCoolantRecipes.size()];
         coolantRecipeOutputRatio = new float[rawCoolantRecipes.size()];
         coolantRecipeTexture = new Image[rawCoolantRecipes.size()];
@@ -111,6 +114,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
             CoolantRecipe recipe = rawCoolantRecipes.get(i);
             coolantRecipeDefinition[i] = recipe.definition;
             coolantRecipeDisplayName[i] = recipe.getDisplayName();
+            coolantRecipeOutputDisplayName[i] = recipe.stats.outputElement.getDisplayName();
             coolantRecipeHeat[i] = recipe.stats.heat;
             coolantRecipeOutputRatio[i] = recipe.stats.outputRatio;
             coolantRecipeTexture[i] = recipe.getTexture();
@@ -211,7 +215,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
                 blockEfficiency[i] = block.neutronSource.efficiency;
             }
             int idx = i;
-            block.withModule(TextureModule::new, (tex)->{
+            block.withModule(TextureModule::new, (tex) -> {
                 blockTexture[idx] = tex.texture;
                 blockDisplayTexture[idx] = tex.displayTexture;
             });
@@ -277,7 +281,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
                 sourceIndex++;
             }
         }
-        
+
         ArrayList<Integer> remainingHeatsinks = new ArrayList<>();
         for(int i : heatsinkIndicies)remainingHeatsinks.add(i);
         ArrayList<Integer> firstLayer = new ArrayList<>();
