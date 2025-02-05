@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,6 +20,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
 import net.ncplanner.plannerator.planner.gui.menu.configuration.NCPFElementComponent;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
+import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 public class MenuPickReference extends MenuDialog{
     private final BorderLayout layout;
     private final ListLayout list;
@@ -36,7 +38,9 @@ public class MenuPickReference extends MenuDialog{
         ArrayList<Supplier<NCPFModule>> modules = new ArrayList<>();
         modules.add(AirModule::new);
         for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
-            for(List<NCPFElement> elements : confg.getElements()){
+            List<List<NCPFElement>> elementsLists = new ArrayList<>(Arrays.asList(confg.getElements()));
+            confg.withModule(GlobalElementsModule::new, (module) -> elementsLists.add(module.elements));
+            for(List<NCPFElement> elements : elementsLists){
                 HashSet<NCPFElement> skip = new HashSet<>();
                 if(filter!=null){
                     elements.forEach((t) -> {
@@ -63,14 +67,15 @@ public class MenuPickReference extends MenuDialog{
                 }
                 if(!hasRelevant||skip.size()>=elements.size())continue;
                 for(NCPFElement elem : elements){
-                    FOR:for(Supplier<NCPFModule> module : elem.getPreferredModules()){
+                    FOR:
+                    for(Supplier<NCPFModule> module : elem.getPreferredModules()){
                         for(Supplier<NCPFModule> other : modules){
                             if(module.get().name.equals(other.get().name))continue FOR;
                         }
                         modules.add(module);
                     }
                 }
-                tabs.add(new Button(elements.get(0).getTitle()+"s", true).addAction(()->{
+                tabs.add(new Button(elements.get(0).getTitle()+"s", true).addAction(() -> {
                     list.components.clear();
                     for(NCPFElement elem : elements){
                         if(skip.contains(elem))continue;
