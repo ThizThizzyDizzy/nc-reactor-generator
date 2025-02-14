@@ -85,6 +85,8 @@ public class UnderhaulNCConfigReader implements FormatReader{
         addFuels(builder, config, powerMult, heatMult, fuelUseMult, "curium", "LECm-243", "LECm-243 Oxide", "HECm-243", "HECm-243 Oxide", "LECm-245", "LECm-245 Oxide", "HECm-245", "HECm-245 Oxide", "LECm-247", "LECm-247 Oxide", "HECm-247", "HECm-247 Oxide");
         addFuels(builder, config, powerMult, heatMult, fuelUseMult, "berkelium", "LEB-248", "LEB-248 Oxide", "HEB-248", "HEB-248 Oxide");
         addFuels(builder, config, powerMult, heatMult, fuelUseMult, "californium", "LECf-249", "LECf-249 Oxide", "HECf-249", "HECf-249 Oxide", "LECf-251", "LECf-251 Oxide", "HECf-251", "HECf-251 Oxide");
+        builder.globalElement(builder.legacyBlock("nuclearcraft:ingot_block:8").blockstate("type", "graphite").build(), "Graphite Block", "underhaul/graphite").tag("blockFissionModerator").tag("blockGraphite");
+        builder.globalElement(builder.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "underhaul/beryllium").tag("blockFissionModerator").tag("blockBeryllium");
         ncpf.setConfiguration(builder.build());
         return ncpf;
     }

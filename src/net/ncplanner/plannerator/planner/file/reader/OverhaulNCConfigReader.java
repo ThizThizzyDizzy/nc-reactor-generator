@@ -3,6 +3,8 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.planner.StringUtil;
@@ -10,6 +12,7 @@ import net.ncplanner.plannerator.planner.file.ForgeConfig;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.builder.ConfigurationBuilder;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulMSRConfigurationBuilder;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulSFRConfigurationBuilder;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulTurbineConfigurationBuilder;
@@ -97,11 +100,15 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulSFR.shield("nuclearcraft:fission_shield:0", "boron_silver", "Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat.getDouble(0), (float) shieldEff.getDouble(0));
         ConfigList irrHeat = fission.getConfigList("fission_irradiator_heat_per_flux");
         ConfigList irrEff = fission.getConfigList("fission_irradiator_efficiency");
-        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
-        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
-        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
-        overhaulSFR.coolantRecipe("water", "Water", "fluids/water", "high_pressure_steam", "High Pressure Steam", "fluids/hps", 64, 4);
-        overhaulSFR.coolantRecipe("preheated_water", "Preheated Water", "fluids/preheated_water", "high_pressure_steam", "High Pressure Steam", "fluids/hps", 32, 4);
+        NCPFElement dustTBP = overhaulSFR.globalElement(new NCPFOredictElement("dustTBP"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").build();
+        NCPFElement dustProtactinium233 = overhaulSFR.globalElement(new NCPFOredictElement("dustProtactinium233"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").build();
+        NCPFElement dustPolonium = overhaulSFR.globalElement(new NCPFOredictElement("dustPolonium"), "Polonium Dust", "overhaul/item/polonium_dust").build();
+        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", dustTBP, (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
+        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", dustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
+        overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", dustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
+        NCPFElement hps = overhaulSFR.globalElement(overhaulSFR.legacyFluid("high_pressure_steam").build(), "High Pressure Steam", "fluids/hps").element;
+        overhaulSFR.coolantRecipe("water", "Water", "fluids/water", hps, 64, 4);
+        overhaulSFR.coolantRecipe("preheated_water", "Preheated Water", "fluids/preheated_water", hps, 32, 4);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
@@ -111,6 +118,12 @@ public class OverhaulNCConfigReader implements FormatReader{
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "curium", null, "LECm-243 Oxide", "LECm-243 Nitride", "LECm-243-Zirconium Alloy", null, null, "HECm-243 Oxide", "HECm-243 Nitride", "HECm-243-Zirconium Alloy", null, null, "LECm-245 Oxide", "LECm-245 Nitride", "LECm-245-Zirconium Alloy", null, null, "HECm-245 Oxide", "HECm-245 Nitride", "HECm-245-Zirconium Alloy", null, null, "LECm-247 Oxide", "LECm-247 Nitride", "LECm-247-Zirconium Alloy", null, null, "HECm-247 Oxide", "HECm-247 Nitride", "HECm-247-Zirconium Alloy", null);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "berkelium", null, "LEB-248 Oxide", "LEB-248 Nitride", "LEB-248-Zirconium Alloy", null, null, "HEB-248 Oxide", "HEB-248 Nitride", "HEB-248-Zirconium Alloy", null);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, "californium", null, "LECf-249 Oxide", "LECf-249 Nitride", "LECf-249-Zirconium Alloy", null, null, "HECf-249 Oxide", "HECf-249 Nitride", "HECf-249-Zirconium Alloy", null, null, "LECf-251 Oxide", "LECf-251 Nitride", "LECf-251-Zirconium Alloy", null, null, "HECf-251 Oxide", "HECf-251 Nitride", "HECf-251-Zirconium Alloy", null);
+        overhaulSFR.globalElement(overhaulSFR.legacyBlock("nuclearcraft:ingot_block:8").blockstate("type", "graphite").build(), "Graphite Block", "overhaul/graphite").tag("blockGraphite");
+        overhaulSFR.globalElement(overhaulSFR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
+        overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
+        overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:dust:3").build(), "Thorium Dust", "overhaul/item/thorium_dust").tag("dustThorium");
+        overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:fission_dust:3").build(), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").tag("dustTBP");
+        overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:fission_dust:0").build(), "Bismuth Dust", "overhaul/item/bismuth_dust").tag("dustBismuth");
         ncpf.setConfiguration(overhaulSFR.build());
 //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Fission MSR">
@@ -238,9 +251,12 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulMSR.block("nuclearcraft:fission_reflector:0", "Beryllium-Carbon Reflector", "overhaul/beryllium-carbon").blockstate("type", "beryllium_carbon").reflector((float) refEff.getDouble(0), (float) refRef.getDouble(0));
         overhaulMSR.block("nuclearcraft:fission_reflector:1", "Lead-Steel Reflector", "overhaul/lead-steel").blockstate("type", "lead_steel").reflector((float) refEff.getDouble(1), (float) refRef.getDouble(1));
         overhaulMSR.shield("nuclearcraft:fission_shield:0", "boron_silver", "Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat.getDouble(0), (float) shieldEff.getDouble(0));
-        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
-        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
-        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
+        NCPFElement mdustTBP = overhaulMSR.globalElement(new NCPFOredictElement("dustTBP"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").build();
+        NCPFElement mdustProtactinium233 = overhaulMSR.globalElement(new NCPFOredictElement("dustProtactinium233"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").build();
+        NCPFElement mdustPolonium = overhaulMSR.globalElement(new NCPFOredictElement("dustPolonium"), "Polonium Dust", "overhaul/item/polonium_dust").build();
+        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", mdustTBP, (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
+        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", mdustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
+        overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", mdustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "thorium", null, null, null, null, "TBU Fluoride");
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-235 Fluoride", null, null, null, null, "HEU-235 Fluoride");
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
@@ -250,6 +266,12 @@ public class OverhaulNCConfigReader implements FormatReader{
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "curium", null, null, null, null, "LECm-243 Fluoride", null, null, null, null, "HECm-243 Fluoride", null, null, null, null, "LECm-245 Fluoride", null, null, null, null, "HECm-245 Fluoride", null, null, null, null, "LECm-247 Fluoride", null, null, null, null, "HECm-247 Fluoride");
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "berkelium", null, null, null, null, "LEB-248 Fluoride", null, null, null, null, "HEB-248 Fluoride");
         addMSRFuels(overhaulMSR, fission, fuelTimeMult, "californium", null, null, null, null, "LECf-249 Fluoride", null, null, null, null, "HECf-249 Fluoride", null, null, null, null, "LECf-251 Fluoride", null, null, null, null, "HECf-251 Fluoride");
+        overhaulMSR.globalElement(overhaulMSR.legacyBlock("nuclearcraft:ingot_block:8").blockstate("type", "graphite").build(), "Graphite Block", "overhaul/graphite").tag("blockGraphite");
+        overhaulMSR.globalElement(overhaulMSR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
+        overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
+        overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:dust:3").build(), "Thorium Dust", "overhaul/item/thorium_dust").tag("dustThorium");
+        overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:fission_dust:3").build(), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").tag("dustTBP");
+        overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:fission_dust:0").build(), "Bismuth Dust", "overhaul/item/bismuth_dust").tag("dustBismuth");
         ncpf.setConfiguration(overhaulMSR.build());
 //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Turbine">
@@ -287,9 +309,11 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulTurbine.block("nuclearcraft:turbine_rotor_shaft", "Rotor Shaft", "overhaul/turbine/shaft").shaft();
         ConfigList rPows = turbine.getConfigList("turbine_power_per_mb");
         ConfigList rCoeffs = turbine.getConfigList("turbine_expansion_level");
-        overhaulTurbine.recipe("high_pressure_steam", "High Pressure Steam", "fluids/hps", "exhaust_steam", "Exhaust Steam", "fluids/exhaust_steam", rPows.getDouble(0), rCoeffs.getDouble(0));
-        overhaulTurbine.recipe("low_pressure_steam", "Low Pressure Steam", "fluids/lps", "low_quality_steam", "Low Quality Steam", "fluids/lqs", rPows.getDouble(1), rCoeffs.getDouble(1));
-        overhaulTurbine.recipe("steam", "Steam", "fluids/steam", "low_quality_steam", "Low Quality Steam", "fluids/lqs", rPows.getDouble(2), rCoeffs.getDouble(2));
+        NCPFElement exhaust = overhaulTurbine.globalElement(overhaulTurbine.legacyFluid("exhaust_steam").build(), "Exhaust Steam", "fluids/exhaust_steam").element;
+        NCPFElement lqs  = overhaulTurbine.globalElement(overhaulTurbine.legacyFluid("low_quality_steam").build(), "Low Quality Steam", "fluids/lqs").element;
+        overhaulTurbine.recipe("high_pressure_steam", "High Pressure Steam", "fluids/hps", exhaust, rPows.getDouble(0), rCoeffs.getDouble(0));
+        overhaulTurbine.recipe("low_pressure_steam", "Low Pressure Steam", "fluids/lps", lqs, rPows.getDouble(1), rCoeffs.getDouble(1));
+        overhaulTurbine.recipe("steam", "Steam", "fluids/steam", lqs, rPows.getDouble(2), rCoeffs.getDouble(2));
         ncpf.setConfiguration(overhaulTurbine.build());
 //</editor-fold>
         return ncpf;

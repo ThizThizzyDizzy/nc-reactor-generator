@@ -53,6 +53,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public void setReferences(List<NCPFElement> lst){
         setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
         super.setReferences(lst);
+        for(ActiveCoolerRecipe recipe : activeCoolerRecipes)recipe.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

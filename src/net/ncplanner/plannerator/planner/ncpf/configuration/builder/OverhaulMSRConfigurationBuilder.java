@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
@@ -29,19 +31,17 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule;
-public class OverhaulMSRConfigurationBuilder{
-    private final OverhaulMSRConfiguration configuration;
+public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<OverhaulMSRConfiguration>{
     public OverhaulMSRSettingsModule settings;
     private HashMap<HeaterModule, ArrayList<String>> pendingRules = new HashMap<>();
     public OverhaulMSRConfigurationBuilder(String name, String version){
-        configuration = new OverhaulMSRConfiguration();
-        configuration.metadata.name = name;
-        configuration.metadata.version = version;
-        settings = configuration.settings = new OverhaulMSRSettingsModule();
+        super(new OverhaulMSRConfiguration(), name, version);
+        settings = configuration.settings;
     }
+    @Override
     public OverhaulMSRConfiguration build(){
         for(BlockElement b : configuration.blocks){
-            b.withModule(LegacyNamesModule::new, (legacy)->{
+            b.withModule(LegacyNamesModule::new, (legacy) -> {
                 for(int i = 0; i<legacy.legacyNames.size(); i++){
                     for(int j = i+1; j<legacy.legacyNames.size(); j++){
                         if(legacy.legacyNames.get(j).equals(legacy.legacyNames.get(i)))legacy.legacyNames.remove(j);
@@ -52,7 +52,7 @@ public class OverhaulMSRConfigurationBuilder{
         for(HeaterModule heater : pendingRules.keySet()){
             for(String rule : pendingRules.get(heater))heater.rules.add(parsePlacementRule(rule).copyTo(NCPFPlacementRule::new));
         }
-        return configuration;
+        return super.build();
     }
     public BlockBuilder block(String name, String displayName, String texture){
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
@@ -153,6 +153,7 @@ public class OverhaulMSRConfigurationBuilder{
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.cooling = cooling;
+        recipe.stats.output = new NCPFElementReference(globalElement(legacyFluid(outputName).build(), outputDisplayName, outputTexture).build());
         block.heaterRecipes.add(recipe);
         return recipe;
     }
@@ -182,13 +183,14 @@ public class OverhaulMSRConfigurationBuilder{
             return this;
         }
     }
-    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, float efficiency, float heat){
+    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, NCPFElement output, float efficiency, float heat){
         IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
+        recipe.stats.output = new NCPFElementReference(output);
         for(BlockElement b : configuration.blocks)if(b.irradiator!=null)b.irradiatorRecipes.add(recipe);
         return new IrradiatorRecipeBuilder(recipe);
     }
@@ -202,60 +204,62 @@ public class OverhaulMSRConfigurationBuilder{
         fuel.stats.time = time;
         fuel.stats.criticality = criticality;
         fuel.stats.selfPriming = selfPriming;
+        fuel.stats.output = new NCPFElementReference(globalElement(legacyFluid(outputName).build(), outputDisplayName, outputTexture).build());
         for(BlockElement b : configuration.blocks)if(b.fuelVessel!=null)b.fuels.add(fuel);
         return fuel;
     }
-    
+
     private NCPFPlacementRule parsePlacementRule(String rules){
-        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str)->{
-            if (str.startsWith("cell")) return FuelVesselModule::new;
-            else if (str.startsWith("vessel")) return FuelVesselModule::new;
-            else if (str.startsWith("moderator")) return ModeratorModule::new;
-            else if (str.startsWith("reflector")) return ReflectorModule::new;
-            else if (str.startsWith("casing")) return CasingModule::new;
-            else if (str.startsWith("air")) return AirModule::new;
-            else if (str.startsWith("conductor")) return ConductorModule::new;
-            else if (str.startsWith("sink")) return HeaterModule::new;
-            else if (str.startsWith("heater")) return HeaterModule::new;
-            else if (str.startsWith("shield")) return NeutronShieldModule::new;
-            else if (str.startsWith("irradiator")) return IrradiatorModule::new;
-            else return null;
-        }, (str)->{
+        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str) -> {
+            if(str.startsWith("cell"))return FuelVesselModule::new;
+            else if(str.startsWith("vessel"))return FuelVesselModule::new;
+            else if(str.startsWith("moderator"))return ModeratorModule::new;
+            else if(str.startsWith("reflector"))return ReflectorModule::new;
+            else if(str.startsWith("casing"))return CasingModule::new;
+            else if(str.startsWith("air"))return AirModule::new;
+            else if(str.startsWith("conductor"))return ConductorModule::new;
+            else if(str.startsWith("sink"))return HeaterModule::new;
+            else if(str.startsWith("heater"))return HeaterModule::new;
+            else if(str.startsWith("shield"))return NeutronShieldModule::new;
+            else if(str.startsWith("irradiator"))return IrradiatorModule::new;
+            else
+                return null;
+        }, (str) -> {
             BlockElement block = null;
             int shortest = 0;
             str = StringUtil.superReplace(str, " heat heater", " heater", " heat sink", " sink");
             if(str.startsWith("water heater")||str.startsWith("water sink"))str = "standard"+str.substring("water".length());
             String[] strs = StringUtil.split(str, " ");
-            if (strs.length != 2 || !(strs[1].startsWith("heater")||strs[1].startsWith("sink"))) {
-                throw new IllegalArgumentException("Unknown rule bit: " + str);
+            if(strs.length!=2||!(strs[1].startsWith("heater")||strs[1].startsWith("sink"))){
+                throw new IllegalArgumentException("Unknown rule bit: "+str);
             }
-            for (BlockElement b : configuration.blocks) {
-                if (b.parent != null) continue;
+            for(BlockElement b : configuration.blocks){
+                if(b.parent!=null)continue;
                 LegacyNamesModule names = b.getModule(LegacyNamesModule::new);
-                if(names!=null)for (String s : names.legacyNames) {
-                    if(str.endsWith(" heater")||str.endsWith(" heaters")){
-                        String withoutTheHeater = str.substring(0, str.indexOf(" heater"));
-                        if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheHeater)){
-                            return new BlockReference(b);
+                if(names!=null)for(String s : names.legacyNames){
+                        if(str.endsWith(" heater")||str.endsWith(" heaters")){
+                            String withoutTheHeater = str.substring(0, str.indexOf(" heater"));
+                            if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheHeater)){
+                                return new BlockReference(b);
+                            }
+                        }
+                        if(str.endsWith(" sink")||str.endsWith(" sinks")){
+                            String withoutTheSink = str.substring(0, str.indexOf(" sink"));
+                            if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheSink)){
+                                return new BlockReference(b);
+                            }
+                        }
+                        if(StringUtil.toLowerCase(s).contains("heater")
+                            &&StringUtil.matches(StringUtil.toLowerCase(s), "(\\s|^)?"+StringUtil.replace(StringUtil.toLowerCase(strs[0]), "_", "[_ ]")+"(\\s|$)?.*")){
+                            int len = s.length();
+                            if(block==null||len<shortest){
+                                block = b;
+                                shortest = len;
+                            }
                         }
                     }
-                    if(str.endsWith(" sink")||str.endsWith(" sinks")){
-                        String withoutTheSink = str.substring(0, str.indexOf(" sink"));
-                        if(s.equals("nuclearcraft:salt_fission_heater_"+withoutTheSink)){
-                            return new BlockReference(b);
-                        }
-                    }
-                    if (StringUtil.toLowerCase(s).contains("heater")
-                            && StringUtil.matches(StringUtil.toLowerCase(s), "(\\s|^)?" + StringUtil.replace(StringUtil.toLowerCase(strs[0]), "_", "[_ ]") + "(\\s|$)?.*")) {
-                        int len = s.length();
-                        if (block == null || len < shortest) {
-                            block = b;
-                            shortest = len;
-                        }
-                    }
-                }
             }
-            if (block == null) throw new IllegalArgumentException("Could not find block matching rule bit " + str + "!");
+            if(block==null)throw new IllegalArgumentException("Could not find block matching rule bit "+str+"!");
             return new BlockReference(block);
         });
     }

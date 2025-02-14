@@ -61,9 +61,9 @@ public class BGStringWriter extends StringFormatWriter{
                         }
                         String theTag = tag;
                         exportPrompts.add(() -> {
-                            MenuMessageDialog dialog = new MenuMessageDialog(Core.gui, Core.gui.menu, "Choose element for tag or oredict: "+theTag);
+                            MenuMessageDialog dialog = new MenuMessageDialog(Core.gui, Core.gui.menu, "Choose element for tag or oredict:\n"+theTag);
                             for(NCPFElement elem : elements){
-                                dialog.addButton(elem.definition.toString(), () -> {
+                                dialog.addButton(elem.getDisplayName(), () -> {
                                     tagMap.put(element, elem);
                                     exportPrompts.remove(0).run();
                                 }, true);

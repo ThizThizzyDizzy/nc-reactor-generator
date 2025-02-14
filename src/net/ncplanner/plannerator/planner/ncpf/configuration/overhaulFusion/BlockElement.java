@@ -65,6 +65,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public void setReferences(List<NCPFElement> lst){
         setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
         super.setReferences(lst);
+        for(BreedingBlanketRecipe recipe : breedingBlanketRecipes)recipe.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

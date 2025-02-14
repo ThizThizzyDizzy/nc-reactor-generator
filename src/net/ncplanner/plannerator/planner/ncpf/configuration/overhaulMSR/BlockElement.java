@@ -41,11 +41,12 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     public List<Fuel> fuels = new ArrayList<>();
     public List<HeaterRecipe> heaterRecipes = new ArrayList<>();
     public List<IrradiatorRecipe> irradiatorRecipes = new ArrayList<>();
-    
+
     public BlockElement parent;//not saved, the parent block for this port
     public BlockElement unToggled;//not saved, the untoggled version of this block
     public BlockElement toggled;//not saved, the toggled version of this block
-    public BlockElement(){}
+    public BlockElement(){
+    }
     public BlockElement(NCPFElementDefinition definition){
         super(definition);
     }
@@ -86,6 +87,9 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
             irradiatorRecipes = parent.irradiatorRecipes;
             heaterRecipes = parent.heaterRecipes;
         }
+        for(Fuel recipe : fuels)recipe.setReferences(lst);
+        for(IrradiatorRecipe recipe : irradiatorRecipes)recipe.setReferences(lst);
+        for(HeaterRecipe recipe : heaterRecipes)recipe.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

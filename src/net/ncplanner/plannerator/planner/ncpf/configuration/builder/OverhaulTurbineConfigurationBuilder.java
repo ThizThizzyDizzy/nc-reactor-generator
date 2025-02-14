@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
@@ -24,20 +26,18 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.InletModule
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.OutletModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ShaftModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.StatorModule;
-public class OverhaulTurbineConfigurationBuilder{
-    private final OverhaulTurbineConfiguration configuration;
+public class OverhaulTurbineConfigurationBuilder extends ConfigurationBuilder<OverhaulTurbineConfiguration>{
     public OverhaulTurbineSettingsModule settings;
     private HashMap<CoilModule, ArrayList<String>> pendingCoilRules = new HashMap<>();
     private HashMap<ConnectorModule, ArrayList<String>> pendingConnectorRules = new HashMap<>();
     public OverhaulTurbineConfigurationBuilder(String name, String version){
-        configuration = new OverhaulTurbineConfiguration();
-        configuration.metadata.name = name;
-        configuration.metadata.version = version;
-        settings = configuration.settings = new OverhaulTurbineSettingsModule();
+        super(new OverhaulTurbineConfiguration(), name, version);
+        settings = configuration.settings;
     }
+    @Override
     public OverhaulTurbineConfiguration build(){
         for(BlockElement b : configuration.blocks){
-            b.withModule(LegacyNamesModule::new, (legacy)->{
+            b.withModule(LegacyNamesModule::new, (legacy) -> {
                 for(int i = 0; i<legacy.legacyNames.size(); i++){
                     for(int j = i+1; j<legacy.legacyNames.size(); j++){
                         if(legacy.legacyNames.get(j).equals(legacy.legacyNames.get(i)))legacy.legacyNames.remove(j);
@@ -51,7 +51,7 @@ public class OverhaulTurbineConfigurationBuilder{
         for(ConnectorModule connector : pendingConnectorRules.keySet()){
             for(String rule : pendingConnectorRules.get(connector))connector.rules.add(parsePlacementRule(rule));
         }
-        return configuration;
+        return super.build();
     }
     public BlockBuilder block(String name, String displayName, String texture){
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
@@ -128,26 +128,28 @@ public class OverhaulTurbineConfigurationBuilder{
             return this;
         }
     }
-    
-    public Recipe recipe(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, double power, double coefficient){
+
+    public Recipe recipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, double power, double coefficient){
         Recipe recipe = new Recipe(new NCPFLegacyFluidElement(inputName));
         recipe.stats.power = power;
         recipe.stats.coefficient = coefficient;
+        recipe.stats.output = new NCPFElementReference(output);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         configuration.recipes.add(recipe);
         return recipe;
     }
-    
+
     private NCPFPlacementRule parsePlacementRule(String rules){
-        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str)->{
-            if(str.startsWith("coil")) return CoilModule::new;
-            else if(str.startsWith("bearing")) return BearingModule::new;
-            else if(str.startsWith("connector")) return ConnectorModule::new;
-            else if(str.startsWith("casing")) return CasingModule::new;
-            else return null;
-        }, (str)->{
+        return new NCPFPlacementRule().parseNc(rules, NCPFPlacementRule::new, (str) -> {
+            if(str.startsWith("coil"))return CoilModule::new;
+            else if(str.startsWith("bearing"))return BearingModule::new;
+            else if(str.startsWith("connector"))return ConnectorModule::new;
+            else if(str.startsWith("casing"))return CasingModule::new;
+            else
+                return null;
+        }, (str) -> {
             BlockElement block = null;
             int shortest = 0;
             String[] strs = StringUtil.split(str, " ");
@@ -157,20 +159,20 @@ public class OverhaulTurbineConfigurationBuilder{
             for(BlockElement b : configuration.blocks){
                 LegacyNamesModule names = b.getModule(LegacyNamesModule::new);
                 if(names!=null)for(String s : names.legacyNames){
-                    if(str.endsWith(" coil")||str.endsWith(" coils")){
-                        String withoutTheCoil = str.substring(0, str.indexOf(" coil"));
-                        if(s.equals("nuclearcraft:turbine_dynamo_coil_"+withoutTheCoil)){
-                            return new BlockReference(b);
+                        if(str.endsWith(" coil")||str.endsWith(" coils")){
+                            String withoutTheCoil = str.substring(0, str.indexOf(" coil"));
+                            if(s.equals("nuclearcraft:turbine_dynamo_coil_"+withoutTheCoil)){
+                                return new BlockReference(b);
+                            }
+                        }
+                        if(StringUtil.toLowerCase(s).contains("coil")&&StringUtil.matches(StringUtil.toLowerCase(s), "(\\s|^)?"+StringUtil.replace(StringUtil.toLowerCase(strs[0]), "_", "[_ ]")+"(\\s|$)?.*")){
+                            int len = s.length();
+                            if(block==null||len<shortest){
+                                block = b;
+                                shortest = len;
+                            }
                         }
                     }
-                    if(StringUtil.toLowerCase(s).contains("coil")&&StringUtil.matches(StringUtil.toLowerCase(s), "(\\s|^)?"+StringUtil.replace(StringUtil.toLowerCase(strs[0]), "_", "[_ ]")+"(\\s|$)?.*")){
-                        int len = s.length();
-                        if(block==null||len<shortest){
-                            block = b;
-                            shortest = len;
-                        }
-                    }
-                }
             }
             if(block==null)throw new IllegalArgumentException("Could not find block matching rule bit "+str+"!");
             return new BlockReference(block);

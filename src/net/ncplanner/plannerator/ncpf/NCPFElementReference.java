@@ -34,6 +34,7 @@ public class NCPFElementReference extends DefinedNCPFObject{
                 isMatch |= legacy.equals(definition.toString());
             }
             if(isMatch){
+                if(target==elem)continue;//it's fine, it's the EXACT same reference.
                 if(target!=null)throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
                 target = elem;
             }

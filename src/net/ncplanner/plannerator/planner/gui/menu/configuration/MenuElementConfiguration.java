@@ -218,6 +218,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 module.recipes.remove(elem);
                                 refresh();
                             }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
+                                config.setReferences();
                                 gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                             })).height = 96;
                         }
@@ -324,6 +325,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 module.recipes.remove(elem);
                                 refresh();
                             }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
+                                config.setReferences();
                                 gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                             })).height = 96;
                         }

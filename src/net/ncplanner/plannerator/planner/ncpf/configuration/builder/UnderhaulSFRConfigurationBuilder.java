@@ -23,18 +23,12 @@ import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModu
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class UnderhaulSFRConfigurationBuilder{
-    private final UnderhaulSFRConfiguration configuration;
+public class UnderhaulSFRConfigurationBuilder extends ConfigurationBuilder<UnderhaulSFRConfiguration>{
     public UnderhaulSFRSettingsModule settings;
     private BlockElement activeCooler;
     public UnderhaulSFRConfigurationBuilder(String name, String version){
-        configuration = new UnderhaulSFRConfiguration();
-        configuration.metadata.name = name;
-        configuration.metadata.version = version;
-        settings = configuration.settings = new UnderhaulSFRSettingsModule();
-    }
-    public UnderhaulSFRConfiguration build(){
-        return configuration;
+        super(new UnderhaulSFRConfiguration(), name, version);
+        settings = configuration.settings;
     }
     public BlockBuilder block(String name, String displayName, String texture){
         return block(new NCPFLegacyBlockElement(name), displayName, texture);

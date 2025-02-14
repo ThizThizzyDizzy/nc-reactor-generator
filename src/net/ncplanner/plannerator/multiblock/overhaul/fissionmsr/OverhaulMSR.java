@@ -740,13 +740,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 float out = c.efficiency*sparsityMult;//TODO output rate?
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.getName())){//TODO output name
+                                    if(s.name.equals(b.heaterRecipe.stats.output.definition.getName())){
                                         s.amount+=out;
                                         found = true;
                                         break;
                                     }
                                 }
-                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.getName(), b.heaterRecipe.getDisplayName(), out));
+                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.output.definition.getName(), b.heaterRecipe.stats.output.getDisplayName(), out));
                                 totalTotalOutput+=out;
                             }
                             shutdownCalcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
@@ -1027,13 +1027,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 float out = c.efficiency*sparsityMult;//TODO output rate?
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.getName())){//TODO output name
+                                    if(s.name.equals(b.heaterRecipe.stats.output.definition.getName())){
                                         s.amount+=out;
                                         found = true;
                                         break;
                                     }
                                 }
-                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.getName(), b.heaterRecipe.getDisplayName(), out));
+                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.output.definition.getName(), b.heaterRecipe.stats.output.getDisplayName(), out));
                                 totalTotalOutput+=out;
                             }
                             calcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
