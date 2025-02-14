@@ -42,6 +42,7 @@ public class MenuSettings extends SettingsMenu{
     private final ToggleBox autoBuildCasing;
     private final ToggleBox vsync;
     private final ToggleBox rememberConfig;
+    private final ToggleBox mainMenu3dView;
     private File[] loadingExternalConfigurations;
     private Task externalConfigTask;
     public MenuSettings(GUI gui, Menu parent){
@@ -53,6 +54,10 @@ public class MenuSettings extends SettingsMenu{
         addToSidebar(rememberConfig = new ToggleBox(0, 0, 0, 48, "Remember Selected Configuration", true).setTooltip("Remember the selected configuration, and load it on startup.\nThis will not remember changes to the configuration, you still have to save those!"));
         rememberConfig.onChange((remember) -> {
             Core.rememberConfig = remember;
+        });
+        addToSidebar(mainMenu3dView = new ToggleBox(0, 0, 0, 48, "Show 3D View", true).setTooltip("Show 3D view on the Main Menu"));
+        mainMenu3dView.onChange((use3DView) -> {
+            Core.mainMenu3dView = use3DView;
         });
         addToSidebar(modules = new Button(0, 0, 0, 48, "Modules", true));
         modules.addAction(() -> {
@@ -142,6 +147,7 @@ public class MenuSettings extends SettingsMenu{
         autoBuildCasing.isToggledOn = Core.autoBuildCasing;
         vsync.isToggledOn = Core.vsync;
         rememberConfig.isToggledOn = Core.rememberConfig;
+        mainMenu3dView.isToggledOn = Core.mainMenu3dView;
         currentConfigLabel.text = "Current Configuration: "+Core.project.getConfigName();
         int active = 0;
         int total = 0;
@@ -156,6 +162,7 @@ public class MenuSettings extends SettingsMenu{
         Core.invertUndoRedo = invertUndoRedo.isToggledOn;
         Core.autoBuildCasing = autoBuildCasing.isToggledOn;
         Core.rememberConfig = rememberConfig.isToggledOn;
+        Core.mainMenu3dView = mainMenu3dView.isToggledOn;
         Core.setVsync(vsync.isToggledOn);
         super.onClosed();
     }

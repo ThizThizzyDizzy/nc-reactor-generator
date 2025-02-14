@@ -209,6 +209,7 @@ public class MenuInit extends Menu{
                     Core.imageExportCasing3D = settings.get("imageExportCasing3D", true);
                     Core.dssl = settings.get("dssl", false);
                     Core.rememberConfig = settings.get("rememberConfig", false);
+                    Core.mainMenu3dView = settings.get("mainMenu3dView", true);
                     Core.lastLoadedConfig = settings.get("lastLoadedConfig", "default");
                     Config cursor = settings.get("cursor", Config.newConfig());
                     MenuCalibrateCursor.xMult = cursor.get("xMult", 1d);

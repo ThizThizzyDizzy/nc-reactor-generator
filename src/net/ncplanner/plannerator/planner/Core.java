@@ -116,6 +116,7 @@ public class Core{
     public static boolean saved = true;
     public static boolean dssl = false;
     public static boolean rememberConfig;
+    public static boolean mainMenu3dView = true;
     public static String lastLoadedConfig = null;
     public static void addModule(Module m){
         modules.add(m);
@@ -365,6 +366,7 @@ public class Core{
         settings.set("imageExportCasingParts", imageExportCasingParts);
         settings.set("dssl", dssl);
         settings.set("rememberConfig", rememberConfig);
+        settings.set("mainMenu3dView", mainMenu3dView);
         if(lastLoadedConfig!=null)settings.set("lastLoadedConfig", lastLoadedConfig);
         Config cursor = Config.newConfig();
         cursor.set("xMult", MenuCalibrateCursor.xMult);

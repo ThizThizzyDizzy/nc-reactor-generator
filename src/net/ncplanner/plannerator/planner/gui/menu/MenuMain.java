@@ -398,6 +398,7 @@ public class MenuMain extends Menu{
     @Override
     public void render3d(double deltaTime){
         super.render3d(deltaTime);
+        if(!Core.mainMenu3dView)return;
         if(glfwGetKey(Core.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
         if(glfwGetKey(Core.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
         if(glfwGetKey(Core.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
