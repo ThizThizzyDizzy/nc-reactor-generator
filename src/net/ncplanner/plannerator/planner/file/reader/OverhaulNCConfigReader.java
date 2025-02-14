@@ -36,6 +36,8 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulSFR.settings.maxSize = fission.getInt("fission_max_size");
         overhaulSFR.settings.neutronReach = fission.getInt("fission_neutron_reach");
         double fuelTimeMult = fission.getDouble("fission_fuel_time_multiplier");
+        double fuelHeatMult = fission.getDouble("fission_fuel_heat_multiplier");
+        double fuelEfficiencyMult = fission.getDouble("fission_fuel_efficiency_multiplier");
         ConfigList sparsity = fission.getConfigList("fission_sparsity_penalty_params");
         overhaulSFR.settings.sparsityPenaltyMultiplier = (float) sparsity.getDouble(0);
         overhaulSFR.settings.sparsityPenaltyThreshold = (float) sparsity.getDouble(1);
@@ -107,15 +109,15 @@ public class OverhaulNCConfigReader implements FormatReader{
         NCPFElement hps = overhaulSFR.globalElement(overhaulSFR.legacyFluid("high_pressure_steam").build(), "High Pressure Steam", "fluids/hps").element;
         overhaulSFR.coolantRecipe("water", "Water", "fluids/water", hps, 64, 4);
         overhaulSFR.coolantRecipe("preheated_water", "Preheated Water", "fluids/preheated_water", hps, 32, 4);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "plutonium", null, "LEP-239 Oxide", "LEP-239 Nitride", "LEP-239-Zirconium Alloy", null, null, "HEP-239 Oxide", "HEP-239 Nitride", "HEP-239-Zirconium Alloy", null, null, "LEP-241 Oxide", "LEP-241 Nitride", "LEP-241-Zirconium Alloy", null, null, "HEP-241 Oxide", "HEP-241 Nitride", "HEP-241-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "mixed", null, "MOX-239", "MNI-239", "MZA-239", null, null, "MOX-241", "MNI-241", "MZA-241", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "americium", null, "LEA-242 Oxide", "LEA-242 Nitride", "LEA-242-Zirconium Alloy", null, null, "HEA-242 Oxide", "HEA-242 Nitride", "HEA-242-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "curium", null, "LECm-243 Oxide", "LECm-243 Nitride", "LECm-243-Zirconium Alloy", null, null, "HECm-243 Oxide", "HECm-243 Nitride", "HECm-243-Zirconium Alloy", null, null, "LECm-245 Oxide", "LECm-245 Nitride", "LECm-245-Zirconium Alloy", null, null, "HECm-245 Oxide", "HECm-245 Nitride", "HECm-245-Zirconium Alloy", null, null, "LECm-247 Oxide", "LECm-247 Nitride", "LECm-247-Zirconium Alloy", null, null, "HECm-247 Oxide", "HECm-247 Nitride", "HECm-247-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "berkelium", null, "LEB-248 Oxide", "LEB-248 Nitride", "LEB-248-Zirconium Alloy", null, null, "HEB-248 Oxide", "HEB-248 Nitride", "HEB-248-Zirconium Alloy", null);
-        addSFRFuels(overhaulSFR, fission, fuelTimeMult, "californium", null, "LECf-249 Oxide", "LECf-249 Nitride", "LECf-249-Zirconium Alloy", null, null, "HECf-249 Oxide", "HECf-249 Nitride", "HECf-249-Zirconium Alloy", null, null, "LECf-251 Oxide", "LECf-251 Nitride", "LECf-251-Zirconium Alloy", null, null, "HECf-251 Oxide", "HECf-251 Nitride", "HECf-251-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "neptunium", null, "LEN-236 Oxide", "LEN-236 Nitride", "LEN-236-Zirconium Alloy", null, null, "HEN-236 Oxide", "HEN-236 Nitride", "HEN-236-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "plutonium", null, "LEP-239 Oxide", "LEP-239 Nitride", "LEP-239-Zirconium Alloy", null, null, "HEP-239 Oxide", "HEP-239 Nitride", "HEP-239-Zirconium Alloy", null, null, "LEP-241 Oxide", "LEP-241 Nitride", "LEP-241-Zirconium Alloy", null, null, "HEP-241 Oxide", "HEP-241 Nitride", "HEP-241-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "mixed", null, "MOX-239", "MNI-239", "MZA-239", null, null, "MOX-241", "MNI-241", "MZA-241", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "americium", null, "LEA-242 Oxide", "LEA-242 Nitride", "LEA-242-Zirconium Alloy", null, null, "HEA-242 Oxide", "HEA-242 Nitride", "HEA-242-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "curium", null, "LECm-243 Oxide", "LECm-243 Nitride", "LECm-243-Zirconium Alloy", null, null, "HECm-243 Oxide", "HECm-243 Nitride", "HECm-243-Zirconium Alloy", null, null, "LECm-245 Oxide", "LECm-245 Nitride", "LECm-245-Zirconium Alloy", null, null, "HECm-245 Oxide", "HECm-245 Nitride", "HECm-245-Zirconium Alloy", null, null, "LECm-247 Oxide", "LECm-247 Nitride", "LECm-247-Zirconium Alloy", null, null, "HECm-247 Oxide", "HECm-247 Nitride", "HECm-247-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "berkelium", null, "LEB-248 Oxide", "LEB-248 Nitride", "LEB-248-Zirconium Alloy", null, null, "HEB-248 Oxide", "HEB-248 Nitride", "HEB-248-Zirconium Alloy", null);
+        addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "californium", null, "LECf-249 Oxide", "LECf-249 Nitride", "LECf-249-Zirconium Alloy", null, null, "HECf-249 Oxide", "HECf-249 Nitride", "HECf-249-Zirconium Alloy", null, null, "LECf-251 Oxide", "LECf-251 Nitride", "LECf-251-Zirconium Alloy", null, null, "HECf-251 Oxide", "HECf-251 Nitride", "HECf-251-Zirconium Alloy", null);
         overhaulSFR.globalElement(overhaulSFR.legacyBlock("nuclearcraft:ingot_block:8").blockstate("type", "graphite").build(), "Graphite Block", "overhaul/graphite").tag("blockGraphite");
         overhaulSFR.globalElement(overhaulSFR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
         overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
@@ -255,15 +257,15 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", mdustTBP, (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", mdustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", mdustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "thorium", null, null, null, null, "TBU Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-235 Fluoride", null, null, null, null, "HEU-235 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "plutonium", null, null, null, null, "LEP-239 Fluoride", null, null, null, null, "HEP-239 Fluoride", null, null, null, null, "LEP-241 Fluoride", null, null, null, null, "HEP-241 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "mixed", null, null, null, null, "MF4-239", null, null, null, null, "MF4-241");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "americium", null, null, null, null, "LEA-242 Fluoride", null, null, null, null, "HEA-242 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "curium", null, null, null, null, "LECm-243 Fluoride", null, null, null, null, "HECm-243 Fluoride", null, null, null, null, "LECm-245 Fluoride", null, null, null, null, "HECm-245 Fluoride", null, null, null, null, "LECm-247 Fluoride", null, null, null, null, "HECm-247 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "berkelium", null, null, null, null, "LEB-248 Fluoride", null, null, null, null, "HEB-248 Fluoride");
-        addMSRFuels(overhaulMSR, fission, fuelTimeMult, "californium", null, null, null, null, "LECf-249 Fluoride", null, null, null, null, "HECf-249 Fluoride", null, null, null, null, "LECf-251 Fluoride", null, null, null, null, "HECf-251 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "thorium", null, null, null, null, "TBU Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "uranium", null, null, null, null, "LEU-233 Fluoride", null, null, null, null, "HEU-233 Fluoride", null, null, null, null, "LEU-235 Fluoride", null, null, null, null, "HEU-235 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "neptunium", null, null, null, null, "LEN-236 Fluoride", null, null, null, null, "HEN-236 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "plutonium", null, null, null, null, "LEP-239 Fluoride", null, null, null, null, "HEP-239 Fluoride", null, null, null, null, "LEP-241 Fluoride", null, null, null, null, "HEP-241 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "mixed", null, null, null, null, "MF4-239", null, null, null, null, "MF4-241");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "americium", null, null, null, null, "LEA-242 Fluoride", null, null, null, null, "HEA-242 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "curium", null, null, null, null, "LECm-243 Fluoride", null, null, null, null, "HECm-243 Fluoride", null, null, null, null, "LECm-245 Fluoride", null, null, null, null, "HECm-245 Fluoride", null, null, null, null, "LECm-247 Fluoride", null, null, null, null, "HECm-247 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "berkelium", null, null, null, null, "LEB-248 Fluoride", null, null, null, null, "HEB-248 Fluoride");
+        addMSRFuels(overhaulMSR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "californium", null, null, null, null, "LECf-249 Fluoride", null, null, null, null, "HECf-249 Fluoride", null, null, null, null, "LECf-251 Fluoride", null, null, null, null, "HECf-251 Fluoride");
         overhaulMSR.globalElement(overhaulMSR.legacyBlock("nuclearcraft:ingot_block:8").blockstate("type", "graphite").build(), "Graphite Block", "overhaul/graphite").tag("blockGraphite");
         overhaulMSR.globalElement(overhaulMSR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
         overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
@@ -316,7 +318,7 @@ public class OverhaulNCConfigReader implements FormatReader{
 //</editor-fold>
         return ncpf;
     }
-    private void addSFRFuels(OverhaulSFRConfigurationBuilder overhaulSFR, Config config, double timeMult, String baseName, String... fuelNames){
+    private void addSFRFuels(OverhaulSFRConfigurationBuilder overhaulSFR, Config config, double timeMult, double heatMult, double efficiencyMult, String baseName, String... fuelNames){
         ConfigList time = config.getConfigList("fission_"+baseName+"_fuel_time");
         ConfigList heat = config.getConfigList("fission_"+baseName+"_heat_generation");
         ConfigList efficiency = config.getConfigList("fission_"+baseName+"_efficiency");
@@ -326,10 +328,10 @@ public class OverhaulNCConfigReader implements FormatReader{
             if(fuelNames[i]==null)continue;
             int fuelIndex = i-i/5;
             String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_ox", "-", "_", " nitride", "_ni", "_zirconium alloy", "_za");
-            overhaulSFR.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, efficiency.getAsFloat(i), heat.getAsInt(i), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
+            overhaulSFR.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)(efficiency.getAsFloat(i)*efficiencyMult), (int)(heat.getAsInt(i)*heatMult), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
         }
     }
-    private void addMSRFuels(OverhaulMSRConfigurationBuilder overhaulMSR, Config config, double timeMult, String baseName, String... fuelNames){
+    private void addMSRFuels(OverhaulMSRConfigurationBuilder overhaulMSR, Config config, double timeMult, double heatMult, double fficiencyMult, String baseName, String... fuelNames){
         ConfigList time = config.getConfigList("fission_"+baseName+"_fuel_time");
         ConfigList heat = config.getConfigList("fission_"+baseName+"_heat_generation");
         ConfigList efficiency = config.getConfigList("fission_"+baseName+"_efficiency");
