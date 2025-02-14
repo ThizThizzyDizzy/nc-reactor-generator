@@ -583,7 +583,10 @@ public class MenuMain extends Menu{
         editMetadata.text = name.isEmpty()?"Edit Metadata":(name+" | Edit Metadata");
     }
     public Multiblock getSelectedMultiblock(){
-        if(multiblocks.getSelectedIndex()==-1)return null;
+        if(multiblocks.getSelectedIndex()==-1){
+            if(multiblocks.components.size()==1)multiblocks.setSelectedIndex(0);
+            else return null;
+        }
         return ((MenuComponentMultiblock)multiblocks.components.get(multiblocks.getSelectedIndex())).multiblock;
     }
     private void startExport(FormatWriter writer, String formatName, String description, String[] extensions){
