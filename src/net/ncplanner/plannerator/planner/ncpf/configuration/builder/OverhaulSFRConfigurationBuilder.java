@@ -217,6 +217,7 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         recipe.stats.output = new NCPFElementReference(output);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName+" to "+output.getDisplayName());
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         configuration.coolantRecipes.add(recipe);
         return recipe;
