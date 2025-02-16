@@ -28,15 +28,17 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
         super(parent, configuration, config.getName().replace(" Configuration", ""), new SplitLayout(SplitLayout.Y_AXIS, 0).fitSize());
         List<List<NCPFElement>> elements = new ArrayList<>(Arrays.asList(config.getElements()));
         List<Supplier<NCPFElement>> suppliers = new ArrayList<>(Arrays.asList(config.getElementSuppliers()));
+        NCPFSettingsModule settings = null;
         for(NCPFModule module : config.modules.modules.values()){
             if(module instanceof NCPFSettingsModule){
-                addSettings((NCPFSettingsModule)module);
+                settings = (NCPFSettingsModule)module;
             }
             if(module instanceof GlobalElementsModule){
                 elements.add(((GlobalElementsModule)module).elements);
                 suppliers.add(NCPFElement::new);
             }
         }
+        addSettings(settings);
         GridLayout lists = add(new GridLayout(0, 1));
         for(int i = 0; i<elements.size(); i++){
             Supplier<NCPFElement> supplier = suppliers.get(i);
