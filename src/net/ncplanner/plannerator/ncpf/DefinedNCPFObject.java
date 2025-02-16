@@ -40,6 +40,7 @@ public abstract class DefinedNCPFObject{
         return copyList(from, to.recipes, NCPFElement::new);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> List<T> copyList(List<V> from, Supplier<T> newCopy){
+        if(from==null)return null;
         return copyList(from, new ArrayList<>(), newCopy);
     }
     public <T extends DefinedNCPFObject, V extends DefinedNCPFObject> List<T> copyList(List<V> from, List<T> to, Supplier<T> newCopy){

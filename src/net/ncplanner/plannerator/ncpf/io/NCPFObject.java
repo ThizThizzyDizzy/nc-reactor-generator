@@ -26,11 +26,17 @@ public class NCPFObject extends HashMap<String, Object>{
         setNCPFObject(key, ncpf);
     }
 
+    public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFListOrEmpty(String key, Supplier<T> objectSupplier){
+        List<T> lst = getDefinedNCPFList(key, objectSupplier);
+        if(lst!=null)return (V)lst;
+        return (V)new ArrayList<T>();
+    }
     public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFList(String key, Supplier<T> objectSupplier){
         return (V)getDefinedNCPFList(key, new ArrayList<>(), objectSupplier);
     }
     public <T extends DefinedNCPFObject, V extends List<T>> V getDefinedNCPFList(String key, V list, Supplier<T> objectSupplier){
         NCPFList ncpf = getNCPFList(key);
+        if(ncpf==null)return null;
         for(int i = 0; i<ncpf.size(); i++){
             NCPFObject obj = ncpf.getNCPFObject(i);
             T object = objectSupplier.get();

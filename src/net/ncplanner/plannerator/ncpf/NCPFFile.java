@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.planner.Core;
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
-    public int version;
+    public int version = 1;
     public List<NCPFAddon> addons = new ArrayList<>();
     public List<NCPFDesign> designs = new ArrayList<>();
     public NCPFConfigurationContainer conglomeration = new NCPFConfigurationContainer();
@@ -12,12 +12,12 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         version = ncpf.getInteger("version");
-        addons = ncpf.getDefinedNCPFList("addons", NCPFAddon::new);
+        addons = ncpf.getDefinedNCPFListOrEmpty("addons", NCPFAddon::new);
         postConvertFromObject(ncpf);
     }
     public void postConvertFromObject(NCPFObject ncpf){
         conglomerate();
-        designs = ncpf.getDefinedNCPFList("designs", ()->{return new NCPFDesign(isConfigEmpty()?Core.project:this);});
+        designs = ncpf.getDefinedNCPFListOrEmpty("designs", ()->{return new NCPFDesign(isConfigEmpty()?Core.project:this);});
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
