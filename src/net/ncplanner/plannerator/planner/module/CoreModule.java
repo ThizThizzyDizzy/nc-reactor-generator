@@ -50,6 +50,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
@@ -80,6 +81,8 @@ public class CoreModule<T> extends Module<T>{
         registerNCPFElement(NCPFFluidTagElement::new);
         registerNCPFElement(NCPFListElement::new);
         registerNCPFElement(NCPFModuleElement::new);
+        
+        registerNCPFModule(NuclearCraftGeneratedModule::new);
         
         registerNCPFModule(NCPFBlockRecipesModule::new);
 

@@ -4,9 +4,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFFileReader{
     public static final ArrayList<NCPFFormatReader> formats = new ArrayList<>();
     private static JSONNCPFReader JSON;
@@ -20,10 +29,43 @@ public class NCPFFileReader{
             try{
                 ncpf = reader.read(provider.get());
                 break;
-            }catch(Throwable t){}//TODO properly separate error handling and incorrect format
+            }catch(Throwable t){
+            }//TODO properly separate error handling and incorrect format
         }
         if(ncpf==null)throw new IllegalArgumentException("Unknown file format!");
         project.convertFromObject(ncpf);
+        project.withModule(NuclearCraftGeneratedModule::new, (generatedModule) -> {
+            // Populate the generated configuration with textures/etc from internal configs
+            for(Configuration configuration : Configuration.configurations){
+                for(NCPFConfiguration config : project.configuration.configurations.values()){
+                    NCPFConfiguration internal = configuration.configuration.configurations.get(config.name);
+                    if(internal==null)continue;
+                    for(List<NCPFElement> elements : config.getElements()){
+                        for(NCPFElement element : elements){
+                            for(List<NCPFElement> internalElements : internal.getElements()){
+                                for(NCPFElement internalElement : internalElements){
+                                    if(element.definition.matches(internalElement.definition)){
+                                        for(NCPFModule module : internalElement.modules.modules.values()){
+                                            if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                            if(module instanceof TextureModule){
+                                                element.modules.setModule(module.copyTo(TextureModule::new));
+                                            }
+                                            if(module instanceof DisplayNameModule){
+                                                element.modules.setModule(module.copyTo(DisplayNameModule::new));
+                                            }
+                                            if(module instanceof LegacyNamesModule){
+                                                element.modules.setModule(module.copyTo(LegacyNamesModule::new));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            project.modules.removeModule(generatedModule);
+        });
         return project;
     }
     public static Project read(File file){
