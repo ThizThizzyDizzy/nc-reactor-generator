@@ -164,7 +164,14 @@ public abstract class NCPFSettingsModule extends NCPFModule{
     public void conglomerate(NCPFModule addon){
         NCPFSettingsModule other = (NCPFSettingsModule)addon;
         for(String setting : settings){
-            sets.get(setting).accept(other.gets.get(setting).get());
+            switch(types.get(setting)){
+                case REFERENCE:
+                    setBaseReferences.get(setting).accept((NCPFElementReference)other.gets.get(setting).get());
+                    break;
+                default:
+                    sets.get(setting).accept(other.gets.get(setting).get());
+                    break;
+            }
         }
     }
     public String getTooltip(){
