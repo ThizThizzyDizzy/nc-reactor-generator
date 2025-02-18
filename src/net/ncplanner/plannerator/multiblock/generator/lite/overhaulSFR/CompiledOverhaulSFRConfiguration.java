@@ -114,7 +114,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
             CoolantRecipe recipe = rawCoolantRecipes.get(i);
             coolantRecipeDefinition[i] = recipe.definition;
             coolantRecipeDisplayName[i] = recipe.getDisplayName();
-            coolantRecipeOutputDisplayName[i] = recipe.stats.output.getDisplayName();
+            coolantRecipeOutputDisplayName[i] = recipe.stats.getOutputDisplayName();
             coolantRecipeHeat[i] = recipe.stats.heat;
             coolantRecipeOutputRatio[i] = recipe.stats.outputRatio;
             coolantRecipeTexture[i] = recipe.getTexture();

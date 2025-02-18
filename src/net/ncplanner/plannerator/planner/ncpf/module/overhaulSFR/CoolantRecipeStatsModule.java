@@ -15,4 +15,7 @@ public class CoolantRecipeStatsModule extends NCPFStatsModule{
     public String getFriendlyName(){
         return "Coolant Recipe Stats";
     }
+    public String getOutputDisplayName(){
+        return output==null?null:output.getDisplayName();
+    }
 }

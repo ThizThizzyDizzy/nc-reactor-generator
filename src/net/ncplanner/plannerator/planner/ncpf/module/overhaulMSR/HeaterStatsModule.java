@@ -13,4 +13,10 @@ public class HeaterStatsModule extends NCPFStatsModule{
     public String getFriendlyName(){
         return "Heater Stats";
     }
+    public String getOutputName(){
+        return output==null?null:output.definition.getName();
+    }
+    public String getOutputDisplayName(){
+        return output==null?null:output.getDisplayName();
+    }
 }
