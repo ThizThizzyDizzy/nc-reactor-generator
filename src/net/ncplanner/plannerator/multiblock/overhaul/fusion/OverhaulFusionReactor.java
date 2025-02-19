@@ -284,7 +284,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.stats.output.getDisplayName()+"\n"
+            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.stats.getOutputDisplayName()+"\n"
                     + "Total Heat: "+totalHeat+"H/t\n"
                     + "Total Cooling: "+totalCooling+"H/t\n"
                     + "Net Heat: "+netHeat+"H/t\n"

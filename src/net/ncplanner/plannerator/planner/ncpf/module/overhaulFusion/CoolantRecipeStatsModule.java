@@ -9,10 +9,16 @@ public class CoolantRecipeStatsModule extends NCPFStatsModule{
         super("plannerator:fusion_test:coolant_recipe_stats");
         addInteger("heat", () -> heat, (v) -> heat = v, "Heat");
         addFloat("output_ratio", () -> outputRatio, (v) -> outputRatio = v, "Output Ratio");
-        addReference("output", () -> output, (elem) -> output = new NCPFElementReference(elem), NCPFElementReference::new, (r)->output = r, "Output Fluid");
+        addReference("output", () -> output, (elem) -> output = new NCPFElementReference(elem), NCPFElementReference::new, (r) -> output = r, "Output Fluid");
     }
     @Override
     public String getFriendlyName(){
         return "Coolant Recipe Stats";
+    }
+    public String getOutputName(){
+        return output==null?null:output.definition.getName();
+    }
+    public String getOutputDisplayName(){
+        return output==null?null:output.getDisplayName();
     }
 }

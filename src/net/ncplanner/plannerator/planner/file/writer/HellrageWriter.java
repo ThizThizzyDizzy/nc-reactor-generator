@@ -237,7 +237,7 @@ public class HellrageWriter extends FormatWriter{
                 dims.set("Y", reactor.getInternalHeight());
                 dims.set("Z", reactor.getInternalDepth());
                 data.set("InteriorDimensions", dims);
-                data.set("CoolantRecipeName", reactor.coolantRecipe.getDisplayName()+" to "+reactor.coolantRecipe.stats.output.getDisplayName());
+                data.set("CoolantRecipeName", reactor.coolantRecipe.getDisplayName()+" to "+reactor.coolantRecipe.stats.getOutputDisplayName());
                 hellrage.set("Data", data);
                 try{
                     hellrage.write(stream);
