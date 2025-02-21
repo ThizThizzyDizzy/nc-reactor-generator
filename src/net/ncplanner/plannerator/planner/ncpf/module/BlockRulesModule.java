@@ -12,7 +12,7 @@ public abstract class BlockRulesModule extends BlockFunctionModule implements El
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        rules = ncpf.getDefinedNCPFList("rules", NCPFPlacementRule::new);
+        rules = ncpf.getDefinedNCPFListOrEmpty("rules", NCPFPlacementRule::new);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
