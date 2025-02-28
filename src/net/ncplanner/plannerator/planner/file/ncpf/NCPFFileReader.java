@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -42,9 +44,11 @@ public class NCPFFileReader{
                     if(internal==null)continue;
                     for(List<NCPFElement> elements : config.getElements()){
                         for(NCPFElement element : elements){
+                            boolean foundMatch = false;
                             for(List<NCPFElement> internalElements : internal.getElements()){
                                 for(NCPFElement internalElement : internalElements){
                                     if(element.definition.matches(internalElement.definition)){
+                                        foundMatch = true;
                                         for(NCPFModule module : internalElement.modules.modules.values()){
                                             if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
                                             if(module instanceof TextureModule){
@@ -55,6 +59,29 @@ public class NCPFFileReader{
                                             }
                                             if(module instanceof LegacyNamesModule){
                                                 element.modules.setModule(module.copyTo(LegacyNamesModule::new));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if(!foundMatch&&element.definition instanceof NCPFListElement){
+                                for(NCPFElementDefinition definition : ((NCPFListElement)element.definition).elements){
+                                    for(List<NCPFElement> internalElements : internal.getElements()){
+                                        for(NCPFElement internalElement : internalElements){
+                                            if(definition.matches(internalElement.definition)){
+                                                foundMatch = true;
+                                                for(NCPFModule module : internalElement.modules.modules.values()){
+                                                    if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                    if(module instanceof TextureModule){
+                                                        element.modules.setModule(module.copyTo(TextureModule::new));
+                                                    }
+                                                    if(module instanceof DisplayNameModule){
+                                                        element.modules.setModule(module.copyTo(DisplayNameModule::new));
+                                                    }
+                                                    if(module instanceof LegacyNamesModule){
+                                                        element.modules.setModule(module.copyTo(LegacyNamesModule::new));
+                                                    }
+                                                }
                                             }
                                         }
                                     }
