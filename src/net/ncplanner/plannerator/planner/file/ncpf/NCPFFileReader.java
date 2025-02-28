@@ -14,6 +14,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;
@@ -37,6 +38,14 @@ public class NCPFFileReader{
         if(ncpf==null)throw new IllegalArgumentException("Unknown file format!");
         project.convertFromObject(ncpf);
         project.withModule(NuclearCraftGeneratedModule::new, (generatedModule) -> {
+            // Populate the generated configureation with config metadata (name/version)
+            for(NCPFConfiguration config : project.configuration.configurations.values()){
+                if(config.hasModule(ConfigurationMetadataModule::new))continue;
+                config.withModuleOrCreate(ConfigurationMetadataModule::new, (metadata) -> {
+                    metadata.name = "NuclearCraft (Exported)";
+                    metadata.version = generatedModule.ncVersion;
+                });
+            }
             // Populate the generated configuration with textures/etc from internal configs
             for(Configuration configuration : Configuration.configurations){
                 for(NCPFConfiguration config : project.configuration.configurations.values()){
