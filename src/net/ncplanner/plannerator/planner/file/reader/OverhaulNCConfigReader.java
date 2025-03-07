@@ -130,13 +130,16 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulSFR.globalElement(overhaulSFR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
         overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
         overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:dust:3").build(), "Thorium Dust", "overhaul/item/thorium_dust").tag("dustThorium");
-        overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:fission_dust:3").build(), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").tag("dustTBP");
         overhaulSFR.globalElement(overhaulSFR.legacyItem("nuclearcraft:fission_dust:0").build(), "Bismuth Dust", "overhaul/item/bismuth_dust").tag("dustBismuth");
         ncpf.setConfiguration(overhaulSFR.build());
 //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Fission MSR">
         OverhaulMSRConfigurationBuilder overhaulMSR = new OverhaulMSRConfigurationBuilder("NuclearCraft", "Unknown");
         overhaulMSR.block("nuclearcraft:salt_fission_controller", "Molten Salt Fission Controller", "overhaul/msr/controller").controller();
+        overhaulMSR.block("nuclearcraft:fission_monitor", "Fission Monitor", "overhaul/monitor").casing(false);
+        overhaulMSR.block("nuclearcraft:fission_source_manager", "Fission Source Manager", "overhaul/source_manager").casing(false);
+        overhaulMSR.block("nuclearcraft:fission_shield_manager", "Fission Shield Manager", "overhaul/shield_manager").casing(false);
+        overhaulMSR.block("nuclearcraft:fission_computer_port", "Fission Computer Port", "overhaul/computer_port").casing(false);
         overhaulMSR.block("nuclearcraft:fission_casing", "Reactor Casing", "overhaul/casing").casing(true);
         overhaulMSR.block("nuclearcraft:fission_glass", "Reactor Glass", "overhaul/glass").casing(false);
         overhaulMSR.settings.coolingEfficiencyLeniency = fission.getInt("fission_cooling_efficiency_leniency");
@@ -260,8 +263,11 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulMSR.block("nuclearcraft:fission_reflector:1", "Lead-Steel Reflector", "overhaul/lead-steel").blockstate("type", "lead_steel").reflector((float) refEff.getDouble(1), (float) refRef.getDouble(1));
         overhaulMSR.shield("nuclearcraft:fission_shield:0", "boron_silver", "Boron-Silver Neutron Shield", "overhaul/boron-silver", "overhaul/boron-silver_closed", (int) shieldHeat.getDouble(0), (float) shieldEff.getDouble(0));
         NCPFElement mdustTBP = overhaulMSR.globalElement(new NCPFOredictElement("dustTBP"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").build();
+        overhaulMSR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:3"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").oredict("dustTBP");
         NCPFElement mdustProtactinium233 = overhaulMSR.globalElement(new NCPFOredictElement("dustProtactinium233"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").build();
+        overhaulMSR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:4"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").oredict("dustProtactinium233");
         NCPFElement mdustPolonium = overhaulMSR.globalElement(new NCPFOredictElement("dustPolonium"), "Polonium Dust", "overhaul/item/polonium_dust").build();
+        overhaulMSR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:2"), "Polonium Dust", "overhaul/item/polonium_dust").oredict("dustPolonium");
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", mdustTBP, (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", mdustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
         overhaulMSR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", mdustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
@@ -278,7 +284,6 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulMSR.globalElement(overhaulMSR.legacyBlock("nuclearcraft:ingot_block:9").blockstate("type", "beryllium").build(), "Beryllium Block", "overhaul/beryllium").tag("blockBeryllium");
         overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:ingot:3").build(), "Thorium Ingot", "overhaul/item/thorium_ingot").tag("ingotThorium");
         overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:dust:3").build(), "Thorium Dust", "overhaul/item/thorium_dust").tag("dustThorium");
-        overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:fission_dust:3").build(), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").tag("dustTBP");
         overhaulMSR.globalElement(overhaulMSR.legacyItem("nuclearcraft:fission_dust:0").build(), "Bismuth Dust", "overhaul/item/bismuth_dust").tag("dustBismuth");
         ncpf.setConfiguration(overhaulMSR.build());
 //</editor-fold>
