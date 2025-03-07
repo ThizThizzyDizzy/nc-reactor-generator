@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.ncpf.configuration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
@@ -30,6 +33,37 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         });
     }
     public abstract List<NCPFElement>[] getElements();
+    /**
+     * @return a list of elements, plus any global elements
+     */
+    public List<NCPFElement>[] getAllElements(){
+        ArrayList<List<NCPFElement>> elements = new ArrayList<>(Arrays.asList(getElements()));
+        withModule(GlobalElementsModule::new, (m) -> {
+            elements.add(m.elements);
+        });
+        return elements.toArray(List[]::new);
+    }
+    /**
+     * @return a list of elements, plus any global elements, PLUS any block recipes
+     */
+    public List<NCPFElement>[] getAllElementsISaidAllElements(){
+        ArrayList<List<NCPFElement>> elements = new ArrayList<>(Arrays.asList(getElements()));
+        for(int i = 0; i<elements.size(); i++){
+            List<NCPFElement> lst = elements.get(i);
+            for(NCPFElement elem : lst){
+                if(elem instanceof BlockRecipesElement){
+                    BlockRecipesElement brelem = (BlockRecipesElement)elem;
+                    List<? extends NCPFElement> recipes = brelem.getBlockRecipes();
+                    if(recipes==null)continue;
+                    elements.add(new ArrayList<>(recipes));
+                }
+            }
+        }
+        withModule(GlobalElementsModule::new, (m) -> {
+            elements.add(m.elements);
+        });
+        return elements.toArray(List[]::new);
+    }
     public Supplier<NCPFElement>[] getElementSuppliers(){
         Supplier<NCPFElement>[] supps = new Supplier[getElements().length];
         for(int i = 0; i<supps.length; i++)supps[i] = NCPFElement::new;

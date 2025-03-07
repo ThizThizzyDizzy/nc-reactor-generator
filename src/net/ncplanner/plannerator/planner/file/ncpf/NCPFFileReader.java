@@ -10,14 +10,18 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFFileReader{
     public static final ArrayList<NCPFFormatReader> formats = new ArrayList<>();
@@ -51,13 +55,17 @@ public class NCPFFileReader{
                 for(NCPFConfiguration config : project.configuration.configurations.values()){
                     NCPFConfiguration internal = configuration.configuration.configurations.get(config.name);
                     if(internal==null)continue;
-                    for(List<NCPFElement> elements : config.getElements()){
+                    // Global Elements
+
+                    // TODO:
+                    // - Allow matching by oredict if no other options are available
+                    for(List<NCPFElement> elements : config.getAllElements()){
                         for(NCPFElement element : elements){
-                            boolean foundMatch = false;
-                            for(List<NCPFElement> internalElements : internal.getElements()){
+                            NCPFElement match = null;
+                            for(List<NCPFElement> internalElements : internal.getAllElements()){
                                 for(NCPFElement internalElement : internalElements){
                                     if(element.definition.matches(internalElement.definition)){
-                                        foundMatch = true;
+                                        if(match==null)match = internalElement;
                                         for(NCPFModule module : internalElement.modules.modules.values()){
                                             if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
                                             if(module instanceof TextureModule){
@@ -73,12 +81,12 @@ public class NCPFFileReader{
                                     }
                                 }
                             }
-                            if(!foundMatch&&element.definition instanceof NCPFListElement){
+                            if(match==null&&element.definition instanceof NCPFListElement){
                                 for(NCPFElementDefinition definition : ((NCPFListElement)element.definition).elements){
-                                    for(List<NCPFElement> internalElements : internal.getElements()){
+                                    for(List<NCPFElement> internalElements : internal.getAllElements()){
                                         for(NCPFElement internalElement : internalElements){
                                             if(definition.matches(internalElement.definition)){
-                                                foundMatch = true;
+                                                if(match==null)match = internalElement;
                                                 for(NCPFModule module : internalElement.modules.modules.values()){
                                                     if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
                                                     if(module instanceof TextureModule){
@@ -93,6 +101,87 @@ public class NCPFFileReader{
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                            if(match==null)continue;
+                            NCPFElement internalMatch = match;
+                            // Block Recipes
+                            if(element instanceof BlockRecipesElement&&internalMatch instanceof BlockRecipesElement){
+                                BlockRecipesElement brelement = (BlockRecipesElement)element;
+                                BlockRecipesElement internalBrelement = (BlockRecipesElement)internalMatch;
+                                List<? extends NCPFElement> recipes = brelement.getBlockRecipes();
+                                List<? extends NCPFElement> internalRecipes = internalBrelement.getBlockRecipes();
+                                if(recipes==null||internalRecipes==null)continue;
+                                for(NCPFElement recipe : recipes){
+                                    boolean foundMatch = false;
+                                    for(NCPFElement internalRecipe : internalRecipes){
+                                        if(recipe.definition.matches(internalRecipe.definition)){
+                                            foundMatch = true;
+                                            for(NCPFModule module : internalRecipe.modules.modules.values()){
+                                                if(recipe.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                if(module instanceof TextureModule){
+                                                    recipe.modules.setModule(module.copyTo(TextureModule::new));
+                                                }
+                                                if(module instanceof DisplayNameModule){
+                                                    recipe.modules.setModule(module.copyTo(DisplayNameModule::new));
+                                                }
+                                                if(module instanceof LegacyNamesModule){
+                                                    recipe.modules.setModule(module.copyTo(LegacyNamesModule::new));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(!foundMatch&&recipe.definition instanceof NCPFListElement){
+                                        for(NCPFElementDefinition definition : ((NCPFListElement)recipe.definition).elements){
+                                            for(NCPFElement internalRecipe : internalRecipes){
+                                                if(definition.matches(internalRecipe.definition)){
+                                                    foundMatch = true;
+                                                    for(NCPFModule module : internalRecipe.modules.modules.values()){
+                                                        if(recipe.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                        if(module instanceof TextureModule){
+                                                            recipe.modules.setModule(module.copyTo(TextureModule::new));
+                                                        }
+                                                        if(module instanceof DisplayNameModule){
+                                                            recipe.modules.setModule(module.copyTo(DisplayNameModule::new));
+                                                        }
+                                                        if(module instanceof LegacyNamesModule){
+                                                            recipe.modules.setModule(module.copyTo(LegacyNamesModule::new));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Set textures & display names of any oredict elements that can get their textures from references
+                    for(List<NCPFElement> elements1 : config.getAllElementsISaidAllElements()){
+                        for(NCPFElement element1 : elements1){
+                            if(!(element1.definition instanceof NCPFOredictElement))continue;
+                            NCPFOredictElement oredict = (NCPFOredictElement)element1.definition;
+                            if(element1.hasModule(TextureModule::new)&&element1.hasModule(DisplayNameModule::new))continue;
+                            ArrayList<NCPFElement> potentials = new ArrayList<>();
+                            for(List<NCPFElement> elements2 : config.getAllElementsISaidAllElements()){
+                                for(NCPFElement element2 : elements2){
+                                    element2.withModule(TagsModule::new, (tags) -> {
+                                        if(tags.tags.contains(oredict.oredict)){
+                                            potentials.add(element2);
+                                        }
+                                    });
+                                }
+                            }
+                            if(potentials.size()==1){
+                                for(NCPFModule module : potentials.get(0).modules.modules.values()){
+                                    if(element1.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                    if(module instanceof TextureModule){
+                                        element1.modules.setModule(module.copyTo(TextureModule::new));
+                                    }
+                                    if(module instanceof DisplayNameModule){
+                                        element1.modules.setModule(module.copyTo(DisplayNameModule::new));
                                     }
                                 }
                             }
