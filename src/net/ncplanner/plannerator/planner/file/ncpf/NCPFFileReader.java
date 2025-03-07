@@ -12,7 +12,6 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -57,8 +56,6 @@ public class NCPFFileReader{
                     if(internal==null)continue;
                     // Global Elements
 
-                    // TODO:
-                    // - Allow matching by oredict if no other options are available
                     for(List<NCPFElement> elements : config.getAllElements()){
                         for(NCPFElement element : elements){
                             NCPFElement match = null;

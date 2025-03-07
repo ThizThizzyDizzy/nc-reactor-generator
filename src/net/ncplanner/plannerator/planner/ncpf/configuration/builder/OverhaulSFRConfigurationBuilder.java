@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
@@ -195,17 +196,23 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         for(BlockElement b : configuration.blocks)if(b.irradiator!=null)b.irradiatorRecipes.add(recipe);
         return new IrradiatorRecipeBuilder(recipe);
     }
-    public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
-        Fuel fuel = new Fuel(new NCPFLegacyItemElement(inputName));
+    public Fuel fuel(String inputOredict, String inputName, String inputDisplayName, String inputTexture, String outputOredict, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
+        Fuel fuel = new Fuel(new NCPFOredictElement(inputOredict));
+        globalElement(new NCPFLegacyItemElement(inputName), inputDisplayName, inputTexture).oredict(inputOredict);
         fuel.names.displayName = inputDisplayName;
-        fuel.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
+        fuel.withModuleOrCreate(LegacyNamesModule::new, (legacyNames)->{
+            legacyNames.legacyNames.add(inputDisplayName);
+            legacyNames.legacyNames.add(inputName);
+        });
         fuel.texture.texture = TextureManager.getImage(inputTexture);
         fuel.stats.efficiency = efficiency;
         fuel.stats.heat = heat;
         fuel.stats.time = time;
         fuel.stats.criticality = criticality;
         fuel.stats.selfPriming = selfPriming;
-        fuel.stats.output = new NCPFElementReference(globalElement(legacyItem(outputName).build(), outputDisplayName, outputTexture).build());
+        
+        fuel.stats.output = new NCPFElementReference(globalElement(new NCPFOredictElement(outputOredict), outputDisplayName, outputTexture).build());
+        globalElement(legacyItem(outputName).build(), outputDisplayName, outputTexture).oredict(outputOredict);
         for(BlockElement b : configuration.blocks)if(b.fuelCell!=null)b.fuels.add(fuel);
         return fuel;
     }

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.planner.StringUtil;
@@ -28,9 +29,14 @@ public class OverhaulNCConfigReader implements FormatReader{
         //<editor-fold defaultstate="collapsed" desc="Fission SFR">
         OverhaulSFRConfigurationBuilder overhaulSFR = new OverhaulSFRConfigurationBuilder("NuclearCraft", "Unknown");
         overhaulSFR.block("nuclearcraft:solid_fission_controller", "Solid Fission Controller", "overhaul/controller").controller();
+        overhaulSFR.block("nuclearcraft:fission_monitor", "Fission Monitor", "overhaul/monitor").casing(false);
+        overhaulSFR.block("nuclearcraft:fission_source_manager", "Fission Source Manager", "overhaul/source_manager").casing(false);
+        overhaulSFR.block("nuclearcraft:fission_shield_manager", "Fission Shield Manager", "overhaul/shield_manager").casing(false);
+        overhaulSFR.coolantVent("nuclearcraft:fission_vent", "Vent (Input)", "overhaul/vent", "Vent (Output)", "overhaul/vent_output");
+        overhaulSFR.block("nuclearcraft:fission_power_port", "Fission Power Port", "overhaul/power_port").casing(false);
+        overhaulSFR.block("nuclearcraft:fission_computer_port", "Fission Computer Port", "overhaul/computer_port").casing(false);
         overhaulSFR.block("nuclearcraft:fission_casing", "Reactor Casing", "overhaul/casing").casing(true);
         overhaulSFR.block("nuclearcraft:fission_glass", "Reactor Glass", "overhaul/glass").casing(false);
-        overhaulSFR.coolantVent("nuclearcraft:fission_vent", "Vent (Input)", "overhaul/vent", "Vent (Output)", "overhaul/vent_output");
         overhaulSFR.settings.coolingEfficiencyLeniency = fission.getInt("fission_cooling_efficiency_leniency");
         overhaulSFR.settings.minSize = fission.getInt("fission_min_size");
         overhaulSFR.settings.maxSize = fission.getInt("fission_max_size");
@@ -101,8 +107,11 @@ public class OverhaulNCConfigReader implements FormatReader{
         ConfigList irrHeat = fission.getConfigList("fission_irradiator_heat_per_flux");
         ConfigList irrEff = fission.getConfigList("fission_irradiator_efficiency");
         NCPFElement dustTBP = overhaulSFR.globalElement(new NCPFOredictElement("dustTBP"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").build();
+        overhaulSFR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:3"), "Protactinium-Enriched Thorium Dust", "overhaul/item/protactinium_enriched_thorium_dust").oredict("dustTBP");
         NCPFElement dustProtactinium233 = overhaulSFR.globalElement(new NCPFOredictElement("dustProtactinium233"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").build();
+        overhaulSFR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:4"), "Protactinium-233 Dust", "overhaul/item/protactinium_dust").oredict("dustProtactinium233");
         NCPFElement dustPolonium = overhaulSFR.globalElement(new NCPFOredictElement("dustPolonium"), "Polonium Dust", "overhaul/item/polonium_dust").build();
+        overhaulSFR.globalElement(new NCPFLegacyItemElement("nuclearcraft:fission_dust:2"), "Polonium Dust", "overhaul/item/polonium_dust").oredict("dustPolonium");
         overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotThorium"), new NCPFOredictElement("dustThorium")), "Thorium", "overhaul/item/thorium_ingust", dustTBP, (float)irrEff.getDouble(0), (float)irrHeat.getDouble(0)).legacy("nuclearcraft:dust:3").legacy("Thorium Dust");
         overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", dustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
         overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", dustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
@@ -328,7 +337,8 @@ public class OverhaulNCConfigReader implements FormatReader{
             if(fuelNames[i]==null)continue;
             int fuelIndex = i-i/5;
             String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_ox", "-", "_", " nitride", "_ni", "_zirconium alloy", "_za");
-            overhaulSFR.fuel("nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)(efficiency.getAsFloat(i)*efficiencyMult), (int)(heat.getAsInt(i)*heatMult), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
+            String oredictBase = fuelNames[i].replace("-", "").replace("Zirconium Alloy", "ZA");
+            overhaulSFR.fuel("ingot"+oredictBase, "nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "ingotDepleted"+oredictBase, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)(efficiency.getAsFloat(i)*efficiencyMult), (int)(heat.getAsInt(i)*heatMult), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
         }
     }
     private void addMSRFuels(OverhaulMSRConfigurationBuilder overhaulMSR, Config config, double timeMult, double heatMult, double fficiencyMult, String baseName, String... fuelNames){
