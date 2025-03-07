@@ -33,7 +33,6 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulSFR.block("nuclearcraft:fission_source_manager", "Fission Source Manager", "overhaul/source_manager").casing(false);
         overhaulSFR.block("nuclearcraft:fission_shield_manager", "Fission Shield Manager", "overhaul/shield_manager").casing(false);
         overhaulSFR.coolantVent("nuclearcraft:fission_vent", "Vent (Input)", "overhaul/vent", "Vent (Output)", "overhaul/vent_output");
-        overhaulSFR.block("nuclearcraft:fission_power_port", "Fission Power Port", "overhaul/power_port").casing(false);
         overhaulSFR.block("nuclearcraft:fission_computer_port", "Fission Computer Port", "overhaul/computer_port").casing(false);
         overhaulSFR.block("nuclearcraft:fission_casing", "Reactor Casing", "overhaul/casing").casing(true);
         overhaulSFR.block("nuclearcraft:fission_glass", "Reactor Glass", "overhaul/glass").casing(false);
