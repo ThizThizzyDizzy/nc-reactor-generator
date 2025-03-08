@@ -290,6 +290,8 @@ public class OverhaulNCConfigReader implements FormatReader{
         //<editor-fold defaultstate="collapsed" desc="Turbine">
         OverhaulTurbineConfigurationBuilder overhaulTurbine = new OverhaulTurbineConfigurationBuilder("NuclearCraft", "Unknown");
         overhaulTurbine.block("nuclearcraft:turbine_controller", "Turbine Controller", "overhaul/turbine/controller").controller();
+        overhaulTurbine.block("nuclearcraft:turbine_computer_port", "Turbine Computer Port", "overhaul/turbine/computer_port").casing(false);
+        overhaulTurbine.block("nuclearcraft:turbine_redstone_port", "Turbine Redstone Port", "overhaul/turbine/redstone_port").casing(false);
         overhaulTurbine.block("nuclearcraft:turbine_casing", "Turbine Casing", "overhaul/turbine/casing").casing(true);
         overhaulTurbine.block("nuclearcraft:turbine_glass", "Turbine Glass", "overhaul/turbine/glass").casing(false);
         overhaulTurbine.block("nuclearcraft:turbine_inlet", "Fluid Inlet", "overhaul/turbine/inlet").inlet();

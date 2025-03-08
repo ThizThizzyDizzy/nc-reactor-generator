@@ -102,6 +102,46 @@
                     }
                 },
                 {
+                    "name": "nuclearcraft:turbine_computer_port",
+                    "type": "legacy_block",
+                    "modules": {
+                        "nuclearcraft:overhaul_turbine:casing": {
+                            "edge": false
+                        },
+                        "plannerator:display_name": {
+                            "display_name": "Turbine Computer Port"
+                        },
+                        "plannerator:texture": {
+                            "texture": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAByUlEQVR4XmMsK2v7z8jIyADDDEDw9+9fhn///oGYDExMTAzMzMxgGiQAEofJgfgsIIKNjQ1sABMTxKAfP36CNcEMZWVlAfNhGv/+/Qe24NevXwxgA/7//8/w6xdIExMDzAUgV4DEQS7494+VAWQ4AxSADGBiYgYbwgKyBaQIhFlY2MBKWIDG/vnzB8yGOR/oS7A3QIZ++/YNLAe2AGYqyHkgARgfphFkMEgzyCKQHEwNzHtwLyAHzrdvX8HmwDSBnA/CvLz8DDAXgxSAXQ3TCDIZZvr///8Y1ofvZAC6mYGRmQkYUMwMwavdwJphakAu/P37NwMTzACYbSAarAhoSOByV4agZW5g14ACDsSAycMMYoL5GSQBMhXZryBFf//+YfjD8BdsOyR9/GeAhRdIngXmF2DaYUABwIS0IXwHA0gR4y9GBlCs/Pr1G2wQsrdZILb8hZsKC6SgtT6o5gG9BHIBshfgLkBPyrDQhgUsLGnD+MgmM4GiAhY4sATFgAXAwgYkBTIInvggKZCFARR1oOQMswUeG0AdIDHkhAbTDNYLM5mNjZ0BOZeB2DCvwRyEnENhYuBYAOUqZFfDbASJQZIyI1waFv8wwwGz0xUC3P7jDgAAAABJRU5ErkJggg=="
+                        },
+                        "plannerator:legacy_names": {
+                            "legacy_names": [
+                                "Turbine Computer Port"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "nuclearcraft:turbine_redstone_port",
+                    "type": "legacy_block",
+                    "modules": {
+                        "nuclearcraft:overhaul_turbine:casing": {
+                            "edge": false
+                        },
+                        "plannerator:display_name": {
+                            "display_name": "Turbine Redstone Port"
+                        },
+                        "plannerator:texture": {
+                            "texture": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB/0lEQVR4XmMsK2v7z8jIyADDDEDw9+9fhn///oGYDExMTAzMzMxgGiQAEofJgfgsIOLsxoUMjP//MwBNYfgPMgyo+T+ID8RAUQZGoCIY/Q8kzsAAttA4MJEBbAAjUINRYALQJiawrX/+/GUAuQJkCMgFrKysQBcwMsDA37//GM6snQd2JQvI6SAJkEIWFjawGhagsX/+/AGzYc4HOgzsDZCh3759Y2AEegtsAdhfQOIf1Nm/f/8GawTxQYaCXALSDDPwP9QLDNBwA7sZ5H9Y4IA0gQxhY2MDOxHkfJBmdnZ2BhANcjFIzT+gRSCaCRyiQNNAJoPwr1+/wKEOolmAfvnz5zcDyDCQZhANdwE0QJhgToeFBUgRTPPPnz8ZWFhYGX5DbQPRjFDL4GEHDkCgTSABUICBbAI5G2bI9+/fGWDiYKf/+88AsxQeiP+hIQ4yDKQZZBPE+X8YQPzv338ApRgZvn79xgBPZFCXMP2HJiCYqbAAAymEBSCIBnkHFisgPTCvQFIOUlKGaeLg4ADbBgoTmGaQt2DJGBaYLCBT/wDTPix6YN6A0SCFIENhNEgcphmc+EAEKFGA6F+/fjLAohPmRJgGmBfBgQ7MYDALwUkZSDCcWTefgQEaHiBF8OgCcsAZCehN5BwKTQaQzATKVQxIAOQKZMWwOEd2Piz7AwCrbjA6ILW/yQAAAABJRU5ErkJggg=="
+                        },
+                        "plannerator:legacy_names": {
+                            "legacy_names": [
+                                "Turbine Redstone Port"
+                            ]
+                        }
+                    }
+                },
+                {
                     "name": "nuclearcraft:turbine_casing",
                     "type": "legacy_block",
                     "modules": {
