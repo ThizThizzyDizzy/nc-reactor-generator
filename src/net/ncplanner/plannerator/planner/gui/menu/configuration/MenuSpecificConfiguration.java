@@ -57,6 +57,8 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
             boolean hasRecipes = false;
             for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
                 if(confg==config)break;
+                List<NCPFElement>[] confgElements = confg.getElements();
+                if(confgElements.length<=i)continue; // confg is missing global elements addon, ignore
                 for(NCPFElement elem : confg.getElements()[i]){
                     if(elem instanceof BlockRecipesElement)hasRecipes = true;
                 }

@@ -3,12 +3,18 @@ import java.util.ArrayList;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
@@ -49,6 +55,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     }
     /**
      * Add all parts of another configuration to this one
+     *
      * @param addon The addon to add
      */
     public void conglomerate(NCPFConfigurationContainer addon){
@@ -56,7 +63,8 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             NCPFConfiguration addonConfig = addon.configurations.get(key);
             if(configurations.containsKey(key)){
                 configurations.get(key).conglomerate(addonConfig);
-            }else configurations.put(key, addonConfig.copyTo(recognizedConfigurations.get(addonConfig.name)));
+            }else
+                configurations.put(key, addonConfig.copyTo(recognizedConfigurations.get(addonConfig.name)));
         }
     }
     public void setReferences(){
@@ -81,5 +89,105 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             if(module!=null&&module.name!=null)return module.name+" "+module.version;
         }
         return "Unknown Configuration";
+    }
+    // Actually converts to addon, with other as parent
+    public void subtract(NCPFConfigurationContainer other){
+        for(Iterator<String> cit = configurations.keySet().iterator(); cit.hasNext();){
+            String key = cit.next();
+            if(other.configurations.containsKey(key)){
+                NCPFConfiguration mainCfg = configurations.get(key);
+                NCPFConfiguration otherCfg = other.configurations.get(key);
+
+                List<NCPFElement>[] mainElementLists = mainCfg.getAllElements();
+                List<NCPFElement>[] otherElementLists = otherCfg.getAllElements();
+                for(int i = 0; i<mainElementLists.length; i++){
+                    List<NCPFElement> mainElements = mainElementLists[i];
+                    List<NCPFElement> otherElements = i<otherElementLists.length?otherElementLists[i]:new ArrayList<>();
+                    List<NCPFElement> replacedElements = new ArrayList<>();
+                    for(Iterator<NCPFElement> it = mainElements.iterator(); it.hasNext();){
+                        NCPFElement element = it.next();
+                        NCPFElement otherMatch = null;
+                        for(NCPFElement otherElement : otherElements){
+                            if(element.definition.matches(otherElement.definition)){
+                                otherMatch = otherElement;
+                            }
+                        }
+                        if(otherMatch==null){
+                            //try matching the element in mainConfig to a list in otherCfg containing it
+                            for(NCPFElement otherElement : otherElements){
+                                if(otherElement.definition instanceof NCPFListElement){
+                                    NCPFListElement list = (NCPFListElement)otherElement.definition;
+                                    for(NCPFElementDefinition otherElem : list.elements){
+                                        if(element.definition.matches(otherElem)){
+                                            otherMatch = otherElement;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if(otherMatch==null)continue;
+
+                        // if it's a port, don't check for recipes
+                        boolean isPort = false;
+                        for(String moduleKey : element.modules.modules.keySet()){
+                            if(moduleKey.endsWith(":port")){
+                                isPort = true;
+                                break;
+                            }
+                        }
+                        if(isPort){
+                            it.remove();
+                            continue;
+                        }
+
+                        NCPFBlockRecipesModule mainRecipes = element.getModule(NCPFBlockRecipesModule::new);
+                        NCPFBlockRecipesModule otherRecipes = otherMatch.getModule(NCPFBlockRecipesModule::new);
+                        if(mainRecipes!=null&&otherRecipes!=null){
+                            Recipe:
+                            for(Iterator<NCPFElement> rit = mainRecipes.recipes.iterator(); rit.hasNext();){
+                                NCPFElement recipe = rit.next();
+                                for(NCPFElement otherRecipe : otherRecipes.recipes){
+                                    if(recipe.definition.matches(otherRecipe.definition)){
+                                        rit.remove();
+                                        continue Recipe;
+                                    }
+                                }
+
+                                //try matching the element in mainRecipes to a list in otherRecipes containing it
+                                for(NCPFElement otherRecipe : otherRecipes.recipes){
+                                    if(otherRecipe.definition instanceof NCPFListElement){
+                                        NCPFListElement list = (NCPFListElement)otherRecipe.definition;
+                                        for(NCPFElementDefinition otherElem : list.elements){
+                                            if(recipe.definition.matches(otherElem)){
+                                                rit.remove();
+                                                continue Recipe;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if(mainRecipes!=null&&!mainRecipes.recipes.isEmpty()){
+                            NCPFElement replacedElement = new NCPFElement(element.definition);
+                            replacedElement.setModule(mainRecipes);
+                            replacedElements.add(replacedElement);
+                        }
+                        it.remove();
+                    }
+                    mainElements.addAll(replacedElements);
+                }
+
+                //Remove all configuration modules except for global elements
+                for(Iterator<String> it = mainCfg.modules.modules.keySet().iterator(); it.hasNext();){
+                    String moduleKey = it.next();
+                    if(moduleKey.equals(new GlobalElementsModule().name))continue;
+                    it.remove();
+                }
+
+                boolean empty = true;
+                for(List<NCPFElement> list : mainElementLists)empty &= list.isEmpty();
+                if(empty)cit.remove();
+            }
+        }
     }
 }

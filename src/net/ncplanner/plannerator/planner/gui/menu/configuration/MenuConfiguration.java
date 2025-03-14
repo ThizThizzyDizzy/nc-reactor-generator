@@ -20,11 +20,15 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickConfiguration;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTask;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import org.lwjgl.glfw.GLFW;
 public class MenuConfiguration extends ConfigurationMenu{
     private final SingleColumnList addonsList;
     private final Configuration configuration;
@@ -73,7 +77,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                 GridLayout left = split.add(new GridLayout(1, 2));
                 left.add(new Label(config.getName(), true));
                 GridLayout fields = left.add(new GridLayout(0, 1));
-                config.withModule(ConfigurationMetadataModule::new, (meta)->{
+                config.withModule(ConfigurationMetadataModule::new, (meta) -> {
                     fields.add(new TextBox(meta.name==null?"":meta.name, true, "Name").onChange((str) -> meta.name = str));
                     fields.add(new TextBox(meta.version==null?"":meta.version, true, "Version").onChange((str) -> meta.version = str));
                 });
@@ -125,7 +129,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                 onOpened();
             }));
         }
-        FOR:for(Addon addon : Configuration.internalAddons){
+        FOR:
+        for(Addon addon : Configuration.internalAddons){
             for(Addon a : configuration.addons){
                 if(Objects.equals(a.getName(), addon.getName()))continue FOR;
             }
@@ -151,6 +156,30 @@ public class MenuConfiguration extends ConfigurationMenu{
         }, "Dropped File Loading Thread");
         t.setDaemon(true);
         t.start();
+    }
+    @Override
+    public void onKeyEvent(int key, int scancode, int action, int mods){
+        super.onKeyEvent(key, scancode, action, mods);
+        if(key==GLFW.GLFW_KEY_KP_SUBTRACT&&action==GLFW.GLFW_PRESS&&mods==GLFW.GLFW_MOD_CONTROL){
+            new MenuMessageDialog("Subtract configuration? (Convert to addon)").addButton("Yes", () -> {
+                new MenuPickConfiguration(this, (config) -> {
+                    configuration.configuration.subtract(config.configuration);
+                    Addon addon = new Addon();
+                    addon.configuration = configuration.configuration;
+                    
+                    Project p = new Project();
+                    p.configuration = config.configuration;
+                    p.addons.add(addon);
+                    Project project = p.copyTo(Project::new);
+                    
+                    //can't make a new configuration, or it won't save properly
+                    configuration.configuration = project.configuration;
+                    configuration.addons = project.addons;
+                    
+                    gui.open(new MenuConfiguration(parent, configuration));
+                }).open();
+            }, true).addButton("Cancel", true).open();
+        }
     }
     private void loadAddon(File file){
         try{

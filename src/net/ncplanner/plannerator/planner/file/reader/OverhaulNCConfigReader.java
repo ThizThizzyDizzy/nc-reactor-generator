@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
@@ -15,6 +16,7 @@ import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulMSRConfigurationBuilder;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulSFRConfigurationBuilder;
 import net.ncplanner.plannerator.planner.ncpf.configuration.builder.OverhaulTurbineConfigurationBuilder;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 public class OverhaulNCConfigReader implements FormatReader{
     @Override
     public boolean formatMatches(Supplier<InputStream> in){
@@ -115,7 +117,7 @@ public class OverhaulNCConfigReader implements FormatReader{
         overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotTBP"), new NCPFOredictElement("dustTBP")), "Protactinium-Enriched Thorium", "overhaul/item/protactinium_enriched_thorium_dust", dustProtactinium233, (float)irrEff.getDouble(1), (float)irrHeat.getDouble(1)).legacy("nuclearcraft:fission_dust:3").legacy("Protactinium-Enriched Thorium Dust");
         overhaulSFR.irradiatorRecipe(new NCPFListElement(new NCPFOredictElement("ingotBismuth"), new NCPFOredictElement("dustBismuth")), "Bismuth", "overhaul/item/bismuth_dust", dustPolonium, (float)irrEff.getDouble(2), (float)irrHeat.getDouble(2)).legacy("nuclearcraft:fission_dust:0").legacy("Bismuth Dust");
         NCPFElement hps = overhaulSFR.globalElement(overhaulSFR.legacyFluid("high_pressure_steam").build(), "High Pressure Steam", "fluids/hps").element;
-        overhaulSFR.coolantRecipe("water", "Water", "fluids/water", hps, 64, 4);
+        overhaulSFR.coolantRecipe(new NCPFListElement(new NCPFLegacyFluidElement("water"), new NCPFLegacyFluidElement("condensate_water")), "Water", "fluids/water", hps, 64, 4).getOrCreateModule(LegacyNamesModule::new).legacyNames.add("water");;
         overhaulSFR.coolantRecipe("preheated_water", "Preheated Water", "fluids/preheated_water", hps, 32, 4);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "thorium", null, "TBU Oxide", "TBU Nitride", "TBU-Zirconium Alloy", null);
         addSFRFuels(overhaulSFR, fission, fuelTimeMult, fuelHeatMult, fuelEfficiencyMult, "uranium", null, "LEU-233 Oxide", "LEU-233 Nitride", "LEU-233-Zirconium Alloy", null, null, "HEU-233 Oxide", "HEU-233 Nitride", "HEU-233-Zirconium Alloy", null, null, "LEU-235 Oxide", "LEU-235 Nitride", "LEU-235-Zirconium Alloy", null, null, "HEU-235 Oxide", "HEU-235 Nitride", "HEU-235-Zirconium Alloy", null);
@@ -343,7 +345,10 @@ public class OverhaulNCConfigReader implements FormatReader{
             if(fuelNames[i]==null)continue;
             int fuelIndex = i-i/5;
             String tex = StringUtil.superReplace(StringUtil.toLowerCase(fuelNames[i]), " oxide", "_ox", "-", "_", " nitride", "_ni", "_zirconium alloy", "_za");
-            String oredictBase = fuelNames[i].replace("-", "").replace("Zirconium Alloy", "ZA");
+            String oredictBase = fuelNames[i].replace("-", "").replace(" ", "").replace("ZirconiumAlloy", "ZA");
+            if(oredictBase.contains("MOX"))oredictBase = oredictBase.replace("MOX", "MIX")+"Oxide";
+            if(oredictBase.contains("MZA"))oredictBase = oredictBase.replace("MZA", "MIX")+"ZA";
+            if(oredictBase.contains("MNI"))oredictBase = oredictBase.replace("MNI", "MIX")+"Nitride";
             overhaulSFR.fuel("ingot"+oredictBase, "nuclearcraft:fuel_"+baseName+":"+fuelIndex, fuelNames[i], "overhaul/fuel/"+tex, "ingotDepleted"+oredictBase, "nuclearcraft:depleted_fuel_"+baseName+":"+fuelIndex, "Depleted "+fuelNames[i], "overhaul/fuel/depleted/"+tex, (float)(efficiency.getAsFloat(i)*efficiencyMult), (int)(heat.getAsInt(i)*heatMult), (int)(time.getAsInt(i)*timeMult), criticality.getAsInt(i), selfPriming.getBoolean(i));
         }
     }

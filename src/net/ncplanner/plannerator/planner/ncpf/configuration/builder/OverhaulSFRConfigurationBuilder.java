@@ -218,7 +218,10 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
     }
 
     public CoolantRecipe coolantRecipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, int heat, float outputRatio){
-        CoolantRecipe recipe = new CoolantRecipe(new NCPFLegacyFluidElement(inputName));
+        return coolantRecipe(new NCPFLegacyFluidElement(inputName), inputDisplayName, inputTexture, output, heat, outputRatio);
+    }
+    public CoolantRecipe coolantRecipe(NCPFElementDefinition input, String inputDisplayName, String inputTexture, NCPFElement output, int heat, float outputRatio){
+        CoolantRecipe recipe = new CoolantRecipe(input);
         recipe.stats.heat = heat;
         recipe.stats.outputRatio = outputRatio;
         recipe.stats.output = new NCPFElementReference(output);

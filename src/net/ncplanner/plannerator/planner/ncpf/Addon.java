@@ -19,7 +19,7 @@ public class Addon extends NCPFAddon{
         setModule(metadata);
         super.convertToObject(ncpf);
     }
-    public String getName(){//TODO name
+    public String getName(){
         for(NCPFConfiguration cfg : configuration.configurations.values()){
             ConfigurationMetadataModule module = cfg.getModule(ConfigurationMetadataModule::new);
             if(module!=null)return module.name;
