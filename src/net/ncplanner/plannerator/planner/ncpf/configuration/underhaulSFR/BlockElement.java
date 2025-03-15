@@ -9,17 +9,14 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
-import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNameModule names = new DisplayNameModule();
-    public TextureModule texture = new TextureModule();
+public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
     public CoolerModule cooler;
     public ActiveCoolerModule activeCooler;
     public FuelCellModule fuelCell;
@@ -34,8 +31,6 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNameModule::new);
-        texture = getModule(TextureModule::new);
         cooler = getModule(CoolerModule::new);
         activeCooler = getModule(ActiveCoolerModule::new);
         fuelCell = getModule(FuelCellModule::new);
@@ -51,13 +46,13 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
-        setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
+        setModules(cooler, activeCooler, fuelCell, moderator, casing, controller);
         super.setReferences(lst);
         for(ActiveCoolerRecipe recipe : activeCoolerRecipes)recipe.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        setModules(names, texture, cooler, activeCooler, fuelCell, moderator, casing, controller);
+        setModules(cooler, activeCooler, fuelCell, moderator, casing, controller);
         setRecipes(activeCoolerRecipes);
         super.convertToObject(ncpf);
     }

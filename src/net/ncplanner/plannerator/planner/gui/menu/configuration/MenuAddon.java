@@ -11,14 +11,23 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class MenuAddon extends ConfigurationMenu{
     private final Addon addon;
     public MenuAddon(Menu parent, Configuration cnfg, Addon addon){
         super(parent, addon.configuration, addon.getName(), new ListLayout());
         this.addon = addon;
+        sidebar.addToBottom(new Button("Save Addon", true).addAction(() -> {
+            cnfg.configuration.makeAddon();
+            Project project = new Project();
+            project.configuration = cnfg.configuration;
+            project.addons.add(addon);
+            new MenuSaveDialog(gui, this, project, this::onOpened).open();
+        }));
         onOpen(() -> {
             content.components.clear();
             for(String key : NCPFConfigurationContainer.configOrder){
@@ -29,7 +38,7 @@ public class MenuAddon extends ConfigurationMenu{
                     GridLayout left = split.add(new GridLayout(1, 2));
                     left.add(new Label(config.getName(), true));
                     GridLayout fields = left.add(new GridLayout(0, 1));
-                    config.withModule(ConfigurationMetadataModule::new, (meta)->{
+                    config.withModule(ConfigurationMetadataModule::new, (meta) -> {
                         fields.add(new TextBox(meta.name==null?"":meta.name, true, "Name").onChange((str) -> meta.name = str));
                         fields.add(new TextBox(meta.version==null?"":meta.version, true, "Version").onChange((str) -> meta.version = str));
                     });

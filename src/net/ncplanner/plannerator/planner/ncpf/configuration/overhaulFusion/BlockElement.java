@@ -9,8 +9,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
-import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConnectorModule;
@@ -21,9 +20,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElec
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
-public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNameModule names = new DisplayNameModule();
-    public TextureModule texture = new TextureModule();
+public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
     public ConductorModule conductor;
     public ConnectorModule connector;
     public CoreModule core;
@@ -42,8 +39,6 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNameModule::new);
-        texture = getModule(TextureModule::new);
         conductor = getModule(ConductorModule::new);
         connector = getModule(ConnectorModule::new);
         core = getModule(CoreModule::new);
@@ -63,13 +58,13 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
-        setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
+        setModules(conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
         super.setReferences(lst);
         for(BreedingBlanketRecipe recipe : breedingBlanketRecipes)recipe.setReferences(lst);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        setModules(names, texture, conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
+        setModules(conductor, connector, core, poloid, toroid, heatingBlanket, breedingBlanket, shielding, reflector, heatsink);
         setRecipes(breedingBlanketRecipes);
         super.convertToObject(ncpf);
     }

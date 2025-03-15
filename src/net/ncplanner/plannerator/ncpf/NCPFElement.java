@@ -103,4 +103,8 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, S
     public NCPFElement get(){
         return this;
     }
+    public void makeAddon(){
+        removeModule(getModule(DisplayNameModule::new));
+        removeModule(getModule(TextureModule::new));
+    }
 }

@@ -9,8 +9,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
-import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule;
@@ -23,9 +22,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule;
-public class BlockElement extends NCPFElement implements BlockRecipesElement{
-    public DisplayNameModule names = new DisplayNameModule();
-    public TextureModule texture = new TextureModule();
+public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
     public ConductorModule conductor;
     public CasingModule casing;
     public ControllerModule controller;
@@ -53,8 +50,6 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        names = getModule(DisplayNameModule::new);
-        texture = getModule(TextureModule::new);
         conductor = getModule(ConductorModule::new);
         casing = getModule(CasingModule::new);
         controller = getModule(ControllerModule::new);
@@ -80,7 +75,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public void setReferences(List<NCPFElement> lst){
-        setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
+        setModules(conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
         super.setReferences(lst);
         if(parent!=null){
             fuels = parent.fuels;
@@ -93,7 +88,7 @@ public class BlockElement extends NCPFElement implements BlockRecipesElement{
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        setModules(names, texture, conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
+        setModules(conductor, casing, controller, fuelVessel, irradiator, reflector, moderator, neutronShield, heater, neutronSource, port, recipePorts);
         setRecipes(fuels, heaterRecipes, irradiatorRecipes);
         super.convertToObject(ncpf);
     }

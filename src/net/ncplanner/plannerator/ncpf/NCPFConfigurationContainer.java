@@ -12,14 +12,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
-import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
@@ -199,5 +192,18 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
             }
         }
         configurations.putAll(replaceConfigs);
+    }
+    /**
+     * Remove things that do not belong in an addon's parent configuration
+     */
+    public void makeAddon(){
+        // Currently only removes textures & display names
+        for(NCPFConfiguration config : configurations.values()){
+            for(List<NCPFElement> elements : config.getAllElementsISaidAllElements()){
+                for(NCPFElement element : elements){
+                    element.makeAddon();
+                }
+            }
+        }
     }
 }

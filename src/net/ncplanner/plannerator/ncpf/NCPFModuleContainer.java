@@ -72,6 +72,7 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
         }
     }
     public void removeModule(NCPFModule module){
+        if(module==null)return;
         modules.remove(module.name);
     }
 }

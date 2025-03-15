@@ -22,7 +22,6 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickConfiguration;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuTask;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
