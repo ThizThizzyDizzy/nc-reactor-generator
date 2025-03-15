@@ -385,17 +385,17 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                         case INTEGER:
                             grid.add(new TextBox(mod.gets.get(setting).get()+"", true, mod.titles.get(setting)).onChange((t) -> {
                                 mod.sets.get(setting).accept(Integer.valueOf(t));
-                            }));
+                            }).setIntFilter());
                             break;
                         case FLOAT:
                             grid.add(new TextBox(mod.gets.get(setting).get()+"", true, mod.titles.get(setting)).onChange((t) -> {
                                 mod.sets.get(setting).accept(Float.valueOf(t));
-                            }));
+                            }).setFloatFilter());
                             break;
                         case DOUBLE:
                             grid.add(new TextBox(mod.gets.get(setting).get()+"", true, mod.titles.get(setting)).onChange((t) -> {
                                 mod.sets.get(setting).accept(Double.valueOf(t));
-                            }));
+                            }).setDoubleFilter());
                             break;
                         case STRING_LIST:
                             List<String> lst = ((Supplier<List<String>>)mod.gets.get(setting)).get();
