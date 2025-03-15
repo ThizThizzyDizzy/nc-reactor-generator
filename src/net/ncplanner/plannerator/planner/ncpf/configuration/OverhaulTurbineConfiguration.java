@@ -60,4 +60,8 @@ public class OverhaulTurbineConfiguration extends NCPFOverhaulTurbineConfigurati
         makePartial(blocks, designs);
         makePartial(recipes, designs);
     }
+    @Override
+    public void removeSettings(){
+        settings = null;
+    }
 }

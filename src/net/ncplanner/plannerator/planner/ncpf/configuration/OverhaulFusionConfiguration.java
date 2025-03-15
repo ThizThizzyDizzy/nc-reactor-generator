@@ -74,4 +74,8 @@ public class OverhaulFusionConfiguration extends NCPFConfiguration{
     public String getName(){
         return "Fusion Test Configuration";
     }
+    @Override
+    public void removeSettings(){
+        settings = null;
+    }
 }

@@ -64,4 +64,8 @@ public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public int boundSize(int size){
         return Math.max(settings.minSize, Math.min(settings.maxSize, size));
     }
+    @Override
+    public void removeSettings(){
+        settings = null;
+    }
 }

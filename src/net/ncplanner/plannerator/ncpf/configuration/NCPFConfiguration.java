@@ -44,7 +44,8 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         return elements.toArray(List[]::new);
     }
     /**
-     * @return a list of elements, plus any global elements, PLUS any block recipes
+     * @return a list of elements, plus any global elements, PLUS any block
+     * recipes
      */
     public List<NCPFElement>[] getAllElementsISaidAllElements(){
         ArrayList<List<NCPFElement>> elements = new ArrayList<>(Arrays.asList(getElements()));
@@ -88,5 +89,7 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
         ConfigurationMetadataModule module = getModule(ConfigurationMetadataModule::new);
         if(module!=null&&module.name!=null)return module.name+" "+module.version;
         return "Unknown Configuration";
+    }
+    public void removeSettings(){
     }
 }

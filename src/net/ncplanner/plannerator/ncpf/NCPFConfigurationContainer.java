@@ -12,6 +12,11 @@ import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
@@ -92,6 +97,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
     }
     // Actually converts to addon, with other as parent
     public void subtract(NCPFConfigurationContainer other){
+        HashMap<String, NCPFConfiguration> replaceConfigs = new HashMap<>();
         for(Iterator<String> cit = configurations.keySet().iterator(); cit.hasNext();){
             String key = cit.next();
             if(other.configurations.containsKey(key)){
@@ -177,17 +183,21 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
                     mainElements.addAll(replacedElements);
                 }
 
-                //Remove all configuration modules except for global elements
+                mainCfg.withModule(ConfigurationMetadataModule::new, (meta) -> {
+                    meta.name = meta.version = null;
+                });
+                // Remove all configuration settings modules
                 for(Iterator<String> it = mainCfg.modules.modules.keySet().iterator(); it.hasNext();){
-                    String moduleKey = it.next();
-                    if(moduleKey.equals(new GlobalElementsModule().name))continue;
-                    it.remove();
+                    if(it.next().endsWith("configuration_settings"))it.remove();
                 }
+                // Keep them from coming back
+                mainCfg.removeSettings();
 
                 boolean empty = true;
                 for(List<NCPFElement> list : mainElementLists)empty &= list.isEmpty();
                 if(empty)cit.remove();
             }
         }
+        configurations.putAll(replaceConfigs);
     }
 }

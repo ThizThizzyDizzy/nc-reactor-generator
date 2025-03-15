@@ -51,4 +51,8 @@ public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
         makePartial(blocks, designs);
         blocks.forEach((t) -> t.makePartial(designs));
     }
+    @Override
+    public void removeSettings(){
+        settings = null;
+    }
 }

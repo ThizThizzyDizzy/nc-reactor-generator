@@ -120,6 +120,12 @@ public class MenuSpecificConfiguration extends ConfigurationMenu{
             Consumer<? extends Number> set = settings.sets.get(setting);
             TextBox box = settingsPanel.add(new TextBox(get.get()+"", true, settings.titles.get(setting)).setTooltip(settings.tooltips.get(setting)));
             switch(settings.types.get(setting)){
+                case DOUBLE:
+                    box.setDoubleFilter();
+                    box.onChange((t) -> {
+                        ((Consumer<Double>)set).accept(Double.valueOf(t));
+                    });
+                    break;
                 case FLOAT:
                     box.setFloatFilter();
                     box.onChange((t) -> {

@@ -64,4 +64,8 @@ public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     public int boundSize(int size){
         return Math.max(settings.minSize, Math.min(settings.maxSize, size));
     }
+    @Override
+    public void removeSettings(){
+        settings = null;
+    }
 }
