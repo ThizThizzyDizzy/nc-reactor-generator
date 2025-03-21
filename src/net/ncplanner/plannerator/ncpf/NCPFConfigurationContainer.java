@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
@@ -89,14 +90,17 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
         return "Unknown Configuration";
     }
     // Actually converts to addon, with other as parent
-    public void subtract(NCPFConfigurationContainer other){
+    public void subtract(NCPFConfigurationContainer other, List<Addon> addons){
         HashMap<String, NCPFConfiguration> replaceConfigs = new HashMap<>();
         for(Iterator<String> cit = configurations.keySet().iterator(); cit.hasNext();){
             String key = cit.next();
-            if(other.configurations.containsKey(key)){
-                NCPFConfiguration mainCfg = configurations.get(key);
-                NCPFConfiguration otherCfg = other.configurations.get(key);
-
+            ArrayList<NCPFConfiguration> otherConfigs = new ArrayList<>();
+            if(other.configurations.containsKey(key))otherConfigs.add(other.configurations.get(key));
+            for(Addon addon : addons){
+                if(addon.configuration.configurations.containsKey(key))otherConfigs.add(addon.configuration.configurations.get(key));
+            }
+            NCPFConfiguration mainCfg = configurations.get(key);
+            for(NCPFConfiguration otherCfg : otherConfigs){
                 List<NCPFElement>[] mainElementLists = mainCfg.getAllElements();
                 List<NCPFElement>[] otherElementLists = otherCfg.getAllElements();
                 for(int i = 0; i<mainElementLists.length; i++){
