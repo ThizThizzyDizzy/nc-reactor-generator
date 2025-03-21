@@ -161,7 +161,7 @@ public class OverhaulModule extends Module<Object>{
         t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/extreme_reactors.ncpf.json")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
         t.getCurrentSubtask().finish();
-        addLegacyAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/ic2.ncpf")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
+        addAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/ic2.ncpf.json")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
         t.getCurrentSubtask().finish();
         addLegacyAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/qmd.ncpf")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/qmd");
         t.getCurrentSubtask().finish();
