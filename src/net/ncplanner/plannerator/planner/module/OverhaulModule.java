@@ -165,7 +165,7 @@ public class OverhaulModule extends Module<Object>{
         t.getCurrentSubtask().finish();
         addAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/qmd.ncpf.json")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/qmd");
         t.getCurrentSubtask().finish();
-        addLegacyAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/trinity.ncpf")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/trinity");
+        addAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/trinity.ncpf.json")).addons.get(0), "https://www.curseforge.com/minecraft/mc-mods/trinity");
         t.getCurrentSubtask().finish();
         addLegacyAddon(FileReader.read(() -> Core.getInputStream("configurations/addons/ncouto.ncpf")).addons.get(0), "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
         t.getCurrentSubtask().finish();
