@@ -162,19 +162,20 @@ public class MenuConfiguration extends ConfigurationMenu{
         if(key==GLFW.GLFW_KEY_KP_SUBTRACT&&action==GLFW.GLFW_PRESS&&mods==GLFW.GLFW_MOD_CONTROL){
             new MenuMessageDialog("Subtract configuration? (Convert to addon)").addButton("Yes", () -> {
                 new MenuPickConfiguration(this, (config) -> {
-                    configuration.configuration.subtract(config.configuration);
+                    configuration.configuration.subtract(config.configuration, config.addons);
                     Addon addon = new Addon();
                     addon.configuration = configuration.configuration;
-                    
+
                     Project p = new Project();
                     p.configuration = config.configuration;
+                    p.addons.addAll(config.addons);
                     p.addons.add(addon);
                     Project project = p.copyTo(Project::new);
-                    
+
                     //can't make a new configuration, or it won't save properly
                     configuration.configuration = project.configuration;
                     configuration.addons = project.addons;
-                    
+
                     gui.open(new MenuConfiguration(parent, configuration));
                 }).open();
             }, true).addButton("Cancel", true).open();
