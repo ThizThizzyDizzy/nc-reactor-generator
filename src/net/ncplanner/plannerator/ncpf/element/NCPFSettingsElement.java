@@ -139,16 +139,19 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                 Object val1 = gets.get(key).get();
                 Object val2 = other.gets.get(key).get();
                 boolean equal = Objects.equals(val1, val2);
-                if(val1 instanceof List && val2 instanceof List){
+                if(val1 instanceof List&&val2 instanceof List){
                     List l1 = (List)val1;
                     List l2 = (List)val2;
                     equal = l1.size()==l2.size();
-                    for(int i = 0; i<l1.size(); i++){
-                        Object elem1 = l1.get(i);
-                        Object elem2 = l2.get(i);
-                        if(elem1 instanceof NCPFElementDefinition && elem2 instanceof NCPFElementDefinition){
-                            equal &= ((NCPFElementDefinition)elem1).matches((NCPFElementDefinition)elem2);
-                        }else equal = false;
+                    if(equal){
+                        for(int i = 0; i<l1.size(); i++){
+                            Object elem1 = l1.get(i);
+                            Object elem2 = l2.get(i);
+                            if(elem1 instanceof NCPFElementDefinition&&elem2 instanceof NCPFElementDefinition){
+                                equal &= ((NCPFElementDefinition)elem1).matches((NCPFElementDefinition)elem2);
+                            }else
+                                equal = false;
+                        }
                     }
                 }
                 if(!equal)return false;
@@ -162,11 +165,11 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         String s = "";
         ArrayList<String> keys = new ArrayList<>(state.keySet());
         Collections.sort(keys);
-        for(String key : keys)s+=","+key+"="+state.get(key);
+        for(String key : keys)s += ","+key+"="+state.get(key);
         return "["+s.substring(1)+"]";
     }
     public static enum Type{
-        NAMESPACED_NAME,NAME,NBT,BLOCKSTATE(true),METADATA(true),TAG,OREDICT,ELEMENT_LIST(true);
+        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true);
         public final boolean special;
         private Type(){
             this(false);
