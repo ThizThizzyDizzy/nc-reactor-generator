@@ -14,15 +14,15 @@ public class FileReader{
     public static final ArrayList<FormatReader> formats = new ArrayList<>();
     public static final RecoveryHandler defaultRecoveryHandler = new NonRecoveryHandler();
     public static Project read(Supplier<InputStream> provider){
-        return read(provider, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler);
+        return read(provider, Core.recoveryMode?new RecoveryModeHandler():defaultRecoveryHandler, null);
     }
-    public static Project read(Supplier<InputStream> provider, RecoveryHandler handler){
+    public static Project read(Supplier<InputStream> provider, RecoveryHandler handler, File fileContext){
         for(FormatReader reader : formats){
             boolean matches = false;
             try{
                 if(reader.formatMatches(provider))matches = true;
             }catch(Throwable t){}
-            if(matches)return reader.read(provider, handler).copyTo(Project::new);
+            if(matches)return reader.read(provider, handler, fileContext).copyTo(Project::new);
         }
         throw new IllegalArgumentException("Unknown file format!");
     }
@@ -36,6 +36,6 @@ public class FileReader{
             }catch(FileNotFoundException ex){
                 return null;
             }
-        }, handler);
+        }, handler, file);
     }
 }

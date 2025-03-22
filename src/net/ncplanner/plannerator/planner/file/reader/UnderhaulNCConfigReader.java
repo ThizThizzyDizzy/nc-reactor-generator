@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
+import java.io.File;
 import java.io.InputStream;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
@@ -21,7 +22,7 @@ public class UnderhaulNCConfigReader implements FormatReader{
         return ForgeConfig.parse(in.get()).getConfig("fission").hasProperty("fission_cooling_rate");
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
         Config config = ForgeConfig.parse(in.get()).getConfig("fission");
         Project ncpf = new Project();
         UnderhaulSFRConfigurationBuilder builder = new UnderhaulSFRConfigurationBuilder("NuclearCraft", "Unknown");

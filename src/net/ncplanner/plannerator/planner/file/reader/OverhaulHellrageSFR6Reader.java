@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class OverhaulHellrageSFR6Reader implements FormatReader{
         return major==2&&minor==1&&build>=1;//&&build<=7;
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
         JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject data = hellrage.getJSONObject("Data");
         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");

@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
+import java.io.File;
 import java.io.InputStream;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.planner.file.FormatReader;
@@ -11,7 +12,7 @@ public class NCPFReader implements FormatReader{
         return true;//no clue actually, but this is the last one in the list, and this is the only way to let it load it
     }
     @Override
-    public Project read(Supplier<InputStream> provider, RecoveryHandler recovery){
-        return NCPFFileReader.read(provider);
+    public Project read(Supplier<InputStream> provider, RecoveryHandler recovery, File fileContext){
+        return NCPFFileReader.read(provider, fileContext);
     }
 }

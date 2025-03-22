@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -27,7 +28,7 @@ public class OverhaulHellrageMSR4Reader implements FormatReader{
         return major==2&&minor==0&&build==31;
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
         JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         OverhaulMSRDesign msr = new OverhaulMSRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));

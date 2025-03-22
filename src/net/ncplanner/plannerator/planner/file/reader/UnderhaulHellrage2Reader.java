@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.reader;
+import java.io.File;
 import java.io.InputStream;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.planner.Core;
@@ -20,7 +21,7 @@ public class UnderhaulHellrage2Reader implements FormatReader{
         return major==1&&minor==2&&build>=23;//&&build<=25;
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
         JSON.JSONObject hellrage = JSON.parse(in.get());
         JSON.JSONObject dims = hellrage.getJSONObject("InteriorDimensions");
         JSON.JSONObject usedFuel = hellrage.getJSONObject("UsedFuel");

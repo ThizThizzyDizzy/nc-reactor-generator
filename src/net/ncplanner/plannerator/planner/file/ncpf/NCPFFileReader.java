@@ -28,7 +28,7 @@ public class NCPFFileReader{
     static{
         formats.add(JSON = new JSONNCPFReader());
     }
-    public static Project read(Supplier<InputStream> provider){
+    public static Project read(Supplier<InputStream> provider, File fileContext){
         Project project = new Project();
         NCPFObject ncpf = null;
         for(NCPFFormatReader reader : formats){
@@ -186,6 +186,9 @@ public class NCPFFileReader{
                     }
                 }
             }
+            
+            //TODO find addon textures/display names using fileContext, if available
+            
             project.modules.removeModule(generatedModule);
         });
         return project;
@@ -197,6 +200,6 @@ public class NCPFFileReader{
             }catch(FileNotFoundException ex){
                 return null;
             }
-        });
+        }, file);
     }
 }

@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         return (byte) 11;
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> provider, RecoveryHandler recovery){
+    public synchronized Project read(Supplier<InputStream> provider, RecoveryHandler recovery, File fileContext){
         InputStream in = provider.get();
         overhaulTurbinePostLoadInputsMap.clear();
         try{
