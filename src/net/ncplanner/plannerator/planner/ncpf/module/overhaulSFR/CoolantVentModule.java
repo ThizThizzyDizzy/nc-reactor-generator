@@ -16,7 +16,7 @@ public class CoolantVentModule extends BlockFunctionModule{
         this.output = output;
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
+    public void setReferences(List<NCPFElement> lst, boolean soft){
         for(NCPFElement elem : lst){
             elem.withModule(CoolantVentModule::new, (vent)->{
                 if(vent.output!=output)otherVent = elem;

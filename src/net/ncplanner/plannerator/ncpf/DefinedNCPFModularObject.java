@@ -46,8 +46,8 @@ public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
         modules.conglomerate(addon.modules);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
-        modules.setReferences(lst);
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        modules.setReferences(lst, soft);
         for(NCPFModule module : modules.modules.values())module.setLocalReferences(this);
     }
     public <T extends DefinedNCPFObject> List<T> getRecipes(Supplier<T> newCopy){

@@ -206,7 +206,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
     private <T extends AbstractBlock> boolean blockMatches(AbstractBlock block, Multiblock<T> reactor) {
         if(target.definition instanceof NCPFModuleElement){
             NCPFModuleReference moduleReference = target.copyTo(NCPFModuleReference::new);
-            moduleReference.setReferences(null);
+            moduleReference.setReferences(null, false);
             if(moduleReference.definition.matches(new NCPFModuleReference(AirModule::new).definition))return block==null;
             return block!=null&&block.getTemplate().hasModule(moduleReference.module);
         }else{
@@ -284,14 +284,14 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         throw new IllegalArgumentException("Unknown rule type: " + rule);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
-        rules.forEach((t) -> t.setReferences(lst));
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        rules.forEach((t) -> t.setReferences(lst, soft));
         if(lst==null){
             if(target==null)return;
             if(target.definition.typeMatches(NCPFModuleElement::new)){
                 target = target.copyTo(NCPFModuleReference::new);
             }else target = target.copyTo(NCPFElementReference::new);
         }
-        if(!rule.hasSubRules)target.setReferences(lst);
+        if(!rule.hasSubRules)target.setReferences(lst, soft);
     }
 }

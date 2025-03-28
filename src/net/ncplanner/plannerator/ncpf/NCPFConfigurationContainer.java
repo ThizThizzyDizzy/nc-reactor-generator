@@ -66,8 +66,8 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
                 configurations.put(key, addonConfig.copyTo(recognizedConfigurations.get(addonConfig.name)));
         }
     }
-    public void setReferences(){
-        configurations.values().forEach(NCPFConfiguration::setReferences);
+    public void setReferences(boolean soft){
+        configurations.values().forEach(ncpfConfiguration -> ncpfConfiguration.setReferences(soft));
     }
     public void makePartial(List<Design> designs){
         for(String key : configurations.keySet()){

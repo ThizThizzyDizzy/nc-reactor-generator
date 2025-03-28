@@ -26,14 +26,14 @@ public class Addon extends NCPFAddon{
         }
         return metadata.metadata.getOrDefault("name", "Unknown Configuration");
     }
-    public void setReferences(NCPFConfigurationContainer config){
+    public void setReferences(NCPFConfigurationContainer config, boolean soft){
         for(String key : this.configuration.configurations.keySet()){
             NCPFConfiguration other = config.configurations.get(key);
             if(other!=null){
                 NCPFConfiguration thisOne = configuration.configurations.get(key);
                 for(List<NCPFElement> otherElements : other.getElements()){
                     for(List<NCPFElement> elems : thisOne.getElements()){
-                        for(NCPFElement elem : elems)elem.setReferences(otherElements);
+                        for(NCPFElement elem : elems)elem.setReferences(otherElements, soft);
                     }
                 }
             }

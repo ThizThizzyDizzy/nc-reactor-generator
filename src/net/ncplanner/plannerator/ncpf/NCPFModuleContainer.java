@@ -62,8 +62,8 @@ public class NCPFModuleContainer extends DefinedNCPFObject{
         }
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
-        for(NCPFModule module : modules.values())module.setReferences(lst);
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        for(NCPFModule module : modules.values())module.setReferences(lst, soft);
     }
     public void clearPlanneratorModules(){
         for(Iterator<String> it = modules.keySet().iterator(); it.hasNext();){

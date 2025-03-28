@@ -74,15 +74,15 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
         if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
+    public void setReferences(List<NCPFElement> lst, boolean soft){
         setModules(conductor, casing, coolantVent, controller, fuelCell, irradiator, reflector, moderator, neutronShield, heatsink, neutronSource, port, recipePorts);
-        super.setReferences(lst);
+        super.setReferences(lst, soft);
         if(parent!=null){
             fuels = parent.fuels;
             irradiatorRecipes = parent.irradiatorRecipes;
         }
-        for(Fuel recipe : fuels)recipe.setReferences(lst);
-        for(IrradiatorRecipe recipe : irradiatorRecipes)recipe.setReferences(lst);
+        for(Fuel recipe : fuels)recipe.setReferences(lst, soft);
+        for(IrradiatorRecipe recipe : irradiatorRecipes)recipe.setReferences(lst, soft);
         if(recipePorts!=null){
             if(recipePorts.input!=null)recipePorts.input.block.fuels = fuels;
             if(recipePorts.output!=null)recipePorts.output.block.fuels = fuels;

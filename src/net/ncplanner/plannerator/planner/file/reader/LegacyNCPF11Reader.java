@@ -367,7 +367,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         boolean isSpecificBlock = ruleCfg.getBoolean("isSpecificBlock");
         if(isSpecificBlock)readRuleBlock(postMap, rule, ruleCfg, blockName);
         else readRuleBlockType(rule, blockTypes, ruleCfg);
-        rule.setReferences(null);
+        rule.setReferences(null, false);
     }
 
     protected <Rule extends NCPFPlacementRule> void readRuleBlockType(Rule rule, Supplier<NCPFModule>[] blockTypes, Config ruleCfg) {

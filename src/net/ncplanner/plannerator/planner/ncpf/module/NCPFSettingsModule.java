@@ -149,13 +149,13 @@ public abstract class NCPFSettingsModule extends NCPFModule{
         }
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
+    public void setReferences(List<NCPFElement> lst, boolean soft){
         for(String setting : settings){
             Supplier get = gets.get(setting);
             switch(types.get(setting)){
                 case REFERENCE:
                     NCPFElementReference ref = ((Supplier<NCPFElementReference>)get).get();
-                    if(ref!=null)ref.setReferences(lst);
+                    if(ref!=null)ref.setReferences(lst, soft);
                     break;
             }
         }

@@ -31,7 +31,7 @@ public abstract class BlockRulesModule extends BlockFunctionModule implements El
         return tip;
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
-        rules.forEach((rule) -> rule.setReferences(lst));
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        rules.forEach((rule) -> rule.setReferences(lst, soft));
     }
 }

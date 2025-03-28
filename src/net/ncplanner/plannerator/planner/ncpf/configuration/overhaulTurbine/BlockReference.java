@@ -16,8 +16,8 @@ public class BlockReference extends NCPFElementReference{
         super.convertToObject(ncpf);
     }
     @Override
-    public void setReferences(List<NCPFElement> elements){
-        super.setReferences(elements);
+    public void setReferences(List<NCPFElement> elements, boolean soft){
+        super.setReferences(elements, soft);
         if(target instanceof BlockElement)block = (BlockElement)target;//it's not convertable when conglomerating
     }
 }

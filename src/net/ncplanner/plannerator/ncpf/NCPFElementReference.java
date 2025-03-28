@@ -27,7 +27,8 @@ public class NCPFElementReference extends DefinedNCPFObject{
         definition.convertToObject(ncpf);
     }
     @Override
-    public void setReferences(List<NCPFElement> elements){
+    public void setReferences(List<NCPFElement> elements, boolean soft){
+        if(target!=null&&soft)return;
         for(NCPFElement elem : elements){
             boolean isMatch = elem.definition.matches(definition);
             for(String legacy : elem.definition.getLegacyNames()){
@@ -35,7 +36,10 @@ public class NCPFElementReference extends DefinedNCPFObject{
             }
             if(isMatch){
                 if(target==elem)continue;//it's fine, it's the EXACT same reference.
-                if(target!=null)throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
+                if(target!=null){
+                    if(soft)return;
+                    throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
+                }
                 target = elem;
             }
         }

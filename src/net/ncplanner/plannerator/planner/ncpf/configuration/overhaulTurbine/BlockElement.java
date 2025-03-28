@@ -46,9 +46,9 @@ public class BlockElement extends NamedTexturedNCPFElement{
         outlet = getModule(OutletModule::new);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
+    public void setReferences(List<NCPFElement> lst, boolean soft){
         setModules(blade, stator, coil, bearing, shaft, connector, controller, casing, inlet, outlet);
-        super.setReferences(lst);
+        super.setReferences(lst, soft);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

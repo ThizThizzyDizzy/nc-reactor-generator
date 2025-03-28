@@ -45,10 +45,10 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
         if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
+    public void setReferences(List<NCPFElement> lst, boolean soft){
         setModules(cooler, activeCooler, fuelCell, moderator, casing, controller);
-        super.setReferences(lst);
-        for(ActiveCoolerRecipe recipe : activeCoolerRecipes)recipe.setReferences(lst);
+        super.setReferences(lst, soft);
+        for(ActiveCoolerRecipe recipe : activeCoolerRecipes)recipe.setReferences(lst, soft);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

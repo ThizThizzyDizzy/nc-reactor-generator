@@ -21,7 +21,7 @@ public class NCPFBlockRecipesModule extends NCPFModule{
         conglomerateElementList(recipes, ((NCPFBlockRecipesModule)addon).recipes);
     }
     @Override
-    public void setReferences(List<NCPFElement> lst){
-        for(NCPFElement recipe : recipes)recipe.setReferences(lst);
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        for(NCPFElement recipe : recipes)recipe.setReferences(lst, soft);
     }
 }

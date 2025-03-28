@@ -14,10 +14,10 @@ public class NCPFModuleReference extends NCPFElementReference{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        setReferences(null);
+        setReferences(null, false);
     }
     @Override
-    public void setReferences(List<NCPFElement> elements){
+    public void setReferences(List<NCPFElement> elements, boolean soft){
         module = NCPFModuleContainer.recognizedModules.get(((NCPFModuleElement)definition).name);
     }
     @Override

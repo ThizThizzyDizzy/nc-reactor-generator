@@ -32,7 +32,7 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
         for(NCPFAddon addon : addons){
             conglomeration.conglomerate(addon.configuration);
         }
-        conglomeration.setReferences();
+        conglomeration.setReferences(false);
     }
     public boolean isConfigEmpty(){
         return conglomeration.configurations.isEmpty();

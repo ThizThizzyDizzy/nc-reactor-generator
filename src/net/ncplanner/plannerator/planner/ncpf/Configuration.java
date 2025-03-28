@@ -76,9 +76,9 @@ public class Configuration{
         return this;
     }
     public void addAddon(Addon addon){
-        addon.setReferences(configuration);
+        addon.setReferences(configuration, true);
         addons.add(addon);
-        for(Addon a : addons)addon.setReferences(a.configuration);
+        for(Addon a : addons)addon.setReferences(a.configuration, true);
     }
     public List<NCPFConfiguration> getConfigurations(String name){
         List<NCPFConfiguration> lst = new ArrayList<>();
@@ -89,9 +89,15 @@ public class Configuration{
         return lst;
     }
     public void setReferences(){
-        this.configuration.setReferences();
+        this.configuration.setReferences(false);
         for(Addon addon : this.addons){
-            addon.configuration.setReferences();
+            addon.configuration.setReferences(false);
+        }
+        for(Addon addon : this.addons){
+            addon.setReferences(configuration, true);
+            for(Addon other : this.addons){
+                addon.setReferences(other.configuration, true);
+            }
         }
     }
 }

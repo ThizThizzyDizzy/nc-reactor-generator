@@ -143,7 +143,7 @@ public abstract class DefinedNCPFObject{
         }
         throw new RuntimeException("Failed to match element "+elem.definition.toString()+" in "+convertTo.name+"!");
     }
-    public void setReferences(List<NCPFElement> lst){}
+    public void setReferences(List<NCPFElement> lst, boolean soft){}
     private <T extends NCPFElement, V extends NCPFElement> T matchElement(V element, Iterable<T> list){
         if(element==null)return null;
         for(T elem : list){

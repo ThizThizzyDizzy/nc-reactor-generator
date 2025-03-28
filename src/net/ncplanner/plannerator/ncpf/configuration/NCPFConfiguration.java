@@ -15,19 +15,19 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public NCPFConfiguration(String name){
         this.name = name;
     }
-    public void setReferences(){
+    public void setReferences(boolean soft){
         List<NCPFElement>[] elements = getElements();
         for(List<NCPFElement> elems : elements){
             for(NCPFElement elem : elems){
                 for(List<NCPFElement> lst : elements){
-                    elem.setReferences(lst);
+                    elem.setReferences(lst, soft);
                 }
             }
         }
         withModule(GlobalElementsModule::new, (m) -> {
             for(List<NCPFElement> elems : elements){
                 for(NCPFElement elem : elems){
-                    elem.setReferences(m.elements);
+                    elem.setReferences(m.elements, soft);
                 }
             }
         });

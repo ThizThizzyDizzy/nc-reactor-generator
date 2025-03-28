@@ -126,7 +126,7 @@ public class LegacyNCPF10Reader extends LegacyNCPF11Reader {
                 }
                 break;
         }
-        rule.setReferences(null);
+        rule.setReferences(null, false);
         return rule;
     }
 }

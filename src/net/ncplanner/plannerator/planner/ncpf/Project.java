@@ -38,7 +38,7 @@ public class Project extends NCPFFile{
     }
     @Override
     public void conglomerate(){
-        configuration.setReferences();
+        configuration.setReferences(false);
         conglomeration = configuration.copyTo(NCPFConfigurationContainer::new);
         for(Addon addon : addons){
             try{
@@ -47,7 +47,7 @@ public class Project extends NCPFFile{
                 throw new ConglomerationError("Failed to conglomerate addon "+addon.getName()+"!", err);
             }
         }
-        conglomeration.setReferences();
+        conglomeration.setReferences(false);
     }
     public <T extends NCPFConfiguration> T getConfiguration(Supplier<T> config){
         return conglomeration.getConfiguration(config);
