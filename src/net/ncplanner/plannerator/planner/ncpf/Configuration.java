@@ -44,6 +44,7 @@ public class Configuration{
         this.configuration = project.configuration;
         this.addons = project.addons;
         this.path = path;
+        setReferences();
     }
     public Configuration(Project project){
         this(project, null);
@@ -86,5 +87,11 @@ public class Configuration{
             if(a.configuration.configurations.containsKey(name))lst.add(a.configuration.configurations.get(name));
         }
         return lst;
+    }
+    public void setReferences(){
+        this.configuration.setReferences();
+        for(Addon addon : this.addons){
+            addon.configuration.setReferences();
+        }
     }
 }

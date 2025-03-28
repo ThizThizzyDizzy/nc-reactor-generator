@@ -175,6 +175,8 @@ public class MenuConfiguration extends ConfigurationMenu{
                     //can't make a new configuration, or it won't save properly
                     configuration.configuration = project.configuration;
                     configuration.addons = project.addons;
+                    
+                    configuration.setReferences();
 
                     gui.open(new MenuConfiguration(parent, configuration));
                 }).open();
