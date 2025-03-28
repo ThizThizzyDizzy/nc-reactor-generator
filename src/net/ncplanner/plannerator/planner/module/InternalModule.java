@@ -1,8 +1,5 @@
 package net.ncplanner.plannerator.planner.module;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.ncpf.Configuration;
 public class InternalModule extends Module{
     public InternalModule(){
         super("_internal", "DEBUG");
@@ -17,10 +14,8 @@ public class InternalModule extends Module{
     }
     @Override
     public void addConfigurations(Task t){
-        t.addSubtask("INTERNAL");
-        addConfiguration(new Configuration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/internal.ncpf.json");
-        })));
-        t.getCurrentSubtask().finish();
+        addConfigurationTask(t, "INTERNAL", "configurations/internal.ncpf.json");
+        addConfigurationTask(t, "Nuclearcraft+Mods", "configurations/nuclearcraft+mods.ncpf.json");
+        runTasks();
     }
 }

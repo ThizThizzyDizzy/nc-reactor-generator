@@ -25,6 +25,7 @@ import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
+import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
@@ -142,4 +143,47 @@ public abstract class Module<T>{
     public void addTutorials(){}
     public void addConfigurations(Task task){}
     public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){}
+    private ArrayList<Runnable> tasks = new ArrayList<>();
+    protected void addConfigurationTask(Task t, String name, String filepath, String... alternatives){
+        Task task = t.addSubtask(name);
+        tasks.add(() -> {
+            Configuration config = new Configuration(FileReader.read(() -> Core.getInputStream(filepath)));
+            for(String alt : alternatives){
+                config.addAlternative(alt);
+            }
+            addConfiguration(config);
+            task.finish();
+        });
+    }
+    @Deprecated
+    protected void addLegacyConfigurationTask(Task t, String name, String filepath, String... alternatives){
+        Task task = t.addSubtask(name);
+        tasks.add(() -> {
+            Configuration config = new Configuration(FileReader.read(() -> Core.getInputStream(filepath)));
+            for(String alt : alternatives){
+                config.addAlternative(alt);
+            }
+            addLegacyConfiguration(config);
+            task.finish();
+        });
+    }
+    protected void addAddonTask(Task t, String name, String filepath, String link){
+        Task task = t.addSubtask(name);
+        tasks.add(() -> {
+            addAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link);
+            task.finish();
+        });
+    }
+    @Deprecated
+    protected void addLegacyAddonTask(Task t, String name, String filepath, String link){
+        Task task = t.addSubtask(name);
+        tasks.add(() -> {
+            addLegacyAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link);
+            task.finish();
+        });
+    }
+    protected void runTasks(){
+        for(Runnable r : tasks)r.run();
+        tasks.clear();
+    }
 }
