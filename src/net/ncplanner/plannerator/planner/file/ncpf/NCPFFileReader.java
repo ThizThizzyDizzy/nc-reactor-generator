@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
@@ -72,12 +73,16 @@ public class NCPFFileReader{
 
                             for(List<NCPFElement> elements : config.getAllElementsISaidAllElements()){
                                 for(NCPFElement element : elements){
-                                    if(!element.definition.getName().startsWith(namespace+":"))continue;
                                     boolean loadTexture = !element.hasModule(TextureModule::new);
                                     boolean loadDisplayName = !element.hasModule(DisplayNameModule::new);
                                     Image texture = null;
-                                    String namePrefix = null;
+                                    String namePrefix = "";
+                                    String nameSuffix = ".name";
+                                    boolean includeNamespace = true;
+                                    boolean valid = false;
                                     if(element.definition.typeMatches(NCPFLegacyItemElement::new)||element.definition.typeMatches(NCPFItemElement::new)){
+                                        if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        valid = true;
                                         if(loadTexture){
                                             try{
                                                 File model = new File(namespaceDir, "models"+File.separatorChar+"item"+File.separatorChar+element.getName().substring(namespace.length()+1)+".json");
@@ -91,9 +96,11 @@ public class NCPFFileReader{
                                             }catch(Exception ex){
                                             }
                                         }
-                                        namePrefix = "item";
+                                        namePrefix = "item.";
                                     }
                                     if(element.definition.typeMatches(NCPFLegacyBlockElement::new)||element.definition.typeMatches(NCPFBlockElement::new)){
+                                        if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        valid = true;
                                         if(loadTexture){
                                             try{
                                                 File blockstate = new File(namespaceDir, "blockstates"+File.separatorChar+element.getName().substring(namespace.length()+1)+".json");
@@ -120,8 +127,15 @@ public class NCPFFileReader{
                                             }catch(Exception ex){
                                             }
                                         }
-                                        namePrefix = "tile";
+                                        namePrefix = "tile.";
                                     }
+                                    if(element.definition.typeMatches(NCPFLegacyFluidElement::new)){
+                                        valid = true;
+                                        namePrefix = "fluid.";
+                                        nameSuffix = "";
+                                        includeNamespace = false;
+                                    }
+                                    if(!valid)continue;
                                     if(loadTexture&&texture!=null){
                                         TextureModule textureModule = new TextureModule();
                                         textureModule.texture = texture;
@@ -130,7 +144,7 @@ public class NCPFFileReader{
 
                                     String displayName = null;
                                     if(loadDisplayName){
-                                        String namePath = namePrefix+"."+namespace+"."+element.getName().substring(namespace.length()+1)+".name=";
+                                        String namePath = namePrefix+(includeNamespace?namespace+".":"")+element.getName().substring(includeNamespace?namespace.length()+1:0)+nameSuffix+"=";
                                         try{
                                             File langFile = new File(namespaceDir, "lang"+File.separatorChar+"en_us.lang");
                                             for(String s : Files.readAllLines(langFile.toPath())){
