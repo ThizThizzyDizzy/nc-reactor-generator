@@ -224,7 +224,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                         }
                     });
                     NCPFElement recipe = recipeModule.getRecipeElement().get().copyTo(recipeModule.getRecipeElement());
-                    recipesListContainer.add(new Label(recipe.getTitle()+"s"), BorderLayout.TOP, 48);
+                    recipesListContainer.add(new Label(recipe.getTitle()+"s ("+recipesList.components.size()+")"), BorderLayout.TOP, 48);
                     recipesListContainer.add(recipesList, BorderLayout.CENTER);
                     recipesListContainer.add(new Button("Add "+recipe.getTitle(), true).addAction(() -> {
                         element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
