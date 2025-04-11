@@ -10,11 +10,13 @@ import net.ncplanner.plannerator.planner.gui.menu.component.LayoutPanel;
 import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextDisplay;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElementComponent extends LayoutPanel{
     private final ListButtonsLayout buttons;
@@ -23,28 +25,41 @@ public class NCPFElementComponent extends LayoutPanel{
         super(new LayeredLayout());
         add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
         content = add(new BorderLayout());
-        if(element!=null)element.withModule(TextureModule::new, (tex)->{
-            content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
-        });
-        TextDisplay display = content.add(new TextDisplay().fitText(), BorderLayout.CENTER);
-        if(element==null)display.addText("No Target");
+        if(element!=null)element.withModule(TextureModule::new, (tex) -> {
+                content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
+            });
+
+        LayoutPanel textGrid = content.add(new LayoutPanel(new GridLayout(2, 1)));
+
+        TextDisplay mainText = textGrid.add(new TextDisplay().fitText());
+        if(element==null)mainText.addText("No Target");
         else{
-            element.withModule(DisplayNameModule::new, (nam)->{
-                display.addText(nam.displayName);
+            element.withModule(DisplayNameModule::new, (nam) -> {
+                mainText.addText(nam.displayName);
             });
             if(element.definition instanceof NCPFModuleElement){
-                display.addText(NCPFModuleContainer.recognizedModules.get(((NCPFModuleElement)element.definition).name).get().getFriendlyName());
+                mainText.addText(NCPFModuleContainer.recognizedModules.get(((NCPFModuleElement)element.definition).name).get().getFriendlyName());
             }
-            display.addText("\n"+element.definition.toString());
+            mainText.addText("\n"+element.definition.toString());
             for(NCPFModule module : element.modules.modules.values()){
                 if(module instanceof BlockFunctionModule){
-                    display.addText("\n"+((BlockFunctionModule)module).getFunctionName());
+                    mainText.addText("\n"+((BlockFunctionModule)module).getFunctionName());
                 }
                 if(module instanceof ElementStatsModule){
-                    display.addText("\n"+((ElementStatsModule)module).getTooltip());
+                    mainText.addText("\n"+((ElementStatsModule)module).getTooltip());
                 }
             }
         }
+
+        if(element!=null){
+            element.withModule(LegacyNamesModule::new, (module) -> {
+                TextDisplay legacyNames = textGrid.add(new TextDisplay().fitText());
+                legacyNames.addText(module.legacyNames.size()+" Legacy Name"+(module.legacyNames.size()==1?"":"s")+":");
+                for(String nam : module.legacyNames)legacyNames.addText("\n"+nam);
+            });
+        }
+        if(textGrid.layout.components.size()==1)((GridLayout)textGrid.layout).columns = 1;
+
         buttons = add(new ListButtonsLayout());
     }
     public NCPFElementComponent addIconButton(String icon, String tooltip, Runnable onClick){
