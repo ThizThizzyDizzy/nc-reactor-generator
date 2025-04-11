@@ -8,6 +8,7 @@ import org.lwjgl.openvr.HmdMatrix44;
 /**
  * An abstraction layer for math operations between java and other platforms.
  * Also provides extra functionality used within the planner
+ *
  * @author Thiz
  */
 public class MathUtil{
@@ -108,6 +109,15 @@ public class MathUtil{
         float valDiff = val2-val1;
         return percent*valDiff+val1;
     }
+    public static float lerp(float a, float b, float t){
+        return a+(b-a)*t;
+    }
+    public static double lerp(double a, double b, double t){
+        return a+(b-a)*t;
+    }
+    public static int lerpToInt(int a, int b, float t){
+        return (int)(a+(b-a)*t);
+    }
     public static boolean isPointWithinRect(double x, double y, double x0, double y0, double x1, double y1){
         return x>=x0&&y>=y0&&x<x1&&y<y1;
     }
@@ -145,9 +155,9 @@ public class MathUtil{
 //        return new Matrix4x3f(m.m(0), m.m(1), m.m(2), m.m(3), m.m(4), m.m(5), m.m(6), m.m(7), m.m(8), m.m(9), m.m(10), m.m(11));//no convert
     }
     public static Vector3f convertPoint(double x, double y, double z, double x0, double y0, double z0, double xRot, double yRot, double zRot){
-        x+=x0;
-        y+=y0;
-        z+=z0;
+        x += x0;
+        y += y0;
+        z += z0;
         double[] xy = rotatePoint(x, y, zRot, x0, y0);
         x = xy[0];
         y = xy[1];
@@ -169,16 +179,17 @@ public class MathUtil{
         double[] xy = rotatePoint(x, y, -zRot, x0, y0);
         x = xy[0];
         y = xy[1];
-        x-=x0;
-        y-=y0;
-        z-=z0;
+        x -= x0;
+        y -= y0;
+        z -= z0;
         return new Vector3f((float)x, (float)y, (float)z);
     }
     public static long nanoTime(){
         return System.nanoTime();
     }
     public static boolean isPrime(int n){
-        if(n<=1)return false;for(int i = 2; i<n; i++){
+        if(n<=1)return false;
+        for(int i = 2; i<n; i++){
             if(n%i==0)return false;
         }
         return true;

@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.graphics.image;
+import net.ncplanner.plannerator.planner.MathUtil;
 public class Color{
     public final static Color WHITE      = new Color(255, 255, 255);
     public final static Color LIGHT_GRAY = new Color(192, 192, 192);
@@ -13,6 +14,14 @@ public class Color{
     public final static Color MAGENTA    = new Color(255, 0, 255);
     public final static Color CYAN       = new Color(0, 255, 255);
     public final static Color BLUE       = new Color(0, 0, 255);
+    public static Color alphaOver(Color base, Color overlay){
+        return new Color(
+            MathUtil.lerpToInt(base.r, overlay.r, overlay.getAlpha()/255f),
+            MathUtil.lerpToInt(base.g, overlay.g, overlay.getAlpha()/255f),
+            MathUtil.lerpToInt(base.b, overlay.b, overlay.getAlpha()/255f),
+            Math.max(base.a, overlay.a)
+        );
+    }
     private int r;
     private int g;
     private int b;

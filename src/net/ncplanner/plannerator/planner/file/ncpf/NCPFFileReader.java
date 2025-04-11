@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -21,6 +23,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -80,19 +83,26 @@ public class NCPFFileReader{
                                     String nameSuffix = ".name";
                                     boolean includeNamespace = true;
                                     boolean valid = false;
+                                    String baseName = element.getName();
                                     if(element.definition.typeMatches(NCPFLegacyItemElement::new)||element.definition.typeMatches(NCPFItemElement::new)){
                                         if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        if(element.definition instanceof NCPFLegacyItemElement){
+                                            baseName = ((NCPFLegacyItemElement)element.definition).name;
+                                        }
+                                        if(element.definition instanceof NCPFItemElement){
+                                            baseName = ((NCPFItemElement)element.definition).name;
+                                        }
                                         valid = true;
                                         if(loadTexture){
                                             try{
                                                 File model = new File(namespaceDir, "models"+File.separatorChar+"item"+File.separatorChar+element.getName().substring(namespace.length()+1)+".json");
                                                 JSON.JSONObject jsonTextures = JSON.parse(model).getJSONObject("textures");
-                                                if(jsonTextures.size()!=1)continue;
-                                                String texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
-                                                String[] textureParts = texturePath.split(":");
-                                                File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
-                                                if(!textureFile.exists())continue;
-                                                texture = ImageIO.read(textureFile);
+                                                if(jsonTextures.size()==1){
+                                                    String texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    String[] textureParts = texturePath.split(":");
+                                                    File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
+                                                    if(textureFile.exists())texture = ImageIO.read(textureFile);
+                                                }
                                             }catch(Exception ex){
                                             }
                                         }
@@ -100,30 +110,69 @@ public class NCPFFileReader{
                                     }
                                     if(element.definition.typeMatches(NCPFLegacyBlockElement::new)||element.definition.typeMatches(NCPFBlockElement::new)){
                                         if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        HashMap<String, Object> blockstates = null;
+                                        if(element.definition instanceof NCPFLegacyBlockElement){
+                                            baseName = ((NCPFLegacyBlockElement)element.definition).name;
+                                            blockstates = ((NCPFLegacyBlockElement)element.definition).blockstate;
+                                        }
+                                        if(element.definition instanceof NCPFBlockElement){
+                                            baseName = ((NCPFBlockElement)element.definition).name;
+                                            blockstates = ((NCPFBlockElement)element.definition).blockstate;
+                                        }
                                         valid = true;
                                         if(loadTexture){
                                             try{
                                                 File blockstate = new File(namespaceDir, "blockstates"+File.separatorChar+element.getName().substring(namespace.length()+1)+".json");
                                                 JSON.JSONObject jsonBlockstate = JSON.parse(blockstate);
-                                                String texturePath;
+                                                String texturePath = null;
+                                                String overlayPath = null;
                                                 if(jsonBlockstate.containsKey("forge_marker")){
                                                     JSON.JSONObject jsonTextures = jsonBlockstate.getJSONObject("defaults").getJSONObject("textures");
-                                                    if(jsonTextures.size()!=1)continue;
-                                                    texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    else if(jsonTextures.size()==2&&(jsonTextures.containsKey("overlay"))){
+                                                        ArrayList<String> jsonTextureKeys = new ArrayList<>(jsonTextures.keySet());
+                                                        jsonTextureKeys.remove("overlay");
+                                                        texturePath = jsonTextures.getString(jsonTextureKeys.get(0));
+                                                        overlayPath = jsonTextures.getString("overlay");
+                                                        if(jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:fission_port_overlayed")&&"true".equals(blockstates.get("active").toString())){
+                                                            overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("true").getJSONObject("textures").getString("overlay");
+                                                        }
+                                                    }
                                                 }else{
                                                     String modelPath = jsonBlockstate.getJSONObject("variants").getJSONObject("").getString("model");
                                                     String[] modelParts = modelPath.split(":");
 
                                                     File model = new File(resourcesDir, modelParts[0]+File.separatorChar+"models"+File.separatorChar+modelParts[1]+".json");
                                                     JSON.JSONObject jsonTextures = JSON.parse(model).getJSONObject("textures");
-                                                    if(jsonTextures.size()!=1)continue;
-                                                    texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                 }
 
-                                                String[] textureParts = texturePath.split(":");
-                                                File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
-                                                if(!textureFile.exists())continue;
-                                                texture = ImageIO.read(textureFile);
+                                                if(texturePath!=null){
+                                                    String[] textureParts = texturePath.split(":");
+                                                    File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
+                                                    if(textureFile.exists())texture = ImageIO.read(textureFile);
+                                                }
+                                                if(overlayPath!=null){
+                                                    Image overlay = null;
+                                                    if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/off"))overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/off.png"));
+                                                    else if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/on"))overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/on.png"));
+                                                    else{
+                                                        String[] overlayParts = overlayPath.split(":");
+                                                        File overlayFile = new File(resourcesDir, overlayParts[0]+File.separatorChar+"overlays"+File.separatorChar+overlayParts[1]+".png");
+                                                        if(overlayFile.exists()){
+                                                            overlay = ImageIO.read(overlayFile);
+                                                        }
+                                                    }
+                                                    if(overlay!=null){
+                                                        if(overlay.getWidth()==texture.getWidth()&&overlay.getHeight()==texture.getHeight()){
+                                                            for(int x = 0; x<texture.getWidth(); x++){
+                                                                for(int y = 0; y<texture.getHeight(); y++){
+                                                                    texture.setColor(x, y, Color.alphaOver(texture.getColor(x, y), overlay.getColor(x, y)));
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }catch(Exception ex){
                                             }
                                         }
@@ -144,7 +193,7 @@ public class NCPFFileReader{
 
                                     String displayName = null;
                                     if(loadDisplayName){
-                                        String namePath = namePrefix+(includeNamespace?namespace+".":"")+element.getName().substring(includeNamespace?namespace.length()+1:0)+nameSuffix+"=";
+                                        String namePath = namePrefix+(includeNamespace?namespace+".":"")+baseName.substring(includeNamespace?namespace.length()+1:0)+nameSuffix+"=";
                                         try{
                                             File langFile = new File(namespaceDir, "lang"+File.separatorChar+"en_us.lang");
                                             for(String s : Files.readAllLines(langFile.toPath())){
