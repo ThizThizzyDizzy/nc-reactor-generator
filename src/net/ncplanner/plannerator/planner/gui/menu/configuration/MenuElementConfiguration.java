@@ -218,7 +218,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 module.recipes.remove(elem);
                                 refresh();
                             }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
-//                                config.setReferences(false); // This looks like an patch for something I just fixed for realsies (i.e. made a slightly better patch)
+                                config.setReferences(false); // This fixes recipe output references not appearing in the config menus
                                 gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                             })).height = 96;
                         }
@@ -325,7 +325,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 module.recipes.remove(elem);
                                 refresh();
                             }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
-//                                config.setReferences(false); // This looks like an patch for something I just fixed for realsies (i.e. made a slightly better patch)
+                                config.setReferences(false); // This fixes recipe output references not appearing in the config menus
                                 gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
                             })).height = 96;
                         }
