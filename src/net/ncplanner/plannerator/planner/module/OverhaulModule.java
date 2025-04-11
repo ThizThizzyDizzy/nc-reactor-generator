@@ -139,7 +139,7 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Trinity", "configurations/addons/trinity.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/trinity");
         addAddonTask(t, "New Turbine Parts", "configurations/addons/new_turbine_parts.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
         addAddonTask(t, "NCOUTO", "configurations/addons/ncouto.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
-        addLegacyAddonTask(t, "Moar Heat Sinks", "configurations/addons/moar_heat_sinks.ncpf", "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
+        addAddonTask(t, "Moar Heat Sinks", "configurations/addons/moar_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
         addLegacyAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addLegacyAddonTask(t, "Moar Fuels (Lite)", "configurations/addons/moar_fuels_lite.ncpf", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addLegacyAddonTask(t, "Moar Fuels (Ultra Lite)", "configurations/addons/moar_fuels_ultra_lite.ncpf", "https://www.curseforge.com/minecraft/customization/moarfuels");
