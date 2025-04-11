@@ -38,6 +38,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuModifyElementDefinition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -46,6 +47,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
+import org.lwjgl.glfw.GLFW;
 public class MenuElementConfiguration extends ConfigurationMenu{
     public MenuElementConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFElement element){
         super(parent, configuration, element.getDisplayName(), new SplitLayout(SplitLayout.Y_AXIS, 0, 192, 0));
@@ -410,7 +412,29 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                     refresh();
                                 }));
                             }
-                            list.add(new Button("Add", true).addAction(() -> {
+                            list.add(new Button("Add", true){
+                                @Override
+                                public void onMouseButton(double x, double y, int button, int action, int mods){
+                                    super.onMouseButton(x, y, button, action, mods);
+                                    if(!enabled)return;
+                                    if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+                                        if(action==GLFW.GLFW_PRESS){
+                                            MenuMessageDialog dialog = new MenuMessageDialog("Automatic Add String");
+                                            String[] names = new String[]{element.getName(), element.definition.toString(), element.getDisplayName()};
+                                            for(String s : names){
+                                                if(s==null||s.isBlank())continue;
+                                                dialog.addButton(element.getName(), () -> {
+                                                    lst.add(s);
+                                                    mod.sets.get(setting).accept(lst);
+                                                    refresh();
+                                                }, true);
+                                            }
+                                            dialog.addButton("Cancel", true);
+                                            dialog.open();
+                                        }
+                                    }
+                                }
+                            }.addAction(() -> {
                                 new MenuInputDialog(gui, this, "", "Add String").addButton("OK", (str) -> {
                                     if(!str.isBlank())lst.add(str);
                                     mod.sets.get(setting).accept(lst);
