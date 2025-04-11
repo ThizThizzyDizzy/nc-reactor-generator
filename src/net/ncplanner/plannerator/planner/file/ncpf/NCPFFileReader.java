@@ -201,6 +201,12 @@ public class NCPFFileReader{
                                                     displayName = s.substring(namePath.length()).trim();
                                                 }
                                             }
+                                            File ncLangFile = new File(new File(resourcesDir, "nuclearcraft"), "lang"+File.separatorChar+"en_us.lang");
+                                            for(String s : Files.readAllLines(ncLangFile.toPath())){
+                                                if(s.startsWith(namePath)){
+                                                    displayName = s.substring(namePath.length()).trim();
+                                                }
+                                            }
                                         }catch(Exception ex){
                                         }
                                     }
