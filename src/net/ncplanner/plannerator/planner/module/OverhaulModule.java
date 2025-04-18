@@ -149,6 +149,7 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Nuclear Tree Factory", "configurations/addons/nuclear_tree_factory.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
         addAddonTask(t, "Binary's Extra Stuff", "configurations/addons/binarys_extra_stuff.ncpf.json", "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
         addAddonTask(t, "Alternative Ore Processing", "configurations/addons/alternative_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/aop");
+        addAddonTask(t, "Crazy Ore Processing", "configurations/addons/crazy_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/crazy-ore-processing");
         addLegacyAddonTask(t, "NCO Confectionery", "configurations/addons/nco_confectionery.ncpf", "https://www.curseforge.com/minecraft/customization/nco-confectionery");
         addLegacyAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
         addLegacyAddonTask(t, "Inert Matrix Fuels", "configurations/addons/inert_matrix_fuels.ncpf", "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
