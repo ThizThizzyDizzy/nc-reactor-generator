@@ -128,6 +128,7 @@ public class NCPFFileReader{
                                                 String overlayPath = null;
                                                 if(jsonBlockstate.containsKey("forge_marker")){
                                                     JSON.JSONObject jsonTextures = jsonBlockstate.getJSONObject("defaults").getJSONObject("textures");
+                                                    jsonTextures.remove("particle");
                                                     if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                     else if(jsonTextures.size()==2&&(jsonTextures.containsKey("overlay"))){
                                                         ArrayList<String> jsonTextureKeys = new ArrayList<>(jsonTextures.keySet());
@@ -135,8 +136,17 @@ public class NCPFFileReader{
                                                         texturePath = jsonTextures.getString(jsonTextureKeys.get(0));
                                                         overlayPath = jsonTextures.getString("overlay");
                                                         if(jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:fission_port_overlayed")&&"true".equals(blockstates.get("active").toString())){
-                                                            overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("true").getJSONObject("textures").getString("overlay");
+                                                            try{
+                                                                overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("true").getJSONObject("textures").getString("overlay");
+                                                            }catch(Exception ex){}
                                                         }
+                                                        if(jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:fission_port_overlayed")&&"false".equals(blockstates.get("active").toString())){
+                                                            try{
+                                                                overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("false").getJSONObject("textures").getString("overlay");
+                                                            }catch(Exception ex){}
+                                                        }
+                                                    }else if(jsonTextures.containsKey("in")&&jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:wall_part")){
+                                                        texturePath = jsonTextures.getString("in");
                                                     }
                                                 }else{
                                                     String modelPath = jsonBlockstate.getJSONObject("variants").getJSONObject("").getString("model");
@@ -144,6 +154,7 @@ public class NCPFFileReader{
 
                                                     File model = new File(resourcesDir, modelParts[0]+File.separatorChar+"models"+File.separatorChar+modelParts[1]+".json");
                                                     JSON.JSONObject jsonTextures = JSON.parse(model).getJSONObject("textures");
+                                                    jsonTextures.remove("particle");
                                                     if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                 }
 
