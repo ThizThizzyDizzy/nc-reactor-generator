@@ -143,7 +143,8 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Lite", "configurations/addons/moar_fuels_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Ultra Lite", "configurations/addons/moar_fuels_ultra_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addLegacyAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
+        addAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
+        addAddonTask(t, "Moar Reactor Components", "configurations/addons/moar_reactor_components.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-components");
         addLegacyAddonTask(t, "Nuclear Oil Refining", "configurations/addons/nuclear_oil_refining.ncpf", "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
         addLegacyAddonTask(t, "Nuclear Tree Factory", "configurations/addons/nuclear_tree_factory.ncpf", "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
         addLegacyAddonTask(t, "Binary's Extra Stuff", "configurations/addons/bes.ncpf", "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
