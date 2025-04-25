@@ -82,11 +82,6 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    @Deprecated
-    public final void addLegacyConfiguration(Configuration c){
-        addConfiguration(c);
-        Configuration.legacyConfigurations.add(c);
-    }
     public final void addConfiguration(Configuration c){
         Configuration.configurations.add(c);
         c.path = "modules/"+name+"/"+c.getName();
@@ -148,18 +143,6 @@ public abstract class Module<T>{
                 config.addAlternative(alt);
             }
             addConfiguration(config);
-            task.finish();
-        });
-    }
-    @Deprecated
-    protected void addLegacyConfigurationTask(Task t, String name, String filepath, String... alternatives){
-        Task task = t.addSubtask(name);
-        tasks.add(() -> {
-            Configuration config = new Configuration(FileReader.read(() -> Core.getInputStream(filepath)));
-            for(String alt : alternatives){
-                config.addAlternative(alt);
-            }
-            addLegacyConfiguration(config);
             task.finish();
         });
     }
