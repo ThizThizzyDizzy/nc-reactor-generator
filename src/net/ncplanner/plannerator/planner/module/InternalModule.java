@@ -16,6 +16,7 @@ public class InternalModule extends Module{
     public void addConfigurations(Task t){
         addConfigurationTask(t, "INTERNAL", "configurations/internal.ncpf.json");
         addConfigurationTask(t, "Nuclearcraft+Mods", "configurations/nuclearcraft+mods.ncpf.json");
+        addConfigurationTask(t, "Nuclearcraft+Mods+Moar", "configurations/nuclearcraft+mods+moar.ncpf.json");
         runTasks();
     }
 }
