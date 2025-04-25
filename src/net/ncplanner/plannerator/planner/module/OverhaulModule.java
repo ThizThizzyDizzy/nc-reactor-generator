@@ -151,7 +151,7 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Alternative Ore Processing", "configurations/addons/alternative_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/aop");
         addAddonTask(t, "Crazy Ore Processing", "configurations/addons/crazy_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/crazy-ore-processing");
         addAddonTask(t, "NCO Confectionery", "configurations/addons/nco_confectionery.ncpf.json", "https://www.curseforge.com/minecraft/customization/nco-confectionery");
-        addLegacyAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
+        addAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
         addLegacyAddonTask(t, "Inert Matrix Fuels", "configurations/addons/inert_matrix_fuels.ncpf", "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
         addLegacyAddonTask(t, "Alloy Heat Sinks", "configurations/addons/alloy_heat_sinks.ncpf", "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
         addLegacyAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
