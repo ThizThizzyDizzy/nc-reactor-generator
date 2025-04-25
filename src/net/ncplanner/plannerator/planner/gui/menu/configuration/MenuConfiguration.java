@@ -59,7 +59,7 @@ public class MenuConfiguration extends ConfigurationMenu{
                     }, "Addon Import Thread");
                     t.setDaemon(true);
                     t.start();
-                }, FileFormat.LEGACY_NCPF, "addon");
+                }, FileFormat.ALL_PLANNER_FORMATS, "addon");
             }catch(IOException ex){
                 Core.error("Failed to import addon!", ex);
             }

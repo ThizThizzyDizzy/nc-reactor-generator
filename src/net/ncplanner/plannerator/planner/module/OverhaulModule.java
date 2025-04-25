@@ -141,8 +141,11 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "NCOUTO", "configurations/addons/ncouto.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
         addAddonTask(t, "Moar Heat Sinks", "configurations/addons/moar_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
         addAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddonTask(t, "Moar Fuels Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Lite", "configurations/addons/moar_fuels_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddonTask(t, "Moar Fuels Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Ultra Lite", "configurations/addons/moar_fuels_ultra_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
+        addAddonTask(t, "Moar Fuels Ultra Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
         addAddonTask(t, "Moar Reactor Components", "configurations/addons/moar_reactor_components.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-components");
         addAddonTask(t, "Nuclear Oil Refining", "configurations/addons/nuclear_oil_refining.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
