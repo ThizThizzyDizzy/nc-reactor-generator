@@ -143,9 +143,9 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Lite", "configurations/addons/moar_fuels_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
+        //addAddonTask(t, "Moar Fuels Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Fuels Ultra Lite", "configurations/addons/moar_fuels_ultra_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Ultra Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
+        //addAddonTask(t, "Moar Fuels Ultra Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
         addAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
         addAddonTask(t, "Moar Reactor Components", "configurations/addons/moar_reactor_components.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-components");
         addAddonTask(t, "Nuclear Oil Refining", "configurations/addons/nuclear_oil_refining.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
@@ -159,7 +159,7 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Alloy Heat Sinks", "configurations/addons/alloy_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
         addAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
         addAddonTask(t, "Spicy Heat Sinks (Unstable)", "configurations/addons/spicy_heat_sinks_unstable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
-        //TODO (don't forget to update the credits!)
+        //TODO Nuclear Additions, moar fuels compat for Lite & ultra lite (don't forget to update the credits!)
         runTasks();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){

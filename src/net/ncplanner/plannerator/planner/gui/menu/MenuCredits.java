@@ -64,6 +64,9 @@ public class MenuCredits extends Menu{
         text("Trinity", 1.25, "https://www.curseforge.com/minecraft/mc-mods/trinity");
         text("made by Pu-238");
         text();
+        text("New Turbine Parts", 1.25, "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
+        text("made by Thalzamar and FishingPole");
+        text();
         text("NCOUTO", 1.25, "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
         text("made by Thalzamar and FishingPole");
         text();
@@ -76,6 +79,9 @@ public class MenuCredits extends Menu{
         text("Moar Reactor Functionality", 1.25, "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
         text("made by QuantumTraverse");
         text();
+        text("Moar Reactor Components", 1.25, "https://www.curseforge.com/minecraft/customization/moar-reactor-components");
+        text("made by QuantumTraverse");
+        text();
         text("Nuclear Oil Refining", 1.25, "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
         text("made by Thalzamar");
         text();
@@ -85,8 +91,11 @@ public class MenuCredits extends Menu{
         text("Binary's Extra Stuff", 1.25, "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
         text("made by binary_nexus");
         text();
-        text("AOP", 1.25, "https://www.curseforge.com/minecraft/customization/aop");
+        text("Alternative Ore Processing", 1.25, "https://www.curseforge.com/minecraft/customization/aop");
         text("made by Thalzamar");
+        text();
+        text("Crazy Ore Processing", 1.25, "https://www.curseforge.com/minecraft/customization/crazy-ore-processing");
+        text("made by QuantumTraverse");
         text();
         text("NCO Confectionery", 1.25, "https://www.curseforge.com/minecraft/customization/nco-confectionery");
         text("made by FishingPole");
