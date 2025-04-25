@@ -13,16 +13,8 @@ public class Configuration{
     public static final HashSet<Configuration> legacyConfigurations = new HashSet<>();
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
     public static final ArrayList<Addon> internalAddons = new ArrayList<>();
-    @Deprecated
-    public static final HashSet<Addon> legacyAddons = new HashSet<>();
     public static final HashMap<Addon, String> internalAddonLinks = new HashMap<>();
     public static Configuration NUCLEARCRAFT;
-    @Deprecated
-    public static void addLegacyInternalAddon(Addon addon, String link){
-        internalAddons.add(addon);
-        internalAddonLinks.put(addon, link);
-        legacyAddons.add(addon);
-    }
     public static void addInternalAddon(Addon addon, String link){
         internalAddons.add(addon);
         internalAddonLinks.put(addon, link);

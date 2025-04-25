@@ -92,10 +92,6 @@ public abstract class Module<T>{
         c.path = "modules/"+name+"/"+c.getName();
         ownConfigs.add(c);
     }
-    @Deprecated //this is just to mark addons that haven't been updated to ncpf.json yet
-    public final void addLegacyAddon(Addon addon, String link){
-        Configuration.addLegacyInternalAddon(addon, link);
-    }
     public final void addAddon(Addon addon, String link){
         Configuration.addInternalAddon(addon, link);
     }
@@ -171,14 +167,6 @@ public abstract class Module<T>{
         Task task = t.addSubtask(name);
         tasks.add(() -> {
             addAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link);
-            task.finish();
-        });
-    }
-    @Deprecated
-    protected void addLegacyAddonTask(Task t, String name, String filepath, String link){
-        Task task = t.addSubtask(name);
-        tasks.add(() -> {
-            addLegacyAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link);
             task.finish();
         });
     }
