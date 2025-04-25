@@ -154,7 +154,7 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
         addAddonTask(t, "Inert Matrix Fuels", "configurations/addons/inert_matrix_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
         addAddonTask(t, "Alloy Heat Sinks", "configurations/addons/alloy_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
-        addLegacyAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
+        addAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
         addLegacyAddonTask(t, "Spicy Heat Sinks (Unstable)", "configurations/addons/spicy_heat_sinks_unstable.ncpf", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
         //TODO (don't forget to update the credits!)
         runTasks();
