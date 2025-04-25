@@ -132,7 +132,6 @@ public class OverhaulModule extends Module<Object>{
     @Override
     public void addConfigurations(Task t){
         addConfigurationTask(t, "E2EE", "configurations/enigmatica_2_expert_extended.ncpf", "E2EE", "E2E:E");
-        addLegacyConfigurationTask(t, "AAPN", "configurations/aapn.ncpf", "AAPN");
         addLegacyConfigurationTask(t, "Quanta", "configurations/quanta.ncpf");
         addAddonTask(t, "Extreme Reactors", "configurations/addons/extreme_reactors.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
         addAddonTask(t, "IC2", "configurations/addons/ic2.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
