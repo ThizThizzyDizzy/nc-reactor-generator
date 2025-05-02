@@ -74,6 +74,7 @@ public class MenuInit extends Menu{
     HashMap<String, Task> readerTasks = new HashMap<>();
     private final ProgressBar progressBar;
     {
+        addReader("NCPFReader", NCPFReader::new);//legacy NCPF reader
         addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// .ncpf version 11
         addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// .ncpf version 10
         addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// .ncpf version 9
@@ -101,7 +102,6 @@ public class MenuInit extends Menu{
         addReader("OverhaulHellrageMSR1Reader", OverhaulHellrageMSR1Reader::new);// hellrage MSR .json 2.0.1-2.0.6
         addReader("OverhaulNCConfigReader", OverhaulNCConfigReader::new);// OVERHAUL nuclearcraft.cfg
         addReader("UnderhaulNCConfigReader", UnderhaulNCConfigReader::new);// UNDERHAUL nuclearcraft.cfg
-        addReader("NCPFReader", NCPFReader::new);//legacy NCPF reader
     }
     private  void addReader(String s, Supplier<FormatReader> reader){
         readerNames.add(s);
