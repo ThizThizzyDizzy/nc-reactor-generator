@@ -131,35 +131,35 @@ public class OverhaulModule extends Module<Object>{
     }
     @Override
     public void addConfigurations(Task t){
-        addConfigurationTask(t, "E2EE", "configurations/enigmatica_2_expert_extended.ncpf.json", "E2EE", "E2E:E");
-        addConfigurationTask(t, "Quanta", "configurations/quanta.ncpf.json");
-        addAddonTask(t, "Extreme Reactors", "configurations/addons/extreme_reactors.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors");
-        addAddonTask(t, "IC2", "configurations/addons/ic2.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/ic2-classic");
-        addAddonTask(t, "QMD", "configurations/addons/qmd.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/qmd");
-        addAddonTask(t, "Trinity", "configurations/addons/trinity.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/trinity");
-        addAddonTask(t, "New Turbine Parts", "configurations/addons/new_turbine_parts.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
-        addAddonTask(t, "NCOUTO", "configurations/addons/ncouto.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine");
-        addAddonTask(t, "Moar Heat Sinks", "configurations/addons/moar_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-heat-sinks");
-        addAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Lite", "configurations/addons/moar_fuels_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_lite_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Ultra Lite", "configurations/addons/moar_fuels_ultra_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Fuels Ultra Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_ultra_lite_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels");
-        addAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality");
-        addAddonTask(t, "Moar Reactor Components", "configurations/addons/moar_reactor_components.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-components");
-        addAddonTask(t, "Nuclear Oil Refining", "configurations/addons/nuclear_oil_refining.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining");
-        addAddonTask(t, "Nuclear Tree Factory", "configurations/addons/nuclear_tree_factory.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory");
-        addAddonTask(t, "Binary's Extra Stuff", "configurations/addons/binarys_extra_stuff.ncpf.json", "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes");
-        addAddonTask(t, "Alternative Ore Processing", "configurations/addons/alternative_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/aop");
-        addAddonTask(t, "Crazy Ore Processing", "configurations/addons/crazy_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/crazy-ore-processing");
-        addAddonTask(t, "NCO Confectionery", "configurations/addons/nco_confectionery.ncpf.json", "https://www.curseforge.com/minecraft/customization/nco-confectionery");
-        addAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels");
-        addAddonTask(t, "Inert Matrix Fuels", "configurations/addons/inert_matrix_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels");
-        addAddonTask(t, "Alloy Heat Sinks", "configurations/addons/alloy_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks");
-        addAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
-        addAddonTask(t, "Spicy Heat Sinks (Unstable)", "configurations/addons/spicy_heat_sinks_unstable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
-        addAddonTask(t, "Nuclear Additions", "configurations/addons/nuclear_additions.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-additions");
+        addConfigurationTask(t, "E2EE", "configurations/enigmatica_2_expert_extended.ncpf.json", "https://www.curseforge.com/minecraft/modpacks/enigmatica-2-expert-extended", "krutoy242", "E2EE", "E2E:E");
+        addConfigurationTask(t, "Quanta", "configurations/quanta.ncpf.json", "https://www.curseforge.com/minecraft/modpacks/quanta", "lach_01298");
+        addAddonTask(t, "Extreme Reactors", "configurations/addons/extreme_reactors.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/extreme-reactors", "ZeroNoRyouki");
+        addAddonTask(t, "IC2", "configurations/addons/ic2.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/ic2-classic", "Speiger");
+        addAddonTask(t, "QMD", "configurations/addons/qmd.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/qmd", "Lach_01298");
+        addAddonTask(t, "Trinity", "configurations/addons/trinity.ncpf.json", "https://www.curseforge.com/minecraft/mc-mods/trinity", "Pu-238");
+        addAddonTask(t, "New Turbine Parts", "configurations/addons/new_turbine_parts.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine", "Thalzamar and FishingPole");
+        addAddonTask(t, "NCOUTO", "configurations/addons/ncouto.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclearcraft-overhauled-unrealistic-turbine", "Thalzamar and FishingPole");
+        addAddonTask(t, "Moar Heat Sinks", "configurations/addons/moar_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-heat-sinks", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels", "configurations/addons/moar_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels Lite", "configurations/addons/moar_fuels_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_lite_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels Ultra Lite", "configurations/addons/moar_fuels_ultra_lite.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Fuels Ultra Lite Compat (Moar Reactor Functionality)", "configurations/addons/moar_fuels_ultra_lite_mrf.ncpf.json", "https://www.curseforge.com/minecraft/customization/moarfuels", "QuantumTraverse");
+        addAddonTask(t, "Moar Reactor Functionality", "configurations/addons/moar_reactor_functionality.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-functionality", "QuantumTraverse");
+        addAddonTask(t, "Moar Reactor Components", "configurations/addons/moar_reactor_components.ncpf.json", "https://www.curseforge.com/minecraft/customization/moar-reactor-components", "QuantumTraverse");
+        addAddonTask(t, "Nuclear Oil Refining", "configurations/addons/nuclear_oil_refining.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-oil-refining", "Thalzamar");
+        addAddonTask(t, "Nuclear Tree Factory", "configurations/addons/nuclear_tree_factory.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-tree-factory", "joendter");
+        addAddonTask(t, "Binary's Extra Stuff", "configurations/addons/binarys_extra_stuff.ncpf.json", "https://www.curseforge.com/minecraft/customization/binarys-extra-stuff-bes", "binary_nexus");
+        addAddonTask(t, "Alternative Ore Processing", "configurations/addons/alternative_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/aop", "Thalzamar");
+        addAddonTask(t, "Crazy Ore Processing", "configurations/addons/crazy_ore_processing.ncpf.json", "https://www.curseforge.com/minecraft/customization/crazy-ore-processing", "QuantumTraverse");
+        addAddonTask(t, "NCO Confectionery", "configurations/addons/nco_confectionery.ncpf.json", "https://www.curseforge.com/minecraft/customization/nco-confectionery", "FishingPole");
+        addAddonTask(t, "Thorium Mixed Fuels", "configurations/addons/thorium_mixed_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/thorium-mixed-fuels", "Thalzamar");
+        addAddonTask(t, "Inert Matrix Fuels", "configurations/addons/inert_matrix_fuels.ncpf.json", "https://www.curseforge.com/minecraft/customization/inert-matrix-fuels", "Cassandra");
+        addAddonTask(t, "Alloy Heat Sinks", "configurations/addons/alloy_heat_sinks.ncpf.json", "https://www.curseforge.com/minecraft/customization/alloy-heat-sinks", "Cn-285");
+        addAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks", "Cn-285");
+        addAddonTask(t, "Spicy Heat Sinks (Unstable)", "configurations/addons/spicy_heat_sinks_unstable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks", "Cn-285");
+        addAddonTask(t, "Nuclear Additions", "configurations/addons/nuclear_additions.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-additions", "john_shepard22");
         //TODO Nuclear Additions (don't forget to update the credits!)
         runTasks();
     }

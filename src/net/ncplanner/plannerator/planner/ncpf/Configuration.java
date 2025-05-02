@@ -9,12 +9,23 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
 public class Configuration{
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
+    public static final ArrayList<Configuration> internalConfigurations = new ArrayList<>();
+    public static final HashMap<Configuration, String> internalConfigurationLinks = new HashMap<>();
+    public static final HashMap<Configuration, String> internalConfigurationAuthors = new HashMap<>();
     public static final ArrayList<Addon> internalAddons = new ArrayList<>();
     public static final HashMap<Addon, String> internalAddonLinks = new HashMap<>();
+    public static final HashMap<Addon, String> internalAddonAuthors = new HashMap<>();
     public static Configuration NUCLEARCRAFT;
-    public static void addInternalAddon(Addon addon, String link){
+    public static void addInternalConfiguration(Configuration c, String link, String author){
+        configurations.add(c);
+        internalConfigurations.add(c);
+        internalConfigurationLinks.put(c, link);
+        internalConfigurationAuthors.put(c, author);
+    }
+    public static void addInternalAddon(Addon addon, String link, String author){
         internalAddons.add(addon);
         internalAddonLinks.put(addon, link);
+        internalAddonAuthors.put(addon, author);
     }
     public static void initNuclearcraftConfiguration(){
         if(NUCLEARCRAFT!=null)return;//already done m8
@@ -26,6 +37,7 @@ public class Configuration{
     public static void clearConfigurations(){
         configurations.clear();
         if(NUCLEARCRAFT!=null)configurations.add(NUCLEARCRAFT);
+        internalConfigurations.clear();
         internalAddons.clear();
     }
     public Configuration(Project project, String path){

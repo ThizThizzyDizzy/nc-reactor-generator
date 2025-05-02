@@ -82,13 +82,13 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    public final void addConfiguration(Configuration c){
-        Configuration.configurations.add(c);
+    public final void addConfiguration(Configuration c, String link, String author){
+        Configuration.addInternalConfiguration(c, link, author);
         c.path = "modules/"+name+"/"+c.getName();
         ownConfigs.add(c);
     }
-    public final void addAddon(Addon addon, String link){
-        Configuration.addInternalAddon(addon, link);
+    public final void addAddon(Addon addon, String link, String author){
+        Configuration.addInternalAddon(addon, link, author);
     }
     public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
         NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
@@ -135,21 +135,21 @@ public abstract class Module<T>{
     public void addConfigurations(Task task){}
     public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){}
     private ArrayList<Runnable> tasks = new ArrayList<>();
-    protected void addConfigurationTask(Task t, String name, String filepath, String... alternatives){
+    protected void addConfigurationTask(Task t, String name, String filepath, String link, String author, String... alternatives){
         Task task = t.addSubtask(name);
         tasks.add(() -> {
             Configuration config = new Configuration(FileReader.read(() -> Core.getInputStream(filepath)));
             for(String alt : alternatives){
                 config.addAlternative(alt);
             }
-            addConfiguration(config);
+            addConfiguration(config, link, author);
             task.finish();
         });
     }
-    protected void addAddonTask(Task t, String name, String filepath, String link){
+    protected void addAddonTask(Task t, String name, String filepath, String link, String author){
         Task task = t.addSubtask(name);
         tasks.add(() -> {
-            addAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link);
+            addAddon(FileReader.read(() -> Core.getInputStream(filepath)).addons.get(0), link, author);
             task.finish();
         });
     }

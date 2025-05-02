@@ -64,9 +64,9 @@ public class UnderhaulModule extends Module<Object>{
     public void addConfigurations(Task task){
         task.addSubtask("PO3");
         task.addSubtask("E2E");
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/project_ozone_3.ncpf.json"))).addAlternative("PO3"));
+        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/project_ozone_3.ncpf.json"))).addAlternative("PO3"), "https://www.curseforge.com/minecraft/modpacks/project-ozone-3-a-new-way-forward", "TheCazadorSniper");
         task.getCurrentSubtask().finish();
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/enigmatica_2_expert.ncpf.json"))).addAlternative("E2E"));
+        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/enigmatica_2_expert.ncpf.json"))).addAlternative("E2E"), "https://www.curseforge.com/minecraft/modpacks/enigmatica2expert", "NillerMedDild");
         task.getCurrentSubtask().finish();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){

@@ -14,7 +14,7 @@ public class InternalModule extends Module{
     }
     @Override
     public void addConfigurations(Task t){
-        addConfigurationTask(t, "INTERNAL", "configurations/internal.ncpf.json");
+        addConfigurationTask(t, "INTERNAL", "configurations/internal.ncpf.json", null, null);
         runTasks();
     }
 }
