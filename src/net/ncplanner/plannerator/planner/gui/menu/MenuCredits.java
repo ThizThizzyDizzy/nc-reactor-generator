@@ -111,6 +111,9 @@ public class MenuCredits extends Menu{
         text();
         text("Spicy Heat Sinks", 1.25, "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks");
         text("made by Cn-285");
+        text();
+        text("Nuclear Additions", 1.25, "https://www.curseforge.com/minecraft/customization/nuclear-additions");
+        text("made by john_shepard22");
         divider();
         text("Hut images", 1.25);
         gap();
