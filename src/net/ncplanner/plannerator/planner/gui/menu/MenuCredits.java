@@ -53,7 +53,7 @@ public class MenuCredits extends Menu{
     }
     public MenuCredits(GUI gui){
         super(gui, null);
-        text("NuclearCraft Reactor Plannerator", 1.5);
+        text("NuclearCraft Plannerator", 1.5);
         text();
         text("Made by ThizThizzyDizzy");
         divider();

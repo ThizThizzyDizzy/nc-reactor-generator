@@ -1,3 +1,85 @@
+v5.0.0
+**NCPF**
++ Completely redesigned NCPF (This is designed for better integration with other tools and with Minecraft/NuclearCraft itself; the new primary file format is now .ncpf.json)
++ Redesigned all configuration menus
++ Added global elements to all NCPF configurations (Including recipe outputs & oredict information)
++ Added oredict/tags element module
+* All old formats are still fully supported
+* Fixed textures always being upside-down (even if they appeared to be upright)
+- Slowed down initialization and saving/loading :(
+**DSSL**
++ Rewrote DSSL editor to use true DSSL rather than an a custom interpreter
++ Added tabs for opening multiple files at once
++ Added a bunch of shortcuts to the DSSL editor (such as Shift-Delete or Ctrl-Tab)
++ Added some more editor features that I've probably forgotten by now
+**Other dev stuff**
++ Added a really bad config2 recovery editor
++ The benchmark argument now lets you choose what benchmarks to run
++ Default generator settings are now generated from templates instead of being hardcoded
+**General stuff**
++ Added external configurations (save them to a `configurations` folder and they will appear in the quick-load configurations list)
++ Added an option to load the last loaded configuration on startup
++ Added support for Windows & MacOS on arm64
+**Configurations**
++ Updated internal configurations to match ingame definitions, including OreDict references where appliccable
++ Added many missing in-casing blocks
++ Added configuration for Enigmatica 2: Expert - Extended
++ Added addons for: New Turbine Parts, Moar Reactor Components, Crazy Ore Processing, Nuclear Additions
++ Added addons to cover the extra items from Moar Fuels when Moar Reactor Functionality is installed
++ Updated all configurations and addons to their latest version, fixing some issues in the process
+* Fixed QMD Hafnium shield having no stats
+- Removed Ad Astra Per Nucleon configuration
+**Editor**
++ Added Quantum Traversed Efficiency Module
+* Fixed reactor casings rebuilding every edit when auto recalculate was turned off
+* Fixed most editor tools not rendering ghosts in the top and left of the turbine coil grids
+* Fixed irradiators with no generated heat always being considered valid
+**Configuration Editor**
++ Added configuration subtractor (Configuration to Addon converter)
++ Element legacy names now appear in the element lists in the configuration menus
++ Added legacy name generator
+* Fixed crash when editing a configuration with no settings module
+**Generator**
++ Added a WIP lite Overhaul SFR generator
++ Added save/load for generator settings
++ The generator animation now matches the current generation speed
+* Fixed active cooling rates being doubled in the underhaul generator
+* Fixed casings being wrongly cached in the generator
+* Fixed active coolers being selected by default in underhaul generator stage 1
+* Fixed the generator not properly showing the imported multiblock
+- Removed the old generator
+**UI Changes and Fixes**
++ Added sliding across toggle boxes for symmetry settings and block indicies in the generator settings
++ Added expand/collapse buttons to generator settings
++ Added a setting to toggle the 3D view on the main menu
++ If you only have one multiblock, it will now always be selected on the main menu
+* macOS Cursor calibration now saves and scales GUI appropriately
+* Fixed numerical fields not clearing on backspace with a negative value
+* Input dialogs are now focused upon opening
+* Fixed 3D view resetting its enabled state when zooming in or out
+* Fixed errors during menu transitions being hidden once the transition finishes
+* Fixed 3D cubes not rendering properly in the credits
+**S'plodo-bot**
+* Hangman no longer uses unstable designs
+* Fixed hangman counting ports, casings, etc. towards the guess limit
+* Fixed s'ome critical misspellings recarding s'mores
+**File Importing/Exporting**
++ Added an option to exclude casings, controllers, and ports from the image export parts list
++ Added Open Folder button on save/export
++ Added ore dictionary support for BG String export
+* Fixed overhaul nuclearcraft.cfg import ignoring global heat & efficiency multipliers
+* Fixed turbine coils being hidden in image export when excluding casing
+* The plannerator is now slightly more tolerant of malformed hellrage JSON files (leu-235.com exports)
+**Other**
+* Rebuilt recovery mode to be slightly more helpful
+* Fixed NoVR check & library downloading on arm systems (PR from @IntegerLimit)
+* Dropped "Reactor" from the name
+- Removed the headless API that nobody used and probably didn't work anyway
+- Temporarily removed placement rule trees
+- Temporarily removed configuration validator
+- Temporarily removed legacy NCPF explorer
+* Fixed tons of bugs
+
 v4.5
 + Added info panel to the main menu
 + Added cursor calibration screen because macOS

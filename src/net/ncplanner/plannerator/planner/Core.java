@@ -165,7 +165,7 @@ public class Core{
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         if(Main.headless)glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         System.out.println("Creating window");
-        window = glfwCreateWindow(1200, 700, "Nuclearcraft Reactor Plannerator "+VersionManager.currentVersion, 0, 0);
+        window = glfwCreateWindow(1200, 700, "Nuclearcraft Plannerator "+VersionManager.currentVersion, 0, 0);
         if(window==0){
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW window!");
@@ -669,7 +669,7 @@ public class Core{
         glfwSetWindowTitle(window, title);
     }
     public static void resetWindowTitle(){
-        glfwSetWindowTitle(window, "Nuclearcraft Reactor Plannerator "+VersionManager.currentVersion);
+        glfwSetWindowTitle(window, "Nuclearcraft Plannerator "+VersionManager.currentVersion);
     }
     public static void setVsync(boolean vs){
         if(vsync!=vs)glfwSwapInterval(vs?1:0);
