@@ -133,12 +133,18 @@ public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<Overha
     public void port(BlockElement parent, String name, String displayName, String texture, String outputDisplayName, String outputTexture, String type){
         BlockBuilder in = block(name, displayName, texture);
         in.blockstate("active", false);
-        if(type!=null)in.blockstate("type", type);
+        if(type!=null){
+            in.legacy(in.block.definition.toString());
+            in.blockstate("type", type);
+        }
         in.block.port = new PortModule();
         in.block.parent = parent;
         BlockBuilder out = block(name, outputDisplayName, outputTexture);
         out.blockstate("active", true);
-        if(type!=null)out.blockstate("type", type);
+        if(type!=null){
+            out.legacy(out.block.definition.toString());
+            out.blockstate("type", type);
+        }
         out.block.port = new PortModule();
         out.block.port.output = true;
         out.block.parent = parent;

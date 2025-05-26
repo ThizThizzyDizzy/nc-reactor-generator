@@ -420,7 +420,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                     if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
                                         if(action==GLFW.GLFW_PRESS){
                                             MenuMessageDialog dialog = new MenuMessageDialog("Automatic Add String");
-                                            String[] names = new String[]{element.getName(), element.definition.toString(), element.getDisplayName()};
+                                            String[] names = new String[]{element.getName(), element.definition.toString(), element.getDisplayName(), element.definition.toString().replaceAll("type=\\w+", "").replace("[,", "[").replace(",]", "]").replace(",,", ",")};
                                             for(String s : names){
                                                 if(s==null||s.isBlank())continue;
                                                 dialog.addButton(element.getName(), () -> {
