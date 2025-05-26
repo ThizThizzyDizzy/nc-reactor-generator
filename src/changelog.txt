@@ -1,3 +1,8 @@
+v5.0.1
+* Fixed all file formats except modern NCPF being considered unworthy
+* Fixed an infinite loop in flux repropogation for MSRs
+* Fixed some msising legacy names for heater ports and QMD shields
+
 v5.0.0
 **NCPF**
 + Completely redesigned NCPF (This is designed for better integration with other tools and with Minecraft/NuclearCraft itself; the new primary file format is now .ncpf.json)
