@@ -22,7 +22,11 @@ public class FileReader{
             try{
                 if(reader.formatMatches(provider))matches = true;
             }catch(Throwable t){}
-            if(matches)return reader.read(provider, handler, fileContext).copyTo(Project::new);
+            if(matches){
+                Project project = reader.read(provider, handler, fileContext);
+                if(project==null)continue; // format does not match, actually. false alarm.
+                return project.copyTo(Project::new);
+            }
         }
         throw new IllegalArgumentException("Unknown file format!");
     }

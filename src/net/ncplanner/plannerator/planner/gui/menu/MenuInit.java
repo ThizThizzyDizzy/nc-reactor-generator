@@ -74,18 +74,18 @@ public class MenuInit extends Menu{
     HashMap<String, Task> readerTasks = new HashMap<>();
     private final ProgressBar progressBar;
     {
-        addReader("NCPFReader", NCPFReader::new);//legacy NCPF reader
-        addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// .ncpf version 11
-        addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// .ncpf version 10
-        addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// .ncpf version 9
-        addReader("LegacyNCPF8Reader", LegacyNCPF8Reader::new);// .ncpf version 8
-        addReader("LegacyNCPF7Reader", LegacyNCPF7Reader::new);// .ncpf version 7
-        addReader("LegacyNCPF6Reader", LegacyNCPF6Reader::new);// .ncpf version 6
-        addReader("LegacyNCPF5Reader", LegacyNCPF5Reader::new);// .ncpf version 5
-        addReader("LegacyNCPF4Reader", LegacyNCPF4Reader::new);// .ncpf version 4
-        addReader("LegacyNCPF3Reader", LegacyNCPF3Reader::new);// .ncpf version 3
-        addReader("LegacyNCPF2Reader", LegacyNCPF2Reader::new);// .ncpf version 2
-        addReader("LegacyNCPF1Reader", LegacyNCPF1Reader::new);// .ncpf version 1
+        addReader("NCPFReader", NCPFReader::new);// modern NCPF
+        addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// Legacy .ncpf version 11
+        addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// Legacy.ncpf version 10
+        addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// Legacy.ncpf version 9
+        addReader("LegacyNCPF8Reader", LegacyNCPF8Reader::new);// Legacy.ncpf version 8
+        addReader("LegacyNCPF7Reader", LegacyNCPF7Reader::new);// Legacy.ncpf version 7
+        addReader("LegacyNCPF6Reader", LegacyNCPF6Reader::new);// Legacy.ncpf version 6
+        addReader("LegacyNCPF5Reader", LegacyNCPF5Reader::new);// Legacy.ncpf version 5
+        addReader("LegacyNCPF4Reader", LegacyNCPF4Reader::new);// Legacy.ncpf version 4
+        addReader("LegacyNCPF3Reader", LegacyNCPF3Reader::new);// Legacy.ncpf version 3
+        addReader("LegacyNCPF2Reader", LegacyNCPF2Reader::new);// Legacy.ncpf version 2
+        addReader("LegacyNCPF1Reader", LegacyNCPF1Reader::new);// Legacy.ncpf version 1
         addReader("OverhaulHellrageSFR6Reader", OverhaulHellrageSFR6Reader::new);// hellrage SFR .json 2.1.1-2.1.7 (present)
         addReader("OverhaulHellrageSFR5Reader", OverhaulHellrageSFR5Reader::new);// hellrage SFR .json 2.0.32-2.0.37
         addReader("OverhaulHellrageSFR4Reader", OverhaulHellrageSFR4Reader::new);// hellrage SFR .json 2.0.31

@@ -51,7 +51,7 @@ public class NCPFFileReader{
             }catch(Throwable t){
             }//TODO properly separate error handling and incorrect format
         }
-        if(ncpf==null)throw new IllegalArgumentException("Unknown file format!");
+        if(ncpf==null)return null; // another way of saying "this isn't NCPF, invalid format"
         project.convertFromObject(ncpf);
         project.withModule(NuclearCraftGeneratedModule::new, (generatedModule) -> {
             // Populate the generated configureation with config metadata (name/version)
