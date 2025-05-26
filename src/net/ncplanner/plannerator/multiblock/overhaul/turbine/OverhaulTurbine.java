@@ -219,6 +219,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     @Override
     public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
+        if(calcSubstep>=10000)throw new RuntimeException("Calculation overflow on step "+calcStep+"! (Halted after "+calcSubstep+" iterations)");
         switch(calcStep){
             case 0://calculate casing
                 numControllers = missingCasings = 0;

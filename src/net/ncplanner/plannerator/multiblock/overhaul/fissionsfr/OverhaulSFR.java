@@ -205,6 +205,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
+        if(calcSubstep>=10000)throw new RuntimeException("Calculation overflow on step "+calcStep+"! (Halted after "+calcSubstep+" iterations)");
         List<Block> allBlocks = getBlocks();
         switch(calcStep){
             //<editor-fold defaultstate="collapsed" desc="Base calculations">

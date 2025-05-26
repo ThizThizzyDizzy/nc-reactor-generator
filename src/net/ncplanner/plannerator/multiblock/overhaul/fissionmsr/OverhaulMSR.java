@@ -68,7 +68,6 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public float shutdownFactor;
     private HashMap<Block, Boolean> shieldsWere = new HashMap<>();//used for shield check
     private ArrayList<VesselGroup> vesselGroupsWereActive = new ArrayList<>();//used for shield check
-    private ArrayList<Block> vesselsWereActive = new ArrayList<>();//used for shield check
     private HashMap<NCPFElement, BlockElement> missingInputPorts = new HashMap<>();
     private HashMap<NCPFElement, BlockElement> missingOutputPorts = new HashMap<>();
     private int calcStep = 0;
@@ -212,6 +211,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     }
     @Override
     public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
+        if(calcSubstep>=10000)throw new RuntimeException("Calculation overflow on step "+calcStep+"! (Halted after "+calcSubstep+" iterations)");
         List<Block> allBlocks = getBlocks();
         switch(calcStep){
             //<editor-fold defaultstate="collapsed" desc="Base calculations">
@@ -270,7 +270,6 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             case 1://open shields
                 shieldsWere.clear();
                 vesselGroupsWereActive.clear();
-                vesselsWereActive.clear();
                 for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
                     if(block.template.neutronShield!=null){
@@ -489,9 +488,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
 //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="Shutdown Factor">
             case 11://clear data & calculate casing
-                vesselsWereActive.clear();
                 vesselGroupsWereActive.clear();
-                for(Block b : getBlocks())if(b!=null&&b.isFuelVesselActive())vesselsWereActive.add(b);
                 for(VesselGroup group : vesselGroups)if(group.isActive())vesselGroupsWereActive.add(group);
                 clearData(allBlocks);
                 validate();
@@ -595,10 +592,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     group.wasActive = wasActive;
                 }
                 fluxDecals = new Queue<>();
-                for(int i = 0; i<allBlocks.size(); i++){
-                    Block block = allBlocks.get(i);//why not vessel groups...?
-                    propogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals, false);
-                    shutdownRePropogateFlux.progress = i/(double)blocks.size();
+                for(int i = 0; i<vesselGroups.size(); i++){
+                    VesselGroup group = vesselGroups.get(i);
+                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals, false);
+                    shutdownRePropogateFlux.progress = i/(double)vesselGroups.size();
                 }
                 for(Block block : allBlocks){
                     if(block.template.fuelVessel!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.vesselGroup==null?block.neutronFlux:block.vesselGroup.neutronFlux, block.vesselGroup==null?(block.fuel==null?0:block.fuel.stats.criticality):block.vesselGroup.criticality));
@@ -863,10 +860,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     group.wasActive = wasActive;
                 }
                 fluxDecals = new Queue<>();
-                for(int i = 0; i<allBlocks.size(); i++){
-                    Block block = allBlocks.get(i);//why not vessel groups...?
-                    propogateNeutronFlux(block, vesselsWereActive.contains(block), fluxDecals, false);
-                    partialShutdownRePropogateFlux.progress = i/(double)allBlocks.size();
+                for(int i = 0; i<vesselGroups.size(); i++){
+                    VesselGroup group = vesselGroups.get(i);
+                    propogateNeutronFlux(group, vesselGroupsWereActive.contains(group), fluxDecals, false);
+                    partialShutdownRePropogateFlux.progress = i/(double)vesselGroups.size();
                 }
                 for(Block block : allBlocks){
                     if(block.template.fuelVessel!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.vesselGroup==null?block.neutronFlux:block.vesselGroup.neutronFlux, block.vesselGroup==null?(block.fuel==null?0:block.fuel.stats.criticality):block.vesselGroup.criticality));
