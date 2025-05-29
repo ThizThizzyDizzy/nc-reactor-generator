@@ -214,6 +214,39 @@ public class ConfigList extends ConfigBase{
     public void add(ConfigNumberList value){
         doAdd(value);
     }
+    public void addConfig(Config value){
+        add(value);
+    }
+    public void addString(String value){
+        add(value);
+    }
+    public void addInt(int value){
+        add(value);
+    }
+    public void addBoolean(boolean value){
+        add(value);
+    }
+    public void addFloat(float value){
+        add(value);
+    }
+    public void addLong(long value){
+        add(value);
+    }
+    public void addDouble(double value){
+        add(value);
+    }
+    public void addByte(byte value){
+        add(value);
+    }
+    public void addShort(short value){
+        add(value);
+    }
+    public void addConfigList(ConfigList value){
+        add(value);
+    }
+    public void addConfigNumberList(ConfigNumberList value){
+        add(value);
+    }
     public void add(Object value){
         if(value==null){
         }else if(value instanceof Config){

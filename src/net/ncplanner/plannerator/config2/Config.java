@@ -402,6 +402,39 @@ public class Config extends ConfigBase implements Cloneable{
     public void set(String key, short value){
         dataput(key, new ConfigShort(value));
     }
+    public void setConfig(String key, Config value){
+        set(key, value);
+    }
+    public void setString(String key, String value){
+        set(key, value);
+    }
+    public void setInt(String key, int value){
+        set(key, value);
+    }
+    public void setBoolean(String key, boolean value){
+        set(key, value);
+    }
+    public void setFloat(String key, float value){
+        set(key, value);
+    }
+    public void setLong(String key, long value){
+        set(key, value);
+    }
+    public void setDouble(String key, double value){
+        set(key, value);
+    }
+    public void setConfigList(String key, ConfigList value){
+        set(key, value);
+    }
+    public void setConfigNumberList(String key, ConfigNumberList value){
+        set(key, value);
+    }
+    public void setByte(String key, byte value){
+        set(key, value);
+    }
+    public void setShort(String key, short value){
+        set(key, value);
+    }
     public void set(String key, Object value){
         if(value==null){
         }else if(value instanceof Config){

@@ -1016,7 +1016,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                         texture = fuel.texture;
                         Config recipeFuelVesselCfg = recipeCfg.getConfig("fuelVessel");
                         fuel.stats.efficiency = recipeFuelVesselCfg.getFloat("efficiency");
-                        fuel.stats.heat = recipeFuelVesselCfg.getInt("heat");
+                        fuel.stats.heat = recipeFuelVesselCfg.getAsInt("heat"); // some plannerator-generated files saved this as a float
                         fuel.stats.time = recipeFuelVesselCfg.getInt("time");
                         fuel.stats.criticality = recipeFuelVesselCfg.getInt("criticality");
                         fuel.stats.selfPriming = recipeFuelVesselCfg.getBoolean("selfPriming", false);

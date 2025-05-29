@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
@@ -52,17 +53,18 @@ public class LegacyNCPFWriter extends FormatWriter{
     }
     @Override
     public void write(Project ncpf, OutputStream stream){
+        ncpf = ncpf.copyTo(Project::new); // Copy it to prevent destructive modifications during legacy NCPF save
         Config header = Config.newConfig();
-        header.set("version", (byte)11);
-        header.set("count", ncpf.designs.size());
+        header.setByte("version", (byte)11);
+        header.setInt("count", ncpf.designs.size());
         Config meta = Config.newConfig();
         for(String key : ncpf.metadata.metadata.keySet()){
             String value = ncpf.metadata.metadata.get(key);
             if(value.trim().isEmpty())continue;
-            meta.set(key,value);
+            meta.setString(key,value);
         }
         if(meta.properties().length>0){
-            header.set("metadata", meta);
+            header.setConfig("metadata", meta);
         }
         header.save(stream);
         saveConfiguration(Config.newConfig(), ncpf.conglomeration).save(stream);
@@ -94,440 +96,445 @@ public class LegacyNCPFWriter extends FormatWriter{
                     tex.add(texture.getRGB(x, texture.getHeight()-y-1));//flip Y axis because GL
                 }
             }
-            config.set(keyName, tex);
+            config.setConfigNumberList(keyName, tex);
         }
     }
     private Config saveConfiguration(Config config, NCPFConfigurationContainer configuration){
-        config.set("partial", true);//always call it partial
-        config.set("addon", false);//never save as an addon
+        config.setBoolean("partial", true);//always call it partial
+        config.setBoolean("addon", false);//never save as an addon
         Config underhaul = Config.newConfig();
         Config overhaul = Config.newConfig();
         configuration.withConfiguration(UnderhaulSFRConfiguration::new, (sfr)->{
-            if(sfr.metadata.version!=null)config.set("underhaulVersion", sfr.metadata.version);
-            if(sfr.metadata.name!=null)config.set("name", sfr.metadata.name);
-            underhaul.set("fissionSFR", saveUnderhaulSFRConfiguration(sfr));
+            if(sfr.metadata.version!=null)config.setString("underhaulVersion", sfr.metadata.version);
+            if(sfr.metadata.name!=null)config.setString("name", sfr.metadata.name);
+            underhaul.setConfig("fissionSFR", saveUnderhaulSFRConfiguration(sfr));
         });
         configuration.withConfiguration(OverhaulSFRConfiguration::new, (sfr)->{
-            if(sfr.metadata.version!=null)config.set("version", sfr.metadata.version);
-            if(sfr.metadata.name!=null)config.set("name", sfr.metadata.name);
-            overhaul.set("fissionSFR", saveOverhaulSFRConfiguration(sfr));
+            if(sfr.metadata.version!=null)config.setString("version", sfr.metadata.version);
+            if(sfr.metadata.name!=null)config.setString("name", sfr.metadata.name);
+            overhaul.setConfig("fissionSFR", saveOverhaulSFRConfiguration(sfr));
         });
         configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
-            if(msr.metadata.version!=null)config.set("version", msr.metadata.version);
-            if(msr.metadata.name!=null)config.set("name", msr.metadata.name);
-            overhaul.set("fissionMSR", saveOverhaulMSRConfiguration(msr));
+            if(msr.metadata.version!=null)config.setString("version", msr.metadata.version);
+            if(msr.metadata.name!=null)config.setString("name", msr.metadata.name);
+            overhaul.setConfig("fissionMSR", saveOverhaulMSRConfiguration(msr));
         });
         configuration.withConfiguration(OverhaulTurbineConfiguration::new, (turbine)->{
-            if(turbine.metadata.version!=null)config.set("version", turbine.metadata.version);
-            if(turbine.metadata.name!=null)config.set("name", turbine.metadata.name);
-            overhaul.set("turbine", saveOverhaulTurbineConfiguration(turbine));
+            if(turbine.metadata.version!=null)config.setString("version", turbine.metadata.version);
+            if(turbine.metadata.name!=null)config.setString("name", turbine.metadata.name);
+            overhaul.setConfig("turbine", saveOverhaulTurbineConfiguration(turbine));
         });
-        if(configuration.hasConfiguration(UnderhaulSFRConfiguration::new))config.set("underhaul", underhaul);
+        if(configuration.hasConfiguration(UnderhaulSFRConfiguration::new))config.setConfig("underhaul", underhaul);
         if(configuration.hasConfiguration(OverhaulSFRConfiguration::new)
          ||configuration.hasConfiguration(OverhaulMSRConfiguration::new)
-         ||configuration.hasConfiguration(OverhaulTurbineConfiguration::new))config.set("overhaul", overhaul);
+         ||configuration.hasConfiguration(OverhaulTurbineConfiguration::new))config.setConfig("overhaul", overhaul);
         return config;
     }
     private Config saveUnderhaulSFRConfiguration(UnderhaulSFRConfiguration sfr){
         Config config = Config.newConfig();
-        config.set("minSize", sfr.settings.minSize);
-        config.set("maxSize", sfr.settings.maxSize);
-        config.set("neutronReach", sfr.settings.neutronReach);
-        config.set("moderatorExtraPower", sfr.settings.moderatorExtraPower);
-        config.set("moderatorExtraHeat", sfr.settings.moderatorExtraHeat);
-        config.set("activeCoolerRate", sfr.settings.activeCoolerRate);
+        config.setInt("minSize", sfr.settings.minSize);
+        config.setInt("maxSize", sfr.settings.maxSize);
+        config.setInt("neutronReach", sfr.settings.neutronReach);
+        config.setFloat("moderatorExtraPower", sfr.settings.moderatorExtraPower);
+        config.setFloat("moderatorExtraHeat", sfr.settings.moderatorExtraHeat);
+        config.setInt("activeCoolerRate", sfr.settings.activeCoolerRate);
         ConfigList blocks = new ConfigList();
         for(BlockElement b : sfr.blocks){
             Config block = Config.newConfig();
-            block.set("name", convertElementDefinition(b.definition));
-            if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(b.cooler!=null)block.set("cooling", b.cooler.cooling);
+            block.setString("name", convertElementDefinition(b.definition));
+            if(b.names.displayName!=null)block.setString("displayName", b.names.displayName);
+            if(b.cooler!=null)block.setInt("cooling", b.cooler.cooling);
             if(b.activeCooler!=null){
-                block.set("active", convertElementDefinition(b.activeCoolerRecipes.get(0).definition));
-                block.set("cooling", b.activeCoolerRecipes.get(0).stats.cooling);
+                block.setString("active", convertElementDefinition(b.activeCoolerRecipes.get(0).definition));
+                block.setInt("cooling", b.activeCoolerRecipes.get(0).stats.cooling);
             }
             if(b.cooler!=null||b.activeCooler!=null){
                 List<NCPFPlacementRule> rules = b.cooler==null?b.activeCoolerRecipes.get(0).stats.rules:b.cooler.rules;
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : rules){
-                    ruls.add(savePlacementRule(rule, sfr, underhaulSFRBlockTypes));
+                    ruls.addConfig(savePlacementRule(rule, sfr, underhaulSFRBlockTypes));
                 }
-                block.set("rules", ruls);
+                block.setConfigList("rules", ruls);
             }
-            if(b.fuelCell!=null)block.set("fuelCell", true);
-            if(b.moderator!=null)block.set("moderator", true);
-            if(b.casing!=null)block.set("casing", true);
-            if(b.controller!=null)block.set("controller", true);
+            if(b.fuelCell!=null)block.setBoolean("fuelCell", true);
+            if(b.moderator!=null)block.setBoolean("moderator", true);
+            if(b.casing!=null)block.setBoolean("casing", true);
+            if(b.controller!=null)block.setBoolean("controller", true);
             saveTexture(block, b.texture.texture);
-            blocks.add(block);
+            blocks.addConfig(block);
         }
-        config.set("blocks", blocks);
+        config.setConfigList("blocks", blocks);
         ConfigList fuels = new ConfigList();
         for(Fuel f : sfr.fuels){
             Config fuel = Config.newConfig();
-            fuel.set("name", convertElementDefinition(f.definition));//toString formats legacy metadata and whatnot
-            if(f.names.displayName!=null)fuel.set("displayName", f.names.displayName);
-            fuel.set("power", f.stats.power);
-            fuel.set("heat", f.stats.heat);
-            fuel.set("time", f.stats.time);
+            fuel.setString("name", convertElementDefinition(f.definition));//toString formats legacy metadata and whatnot
+            if(f.names.displayName!=null)fuel.setString("displayName", f.names.displayName);
+            fuel.setFloat("power", f.stats.power);
+            fuel.setFloat("heat", f.stats.heat);
+            fuel.setInt("time", f.stats.time);
             saveTexture(fuel, f.texture.texture);
-            fuels.add(fuel);
+            fuels.addConfig(fuel);
         }
-        config.set("fuels", fuels);
+        config.setConfigList("fuels", fuels);
         return config;
     }
     private Config saveOverhaulSFRConfiguration(OverhaulSFRConfiguration sfr){
         Config config = Config.newConfig();
-        config.set("minSize", sfr.settings.minSize);
-        config.set("maxSize", sfr.settings.maxSize);
-        config.set("neutronReach", sfr.settings.neutronReach);
-        config.set("coolingEfficiencyLeniency", sfr.settings.coolingEfficiencyLeniency);
-        config.set("sparsityPenaltyMult", sfr.settings.sparsityPenaltyMultiplier);
-        config.set("sparsityPenaltyThreshold", sfr.settings.sparsityPenaltyThreshold);
+        config.setInt("minSize", sfr.settings.minSize);
+        config.setInt("maxSize", sfr.settings.maxSize);
+        config.setInt("neutronReach", sfr.settings.neutronReach);
+        config.setInt("coolingEfficiencyLeniency", sfr.settings.coolingEfficiencyLeniency);
+        config.setFloat("sparsityPenaltyMult", sfr.settings.sparsityPenaltyMultiplier);
+        config.setFloat("sparsityPenaltyThreshold", sfr.settings.sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
+        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> it = sfr.blocks.iterator(); it.hasNext();){
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = it.next();
+            if(b.port!=null||b.unToggled!=null)it.remove();// remove all ports and toggled blocks, because legacy NCPF doesn't have these, and it will mess up the indicies
+        }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : sfr.blocks){
-            if(b.port!=null)continue;//don't save ports, because UGH
-            if(b.unToggled!=null)continue;//don't save output vents, because UGGGHHHH
             Config block = Config.newConfig();
-            block.set("name", convertElementDefinition(b.definition));
-            if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            block.set("cluster", b.heatsink!=null||b.neutronShield!=null||b.conductor!=null||b.fuelCell!=null||b.irradiator!=null);
-            block.set("createCluster", b.fuelCell!=null||b.irradiator!=null||b.neutronShield!=null);
-            block.set("functional", b.fuelCell!=null||b.irradiator!=null||b.heatsink!=null||b.reflector!=null||b.neutronShield!=null);
-            block.set("blocksLOS", b.reflector!=null||b.fuelCell!=null||b.irradiator!=null);
-            block.set("casing", b.casing!=null);
-            if(b.casing!=null)block.set("casingEdge", b.casing.edge);
+            block.setString("name", convertElementDefinition(b.definition));
+            if(b.names.displayName!=null)block.setString("displayName", b.names.displayName);
+            block.setBoolean("cluster", b.heatsink!=null||b.neutronShield!=null||b.conductor!=null||b.fuelCell!=null||b.irradiator!=null);
+            block.setBoolean("createCluster", b.fuelCell!=null||b.irradiator!=null||b.neutronShield!=null);
+            block.setBoolean("functional", b.fuelCell!=null||b.irradiator!=null||b.heatsink!=null||b.reflector!=null||b.neutronShield!=null);
+            block.setBoolean("blocksLOS", b.reflector!=null||b.fuelCell!=null||b.irradiator!=null);
+            block.setBoolean("casing", b.casing!=null);
+            if(b.casing!=null)block.setBoolean("casingEdge", b.casing.edge);
             if(b.coolantVent!=null){
                 Config coolantVentCfg = Config.newConfig();
                 LegacyNCPFWriter.saveTexture(coolantVentCfg, "outTexture", b.toggled.texture.texture);
-                if(b.toggled.names.displayName!=null)coolantVentCfg.set("outDisplayName", b.toggled.names.displayName);
-                block.set("coolantVent", coolantVentCfg);
+                if(b.toggled.names.displayName!=null)coolantVentCfg.setString("outDisplayName", b.toggled.names.displayName);
+                block.setConfig("coolantVent", coolantVentCfg);
             }
-            block.set("controller", b.controller!=null);
+            block.setBoolean("controller", b.controller!=null);
             if(b.fuelCell!=null){
                 Config fuelCellCfg = Config.newConfig();
-                fuelCellCfg.set("hasBaseStats", false);
-                block.set("fuelCell", fuelCellCfg);
+                fuelCellCfg.setBoolean("hasBaseStats", false);
+                block.setConfig("fuelCell", fuelCellCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", convertElementDefinition(f.definition));
-                    if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
+                    inputCfg.setString("name", convertElementDefinition(f.definition));
+                    if(f.names.displayName!=null)inputCfg.setString("displayName", f.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
-                    fuel.set("input", inputCfg);
-                    fuel.set("output", inputCfg);//...don't worry about it, it's fine
+                    fuel.setConfig("input", inputCfg);
+                    fuel.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config fuelCfg = Config.newConfig();
-                    fuelCfg.set("efficiency", f.stats.efficiency);
-                    fuelCfg.set("heat", f.stats.heat);
-                    fuelCfg.set("time", f.stats.time);
-                    fuelCfg.set("criticality", f.stats.criticality);
-                    if(f.stats.selfPriming)fuelCfg.set("selfPriming", true);
-                    fuel.set("fuelCell", fuelCfg);
-                    recipesCfg.add(fuel);
+                    fuelCfg.setFloat("efficiency", f.stats.efficiency);
+                    fuelCfg.setInt("heat", f.stats.heat);
+                    fuelCfg.setInt("time", f.stats.time);
+                    fuelCfg.setInt("criticality", f.stats.criticality);
+                    if(f.stats.selfPriming)fuelCfg.setBoolean("selfPriming", true);
+                    fuel.setConfig("fuelCell", fuelCfg);
+                    recipesCfg.addConfig(fuel);
                 }
-                block.set("recipes", recipesCfg);
+                block.setConfigList("recipes", recipesCfg);
             }
             if(b.irradiator!=null){
                 Config irradiatorCfg = Config.newConfig();
-                irradiatorCfg.set("hasBaseStats", false);
-                block.set("irradiator", irradiatorCfg);
+                irradiatorCfg.setBoolean("hasBaseStats", false);
+                block.setConfig("irradiator", irradiatorCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for( IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", convertElementDefinition(r.definition));
-                    if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
+                    inputCfg.setString("name", convertElementDefinition(r.definition));
+                    if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
-                    recipe.set("input", inputCfg);
-                    recipe.set("output", inputCfg);//...don't worry about it, it's fine
+                    recipe.setConfig("input", inputCfg);
+                    recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config irrecipeCfg = Config.newConfig();
-                    irrecipeCfg.set("efficiency", r.stats.efficiency);
-                    irrecipeCfg.set("heat", r.stats.heat);
-                    recipe.set("irradiator", irrecipeCfg);
-                    recipesCfg.add(recipe);
+                    irrecipeCfg.setFloat("efficiency", r.stats.efficiency);
+                    irrecipeCfg.setFloat("heat", r.stats.heat);
+                    recipe.setConfig("irradiator", irrecipeCfg);
+                    recipesCfg.addConfig(recipe);
                 }
-                block.set("recipes", recipesCfg);
+                block.setConfigList("recipes", recipesCfg);
             }
             if(b.reflector!=null){
                 Config reflectorCfg = Config.newConfig();
-                reflectorCfg.set("hasBaseStats", true);
-                reflectorCfg.set("efficiency", b.reflector.efficiency);
-                reflectorCfg.set("reflectivity", b.reflector.reflectivity);
-                block.set("reflector", reflectorCfg);
+                reflectorCfg.setBoolean("hasBaseStats", true);
+                reflectorCfg.setFloat("efficiency", b.reflector.efficiency);
+                reflectorCfg.setFloat("reflectivity", b.reflector.reflectivity);
+                block.setConfig("reflector", reflectorCfg);
             }
             if(b.moderator!=null){
                 Config moderatorCfg = Config.newConfig();
-                moderatorCfg.set("hasBaseStats", true);
-                moderatorCfg.set("flux", b.moderator.flux);
-                moderatorCfg.set("efficiency", b.moderator.efficiency);
-                moderatorCfg.set("active", true);
-                block.set("moderator", moderatorCfg);
+                moderatorCfg.setBoolean("hasBaseStats", true);
+                moderatorCfg.setInt("flux", b.moderator.flux);
+                moderatorCfg.setFloat("efficiency", b.moderator.efficiency);
+                moderatorCfg.setBoolean("active", true);
+                block.setConfig("moderator", moderatorCfg);
             }
             if(b.neutronShield!=null){
                 Config moderatorCfg = Config.newConfig();
-                moderatorCfg.set("hasBaseStats", true);
-                moderatorCfg.set("flux", 0);
-                moderatorCfg.set("efficiency", b.neutronShield.efficiency);
-                moderatorCfg.set("active", false);
-                block.set("moderator", moderatorCfg);
+                moderatorCfg.setBoolean("hasBaseStats", true);
+                moderatorCfg.setInt("flux", 0);
+                moderatorCfg.setFloat("efficiency", b.neutronShield.efficiency);
+                moderatorCfg.setBoolean("active", false);
+                block.setConfig("moderator", moderatorCfg);
                 Config shieldCfg = Config.newConfig();
-                shieldCfg.set("hasBaseStats", true);
-                shieldCfg.set("heat", b.neutronShield.heatPerFlux);
-                shieldCfg.set("efficiency", b.neutronShield.efficiency);
+                shieldCfg.setBoolean("hasBaseStats", true);
+                shieldCfg.setInt("heat", b.neutronShield.heatPerFlux);
+                shieldCfg.setFloat("efficiency", b.neutronShield.efficiency);
                 LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture.texture);
-                block.set("shield", shieldCfg);
+                block.setConfig("shield", shieldCfg);
             }
             if(b.heatsink!=null){
                 Config heatsinkCfg = Config.newConfig();
-                heatsinkCfg.set("hasBaseStats", true);
-                heatsinkCfg.set("cooling", b.heatsink.cooling);
-                block.set("heatsink", heatsinkCfg);
+                heatsinkCfg.setBoolean("hasBaseStats", true);
+                heatsinkCfg.setInt("cooling", b.heatsink.cooling);
+                block.setConfig("heatsink", heatsinkCfg);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.heatsink.rules){
-                    ruls.add(savePlacementRule(rule, sfr, overhaulSFRBlockTypes));
+                    ruls.addConfig(savePlacementRule(rule, sfr, overhaulSFRBlockTypes));
                 }
-                block.set("rules", ruls);
+                block.setConfigList("rules", ruls);
             }
             if(b.neutronSource!=null){
                 Config sourceCfg = Config.newConfig();
-                sourceCfg.set("efficiency", b.neutronSource.efficiency);
-                block.set("source", sourceCfg);
+                sourceCfg.setFloat("efficiency", b.neutronSource.efficiency);
+                block.setConfig("source", sourceCfg);
             }
             LegacyNCPFWriter.saveTexture(block, b.texture.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement out = b.recipePorts.output.block;
-                portCfg.set("name", convertElementDefinition(in.definition));
-                if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
+                portCfg.setString("name", convertElementDefinition(in.definition));
+                if(in.names.displayName!=null)portCfg.setString("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
-                if(out.names.displayName!=null)portCfg.set("outputDisplayName", out.names.displayName);
+                if(out.names.displayName!=null)portCfg.setString("outputDisplayName", out.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture.texture);
-                block.set("port", portCfg);
+                block.setConfig("port", portCfg);
             }
-            blocks.add(block);
+            blocks.addConfig(block);
         }
-        config.set("blocks", blocks);
+        config.setConfigList("blocks", blocks);
         ConfigList coolantRecipes = new ConfigList();
         for(CoolantRecipe r : sfr.coolantRecipes){
             Config recipe = Config.newConfig();
             Config inputCfg = Config.newConfig();
-            inputCfg.set("name", convertElementDefinition(r.definition));
-            if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
+            inputCfg.setString("name", convertElementDefinition(r.definition));
+            if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
-            recipe.set("input", inputCfg);
-            recipe.set("output", inputCfg);//...don't worry about it, it's fine
-            recipe.set("heat", r.stats.heat);
-            recipe.set("outputRatio", r.stats.outputRatio);
-            coolantRecipes.add(recipe);
+            recipe.setConfig("input", inputCfg);
+            recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
+            recipe.setInt("heat", r.stats.heat);
+            recipe.setFloat("outputRatio", r.stats.outputRatio);
+            coolantRecipes.addConfig(recipe);
         }
-        config.set("coolantRecipes", coolantRecipes);
+        config.setConfigList("coolantRecipes", coolantRecipes);
         return config;
     }
     private Config saveOverhaulMSRConfiguration(OverhaulMSRConfiguration msr){
         Config config = Config.newConfig();
-        config.set("minSize", msr.settings.minSize);
-        config.set("maxSize", msr.settings.maxSize);
-        config.set("neutronReach", msr.settings.neutronReach);
-        config.set("coolingEfficiencyLeniency", msr.settings.coolingEfficiencyLeniency);
-        config.set("sparsityPenaltyMult", msr.settings.sparsityPenaltyMultiplier);
-        config.set("sparsityPenaltyThreshold", msr.settings.sparsityPenaltyThreshold);
+        config.setInt("minSize", msr.settings.minSize);
+        config.setInt("maxSize", msr.settings.maxSize);
+        config.setInt("neutronReach", msr.settings.neutronReach);
+        config.setInt("coolingEfficiencyLeniency", msr.settings.coolingEfficiencyLeniency);
+        config.setFloat("sparsityPenaltyMult", msr.settings.sparsityPenaltyMultiplier);
+        config.setFloat("sparsityPenaltyThreshold", msr.settings.sparsityPenaltyThreshold);
         ConfigList blocks = new ConfigList();
+        for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> it = msr.blocks.iterator(); it.hasNext();){
+            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = it.next();
+            if(b.port!=null||b.unToggled!=null)it.remove();// remove all ports and toggled blocks, because legacy NCPF doesn't have these, and it will mess up the indicies
+        }
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : msr.blocks){
-            if(b.port!=null)continue;//don't save ports, because UGH
             Config block = Config.newConfig();
-            block.set("name", convertElementDefinition(b.definition));
-            if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            block.set("cluster", b.heater!=null||b.neutronShield!=null||b.conductor!=null||b.fuelVessel!=null||b.irradiator!=null);
-            block.set("createCluster", b.fuelVessel!=null||b.irradiator!=null||b.neutronShield!=null);
-            block.set("functional", b.fuelVessel!=null||b.irradiator!=null||b.heater!=null||b.reflector!=null||b.neutronShield!=null);
-            block.set("blocksLOS", b.reflector!=null||b.fuelVessel!=null||b.irradiator!=null);
-            block.set("casing", b.casing!=null);
-            if(b.casing!=null)block.set("casingEdge", b.casing.edge);
-            block.set("controller", b.controller!=null);
+            block.setString("name", convertElementDefinition(b.definition));
+            if(b.names.displayName!=null)block.setString("displayName", b.names.displayName);
+            block.setBoolean("cluster", b.heater!=null||b.neutronShield!=null||b.conductor!=null||b.fuelVessel!=null||b.irradiator!=null);
+            block.setBoolean("createCluster", b.fuelVessel!=null||b.irradiator!=null||b.neutronShield!=null);
+            block.setBoolean("functional", b.fuelVessel!=null||b.irradiator!=null||b.heater!=null||b.reflector!=null||b.neutronShield!=null);
+            block.setBoolean("blocksLOS", b.reflector!=null||b.fuelVessel!=null||b.irradiator!=null);
+            block.setBoolean("casing", b.casing!=null);
+            if(b.casing!=null)block.setBoolean("casingEdge", b.casing.edge);
+            block.setBoolean("controller", b.controller!=null);
             if(b.fuelVessel!=null){
                 Config fuelVesselCfg = Config.newConfig();
-                fuelVesselCfg.set("hasBaseStats", false);
-                block.set("fuelVessel", fuelVesselCfg);
+                fuelVesselCfg.setBoolean("hasBaseStats", false);
+                block.setConfig("fuelVessel", fuelVesselCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel f : b.fuels){
                     Config fuel = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", convertElementDefinition(f.definition));
-                    if(f.names.displayName!=null)inputCfg.set("displayName", f.names.displayName);
+                    inputCfg.setString("name", convertElementDefinition(f.definition));
+                    if(f.names.displayName!=null)inputCfg.setString("displayName", f.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
-                    inputCfg.set("rate", 1);
-                    fuel.set("input", inputCfg);
-                    fuel.set("output", inputCfg);//...don't worry about it, it's fine
+                    inputCfg.setInt("rate", 1);
+                    fuel.setConfig("input", inputCfg);
+                    fuel.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config fuelCfg = Config.newConfig();
-                    fuelCfg.set("efficiency", f.stats.efficiency);
-                    fuelCfg.set("heat", f.stats.heat);
-                    fuelCfg.set("time", f.stats.time);
-                    fuelCfg.set("criticality", f.stats.criticality);
-                    if(f.stats.selfPriming)fuelCfg.set("selfPriming", true);
-                    fuel.set("fuelVessel", fuelCfg);
-                    recipesCfg.add(fuel);
+                    fuelCfg.setFloat("efficiency", f.stats.efficiency);
+                    fuelCfg.setInt("heat", f.stats.heat);
+                    fuelCfg.setInt("time", (int)f.stats.time);
+                    fuelCfg.setInt("criticality", f.stats.criticality);
+                    if(f.stats.selfPriming)fuelCfg.setBoolean("selfPriming", true);
+                    fuel.setConfig("fuelVessel", fuelCfg);
+                    recipesCfg.addConfig(fuel);
                 }
-                block.set("recipes", recipesCfg);
+                block.setConfigList("recipes", recipesCfg);
             }
             if(b.irradiator!=null){
                 Config irradiatorCfg = Config.newConfig();
-                irradiatorCfg.set("hasBaseStats", false);
-                block.set("irradiator", irradiatorCfg);
+                irradiatorCfg.setBoolean("hasBaseStats", false);
+                block.setConfig("irradiator", irradiatorCfg);
                 ConfigList recipesCfg = new ConfigList();
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe r : b.irradiatorRecipes){
                     Config recipe = Config.newConfig();
                     Config inputCfg = Config.newConfig();
-                    inputCfg.set("name", convertElementDefinition(r.definition));
-                    if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
+                    inputCfg.setString("name", convertElementDefinition(r.definition));
+                    if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
                     LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
-                    recipe.set("input", inputCfg);
-                    recipe.set("output", inputCfg);//...don't worry about it, it's fine
+                    recipe.setConfig("input", inputCfg);
+                    recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config irrecipeCfg = Config.newConfig();
-                    irrecipeCfg.set("efficiency", r.stats.efficiency);
-                    irrecipeCfg.set("heat", r.stats.heat);
-                    recipe.set("irradiator", irrecipeCfg);
-                    recipesCfg.add(recipe);
+                    irrecipeCfg.setFloat("efficiency", r.stats.efficiency);
+                    irrecipeCfg.setFloat("heat", r.stats.heat);
+                    recipe.setConfig("irradiator", irrecipeCfg);
+                    recipesCfg.addConfig(recipe);
                 }
-                block.set("recipes", recipesCfg);
+                block.setConfigList("recipes", recipesCfg);
             }
             if(b.reflector!=null){
                 Config reflectorCfg = Config.newConfig();
-                reflectorCfg.set("hasBaseStats", true);
-                reflectorCfg.set("efficiency", b.reflector.efficiency);
-                reflectorCfg.set("reflectivity", b.reflector.reflectivity);
-                block.set("reflector", reflectorCfg);
+                reflectorCfg.setBoolean("hasBaseStats", true);
+                reflectorCfg.setFloat("efficiency", b.reflector.efficiency);
+                reflectorCfg.setFloat("reflectivity", b.reflector.reflectivity);
+                block.setConfig("reflector", reflectorCfg);
             }
             if(b.moderator!=null){
                 Config moderatorCfg = Config.newConfig();
-                moderatorCfg.set("hasBaseStats", true);
-                moderatorCfg.set("flux", b.moderator.flux);
-                moderatorCfg.set("efficiency", b.moderator.efficiency);
-                moderatorCfg.set("active", true);
-                block.set("moderator", moderatorCfg);
+                moderatorCfg.setBoolean("hasBaseStats", true);
+                moderatorCfg.setInt("flux", b.moderator.flux);
+                moderatorCfg.setFloat("efficiency", b.moderator.efficiency);
+                moderatorCfg.setBoolean("active", true);
+                block.setConfig("moderator", moderatorCfg);
             }
             if(b.neutronShield!=null){
                 Config moderatorCfg = Config.newConfig();
-                moderatorCfg.set("hasBaseStats", true);
-                moderatorCfg.set("flux", 0);
-                moderatorCfg.set("efficiency", b.neutronShield.efficiency);
-                moderatorCfg.set("active", false);
-                block.set("moderator", moderatorCfg);
+                moderatorCfg.setBoolean("hasBaseStats", true);
+                moderatorCfg.setInt("flux", 0);
+                moderatorCfg.setFloat("efficiency", b.neutronShield.efficiency);
+                moderatorCfg.setBoolean("active", false);
+                block.setConfig("moderator", moderatorCfg);
                 Config shieldCfg = Config.newConfig();
-                shieldCfg.set("hasBaseStats", true);
-                shieldCfg.set("heat", b.neutronShield.heatPerFlux);
-                shieldCfg.set("efficiency", b.neutronShield.efficiency);
+                shieldCfg.setBoolean("hasBaseStats", true);
+                shieldCfg.setInt("heat", b.neutronShield.heatPerFlux);
+                shieldCfg.setFloat("efficiency", b.neutronShield.efficiency);
                 LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture.texture);
-                block.set("shield", shieldCfg);
+                block.setConfig("shield", shieldCfg);
             }
             if(b.heater!=null){
                 Config heatsinkCfg = Config.newConfig();
-                heatsinkCfg.set("hasBaseStats", true);
-                heatsinkCfg.set("cooling", b.heaterRecipes.get(0).stats.cooling);
-                block.set("heater", heatsinkCfg);
+                heatsinkCfg.setBoolean("hasBaseStats", true);
+                heatsinkCfg.setInt("cooling", b.heaterRecipes.get(0).stats.cooling);
+                block.setConfig("heater", heatsinkCfg);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.heater.rules){
-                    ruls.add(savePlacementRule(rule, msr, overhaulMSRBlockTypes));
+                    ruls.addConfig(savePlacementRule(rule, msr, overhaulMSRBlockTypes));
                 }
-                block.set("rules", ruls);
+                block.setConfigList("rules", ruls);
             }
             if(b.neutronSource!=null){
                 Config sourceCfg = Config.newConfig();
-                sourceCfg.set("efficiency", b.neutronSource.efficiency);
-                block.set("source", sourceCfg);
+                sourceCfg.setFloat("efficiency", b.neutronSource.efficiency);
+                block.setConfig("source", sourceCfg);
             }
             LegacyNCPFWriter.saveTexture(block, b.texture.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement out = b.recipePorts.output.block;
-                portCfg.set("name", convertElementDefinition(in.definition));
-                if(in.names.displayName!=null)portCfg.set("inputDisplayName", in.names.displayName);
+                portCfg.setString("name", convertElementDefinition(in.definition));
+                if(in.names.displayName!=null)portCfg.setString("inputDisplayName", in.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
-                if(out.names.displayName!=null)portCfg.set("outputDisplayName", out.names.displayName);
+                if(out.names.displayName!=null)portCfg.setString("outputDisplayName", out.names.displayName);
                 LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture.texture);
-                block.set("port", portCfg);
+                block.setConfig("port", portCfg);
             }
-            blocks.add(block);
+            blocks.addConfig(block);
         }
-        config.set("blocks", blocks);
+        config.setConfigList("blocks", blocks);
         return config;
     }
     private Config saveOverhaulTurbineConfiguration(OverhaulTurbineConfiguration turbine){
         Config config = Config.newConfig();
-        config.set("minWidth", turbine.settings.minWidth);
-        config.set("minLength", turbine.settings.minLength);
-        config.set("maxSize", turbine.settings.maxSize);
-        config.set("fluidPerBlade", turbine.settings.fluidPerBlade);
-        config.set("throughputEfficiencyLeniencyMult", turbine.settings.throughputEfficiencyLeniencyMultiplier);
-        config.set("throughputEfficiencyLeniencyThreshold", turbine.settings.throughputEfficiencyLeniencyThreshold);
-        config.set("throughputFactor", turbine.settings.throughputFactor);
-        config.set("powerBonus", turbine.settings.powerBonus);
+        config.setInt("minWidth", turbine.settings.minWidth);
+        config.setInt("minLength", turbine.settings.minLength);
+        config.setInt("maxSize", turbine.settings.maxSize);
+        config.setInt("fluidPerBlade", turbine.settings.fluidPerBlade);
+        config.setFloat("throughputEfficiencyLeniencyMult", turbine.settings.throughputEfficiencyLeniencyMultiplier);
+        config.setFloat("throughputEfficiencyLeniencyThreshold", turbine.settings.throughputEfficiencyLeniencyThreshold);
+        config.setFloat("throughputFactor", turbine.settings.throughputFactor);
+        config.setFloat("powerBonus", turbine.settings.powerBonus);
         ConfigList blocks = new ConfigList();
         for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b : turbine.blocks){
             Config block = Config.newConfig();
-            block.set("name", convertElementDefinition(b.definition));
-            if(b.names.displayName!=null)block.set("displayName", b.names.displayName);
-            if(b.bearing!=null)block.set("bearing", true);
-            if(b.shaft!=null)block.set("shaft", true);
+            block.setString("name", convertElementDefinition(b.definition));
+            if(b.names.displayName!=null)block.setString("displayName", b.names.displayName);
+            if(b.bearing!=null)block.setBoolean("bearing", true);
+            if(b.shaft!=null)block.setBoolean("shaft", true);
             if(b.connector!=null){
-                block.set("connector", true);
+                block.setBoolean("connector", true);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.connector.rules){
-                    ruls.add(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
+                    ruls.addConfig(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
                 }
-                block.set("rules", ruls);
+                block.setConfigList("rules", ruls);
             }
-            if(b.controller!=null)block.set("controller", true);
+            if(b.controller!=null)block.setBoolean("controller", true);
             if(b.casing!=null){
-                block.set("casing", true);
-                block.set("casingEdge", b.casing.edge);
+                block.setBoolean("casing", true);
+                block.setBoolean("casingEdge", b.casing.edge);
             }
-            if(b.inlet!=null)block.set("inlet", true);
-            if(b.outlet!=null)block.set("outlet", true);
+            if(b.inlet!=null)block.setBoolean("inlet", true);
+            if(b.outlet!=null)block.setBoolean("outlet", true);
             if(b.blade!=null){
                 Config bladeCfg = Config.newConfig();
-                bladeCfg.set("efficiency", b.blade.efficiency);
-                bladeCfg.set("expansion", b.blade.expansion);
-                bladeCfg.set("stator", false);
-                block.set("blade", bladeCfg);
+                bladeCfg.setFloat("efficiency", b.blade.efficiency);
+                bladeCfg.setFloat("expansion", b.blade.expansion);
+                bladeCfg.setBoolean("stator", false);
+                block.setConfig("blade", bladeCfg);
             }
             if(b.stator!=null){
                 Config bladeCfg = Config.newConfig();
-                bladeCfg.set("efficiency", 0f);
-                bladeCfg.set("expansion", b.stator.expansion);
-                bladeCfg.set("stator", true);
-                block.set("blade", bladeCfg);
+                bladeCfg.setFloat("efficiency", 0f);
+                bladeCfg.setFloat("expansion", b.stator.expansion);
+                bladeCfg.setBoolean("stator", true);
+                block.setConfig("blade", bladeCfg);
             }
             if(b.coil!=null){
                 Config coilCfg = Config.newConfig();
-                coilCfg.set("efficiency", b.coil.efficiency);
-                block.set("coil", coilCfg);
+                coilCfg.setFloat("efficiency", b.coil.efficiency);
+                block.setConfig("coil", coilCfg);
                 ConfigList ruls = new ConfigList();
                 for(NCPFPlacementRule rule : b.coil.rules){
-                    ruls.add(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
+                    ruls.addConfig(savePlacementRule(rule, turbine, overhaulTurbineBlockTypes));
                 }
-                block.set("rules", ruls);
+                block.setConfigList("rules", ruls);
             }
             LegacyNCPFWriter.saveTexture(block, b.texture.texture);
-            blocks.add(block);
+            blocks.addConfig(block);
         }
-        config.set("blocks", blocks);
+        config.setConfigList("blocks", blocks);
         ConfigList recipes = new ConfigList();
         for(Recipe r : turbine.recipes){
             Config recipe = Config.newConfig();
             Config inputCfg = Config.newConfig();
-            inputCfg.set("name", convertElementDefinition(r.definition));
-            if(r.names.displayName!=null)inputCfg.set("displayName", r.names.displayName);
+            inputCfg.setString("name", convertElementDefinition(r.definition));
+            if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
             LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
-            recipe.set("input", inputCfg);
-            recipe.set("output", inputCfg);//...don't worry about it, it's fine
-            recipe.set("power", r.stats.power);
-            recipe.set("coefficient", r.stats.coefficient);
-            recipes.add(recipe);
+            recipe.setConfig("input", inputCfg);
+            recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
+            recipe.setDouble("power", r.stats.power);
+            recipe.setDouble("coefficient", r.stats.coefficient);
+            recipes.addConfig(recipe);
         }
-        config.set("recipes", recipes);
+        config.setConfigList("recipes", recipes);
         return config;
     }
     
@@ -576,13 +583,13 @@ public class LegacyNCPFWriter extends FormatWriter{
     };
     public Config savePlacementRule(NCPFPlacementRule rule, NCPFConfiguration cfg, Supplier<NCPFModule>[] blockTypes){
         Config config = Config.newConfig();
-        config.set("type", (byte) indexof(rule.rule, ruleTypes));
+        config.setByte("type", (byte) indexof(rule.rule, ruleTypes));
         switch (rule.rule) {
             case BETWEEN:
             case AXIAL:
                 saveRuleTarget(rule, config, cfg, blockTypes);
-                config.set("min", (byte)rule.min);
-                config.set("max", (byte)rule.max);
+                config.setByte("min", (byte)rule.min);
+                config.setByte("max", (byte)rule.max);
                 break;
             case VERTEX:
             case EDGE:
@@ -592,20 +599,20 @@ public class LegacyNCPFWriter extends FormatWriter{
             case AND:
                 ConfigList ruls = new ConfigList();
                 for (NCPFPlacementRule rul : rule.rules) {
-                    ruls.add(savePlacementRule(rul, cfg, blockTypes));
+                    ruls.addConfig(savePlacementRule(rul, cfg, blockTypes));
                 }
-                config.set("rules", ruls);
+                config.setConfigList("rules", ruls);
                 break;
         }
         return config;
     }
     private void saveRuleTarget(NCPFPlacementRule rule, Config config, NCPFConfiguration cfg, Supplier<NCPFModule>[] blockTypes) {
         boolean isSpecificBlock = !rule.target.definition.typeMatches(NCPFModuleElement::new);
-        config.set("isSpecificBlock", isSpecificBlock);
+        config.setBoolean("isSpecificBlock", isSpecificBlock);
         if (isSpecificBlock) {
-            config.set("block", indexof(rule.target, cfg.getElements()) + 1);
+            config.setInt("block", indexof(rule.target, cfg.getElements()) + 1);
         } else {
-            config.set("blockType", (byte)mindexof(((NCPFModuleElement)rule.target.definition).name, blockTypes));
+            config.setByte("blockType", (byte)mindexof(((NCPFModuleElement)rule.target.definition).name, blockTypes));
         }
     }
     private int mindexof(String moduleName, Supplier<NCPFModule>[] arr){
@@ -646,26 +653,26 @@ public class LegacyNCPFWriter extends FormatWriter{
         int id = dindexof(design.definition, designIndicies);
         if(id==-1)return null;
         Config config = Config.newConfig();
-        config.set("id", id);
+        config.setInt("id", id);
         Config meta = Config.newConfig();
         for(String key : design.metadata.metadata.keySet()){
             String value = design.metadata.get(key);
             if(value.trim().isEmpty())continue;
-            meta.set(key,value);
+            meta.setString(key,value);
         }
         if(meta.properties().length>0){
-            config.set("metadata", meta);
+            config.setConfig("metadata", meta);
         }
         ConfigNumberList dimensions = new ConfigNumberList();
         dimensions.add(definition.design.length-2);
         dimensions.add(definition.design[0].length-2);
         dimensions.add(definition.design[0][0].length-2);
-        config.set("dimensions", dimensions);
+        config.setConfigNumberList("dimensions", dimensions);
         if(design instanceof UnderhaulSFRDesign){
             UnderhaulSFRDesign sfr = (UnderhaulSFRDesign)design;
             UnderhaulSFRConfiguration cfg = configuration.getConfiguration(UnderhaulSFRConfiguration::new);
-            config.set("fuel", cfg.fuels.indexOf(sfr.fuel));
-            config.set("compact", true);
+            config.setInt("fuel", cfg.fuels.indexOf(sfr.fuel));
+            config.setBoolean("compact", true);
             ConfigNumberList blox = new ConfigNumberList();
             for(int x = 0; x<sfr.design.length; x++){
                 for(int y = 0; y<sfr.design[x].length; y++){
@@ -676,14 +683,14 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                 }
             }
-            config.set("blocks", blox);
+            config.setConfigNumberList("blocks", blox);
         }
         if(design instanceof OverhaulSFRDesign){
             OverhaulSFRDesign sfr = (OverhaulSFRDesign)design;
-            config.set("compact", true);
+            config.setBoolean("compact", true);
             OverhaulSFRConfiguration cfg = configuration.getConfiguration(OverhaulSFRConfiguration::new);
             int cr = cfg.coolantRecipes.indexOf(sfr.coolantRecipe);
-            config.set("coolantRecipe", Math.max(cr, 0));//give a default if it's none
+            config.setInt("coolantRecipe", Math.max(cr, 0));//give a default if it's none
             ConfigNumberList blox = new ConfigNumberList();
             ConfigNumberList blockRecipes = new ConfigNumberList();
             ConfigNumberList ports = new ConfigNumberList();
@@ -707,13 +714,13 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                 }
             }
-            config.set("blocks", blox);
-            config.set("blockRecipes", blockRecipes);
-            config.set("ports", ports);
+            config.setConfigNumberList("blocks", blox);
+            config.setConfigNumberList("blockRecipes", blockRecipes);
+            config.setConfigNumberList("ports", ports);
         }
         if(design instanceof OverhaulMSRDesign){
             OverhaulMSRDesign msr = (OverhaulMSRDesign)design;
-            config.set("compact", true);
+            config.setBoolean("compact", true);
             OverhaulMSRConfiguration cfg = configuration.getConfiguration(OverhaulMSRConfiguration::new);
             ConfigNumberList blox = new ConfigNumberList();
             ConfigNumberList blockRecipes = new ConfigNumberList();
@@ -739,9 +746,9 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                 }
             }
-            config.set("blocks", blox);
-            config.set("blockRecipes", blockRecipes);
-            config.set("ports", ports);
+            config.setConfigNumberList("blocks", blox);
+            config.setConfigNumberList("blockRecipes", blockRecipes);
+            config.setConfigNumberList("ports", ports);
         }
         if(design instanceof OverhaulTurbineDesign){
             OverhaulTurbineDesign turbine = (OverhaulTurbineDesign)design;
@@ -756,8 +763,8 @@ public class LegacyNCPFWriter extends FormatWriter{
                     }
                 }
             }
-            config.set("blocks", blocks);
-            config.set("recipe", cfg.recipes.indexOf(turbine.recipe));
+            config.setConfigNumberList("blocks", blocks);
+            config.setInt("recipe", cfg.recipes.indexOf(turbine.recipe));
         }
         return config;
     }
