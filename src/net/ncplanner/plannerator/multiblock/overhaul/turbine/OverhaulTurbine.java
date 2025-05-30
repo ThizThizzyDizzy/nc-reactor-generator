@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
+import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.multiblock.editor.decal.BlockInvalidDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.BlockValidDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.MissingBladeDecal;
@@ -646,7 +647,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                                 continue;
                             }
                             for(Block newBlock : blocks){
-                                if(newBlock.template.coil.efficiency>(block==null?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.coil.efficiency>(block==null||!block.isCoil()?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
                                 else suggestor.task.max--;
                             }
                             if(block!=null){
@@ -680,12 +681,22 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     Block b = it.next();
                     if(!b.isBlade())it.remove();
                 }
-                int x = multiblock.getExternalWidth()/2;
-                int y = 0;
+                int bladeSize = (getInternalWidth()-bearingDiameter)/2;
                 for(int z = 1; z<getExternalDepth()-1; z++){
                     Block block = multiblock.getBlock(x, y, z);
                     for(Block newBlock : blades){
-                        suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                        SetblocksAction action = new SetblocksAction(newBlock);
+                        for(int x = 1; x<multiblock.getExternalWidth()-1; x++){
+                            for(int y = 1; y<multiblock.getExternalHeight()-1; y++){
+                                int numEdges = 0;
+                                if(x<=bladeSize)numEdges++;
+                                if(x>bladeSize+bearingDiameter)numEdges++;
+                                if(y<=bladeSize)numEdges++;
+                                if(y>bladeSize+bearingDiameter)numEdges++;
+                                if(numEdges==1)action.add(x, y, z);
+                            }
+                        }
+                        suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), action, priorities));
                     }
                 }
             }
