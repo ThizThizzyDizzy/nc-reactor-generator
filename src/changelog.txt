@@ -1,3 +1,7 @@
+v5.0.4
+* Fixed legacy NCPF being exported wrongly, definitely for sure this time
+* Reminded legacy NCPF importer that input ports do in fact exist
+
 v5.0.3
 * Fixed legacy NCPF being exported wrongly, but for real this time
 

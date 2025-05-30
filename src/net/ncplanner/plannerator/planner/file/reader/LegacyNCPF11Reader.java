@@ -229,7 +229,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     }
                     if(block.port!=null||block.coolantVent!=null){
                         boolean isToggled = ports.get(portIndex)>0;
-                        overhaulSFR.design[x][y][z] = isToggled?block.toggled:block.unToggled;
+                        if(isToggled)overhaulSFR.design[x][y][z] = block.toggled;
                         portIndex++;
                     }
                 }
@@ -292,7 +292,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                     }
                     if(block.port!=null){
                         boolean isToggled = ports.get(portIndex)>0;
-                        overhaulMSR.design[x][y][z] = isToggled?block.toggled:block.unToggled;
+                        if(isToggled)overhaulMSR.design[x][y][z] = block.toggled;
                         portIndex++;
                     }
                 }

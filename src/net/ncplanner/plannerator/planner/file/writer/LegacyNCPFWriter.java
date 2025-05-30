@@ -53,6 +53,7 @@ public class LegacyNCPFWriter extends FormatWriter{
     }
     @Override
     public void write(Project ncpf, OutputStream stream){
+        ncpf = ncpf.copyTo(Project::new);
         Config header = Config.newConfig();
         header.setByte("version", (byte)11);
         header.setInt("count", ncpf.designs.size());
@@ -66,7 +67,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             header.setConfig("metadata", meta);
         }
         header.save(stream);
-        saveConfiguration(Config.newConfig(), ncpf.copyTo(Project::new).conglomeration).save(stream); // Copy it to prevent destructive modifications during legacy NCPF save
+        saveConfiguration(Config.newConfig(), ncpf.conglomeration).save(stream); // Copy it to prevent destructive modifications during legacy NCPF save
         for(Design d : ncpf.designs){
             saveDesign(d, ncpf.configuration).save(stream);
         }
@@ -437,6 +438,27 @@ public class LegacyNCPFWriter extends FormatWriter{
                     ruls.addConfig(savePlacementRule(rule, msr, overhaulMSRBlockTypes));
                 }
                 block.setConfigList("rules", ruls);
+                
+                
+                ConfigList recipesCfg = new ConfigList();
+                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe r : b.heaterRecipes){
+                    Config recipe = Config.newConfig();
+                    Config inputCfg = Config.newConfig();
+                    inputCfg.setString("name", convertElementDefinition(r.definition));
+                    if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
+                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+                    recipe.setConfig("input", inputCfg);
+                    recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
+                    Config hRecipeCfgM = Config.newConfig();
+                    hRecipeCfgM.setFloat("efficiency", 0);
+                    hRecipeCfgM.setInt("flux", 0);
+                    recipe.setConfig("moderator", hRecipeCfgM);
+                    Config hRecipeCfgH = Config.newConfig();
+                    hRecipeCfgH.setInt("cooling", r.stats.cooling);
+                    recipe.setConfig("heater", hRecipeCfgH);
+                    recipesCfg.addConfig(recipe);
+                }
+                block.setConfigList("recipes", recipesCfg);
             }
             if(b.neutronSource!=null){
                 Config sourceCfg = Config.newConfig();
@@ -632,7 +654,15 @@ public class LegacyNCPFWriter extends FormatWriter{
         }
         return -1;
     }
-    private int indexof(NCPFElementReference elem, List<NCPFElement>[] arr){
+    private <T extends NCPFElement> int indexof(T elem, List<T>... arr){
+        for(List<T> lst : arr){
+            for(int i = 0; i<lst.size(); i++){
+                if(lst.get(i).definition.matches(elem.definition))return i;
+            }
+        }
+        return -1;
+    }
+    private int indexof(NCPFElementReference elem, List<NCPFElement>... arr){
         for(List<NCPFElement> lst : arr){
             for(int i = 0; i<lst.size(); i++){
                 if(lst.get(i).definition.matches(elem.definition))return i;
@@ -670,7 +700,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         if(design instanceof UnderhaulSFRDesign){
             UnderhaulSFRDesign sfr = (UnderhaulSFRDesign)design;
             UnderhaulSFRConfiguration cfg = configuration.getConfiguration(UnderhaulSFRConfiguration::new);
-            config.setInt("fuel", cfg.fuels.indexOf(sfr.fuel));
+            config.setInt("fuel", indexof(sfr.fuel, cfg.fuels));
             config.setBoolean("compact", true);
             ConfigNumberList blox = new ConfigNumberList();
             for(int x = 0; x<sfr.design.length; x++){
@@ -678,7 +708,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     for(int z = 0; z<sfr.design[x][y].length; z++){
                         BlockElement block = sfr.design[x][y][z];
                         if(block==null)blox.add(0);
-                        else blox.add(cfg.blocks.indexOf(block)+1);
+                        else blox.add(indexof(block, cfg.blocks)+1);
                     }
                 }
             }
@@ -688,7 +718,11 @@ public class LegacyNCPFWriter extends FormatWriter{
             OverhaulSFRDesign sfr = (OverhaulSFRDesign)design;
             config.setBoolean("compact", true);
             OverhaulSFRConfiguration cfg = configuration.getConfiguration(OverhaulSFRConfiguration::new);
-            int cr = cfg.coolantRecipes.indexOf(sfr.coolantRecipe);
+            for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> it = cfg.blocks.iterator(); it.hasNext();){
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = it.next();
+                if(b.unToggled!=null)it.remove();// remove all toggled blocks, because legacy NCPF doesn't have these, but NOT all ports, because legacy NCPF sucks
+            }
+            int cr = indexof(sfr.coolantRecipe, cfg.coolantRecipes);
             config.setInt("coolantRecipe", Math.max(cr, 0));//give a default if it's none
             ConfigNumberList blox = new ConfigNumberList();
             ConfigNumberList blockRecipes = new ConfigNumberList();
@@ -699,15 +733,16 @@ public class LegacyNCPFWriter extends FormatWriter{
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = sfr.design[x][y][z];
                         if(block==null)blox.add(0);
                         else{
+                            boolean wasItAPort = block.port!=null;
                             if(block.port!=null||block.coolantVent!=null)ports.add(block.unToggled!=null?1:0);
                             if(block.port!=null)block = block.parent;
                             if(block.coolantVent!=null&&block.unToggled!=null)block = block.unToggled;
-                            blox.add(cfg.blocks.indexOf(block)+1);
+                            blox.add(indexof(block, cfg.blocks)+1+(wasItAPort?1:0));
                             if(block.fuelCell!=null){
-                                blockRecipes.add(block.fuels.indexOf(sfr.fuels[x][y][z])+1);
+                                blockRecipes.add(indexof(sfr.fuels[x][y][z], block.fuels)+1);
                             }
                             if(block.irradiator!=null){
-                                blockRecipes.add(block.irradiatorRecipes.indexOf(sfr.irradiatorRecipes[x][y][z])+1);
+                                blockRecipes.add(indexof(sfr.irradiatorRecipes[x][y][z], block.irradiatorRecipes)+1);
                             }
                         }
                     }
@@ -721,6 +756,10 @@ public class LegacyNCPFWriter extends FormatWriter{
             OverhaulMSRDesign msr = (OverhaulMSRDesign)design;
             config.setBoolean("compact", true);
             OverhaulMSRConfiguration cfg = configuration.getConfiguration(OverhaulMSRConfiguration::new);
+            for(Iterator<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> it = cfg.blocks.iterator(); it.hasNext();){
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = it.next();
+                if(b.unToggled!=null)it.remove(); // remove all toggled blocks, because legacy NCPF doesn't have these, but NOT all ports, because legacy NCPF sucks
+            }
             ConfigNumberList blox = new ConfigNumberList();
             ConfigNumberList blockRecipes = new ConfigNumberList();
             ConfigNumberList ports = new ConfigNumberList();
@@ -730,16 +769,20 @@ public class LegacyNCPFWriter extends FormatWriter{
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = msr.design[x][y][z];
                         if(block==null)blox.add(0);
                         else{
+                            boolean wasItAPort = block.port!=null;
                             if(block.port!=null){
                                 ports.add(block.unToggled!=null?1:0);
                                 block = block.parent;
                             }
-                            blox.add(cfg.blocks.indexOf(block)+1);
+                            blox.add(indexof(block, cfg.blocks)+1+(wasItAPort?1:0));
                             if(block.fuelVessel!=null){
-                                blockRecipes.add(block.fuels.indexOf(msr.fuels[x][y][z])+1);
+                                blockRecipes.add(indexof(msr.fuels[x][y][z], block.fuels)+1);
                             }
                             if(block.irradiator!=null){
-                                blockRecipes.add(block.irradiatorRecipes.indexOf(msr.irradiatorRecipes[x][y][z])+1);
+                                blockRecipes.add(indexof(msr.irradiatorRecipes[x][y][z], block.irradiatorRecipes)+1);
+                            }
+                            if(block.heater!=null){
+                                blockRecipes.add(indexof(msr.heaterRecipes[x][y][z], block.heaterRecipes)+1);
                             }
                         }
                     }
@@ -758,12 +801,12 @@ public class LegacyNCPFWriter extends FormatWriter{
                     for(int z = 0; z<turbine.design[x][y].length; z++){
                         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = turbine.design[x][y][z];
                         if(block==null)blocks.add(0);
-                        else blocks.add(cfg.blocks.indexOf(block)+1);
+                        else blocks.add(indexof(block, cfg.blocks)+1);
                     }
                 }
             }
             config.setConfigNumberList("blocks", blocks);
-            config.setInt("recipe", cfg.recipes.indexOf(turbine.recipe));
+            config.setInt("recipe", indexof(turbine.recipe, cfg.recipes));
         }
         return config;
     }
