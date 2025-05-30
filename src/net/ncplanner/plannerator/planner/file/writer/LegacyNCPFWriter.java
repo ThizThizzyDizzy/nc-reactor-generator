@@ -53,7 +53,6 @@ public class LegacyNCPFWriter extends FormatWriter{
     }
     @Override
     public void write(Project ncpf, OutputStream stream){
-        ncpf = ncpf.copyTo(Project::new); // Copy it to prevent destructive modifications during legacy NCPF save
         Config header = Config.newConfig();
         header.setByte("version", (byte)11);
         header.setInt("count", ncpf.designs.size());
@@ -67,7 +66,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             header.setConfig("metadata", meta);
         }
         header.save(stream);
-        saveConfiguration(Config.newConfig(), ncpf.conglomeration).save(stream);
+        saveConfiguration(Config.newConfig(), ncpf.copyTo(Project::new).conglomeration).save(stream); // Copy it to prevent destructive modifications during legacy NCPF save
         for(Design d : ncpf.designs){
             saveDesign(d, ncpf.configuration).save(stream);
         }

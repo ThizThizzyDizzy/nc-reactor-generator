@@ -1,4 +1,7 @@
 v5.0.2
+* Fixed legacy NCPF being exported wrongly, but for real this time
+
+v5.0.2
 * Fixed legacy NCPF being exported wrongly
 * Fixed crash when using overhaul turbine suggestors
 
