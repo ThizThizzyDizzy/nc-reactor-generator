@@ -1,17 +1,20 @@
-package net.ncplanner.plannerator.multiblock;
+package net.ncplanner.plannerator.multiblock.symmetry;
 import java.util.ArrayList;
 import java.util.HashSet;
-public class Symmetry{
+import net.ncplanner.plannerator.multiblock.BlockPos;
+import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
+public class StandardSymmetry extends Symmetry{
     public boolean mx;
     public boolean my;
     public boolean mz;
     public boolean rx180;
     public boolean ry180;
     public boolean rz180;
-    public Symmetry(){
+    public StandardSymmetry(){
         this(false,false,false,false,false,false);
     }
-    public Symmetry(boolean mx, boolean my, boolean mz, boolean rx180, boolean ry180, boolean rz180){
+    public StandardSymmetry(boolean mx, boolean my, boolean mz, boolean rx180, boolean ry180, boolean rz180){
         this.mx = mx;
         this.my = my;
         this.mz = mz;
@@ -19,9 +22,11 @@ public class Symmetry{
         this.ry180 = ry180;
         this.rz180 = rz180;
     }
+    @Override
     public void apply(int x, int y, int z, BoundingBox bbox, BlockPosConsumer consumer){
         apply(x, y, z, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), consumer);
     }
+    @Override
     public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
         HashSet<BlockPos> positions = new HashSet<>();
         positions.add(new BlockPos(x, y, z));

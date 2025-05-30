@@ -1,13 +1,13 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Symmetry;
+import net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 public class MenuSymmetrySettings extends MenuDialog{
-    public MenuSymmetrySettings(GUI gui, Menu parent, Symmetry symmetry){
+    public MenuSymmetrySettings(GUI gui, Menu parent, StandardSymmetry symmetry){
         super(gui, parent);
         setContent(new Component(0, 0, 600, 212){
             {

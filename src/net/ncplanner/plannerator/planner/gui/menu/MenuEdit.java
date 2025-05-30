@@ -14,7 +14,7 @@ import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
-import net.ncplanner.plannerator.multiblock.Symmetry;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -29,6 +29,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
+import net.ncplanner.plannerator.multiblock.symmetry.EditorSymmetry;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
@@ -195,7 +196,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public float maxYRot = 80f;
     public float xRot = 30;
     public float yRot = 30;
-    public Symmetry symmetry = new Symmetry();
+    public EditorSymmetry symmetry = new EditorSymmetry(this);
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
         suggestionList.optimizeForLargeComponentCount = true;
@@ -241,7 +242,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
         });
         symmetrySettings.addAction(() -> {
-            new MenuSymmetrySettings(gui, this, symmetry).open(); 
+            new MenuSymmetrySettings(gui, this, symmetry.standard).open(); 
         });
         overlaySettings.addAction(() -> {
             new MenuOverlaySettings(gui, this, overlays, multiblock).open(); 
