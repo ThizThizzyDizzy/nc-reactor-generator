@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.config2;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 public class C2ConfigComponentBase extends SplitLayout{
@@ -19,6 +21,22 @@ public class C2ConfigComponentBase extends SplitLayout{
             }
         });//just an indent lol
         content = add(new ListLayout().fitContent());
+    }
+    public float getYInScrollable(){
+        float y = this.y;
+        Component c = this;
+        while(!((c = c.parent) instanceof Scrollable)){
+            y+=c.y;
+        }
+        y-=((Scrollable)c).scrollY;
+        return y;
+    }
+    @Override
+    public void render2d(double deltaTime){
+        float totalY = getYInScrollable();
+        if(totalY>Core.gui.getHeight())return;
+        if(totalY+height<0)return;
+        super.render2d(deltaTime);
     }
     @Override
     public void draw(double deltaTime){
