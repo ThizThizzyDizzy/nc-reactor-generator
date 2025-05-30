@@ -1,3 +1,7 @@
+v5.0.2
+* Fixed legacy NCPF being exported wrongly
+* Fixed crash when using overhaul turbine suggestors
+
 v5.0.1
 * Fixed all file formats except modern NCPF being considered unworthy
 * Fixed an infinite loop in flux repropogation for MSRs
