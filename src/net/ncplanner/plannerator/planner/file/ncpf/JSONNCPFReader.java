@@ -6,7 +6,9 @@ import net.ncplanner.plannerator.planner.file.JSON;
 public class JSONNCPFReader implements NCPFFormatReader{
     @Override
     public NCPFObject read(InputStream stream){
-        return toNCPF(JSON.parse(stream));
+        NCPFObject ncpf = toNCPF(JSON.parse(stream));
+        if(!ncpf.containsKey("version")||!(ncpf.get("version") instanceof Integer))return null;
+        return ncpf;
     }
     private NCPFObject toNCPF(JSON.JSONObject json){
         NCPFObject ncpf = new NCPFObject();

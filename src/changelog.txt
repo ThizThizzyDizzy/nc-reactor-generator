@@ -1,3 +1,6 @@
+v5.0.5
+* Fixed all JSON formats being assumed to be NCPF
+
 v5.0.4
 * Fixed legacy NCPF being exported wrongly, definitely for sure this time
 * Reminded legacy NCPF importer that input ports do in fact exist
