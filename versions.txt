@@ -104,3 +104,4 @@
 5.0.2=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v5.0.2/NC-Plannerator-5.0.2.jar
 5.0.3=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v5.0.3/NC-Plannerator-5.0.3.jar
 5.0.4=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v5.0.4/NC-Plannerator-5.0.4.jar
+5.0.5=https://github.com/ThizThizzyDizzy/nc-reactor-generator/releases/download/v5.0.5/NC-Plannerator-5.0.5.jar
