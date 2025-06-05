@@ -46,6 +46,7 @@ import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class LegacyNCPFWriter extends FormatWriter{
     @Override
     public FileFormat getFileFormat(){
@@ -87,17 +88,24 @@ public class LegacyNCPFWriter extends FormatWriter{
     public static void saveTexture(Config config, Image texture){
         saveTexture(config, "texture", texture);
     }
+    public static void saveTexture(Config config, TextureModule texture){
+        if(texture==null)return;
+        saveTexture(config, "texture", texture.texture);
+    }
     public static void saveTexture(Config config, String keyName, Image texture){
-        if(texture!=null){
-            ConfigNumberList tex = new ConfigNumberList();
-            tex.add(texture.getWidth());
-            for(int x = 0; x<texture.getWidth(); x++){
-                for(int y = 0; y<texture.getHeight(); y++){
-                    tex.add(texture.getRGB(x, texture.getHeight()-y-1));//flip Y axis because GL
-                }
+        if(texture==null)return;
+        ConfigNumberList tex = new ConfigNumberList();
+        tex.add(texture.getWidth());
+        for(int x = 0; x<texture.getWidth(); x++){
+            for(int y = 0; y<texture.getHeight(); y++){
+                tex.add(texture.getRGB(x, texture.getHeight()-y-1));//flip Y axis because GL
             }
-            config.setConfigNumberList(keyName, tex);
         }
+        config.setConfigNumberList(keyName, tex);
+    }
+    public static void saveTexture(Config config, String keyName, TextureModule texture){
+        if(texture==null)return;
+        saveTexture(config, keyName, texture.texture);
     }
     private Config saveConfiguration(Config config, NCPFConfigurationContainer configuration){
         config.setBoolean("partial", true);//always call it partial
@@ -160,7 +168,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             if(b.moderator!=null)block.setBoolean("moderator", true);
             if(b.casing!=null)block.setBoolean("casing", true);
             if(b.controller!=null)block.setBoolean("controller", true);
-            saveTexture(block, b.texture.texture);
+            saveTexture(block, b.texture);
             blocks.addConfig(block);
         }
         config.setConfigList("blocks", blocks);
@@ -172,7 +180,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             fuel.setFloat("power", f.stats.power);
             fuel.setFloat("heat", f.stats.heat);
             fuel.setInt("time", f.stats.time);
-            saveTexture(fuel, f.texture.texture);
+            saveTexture(fuel, f.texture);
             fuels.addConfig(fuel);
         }
         config.setConfigList("fuels", fuels);
@@ -203,7 +211,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             if(b.casing!=null)block.setBoolean("casingEdge", b.casing.edge);
             if(b.coolantVent!=null){
                 Config coolantVentCfg = Config.newConfig();
-                LegacyNCPFWriter.saveTexture(coolantVentCfg, "outTexture", b.toggled.texture.texture);
+                LegacyNCPFWriter.saveTexture(coolantVentCfg, "outTexture", b.toggled.texture);
                 if(b.toggled.names.displayName!=null)coolantVentCfg.setString("outDisplayName", b.toggled.names.displayName);
                 block.setConfig("coolantVent", coolantVentCfg);
             }
@@ -218,7 +226,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.setString("name", convertElementDefinition(f.definition));
                     if(f.names.displayName!=null)inputCfg.setString("displayName", f.names.displayName);
-                    LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
+                    LegacyNCPFWriter.saveTexture(inputCfg, f.texture);
                     fuel.setConfig("input", inputCfg);
                     fuel.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config fuelCfg = Config.newConfig();
@@ -242,7 +250,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.setString("name", convertElementDefinition(r.definition));
                     if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
-                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture);
                     recipe.setConfig("input", inputCfg);
                     recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config irrecipeCfg = Config.newConfig();
@@ -279,7 +287,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 shieldCfg.setBoolean("hasBaseStats", true);
                 shieldCfg.setInt("heat", b.neutronShield.heatPerFlux);
                 shieldCfg.setFloat("efficiency", b.neutronShield.efficiency);
-                LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture.texture);
+                LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture);
                 block.setConfig("shield", shieldCfg);
             }
             if(b.heatsink!=null){
@@ -298,16 +306,16 @@ public class LegacyNCPFWriter extends FormatWriter{
                 sourceCfg.setFloat("efficiency", b.neutronSource.efficiency);
                 block.setConfig("source", sourceCfg);
             }
-            LegacyNCPFWriter.saveTexture(block, b.texture.texture);
+            LegacyNCPFWriter.saveTexture(block, b.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement out = b.recipePorts.output.block;
                 portCfg.setString("name", convertElementDefinition(in.definition));
                 if(in.names.displayName!=null)portCfg.setString("inputDisplayName", in.names.displayName);
-                LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
+                LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture);
                 if(out.names.displayName!=null)portCfg.setString("outputDisplayName", out.names.displayName);
-                LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture.texture);
+                LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture);
                 block.setConfig("port", portCfg);
             }
             blocks.addConfig(block);
@@ -319,7 +327,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config inputCfg = Config.newConfig();
             inputCfg.setString("name", convertElementDefinition(r.definition));
             if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
-            LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+            LegacyNCPFWriter.saveTexture(inputCfg, r.texture);
             recipe.setConfig("input", inputCfg);
             recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
             recipe.setInt("heat", r.stats.heat);
@@ -363,7 +371,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.setString("name", convertElementDefinition(f.definition));
                     if(f.names.displayName!=null)inputCfg.setString("displayName", f.names.displayName);
-                    LegacyNCPFWriter.saveTexture(inputCfg, f.texture.texture);
+                    LegacyNCPFWriter.saveTexture(inputCfg, f.texture);
                     inputCfg.setInt("rate", 1);
                     fuel.setConfig("input", inputCfg);
                     fuel.setConfig("output", inputCfg);//...don't worry about it, it's fine
@@ -388,7 +396,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.setString("name", convertElementDefinition(r.definition));
                     if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
-                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture);
                     recipe.setConfig("input", inputCfg);
                     recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config irrecipeCfg = Config.newConfig();
@@ -425,7 +433,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 shieldCfg.setBoolean("hasBaseStats", true);
                 shieldCfg.setInt("heat", b.neutronShield.heatPerFlux);
                 shieldCfg.setFloat("efficiency", b.neutronShield.efficiency);
-                LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture.texture);
+                LegacyNCPFWriter.saveTexture(shieldCfg, "closedTexture", b.toggled.texture);
                 block.setConfig("shield", shieldCfg);
             }
             if(b.heater!=null){
@@ -446,7 +454,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                     Config inputCfg = Config.newConfig();
                     inputCfg.setString("name", convertElementDefinition(r.definition));
                     if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
-                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+                    LegacyNCPFWriter.saveTexture(inputCfg, r.texture);
                     recipe.setConfig("input", inputCfg);
                     recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
                     Config hRecipeCfgM = Config.newConfig();
@@ -465,16 +473,16 @@ public class LegacyNCPFWriter extends FormatWriter{
                 sourceCfg.setFloat("efficiency", b.neutronSource.efficiency);
                 block.setConfig("source", sourceCfg);
             }
-            LegacyNCPFWriter.saveTexture(block, b.texture.texture);
+            LegacyNCPFWriter.saveTexture(block, b.texture);
             if(b.recipePorts!=null){
                 Config portCfg = Config.newConfig();
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement in = b.recipePorts.input.block;
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement out = b.recipePorts.output.block;
                 portCfg.setString("name", convertElementDefinition(in.definition));
                 if(in.names.displayName!=null)portCfg.setString("inputDisplayName", in.names.displayName);
-                LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture.texture);
+                LegacyNCPFWriter.saveTexture(portCfg, "inputTexture", in.texture);
                 if(out.names.displayName!=null)portCfg.setString("outputDisplayName", out.names.displayName);
-                LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture.texture);
+                LegacyNCPFWriter.saveTexture(portCfg, "outputTexture", out.texture);
                 block.setConfig("port", portCfg);
             }
             blocks.addConfig(block);
@@ -538,7 +546,7 @@ public class LegacyNCPFWriter extends FormatWriter{
                 }
                 block.setConfigList("rules", ruls);
             }
-            LegacyNCPFWriter.saveTexture(block, b.texture.texture);
+            LegacyNCPFWriter.saveTexture(block, b.texture);
             blocks.addConfig(block);
         }
         config.setConfigList("blocks", blocks);
@@ -548,7 +556,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             Config inputCfg = Config.newConfig();
             inputCfg.setString("name", convertElementDefinition(r.definition));
             if(r.names.displayName!=null)inputCfg.setString("displayName", r.names.displayName);
-            LegacyNCPFWriter.saveTexture(inputCfg, r.texture.texture);
+            LegacyNCPFWriter.saveTexture(inputCfg, r.texture);
             recipe.setConfig("input", inputCfg);
             recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
             recipe.setDouble("power", r.stats.power);
