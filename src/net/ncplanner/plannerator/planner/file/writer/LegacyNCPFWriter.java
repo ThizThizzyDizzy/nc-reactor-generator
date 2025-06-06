@@ -657,12 +657,14 @@ public class LegacyNCPFWriter extends FormatWriter{
         return -1;
     }
     private <T> int indexof(T elem, T[] arr){
+        if(elem==null)return -1;
         for(int i = 0; i<arr.length; i++){
             if(arr[i]==elem)return i;
         }
         return -1;
     }
     private <T extends NCPFElement> int indexof(T elem, List<T>... arr){
+        if(elem==null)return -1;
         for(List<T> lst : arr){
             for(int i = 0; i<lst.size(); i++){
                 if(lst.get(i).definition.matches(elem.definition))return i;
@@ -671,6 +673,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         return -1;
     }
     private int indexof(NCPFElementReference elem, List<NCPFElement>... arr){
+        if(elem==null)return -1;
         for(List<NCPFElement> lst : arr){
             for(int i = 0; i<lst.size(); i++){
                 if(lst.get(i).definition.matches(elem.definition))return i;
