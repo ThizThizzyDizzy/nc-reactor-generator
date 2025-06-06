@@ -99,6 +99,23 @@ public abstract class AbstractBlock implements Pinnable{
                 tip+="\n"+mod.getTooltip().trim();
             }
         }
+        if(hasDirectRecipes()){
+            List<? extends IBlockRecipe> recipes = getRecipes();
+            if(recipes.size()==1){
+                NCPFElement recipe = (NCPFElement)recipes.get(0);
+                tip+="\n"+recipe.getDisplayName();
+                for(NCPFModule module : recipe.modules.modules.values()){
+                    if(module instanceof BlockFunctionModule){
+                        BlockFunctionModule mod = (BlockFunctionModule)module;
+                        tip+="\n"+mod.getFunctionName();
+                    }
+                    if(module instanceof ElementStatsModule){
+                        ElementStatsModule mod = (ElementStatsModule)module;
+                        tip+="\n"+mod.getTooltip().trim();
+                    }
+                }
+            }
+        }
         return tip;
     }
     public void render(Renderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
@@ -400,6 +417,13 @@ public abstract class AbstractBlock implements Pinnable{
     public abstract List<? extends IBlockRecipe> getRecipes();
     public abstract NCPFElement getRecipe();
     public abstract void setRecipe(NCPFElement recipe);
+    /**
+     * This method differentiates ports (indirect recipes) from the blocks they provide (direct recipes)
+     * @return whether this block has recipes, that are direct.
+     */
+    public boolean hasDirectRecipes(){
+        return hasRecipes();
+    }
     public boolean isToggled(){
         return false;
     }

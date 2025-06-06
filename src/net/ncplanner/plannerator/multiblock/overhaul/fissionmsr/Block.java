@@ -389,6 +389,10 @@ public class Block extends AbstractBlock{
         return template.fuelVessel!=null||template.irradiator!=null||template.heater!=null;
     }
     @Override
+    public boolean hasDirectRecipes(){
+        return hasRecipes()&&template.parent==null;
+    }
+    @Override
     public List<? extends IBlockRecipe> getRecipes(){
         if(template.parent!=null){
             if(template.parent.fuelVessel!=null)return template.parent.fuels;
@@ -396,9 +400,9 @@ public class Block extends AbstractBlock{
             if(template.parent.heater!=null)return template.parent.heaterRecipes;
             return null;
         }
-        if(template.fuelVessel!=null)return template.parent.fuels;
-        if(template.irradiator!=null)return template.parent.irradiatorRecipes;
-        if(template.heater!=null)return template.parent.heaterRecipes;
+        if(template.fuelVessel!=null)return template.fuels;
+        if(template.irradiator!=null)return template.irradiatorRecipes;
+        if(template.heater!=null)return template.heaterRecipes;
         return null;
     }
     @Override

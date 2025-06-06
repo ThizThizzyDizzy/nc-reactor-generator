@@ -371,6 +371,10 @@ public class Block extends AbstractBlock{
         return template.fuelCell!=null||template.irradiator!=null;
     }
     @Override
+    public boolean hasDirectRecipes(){
+        return hasRecipes()&&template.parent==null;
+    }
+    @Override
     public List<? extends IBlockRecipe> getRecipes(){
         if(template.parent!=null)return template.parent.fuelCell!=null?template.parent.fuels:template.parent.irradiatorRecipes;
         return isFuelCell()?template.fuels:template.irradiatorRecipes;
