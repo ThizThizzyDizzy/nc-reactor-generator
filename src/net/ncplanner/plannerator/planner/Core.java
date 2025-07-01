@@ -191,6 +191,7 @@ public class Core{
             try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
                 while(!glfwWindowShouldClose(window)){
                     String line = reader.readLine();
+                    if(line==null)break;
                     switch(line.trim()){
                         case "fps":
                             System.out.println("FPS: "+getFPS());
