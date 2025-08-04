@@ -77,9 +77,22 @@ public class UnderhaulModule extends Module<Object>{
             }
         }
     };
+    private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeCoolerRecipeOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Cooler Recipes", "Shows the chosen recipe on active coolers", true){
+        @Override
+        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block, Multiblock<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> multiblock){
+            net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
+            if(b.recipe!=null&&b.template.getBlockRecipes().size()>1){
+                renderer.setWhite(.75f);
+                renderer.drawImage(b.recipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
+            }
+        }
+    };
     @Override
     public void getEditorOverlays(Multiblock multiblock, ArrayList overlays){
-        if(multiblock instanceof UnderhaulSFR)overlays.add(activeModeratorOverlay);
+        if(multiblock instanceof UnderhaulSFR){
+            overlays.add(activeModeratorOverlay);
+            overlays.add(activeCoolerRecipeOverlay);
+        }
     }
     @Override
     public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){
