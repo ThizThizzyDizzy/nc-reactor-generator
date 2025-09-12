@@ -3,6 +3,9 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class NCPFOverhaulMSRDesign extends NCPFCuboidalMultiblockDesign{
     public NCPFElement coolantRecipe;
     public NCPFElement[][][] blockRecipes;

@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileReader;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 public class Configuration{
     public static final ArrayList<Configuration> configurations = new ArrayList<>();
     public static final ArrayList<Configuration> internalConfigurations = new ArrayList<>();

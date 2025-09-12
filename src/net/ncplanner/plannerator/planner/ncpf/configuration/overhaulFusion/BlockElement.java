@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConductorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ConnectorModule;
@@ -20,7 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.PoloidalElec
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ReflectorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ShieldingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.ToroidalElectromagnetModule;
-public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
+public class BlockElement extends BlockRecipesElement{
     public ConductorModule conductor;
     public ConnectorModule connector;
     public CoreModule core;
@@ -32,10 +30,6 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
     public ReflectorModule reflector;
     public HeatsinkModule heatsink;
     public List<BreedingBlanketRecipe> breedingBlanketRecipes = new ArrayList<>();
-    public BlockElement(){}
-    public BlockElement(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
@@ -105,5 +99,9 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
         if(module==reflector)reflector = null;
         if(module==heatsink)heatsink = null;
         super.removeModule(module);
+    }
+    @Override
+    public BlockRecipesElement getParent(){
+        return null;
     }
 }

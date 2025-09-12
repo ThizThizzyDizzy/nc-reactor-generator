@@ -312,14 +312,16 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                 underhaulPostLoadMap.clear();
                 for(int i = 0; i<blocks.size(); i++){
                     Config blockCfg = blocks.getConfig(i);
-                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement();
+                    block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                     configuration.blocks.add(block);
                     String active = blockCfg.getString("active");
                     int cooling = blockCfg.getInt("cooling", 0);
                     net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule coolerStats = null;//used to add placement rules
                     if(active!=null){
                         block.activeCooler = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule();
-                        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe(new NCPFLegacyFluidElement(active));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe();
+                        recipe.definition = new NCPFLegacyFluidElement(active);
                         coolerStats = recipe.stats;
                         recipe.stats.cooling = cooling;
                         block.activeCoolerRecipes.add(recipe);
@@ -340,7 +342,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                 ConfigList fuels = fissionSFR.get("fuels");
                 for(int i = 0; i<fuels.size(); i++){
                     Config fuelCfg = fuels.getConfig(i);
-                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel(new NCPFLegacyItemElement(fuelCfg.getString("name")));
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel();
+                    fuel.definition = new NCPFLegacyItemElement(fuelCfg.getString("name"));
                     fuel.stats.power = fuelCfg.getFloat("power");
                     fuel.stats.heat = fuelCfg.getFloat("heat");
                     fuel.stats.time = fuelCfg.getInt("time");
@@ -367,7 +370,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             overhaulSFRPostLoadMap.clear();
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
@@ -402,7 +406,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList fuels = fissionSFR.get("fuels");
             for(int i = 0; i<fuels.size(); i++){
                 Config fuelCfg = fuels.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel(new NCPFLegacyItemElement(fuelCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel();
+                fuel.definition = new NCPFLegacyItemElement(fuelCfg.get("name"));
                 fuel.stats.efficiency = fuelCfg.get("efficiency");
                 fuel.stats.heat = fuelCfg.get("heat");
                 fuel.stats.time = fuelCfg.get("time");
@@ -417,7 +422,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList sources = fissionSFR.get("sources");
             for(int i = 0; i<sources.size(); i++){
                 Config sourceCfg = sources.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(new NCPFLegacyBlockElement(sourceCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(sourceCfg.getString("name"));
                 configuration.blocks.add(block);
                 block.neutronSource = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule();
                 block.neutronSource.efficiency = sourceCfg.get("efficiency");
@@ -425,7 +431,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList irradiatorRecipes = fissionSFR.get("irradiatorRecipes");
             for(int i = 0; i<irradiatorRecipes.size(); i++){
                 Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe(new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe();
+                recipe.definition = new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name"));
                 recipe.stats.efficiency = irradiatorRecipeCfg.get("efficiency");
                 recipe.stats.heat = irradiatorRecipeCfg.get("heat");
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : project.getConfiguration(OverhaulSFRConfiguration::new).blocks){
@@ -437,7 +444,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList coolantRecipes = fissionSFR.get("coolantRecipes");
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input"));
                 recipe.stats.heat = coolantRecipeCfg.get("heat");
                 recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
                 configuration.coolantRecipes.add(recipe);
@@ -461,12 +469,14 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             overhaulMSRPostLoadMap.clear();
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
                     block.heater = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule();
-                    HeaterRecipe recipe = new HeaterRecipe(new NCPFLegacyFluidElement("null"));
+                    HeaterRecipe recipe = new HeaterRecipe();
+                    recipe.definition = new NCPFLegacyFluidElement("null");
                     recipe.stats.cooling = cooling;
                     block.heaterRecipes.add(recipe);
                 }
@@ -498,7 +508,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList fuels = fissionMSR.get("fuels");
             for(int i = 0; i<fuels.size(); i++){
                 Config fuelCfg = fuels.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel(new NCPFLegacyItemElement(fuelCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel();
+                fuel.definition = new NCPFLegacyItemElement(fuelCfg.get("name"));
                 fuel.stats.efficiency = fuelCfg.get("efficiency");
                 fuel.stats.heat = fuelCfg.get("heat");
                 fuel.stats.time = fuelCfg.get("time");
@@ -513,7 +524,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList sources = fissionMSR.get("sources");
             for(int i = 0; i<sources.size(); i++){
                 Config sourceCfg = sources.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(new NCPFLegacyBlockElement(sourceCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(sourceCfg.getString("name"));
                 configuration.blocks.add(block);
                 block.neutronSource = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule();
                 block.neutronSource.efficiency = sourceCfg.get("efficiency");
@@ -521,7 +533,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList irradiatorRecipes = fissionMSR.get("irradiatorRecipes");
             for(int i = 0; i<irradiatorRecipes.size(); i++){
                 Config irradiatorRecipeCfg = irradiatorRecipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe(new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe();
+                recipe.definition = new NCPFLegacyItemElement(irradiatorRecipeCfg.getString("name"));
                 recipe.stats.efficiency = irradiatorRecipeCfg.get("efficiency");
                 recipe.stats.heat = irradiatorRecipeCfg.get("heat");
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
@@ -550,7 +563,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             overhaulTurbinePostLoadMap.clear();
             for(int i = 0; i<coils.size(); i++){
                 Config blockCfg = coils.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.get("name"));
                 configuration.blocks.add(block);
                 if(blockCfg.get("bearing", false))block.bearing = new BearingModule();
                 if(blockCfg.get("connector", false))block.connector = new net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ConnectorModule();
@@ -570,7 +584,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList blades = turbine.get("blades");
             for(int i = 0; i<blades.size(); i++){
                 Config blockCfg = blades.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement blade = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement blade = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement();
+                blade.definition = new NCPFLegacyBlockElement(blockCfg.get("name"));
                 configuration.blocks.add(blade);
                 if(readBladeStator(blade, blockCfg, "stator")){
                     blade.stator = new StatorModule();
@@ -591,7 +606,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList recipes = turbine.get("recipes");
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe(new NCPFLegacyFluidElement(recipeCfg.get("input")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(recipeCfg.get("input"));
                 recipe.stats.power = recipeCfg.get("power");
                 recipe.stats.coefficient = recipeCfg.get("coefficient");
                 configuration.recipes.add(recipe);
@@ -621,7 +637,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             boolean augmented = false;
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement(new NCPFLegacyBlockElement(blockCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.get("name"));
                 configuration.blocks.add(block);
                 int cooling = blockCfg.get("cooling", 0);
                 if(cooling!=0){
@@ -658,7 +675,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
                 Config breedingBlanketRecipeCfg = breedingBlanketRecipes.getConfig(i);
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement b : project.getConfiguration(OverhaulFusionConfiguration::new).blocks){
                     if(b.breedingBlanket!=null){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe(new NCPFLegacyBlockElement(breedingBlanketRecipeCfg.get("name")));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe();
+                        recipe.definition = new NCPFLegacyBlockElement(breedingBlanketRecipeCfg.get("name"));
                         recipe.stats.efficiency = breedingBlanketRecipeCfg.get("efficiency");
                         recipe.stats.heat = ((Number)breedingBlanketRecipeCfg.get("heat")).floatValue();
                         recipe.stats.augmented = augmented;//doesn't work for addons, but fusion addons don't exist this old anyway
@@ -669,7 +687,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList recipes = fusion.get("recipes");
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe(new NCPFLegacyFluidElement(recipeCfg.get("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe();
+                recipe.definition = new NCPFLegacyFluidElement(recipeCfg.get("name"));
                 recipe.stats.efficiency = recipeCfg.get("efficiency");
                 recipe.stats.heat = recipeCfg.get("heat");
                 recipe.stats.time = recipeCfg.get("time");
@@ -679,7 +698,8 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             ConfigList coolantRecipes = fusion.get("coolantRecipes");
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe(new NCPFLegacyFluidElement(coolantRecipeCfg.get("input")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(coolantRecipeCfg.get("input"));
                 recipe.stats.heat = coolantRecipeCfg.get("heat");
                 recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
                 configuration.coolantRecipes.add(recipe);

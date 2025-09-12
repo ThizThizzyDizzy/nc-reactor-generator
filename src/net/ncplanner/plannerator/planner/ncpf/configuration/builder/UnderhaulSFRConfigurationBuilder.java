@@ -10,13 +10,13 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
@@ -34,7 +34,8 @@ public class UnderhaulSFRConfigurationBuilder extends ConfigurationBuilder<Under
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
     public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
-        BlockElement block = new BlockElement(definition);
+        BlockElement block = new BlockElement();
+        block.definition = definition;
         block.names.displayName = displayName;
         block.texture.texture = TextureManager.getImage(texture);
         configuration.blocks.add(block);
@@ -102,7 +103,8 @@ public class UnderhaulSFRConfigurationBuilder extends ConfigurationBuilder<Under
         }
     }
     public ActiveCoolerRecipeBuilder activeRecipe(int cooling, String liquid, String displayName, NCPFPlacementRule... rules){
-        ActiveCoolerRecipe recipe = new ActiveCoolerRecipe(new NCPFLegacyFluidElement(liquid));
+        ActiveCoolerRecipe recipe = new ActiveCoolerRecipe();
+        recipe.definition = new NCPFLegacyFluidElement(liquid);
         recipe.names.displayName = displayName;
         recipe.stats.cooling = cooling;
         for(NCPFPlacementRule r : rules){
@@ -181,7 +183,8 @@ public class UnderhaulSFRConfigurationBuilder extends ConfigurationBuilder<Under
         return rule;
     }
     public Fuel fuel(String name, String displayName, float power, float heat, int time, String texture){
-        Fuel fuel = new Fuel(new NCPFLegacyItemElement(name));
+        Fuel fuel = new Fuel();
+        fuel.definition = new NCPFLegacyItemElement(name);
         fuel.stats.power = power;
         fuel.stats.heat = heat;
         fuel.stats.time = time;

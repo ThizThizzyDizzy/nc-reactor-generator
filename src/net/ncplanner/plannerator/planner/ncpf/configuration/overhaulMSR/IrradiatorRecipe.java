@@ -1,17 +1,12 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorStatsModule;
 public class IrradiatorRecipe extends NamedTexturedNCPFElement implements IBlockRecipe{
     public IrradiatorStatsModule stats = new IrradiatorStatsModule();
-    public IrradiatorRecipe(){}
-    public IrradiatorRecipe(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

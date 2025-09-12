@@ -8,10 +8,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFEle
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 public class ActiveCoolerRecipe extends NamedTexturedNCPFElement implements IBlockRecipe{
     public CoolerModule stats = new CoolerModule();
-    public ActiveCoolerRecipe(){}
-    public ActiveCoolerRecipe(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

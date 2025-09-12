@@ -1,11 +1,14 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class StatorModule extends BlockFunctionModule implements ElementStatsModule{
     public float expansion;
     public StatorModule(){
         super("nuclearcraft:overhaul_turbine:stator");
-        addFloat("expansion", ()->expansion, (v)->expansion = v, "Expansion");
+        addFloat("expansion", () -> expansion, (v) -> expansion = v, "Expansion");
     }
     @Override
     public String getFunctionName(){

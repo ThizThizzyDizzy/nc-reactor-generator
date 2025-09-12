@@ -3,13 +3,17 @@ import java.util.HashMap;
 import java.util.Set;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class MetadataModule extends NCPFModule{
     public HashMap<String, String> metadata = new HashMap<>();
     public MetadataModule(){
         super("plannerator:metadata");
     }
     @Override
-    public void conglomerate(NCPFModule addon){}
+    public void conglomerate(NCPFModule addon){
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String key : ncpf.keySet())metadata.put(key, ncpf.getString(key));

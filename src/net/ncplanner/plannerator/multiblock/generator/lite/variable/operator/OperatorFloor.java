@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.Con
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class OperatorFloor extends VariableInt implements Operator{
     public SettingVariable<Number> v = new SettingVariable(null, new ConstInt(0));
     private boolean expanded;

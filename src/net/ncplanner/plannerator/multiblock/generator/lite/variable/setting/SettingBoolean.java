@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.OptionButton;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class SettingBoolean extends Parameter<Boolean> implements Setting<Boolean>{
     private boolean value;
     private String otherName;

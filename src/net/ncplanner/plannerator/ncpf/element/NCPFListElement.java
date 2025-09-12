@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFListElement extends NCPFSettingsElement{
     public ArrayList<NCPFElementDefinition> elements = new ArrayList<>();
     public NCPFListElement(){
         super("list");
-        addElementsList("elements", ()->elements, (elems)->elements = elems, "Elements");
+        addElementsList("elements", () -> elements, (elems) -> elements = elems, "Elements");
     }
     public NCPFListElement(NCPFElementDefinition... definitions){
         this();

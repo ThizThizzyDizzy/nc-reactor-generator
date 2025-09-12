@@ -1,14 +1,17 @@
 package net.ncplanner.plannerator.ncpf.element;
 import java.util.HashMap;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFBlockElement extends NCPFSettingsElement{
     public String name = "";
     public HashMap<String, Object> blockstate = new HashMap<>();
     public String nbt;
     public NCPFBlockElement(){
         super("block");
-        addString("name", ()->name, (v)->name = v, "Name", Type.NAMESPACED_NAME);
-        addBlockstate(()->blockstate, (v)->blockstate = v);
-        addString("nbt", ()->nbt, (v)->nbt = v, "NBT Tag", Type.NBT);
+        addString("name", () -> name, (v) -> name = v, "Name", Type.NAMESPACED_NAME);
+        addBlockstate(() -> blockstate, (v) -> blockstate = v);
+        addString("nbt", () -> nbt, (v) -> nbt = v, "NBT Tag", Type.NBT);
     }
     public NCPFBlockElement(String name){
         this();

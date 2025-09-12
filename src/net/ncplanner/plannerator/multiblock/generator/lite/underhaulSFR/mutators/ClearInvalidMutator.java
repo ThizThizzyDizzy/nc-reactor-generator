@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = UnderhaulModule.class)
 public class ClearInvalidMutator extends Mutator<LiteUnderhaulSFR>{
     public ClearInvalidMutator(){
         super("nuclearcraft:underhaul_sfr:clear_invalid");
@@ -36,9 +39,12 @@ public class ClearInvalidMutator extends Mutator<LiteUnderhaulSFR>{
         return null;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){}
+    public void convertFromObject(NCPFObject ncpf){
+    }
     @Override
-    public void convertToObject(NCPFObject ncpf){}
+    public void convertToObject(NCPFObject ncpf){
+    }
     @Override
-    public void init(LiteUnderhaulSFR multiblock){}
+    public void init(LiteUnderhaulSFR multiblock){
+    }
 }

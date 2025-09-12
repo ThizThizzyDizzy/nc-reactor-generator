@@ -26,6 +26,6 @@ public class ToolPart extends SimpleBlock{
     }
     @Override
     public NCPFElement getTemplate(){
-        return new NCPFElement(new UnknownNCPFElement());
+        return new NCPFElement();
     }
 }

@@ -47,7 +47,8 @@ public class MenuPlacementRuleConfiguration extends ConfigurationMenu{
                 NCPFElementReference reference = rule.target;
                 NCPFElement target = reference==null?null:reference.target;
                 if(reference instanceof NCPFModuleReference){
-                    target = new NCPFElement(new NCPFModuleElement(((NCPFModuleReference)reference).module));
+                    target = new NCPFElement();
+                    target.definition = new NCPFModuleElement(((NCPFModuleReference)reference).module);
                 }
                 panel.add(new NCPFElementComponent(target).addIconButton("pencil", "Change Target", () -> {
                     new MenuPickReference(this, cnfg, config, true, (ref)->{

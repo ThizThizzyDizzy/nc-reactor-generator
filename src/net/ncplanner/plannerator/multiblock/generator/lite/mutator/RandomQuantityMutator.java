@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.constant.ConstInt;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class RandomQuantityMutator<T extends LiteMultiblock> extends GeneratorMutator<T>{
     public SettingVariable<Integer> min = new SettingVariable<>("Minimum tries", new ConstInt(1));
     public SettingVariable<Integer> max = new SettingVariable<>("Maximum tries", new ConstInt(100));

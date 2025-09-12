@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
 import java.util.HashMap;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     public String name = "";
     public Integer metadata;
@@ -8,10 +11,10 @@ public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     public String nbt;
     public NCPFLegacyBlockElement(){
         super("legacy_block");
-        addString("name", ()->name, (v)->name = v, "Name", Type.NAMESPACED_NAME);
-        addMetadata(()->metadata, (v)->metadata = v);
-        addBlockstate(()->blockstate, (v)->blockstate = v);
-        addString("nbt", ()->nbt, (v)->nbt = v, "NBT Tag", Type.NBT);
+        addString("name", () -> name, (v) -> name = v, "Name", Type.NAMESPACED_NAME);
+        addMetadata(() -> metadata, (v) -> metadata = v);
+        addBlockstate(() -> blockstate, (v) -> blockstate = v);
+        addString("nbt", () -> nbt, (v) -> nbt = v, "NBT Tag", Type.NBT);
     }
     public NCPFLegacyBlockElement(String name){
         this();

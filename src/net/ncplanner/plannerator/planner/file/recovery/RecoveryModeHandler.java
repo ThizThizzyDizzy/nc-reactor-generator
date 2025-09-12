@@ -77,7 +77,7 @@ public class RecoveryModeHandler implements RecoveryHandler{
         return recoverFallbackID(block.fuelVessel!=null?"fuel":"recipe", id, list, fallbackList, true);
     }
     @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id){
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id){
         return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).recipes, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes, false);
     }
     @Override

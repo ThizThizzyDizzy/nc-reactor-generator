@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.VariableFloa
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class ConstRandom extends VariableFloat implements Constant{
     Random rand = new Random();
     public ConstRandom(){
@@ -13,13 +16,16 @@ public class ConstRandom extends VariableFloat implements Constant{
     public float getValue(){
         return rand.nextFloat();
     }
-    public void addSettings(SingleColumnList list, MenuGenerator menu){}
+    public void addSettings(SingleColumnList list, MenuGenerator menu){
+    }
     @Override
     public String getType(){
         return "random";
     }
     @Override
-    public void convertToObject(NCPFObject ncpf){}
+    public void convertToObject(NCPFObject ncpf){
+    }
     @Override
-    public void convertFromObject(NCPFObject ncpf){}
+    public void convertFromObject(NCPFObject ncpf){
+    }
 }

@@ -28,6 +28,7 @@ import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
@@ -41,12 +42,12 @@ import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulFusionSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulFusionSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulMSRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulTurbineSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
-import net.ncplanner.plannerator.planner.ncpf.module.UnderhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantVentModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CoilModule;
@@ -481,7 +482,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(postLoadBlockFromIndex(project, UnderhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
+                    rule.target = new BlockReference(postLoadBlockFromIndex(project, UnderhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -493,7 +494,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(postLoadBlockFromIndex(project, OverhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
+                    rule.target = new BlockReference(postLoadBlockFromIndex(project, OverhaulSFRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -505,7 +506,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(postLoadBlockFromIndex(project, OverhaulMSRConfiguration::new, (cfg)->cfg.blocks, index-1));
+                    rule.target = new BlockReference(postLoadBlockFromIndex(project, OverhaulMSRConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -517,7 +518,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 rule.target = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
             }else{
                 try{
-                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(postLoadBlockFromIndex(project, OverhaulTurbineConfiguration::new, (cfg)->cfg.blocks, index-1));
+                    rule.target = new BlockReference(postLoadBlockFromIndex(project, OverhaulTurbineConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -529,7 +530,7 @@ public class LegacyNCPF11Reader implements FormatReader {
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
                 try{
-                    rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockReference(postLoadBlockFromIndex(project, OverhaulFusionConfiguration::new, (cfg)->cfg.blocks, index-1));
+                    rule.target = new BlockReference(postLoadBlockFromIndex(project, OverhaulFusionConfiguration::new, (cfg)->cfg.blocks, index-1));
                 }catch(IndexOutOfBoundsException ex){
                     throw new RuntimeException("Invalid block index "+index+" for rules of "+postNames.get(rule)+"!", ex);
                 }
@@ -630,7 +631,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 }
                 for(int i = 0; i<blocks.size(); i++){
                     Config blockCfg = blocks.getConfig(i);
-                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement();
+                    block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                     configuration.blocks.add(block);
                     block.names.displayName = blockCfg.getString("displayName");
                     if(blockCfg.hasProperty("legacyNames")){
@@ -648,7 +650,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(active!=null){
                         block.activeCooler = new net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule();
                         ((NCPFLegacyBlockElement)block.definition).metadata = null;
-                        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe(new NCPFLegacyFluidElement(active));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe();
+                        recipe.definition = new NCPFLegacyFluidElement(active);
                         coolerStats = recipe.stats;
                         recipe.stats.cooling = cooling;
                         block.activeCoolerRecipes.add(recipe);
@@ -671,7 +674,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 ConfigList fuels = fissionSFR.getConfigList("fuels");
                 for(int i = 0; i<fuels.size(); i++){
                     Config fuelCfg = fuels.getConfig(i);
-                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel(new NCPFLegacyItemElement(fuelCfg.getString("name")));
+                    net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel();
+                    fuel.definition = new NCPFLegacyItemElement(fuelCfg.getString("name"));
                     fuel.stats.power = fuelCfg.getFloat("power");
                     fuel.stats.heat = fuelCfg.getFloat("heat");
                     fuel.stats.time = fuelCfg.getInt("time");
@@ -710,7 +714,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement theBlockThatThisBlockIsAnAddonRecipeBlockFor = null;
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 if (loadingAddon) {
                     for (net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : parent.getConfiguration(OverhaulSFRConfiguration::new).blocks) {
@@ -741,7 +746,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         ((NCPFLegacyBlockElement)block.definition).blockstate.put("active", false);
 
                         block.coolantVent = new CoolantVentModule(false);
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                        output.definition = block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true);
                         output.casing = block.casing.copyTo(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new);
                         output.coolantVent = new CoolantVentModule(true);
                         if(coolantVentCfg.hasProperty("outTexture"))output.texture.texture = loadNCPFTexture(coolantVentCfg.getConfigNumberList("outTexture"));
@@ -773,8 +779,9 @@ public class LegacyNCPF11Reader implements FormatReader {
                         block.moderator = null;//don't double it up
                         block.neutronShield.heatPerFlux = shieldCfg.getInt("heat");
                         block.neutronShield.efficiency = shieldCfg.getFloat("efficiency");
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true));
-                        block.neutronShield.closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(closed);
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                        closed.definition = block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true);
+                        block.neutronShield.closed = new BlockReference(closed);
                         if(shieldCfg.hasProperty("closedTexture"))closed.texture.texture = loadNCPFTexture(shieldCfg.getConfigNumberList("closedTexture"));
                         additionalBlocks.add(closed);
                     }
@@ -792,14 +799,16 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(hasRecipes && (loadingAddon || !isAddon)){
                         Config portCfg = blockCfg.getConfig("port");
                         
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(new NCPFLegacyBlockElement(portCfg.getString("name")).with("active", false));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                        input.definition = new NCPFLegacyBlockElement(portCfg.getString("name")).with("active", false);
                         input.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule(false);
                         input.port = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule(false);
                         input.names.displayName = portCfg.getString("inputDisplayName");
                         if(portCfg.hasProperty("inputTexture"))input.texture.texture = loadNCPFTexture(portCfg.getConfigNumberList("inputTexture"));
                         configuration.blocks.add(input);
                         
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement(input.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement();
+                        output.definition = input.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true);
                         output.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule(false);
                         output.port = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule(true);
                         output.names.displayName = portCfg.getString("outputDisplayName");
@@ -807,8 +816,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         additionalBlocks.add(output);
                         
                         block.recipePorts = new net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule();
-                        block.recipePorts.input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(input);
-                        block.recipePorts.output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(output);
+                        block.recipePorts.input = new BlockReference(input);
+                        block.recipePorts.output = new BlockReference(output);
                     }
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.getConfigList("rules");
@@ -826,7 +835,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     NCPFElement recip = null;
                     TextureModule texture = null;
                     if(isFuelCell){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel(new NCPFLegacyItemElement(name));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel();
+                        fuel.definition = new NCPFLegacyItemElement(name);
                         //TODO output
                         recip = fuel;
                         recipeNames = fuel.names;
@@ -840,7 +850,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         block.fuels.add(fuel);
                     }
                     if(isIrradiator){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe(new NCPFLegacyItemElement(name));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe();
+                        recipe.definition = new NCPFLegacyItemElement(name);
                         //TODO output
                         recip = recipe;
                         recipeNames = recipe.names;
@@ -868,7 +879,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 Config inputCfg = coolantRecipeCfg.getConfig("input");
                 Config outputCfg = coolantRecipeCfg.getConfig("output");
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe(new NCPFLegacyFluidElement(inputCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
                 //TODO output
                 recipe.stats.heat = coolantRecipeCfg.getInt("heat");
                 recipe.stats.outputRatio = coolantRecipeCfg.getFloat("outputRatio");
@@ -905,7 +917,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement theBlockThatThisBlockIsAnAddonRecipeBlockFor = null;
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 if (loadingAddon) {
                     for (net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b : parent.getConfiguration(OverhaulMSRConfiguration::new).blocks) {
@@ -957,8 +970,9 @@ public class LegacyNCPF11Reader implements FormatReader {
                         block.moderator = null;
                         block.neutronShield.heatPerFlux = shieldCfg.getInt("heat");
                         block.neutronShield.efficiency = shieldCfg.getFloat("efficiency");
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true));
-                        block.neutronShield.closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(closed);
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement closed = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                        closed.definition = block.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true);
+                        block.neutronShield.closed = new BlockReference(closed);
                         if(shieldCfg.hasProperty("closedTexture"))closed.texture.texture = loadNCPFTexture(shieldCfg.getConfigNumberList("closedTexture"));
                         additionalBlocks.add(closed);
                     }
@@ -976,14 +990,16 @@ public class LegacyNCPF11Reader implements FormatReader {
                     if(hasRecipes && (loadingAddon || !isAddon)){
                         Config portCfg = blockCfg.getConfig("port");
                         
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(new NCPFLegacyBlockElement(portCfg.getString("name")).with("active", false));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                        input.definition = new NCPFLegacyBlockElement(portCfg.getString("name")).with("active", false);
                         input.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule(false);
                         input.port = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule(false);
                         input.names.displayName = portCfg.getString("inputDisplayName");
                         if(portCfg.hasProperty("inputTexture"))input.texture.texture = loadNCPFTexture(portCfg.getConfigNumberList("inputTexture"));
                         configuration.blocks.add(input);
                         
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement(input.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement();
+                        output.definition = input.definition.copyTo(NCPFLegacyBlockElement::new).with("active", true);
                         output.casing = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule(false);
                         output.port = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule(true);
                         output.names.displayName = portCfg.getString("outputDisplayName");
@@ -991,8 +1007,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         additionalBlocks.add(output);
 
                         block.recipePorts = new net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule();
-                        block.recipePorts.input = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(input);
-                        block.recipePorts.output = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(output);
+                        block.recipePorts.input = new BlockReference(input);
+                        block.recipePorts.output = new BlockReference(output);
                     }
                     if(blockCfg.hasProperty("rules")){
                         ConfigList rules = blockCfg.getConfigList("rules");
@@ -1010,7 +1026,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     NCPFElement recip = null;
                     TextureModule texture = null;
                     if(isFuelVessel){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel(new NCPFLegacyFluidElement(name));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel fuel = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel();
+                        fuel.definition = new NCPFLegacyFluidElement(name);
                         recip = fuel;
                         recipeNames = fuel.names;
                         texture = fuel.texture;
@@ -1023,7 +1040,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         block.fuels.add(fuel);
                     }
                     if(isIrradiator){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe(new NCPFLegacyItemElement(name));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe();
+                        recipe.definition = new NCPFLegacyItemElement(name);
                         recip = recipe;
                         recipeNames = recipe.names;
                         texture = recipe.texture;
@@ -1033,7 +1051,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                         block.irradiatorRecipes.add(recipe);
                     }
                     if(isHeater){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe(new NCPFLegacyFluidElement(name));
+                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe();
+                        recipe.definition = new NCPFLegacyFluidElement(name);
                         recip = recipe;
                         recipeNames = recipe.names;
                         texture = recipe.texture;
@@ -1075,7 +1094,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             ConfigList blocks = turbine.getConfigList("blocks");
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 block.names.displayName = blockCfg.getString("displayName");
                 if(blockCfg.hasProperty("legacyNames")){
@@ -1123,7 +1143,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
                 Config inputCfg = recipeCfg.getConfig("input");
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe(new NCPFLegacyFluidElement(inputCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
                 recipe.stats.power = recipeCfg.getDouble("power");
                 recipe.stats.coefficient = recipeCfg.getDouble("coefficient");
                 recipe.names.displayName = inputCfg.getString("displayName");
@@ -1163,7 +1184,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             ConfigList blocks = fusion.getConfigList("blocks");
             for(int i = 0; i<blocks.size(); i++){
                 Config blockCfg = blocks.getConfig(i);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement(new NCPFLegacyBlockElement(blockCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement();
+                block.definition = new NCPFLegacyBlockElement(blockCfg.getString("name"));
                 configuration.blocks.add(block);
                 block.names.displayName = blockCfg.getString("displayName");
                 if(blockCfg.hasProperty("legacyNames")){
@@ -1214,7 +1236,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     Config recipeCfg = recipes.get(idx);
                     Config inputCfg = recipeCfg.getConfig("input");
                     Config outputCfg = recipeCfg.getConfig("output");
-                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe(new NCPFLegacyItemElement(inputCfg.getString("name")));
+                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe();
+                    recipe.definition = new NCPFLegacyItemElement(inputCfg.getString("name"));
                     recipe.names.displayName = inputCfg.getString("displayName");
                     if(inputCfg.hasProperty("legacyNames")){
                         ConfigList names = inputCfg.getConfigList("legacyNames");
@@ -1237,7 +1260,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<recipes.size(); i++){
                 Config recipeCfg = recipes.getConfig(i);
                 Config inputCfg = recipeCfg.getConfig("input");
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe(new NCPFLegacyFluidElement(inputCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe();
+                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
                 recipe.stats.efficiency = recipeCfg.getFloat("efficiency");
                 recipe.stats.heat = recipeCfg.getInt("heat");
                 recipe.stats.time = recipeCfg.getInt("time");
@@ -1259,7 +1283,8 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 Config inputCfg = coolantRecipeCfg.getConfig("input");
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe(new NCPFLegacyFluidElement(inputCfg.getString("name")));
+                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe();
+                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
                 recipe.stats.heat = coolantRecipeCfg.getInt("heat");
                 recipe.stats.outputRatio = coolantRecipeCfg.getFloat("outputRatio");
                 recipe.names.displayName = inputCfg.getString("displayName");

@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
@@ -18,6 +19,8 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, OverhaulMSR>{
     public BlockElement[][][] design;
     public Fuel[][][] fuels;
@@ -38,9 +41,9 @@ public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, O
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulMSRConfiguration::new).blocks);
-        match3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement vessel)->matchElement(vessel).fuels, (BlockElement vessel)->matchModule(vessel, FuelVesselModule::new));
-        match3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement irradiator)->matchElement(irradiator).irradiatorRecipes, (BlockElement irradiator)->matchModule(irradiator, IrradiatorModule::new));
-        match3DArrayConditional(definition.blockRecipes, heaterRecipes = new HeaterRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement heater)->matchElement(heater).heaterRecipes, (BlockElement heater)->matchModule(heater, HeaterModule::new));
+        match3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement vessel) -> matchElement(vessel).fuels, (BlockElement vessel) -> matchModule(vessel, FuelVesselModule::new));
+        match3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement irradiator) -> matchElement(irradiator).irradiatorRecipes, (BlockElement irradiator) -> matchModule(irradiator, IrradiatorModule::new));
+        match3DArrayConditional(definition.blockRecipes, heaterRecipes = new HeaterRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement heater) -> matchElement(heater).heaterRecipes, (BlockElement heater) -> matchModule(heater, HeaterModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
@@ -78,9 +81,9 @@ public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, O
     public void convertElements(){
         OverhaulMSRConfiguration config = file.getConfiguration(OverhaulMSRConfiguration::new);
         convertElements(design, config);
-        convertRecipes(design, fuels, (b)->b.fuels, config);
-        convertRecipes(design, irradiatorRecipes, (b)->b.irradiatorRecipes, config);
-        convertRecipes(design, heaterRecipes, (b)->b.heaterRecipes, config);
+        convertRecipes(design, fuels, (b) -> b.fuels, config);
+        convertRecipes(design, irradiatorRecipes, (b) -> b.irradiatorRecipes, config);
+        convertRecipes(design, heaterRecipes, (b) -> b.heaterRecipes, config);
     }
     @Override
     public Set<NCPFElementDefinition> getElements(){

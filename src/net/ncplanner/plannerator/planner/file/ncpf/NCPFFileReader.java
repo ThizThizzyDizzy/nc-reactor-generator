@@ -29,7 +29,7 @@ import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;

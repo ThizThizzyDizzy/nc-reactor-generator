@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class PortModule extends BlockFunctionModule{
     public boolean output;
     public PortModule(){
         super("nuclearcraft:overhaul_sfr:port");
-        addBoolean("output", ()->output, (v)->output = v, "Output");
+        addBoolean("output", () -> output, (v) -> output = v, "Output");
     }
     public PortModule(boolean output){
         this();

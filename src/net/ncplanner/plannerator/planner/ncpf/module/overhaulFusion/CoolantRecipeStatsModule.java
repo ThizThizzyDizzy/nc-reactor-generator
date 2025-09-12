@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = FusionTestModule.class)
 public class CoolantRecipeStatsModule extends NCPFStatsModule{
     public int heat;
     public float outputRatio;

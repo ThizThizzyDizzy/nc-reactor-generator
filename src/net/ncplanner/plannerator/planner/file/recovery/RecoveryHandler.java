@@ -9,7 +9,7 @@ public interface RecoveryHandler{
     public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, int id);
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlockLegacyNCPF(Project ncpf, int id);
     public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, int id);
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id);
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement recoverOverhaulTurbineBlockLegacyNCPF(Project ncpf, int id);
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recoverOverhaulFusionCoolantRecipeLegacyNCPF(Project ncpf, int id);
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recoverOverhaulFusionRecipeLegacyNCPF(Project ncpf, int id);

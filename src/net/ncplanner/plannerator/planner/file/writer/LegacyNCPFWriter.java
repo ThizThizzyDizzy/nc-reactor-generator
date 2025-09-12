@@ -38,7 +38,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfi
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
@@ -551,7 +551,7 @@ public class LegacyNCPFWriter extends FormatWriter{
         }
         config.setConfigList("blocks", blocks);
         ConfigList recipes = new ConfigList();
-        for(Recipe r : turbine.recipes){
+        for(TurbineRecipe r : turbine.recipes){
             Config recipe = Config.newConfig();
             Config inputCfg = Config.newConfig();
             inputCfg.setString("name", convertElementDefinition(r.definition));

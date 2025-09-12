@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.planner.ncpf.module;
 import net.ncplanner.plannerator.ncpf.ConglomerationError;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NuclearCraftGeneratedModule extends NCPFModule{
     public String ncVersion;
     public NuclearCraftGeneratedModule(){

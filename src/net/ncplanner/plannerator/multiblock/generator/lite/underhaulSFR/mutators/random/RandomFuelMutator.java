@@ -5,6 +5,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnde
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingIndicies;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = UnderhaulModule.class)
 public class RandomFuelMutator extends Mutator<LiteUnderhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Fuels");
     public RandomFuelMutator(){
@@ -43,5 +46,6 @@ public class RandomFuelMutator extends Mutator<LiteUnderhaulSFR>{
         indicies.init(multiblock.configuration.fuelDisplayName, multiblock.configuration.fuelDisplayTexture);
     }
     @Override
-    public void init(LiteUnderhaulSFR multiblock){}
+    public void init(LiteUnderhaulSFR multiblock){
+    }
 }

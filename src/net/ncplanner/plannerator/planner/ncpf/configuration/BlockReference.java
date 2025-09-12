@@ -1,16 +1,17 @@
-package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
+package net.ncplanner.plannerator.planner.ncpf.configuration;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-public class BlockReference extends NCPFElementReference{
-    public static BlockReference create(BlockElement blockElement){
-        BlockReference ref = new BlockReference(blockElement);
+public class BlockReference<BlockElement extends NCPFElement> extends NCPFElementReference{
+    public static <BlockElement extends NCPFElement> BlockReference<BlockElement> create(BlockElement blockElement){
+        BlockReference<BlockElement> ref = new BlockReference<>(blockElement);
         ref.target = ref.block;
         return ref;
     }
     public BlockElement block;
-    public BlockReference(){}
+    public BlockReference(){
+    }
     public BlockReference(BlockElement block){
         super(block.definition);
         this.block = block;
@@ -23,6 +24,7 @@ public class BlockReference extends NCPFElementReference{
     @Override
     public void setReferences(List<NCPFElement> elements, boolean soft){
         super.setReferences(elements, soft);
-        if(target instanceof BlockElement)block = (BlockElement)target;//it's not convertable when conglomerating
+        // When conglomerating, it's only a `NCPFElement`. Otherwise, I can't instanceof BlockElement, but I can instanceof an intermediary
+        if(target instanceof NamedTexturedNCPFElement)block = (BlockElement)target;
     }
 }

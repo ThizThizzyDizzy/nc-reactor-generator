@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.mutator.Mutator;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class ClearInvalidMutator extends Mutator<LiteOverhaulSFR>{
     public ClearInvalidMutator(){
         super("nuclearcraft:overhaul_sfr:clear_invalid");
@@ -36,9 +39,12 @@ public class ClearInvalidMutator extends Mutator<LiteOverhaulSFR>{
         return null;
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){}
+    public void convertFromObject(NCPFObject ncpf){
+    }
     @Override
-    public void convertToObject(NCPFObject ncpf){}
+    public void convertToObject(NCPFObject ncpf){
+    }
     @Override
-    public void init(LiteOverhaulSFR multiblock){}
+    public void init(LiteOverhaulSFR multiblock){
+    }
 }

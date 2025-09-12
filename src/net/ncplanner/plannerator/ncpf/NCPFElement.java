@@ -16,10 +16,6 @@ import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, Supplier<NCPFElement>{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
     public NCPFElementDefinition definition = new UnknownNCPFElement();
-    public NCPFElement(){}
-    public NCPFElement(NCPFElementDefinition definition){
-        this.definition = definition;
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         definition = recognizedElements.getOrDefault(ncpf.getString("type"), UnknownNCPFElement::new).get();
@@ -97,6 +93,7 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, S
         }
     }
     public void removeModule(NCPFModule module){
+        definedPlanneratorModules.forEach((mod) -> mod.removeModule(module));
         modules.removeModule(module);
     }
     @Override

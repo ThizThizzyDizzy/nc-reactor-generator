@@ -4,6 +4,9 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class GlobalElementsModule extends NCPFModule{
     public List<NCPFElement> elements = new ArrayList<>();
     public GlobalElementsModule(){

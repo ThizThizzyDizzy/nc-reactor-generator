@@ -12,15 +12,15 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ControllerModule;
@@ -61,7 +61,8 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
     public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
-        BlockElement block = new BlockElement(definition);
+        BlockElement block = new BlockElement();
+        block.definition = definition;
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
@@ -186,7 +187,8 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         }
     }
     public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, NCPFElement output, float efficiency, float heat){
-        IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
+        IrradiatorRecipe recipe = new IrradiatorRecipe();
+        recipe.definition = definition;
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
@@ -197,7 +199,8 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         return new IrradiatorRecipeBuilder(recipe);
     }
     public Fuel fuel(String inputOredict, String inputName, String inputDisplayName, String inputTexture, String outputOredict, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
-        Fuel fuel = new Fuel(new NCPFOredictElement(inputOredict));
+        Fuel fuel = new Fuel();
+        fuel.definition = new NCPFOredictElement(inputOredict);
         globalElement(new NCPFLegacyItemElement(inputName), inputDisplayName, inputTexture).oredict(inputOredict);
         fuel.names.displayName = inputDisplayName;
         fuel.withModuleOrCreate(LegacyNamesModule::new, (legacyNames)->{
@@ -221,7 +224,8 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         return coolantRecipe(new NCPFLegacyFluidElement(inputName), inputDisplayName, inputTexture, output, heat, outputRatio);
     }
     public CoolantRecipe coolantRecipe(NCPFElementDefinition input, String inputDisplayName, String inputTexture, NCPFElement output, int heat, float outputRatio){
-        CoolantRecipe recipe = new CoolantRecipe(input);
+        CoolantRecipe recipe = new CoolantRecipe();
+        recipe.definition = input;
         recipe.stats.heat = heat;
         recipe.stats.outputRatio = outputRatio;
         recipe.stats.output = new NCPFElementReference(output);

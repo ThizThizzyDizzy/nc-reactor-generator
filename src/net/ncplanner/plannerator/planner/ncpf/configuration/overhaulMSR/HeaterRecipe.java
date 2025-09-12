@@ -8,10 +8,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFEle
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
 public class HeaterRecipe extends NamedTexturedNCPFElement implements IBlockRecipe{
     public HeaterStatsModule stats = new HeaterStatsModule();
-    public HeaterRecipe(){}
-    public HeaterRecipe(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

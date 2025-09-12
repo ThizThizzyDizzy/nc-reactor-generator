@@ -12,7 +12,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 public class Project extends NCPFFile{
     public MetadataModule metadata = new MetadataModule();

@@ -6,11 +6,14 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = FusionTestModule.class)
 public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinition, OverhaulFusionReactor>{
     public int innerRadius, coreSize, toroidWidth, liningThickness;
     public Recipe recipe;
@@ -83,7 +86,7 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
     public void convertElements(){
         OverhaulFusionConfiguration config = file.getConfiguration(OverhaulFusionConfiguration::new);
         convertElements(design, config);
-        convertRecipes(design, breedingBlanketRecipes, (b)->b.breedingBlanketRecipes, config);
+        convertRecipes(design, breedingBlanketRecipes, (b) -> b.breedingBlanketRecipes, config);
         recipe = convertElement(recipe, config);
         coolantRecipe = convertElement(coolantRecipe, config);
     }

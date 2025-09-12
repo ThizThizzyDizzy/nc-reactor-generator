@@ -1,5 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = FusionTestModule.class)
 public class RecipeStatsModule extends NCPFStatsModule{
     public float efficiency;
     public int heat;
@@ -7,10 +10,10 @@ public class RecipeStatsModule extends NCPFStatsModule{
     public float fluxiness;
     public RecipeStatsModule(){
         super("plannerator:fusion_test:recipe_stats");
-        addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
-        addInteger("heat", ()->heat, (v)->heat = v, "Base Heat");
-        addFloat("fluxiness", ()->fluxiness, (v)->fluxiness = v, "Fluxiness");
-        addInteger("time", ()->time, (v)->time = v, "Base Time");
+        addFloat("efficiency", () -> efficiency, (v) -> efficiency = v, "Efficiency");
+        addInteger("heat", () -> heat, (v) -> heat = v, "Base Heat");
+        addFloat("fluxiness", () -> fluxiness, (v) -> fluxiness = v, "Fluxiness");
+        addInteger("time", () -> time, (v) -> time = v, "Base Time");
     }
     @Override
     public String getFriendlyName(){

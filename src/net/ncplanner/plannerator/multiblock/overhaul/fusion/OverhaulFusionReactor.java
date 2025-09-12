@@ -27,6 +27,7 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.MenuResizeFusion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
@@ -35,7 +36,9 @@ import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResizeFusion;
-public class OverhaulFusionReactor extends Multiblock<Block> {
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = FusionTestModule.class)
+public class OverhaulFusionReactor extends Multiblock<Block>{
     public CoolantRecipe coolantRecipe;
     public int innerRadius;
     public int coreSize;
@@ -166,7 +169,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         }
     }
     @Override
-    public void genCalcSubtasks(){}
+    public void genCalcSubtasks(){
+    }
     @Override
     public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
         Task calcBreeding = calculateTask.addSubtask(new Task("Calculating Breeding Blankets"));
@@ -203,7 +207,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         for(int i = 0; i<allBlocks.size(); i++){
             Block block = allBlocks.get(i);//detect clusters and shieldniness too
             if(block.isShielding()){
-                shieldinessFactor+=block.template.shielding.shieldiness;
+                shieldinessFactor += block.template.shielding.shieldiness;
             }
             Cluster cluster = getCluster(block);
             if(cluster==null)continue;//that's not a cluster!
@@ -214,7 +218,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             buildClusters.progress = i/(double)allBlocks.size();
         }
         buildClusters.finish();
-        shieldinessFactor/=getPlasmaSurfaceArea();
+        shieldinessFactor /= getPlasmaSurfaceArea();
         synchronized(clusters){
             for(int i = 0; i<clusters.size(); i++){
                 Cluster cluster = clusters.get(i);
@@ -224,38 +228,39 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                     if(b.isHeatingBlanketActive()){
                         heatingBlankets++;
                         cluster.totalOutput += recipe.stats.heat*b.efficiency;
-                        cluster.efficiency+=b.efficiency;
-                        cluster.totalHeat+=recipe.stats.heat*b.heatMult;
-                        cluster.heatMult+=b.heatMult;
+                        cluster.efficiency += b.efficiency;
+                        cluster.totalHeat += recipe.stats.heat*b.heatMult;
+                        cluster.heatMult += b.heatMult;
                     }
                     if(b.isHeatsinkActive()){
-                        cluster.totalCooling+=b.template.heatsink.cooling;
+                        cluster.totalCooling += b.template.heatsink.cooling;
                     }
                     calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                 }
-                cluster.efficiency/=heatingBlankets;
-                cluster.heatMult/=heatingBlankets;
+                cluster.efficiency /= heatingBlankets;
+                cluster.heatMult /= heatingBlankets;
                 if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
                 if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
                 cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
                 if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-                else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-                cluster.efficiency*=cluster.coolingPenaltyMult;
-                cluster.totalOutput*=cluster.coolingPenaltyMult;
-                totalHeatingBlankets+=heatingBlankets;
-                rawOutput+=cluster.totalOutput;
-                totalOutput+=cluster.totalOutput;
-                totalCooling+=cluster.totalCooling;
-                totalHeat+=cluster.totalHeat;
-                netHeat+=cluster.netHeat;
-                totalEfficiency+=cluster.efficiency*heatingBlankets;
-                totalHeatMult+=cluster.heatMult*heatingBlankets;
+                else
+                    cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                cluster.efficiency *= cluster.coolingPenaltyMult;
+                cluster.totalOutput *= cluster.coolingPenaltyMult;
+                totalHeatingBlankets += heatingBlankets;
+                rawOutput += cluster.totalOutput;
+                totalOutput += cluster.totalOutput;
+                totalCooling += cluster.totalCooling;
+                totalHeat += cluster.totalHeat;
+                netHeat += cluster.netHeat;
+                totalEfficiency += cluster.efficiency*heatingBlankets;
+                totalHeatMult += cluster.heatMult*heatingBlankets;
                 calcClusters.progress = (i+1)/(double)clusters.size();
             }
         }
         calcClusters.finish();
-        totalEfficiency/=totalHeatingBlankets;
-        totalHeatMult/=totalHeatingBlankets;
+        totalEfficiency /= totalHeatingBlankets;
+        totalHeatMult /= totalHeatingBlankets;
         if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
         if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
         functionalBlocks = 0;
@@ -270,10 +275,10 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             LocationCategory cat = getLocationCategory(x, y, z);
             if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR)volume[0]++;
         });
-        sparsityMult = (float) (functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
-        totalOutput*=sparsityMult;
-        totalEfficiency*=sparsityMult;
-        totalOutput/=coolantRecipe.stats.heat/coolantRecipe.stats.outputRatio;
+        sparsityMult = (float)(functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
+        totalOutput *= sparsityMult;
+        totalEfficiency *= sparsityMult;
+        totalOutput /= coolantRecipe.stats.heat/coolantRecipe.stats.outputRatio;
         calcStats.finish();
         return false;
     }
@@ -285,14 +290,14 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 if(c.isValid())validClusters++;
             }
             FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.stats.getOutputDisplayName()+"\n"
-                    + "Total Heat: "+totalHeat+"H/t\n"
-                    + "Total Cooling: "+totalCooling+"H/t\n"
-                    + "Net Heat: "+netHeat+"H/t\n"
-                    + "Overall Efficiency: "+MathUtil.percent(totalEfficiency, 0)+"\n"
-                    + "Overall Heat Multiplier: "+MathUtil.percent(totalHeatMult, 0)+"\n"
-                    + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
-                    + "Shieldiness Factor: "+MathUtil.percent(shieldinessFactor, 1)+"\n"
-                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size())));
+                +"Total Heat: "+totalHeat+"H/t\n"
+                +"Total Cooling: "+totalCooling+"H/t\n"
+                +"Net Heat: "+netHeat+"H/t\n"
+                +"Overall Efficiency: "+MathUtil.percent(totalEfficiency, 0)+"\n"
+                +"Overall Heat Multiplier: "+MathUtil.percent(totalHeatMult, 0)+"\n"
+                +"Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
+                +"Shieldiness Factor: "+MathUtil.percent(shieldinessFactor, 1)+"\n"
+                +"Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size())));
             text.addText(getModuleTooltip()+"\n");
             if(full){
                 HashMap<String, Integer> counts = new HashMap<>();
@@ -316,9 +321,9 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 for(String str : order){
                     int count = counts.get(str);
                     String s;
-                    if(count==1)s="\n\n"+str;
+                    if(count==1)s = "\n\n"+str;
                     else{
-                        s="\n\n"+count+" similar clusters:\n\n"+str;
+                        s = "\n\n"+count+" similar clusters:\n\n"+str;
                     }
                     text.addText(s, colors.get(str));
                 }
@@ -467,7 +472,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 b.cluster = this;
             }
         }
-        private Cluster(){}
+        private Cluster(){
+        }
         private boolean isValid(){
             return isConnectedToWall&&isCreated();
         }
@@ -499,12 +505,12 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
             if(!isCreated())return "Invalid cluster!";
             if(!isValid())return "Cluster is not connected to a connector!";
             return "Total output: "+Math.round(totalOutput)+"\n"
-                + "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
-                + "Total Heating: "+totalHeat+"H/t\n"
-                + "Total Cooling: "+totalCooling+"H/t\n"
-                + "Net Heating: "+netHeat+"H/t\n"
-                + "Heat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
-                + "Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
+                +"Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
+                +"Total Heating: "+totalHeat+"H/t\n"
+                +"Total Cooling: "+totalCooling+"H/t\n"
+                +"Net Heating: "+netHeat+"H/t\n"
+                +"Heat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+                +"Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
         }
         private Cluster copy(OverhaulFusionReactor newReactor){
             Cluster copy = new Cluster();
@@ -535,7 +541,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
      */
     private HashMap<Integer, ArrayList<Block>> getClusterBlocks(Block start, boolean useConductors){
         //layer zero
-        HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+        HashMap<Integer, ArrayList<Block>> results = new HashMap<>();
         ArrayList<Block> zero = new ArrayList<>();
         if(start.canCluster()||(useConductors&&start.isConductor())){
             zero.add(start);
@@ -550,8 +556,9 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                 lastLayer.add(start);
             }
             for(Block block : lastLayer){
-                FOR:for(int j = 0; j<6; j++){
-                    int dx=0,dy=0,dz=0;
+                FOR:
+                for(int j = 0; j<6; j++){
+                    int dx = 0, dy = 0, dz = 0;
                     switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
                         case 0:
                             dx = -1;
@@ -575,7 +582,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                             throw new IllegalArgumentException("How did this happen?");
                     }
                     if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                    Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                    Block newBlock = getBlock(block.x+dx, block.y+dy, block.z+dz);
                     if(newBlock==null)continue;
                     if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
                         continue;
@@ -606,7 +613,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return results;
     }
     /**
-     * Converts the tiered search returned by getBlocks into a list of blocks.<br>
+     * Converts the tiered search returned by getBlocks into a list of
+     * blocks.<br>
      * Also from my tree feller
      */
     private static ArrayList<Block> toList(HashMap<Integer, ArrayList<Block>> blocks){
@@ -652,7 +660,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return ((OverhaulFusionReactor)other).recipe==recipe&&((OverhaulFusionReactor)other).coolantRecipe==coolantRecipe;
     }
     @Override
-    protected void getExtraParts(ArrayList<PartCount> parts){}
+    protected void getExtraParts(ArrayList<PartCount> parts){
+    }
     @Override
     public String getDescriptionTooltip(){
         return "A fusion reactor for Nuclearcraft: Overhauled\nTHESE DO NOT EXIST INGAME!\nThis is just a prototype, and is VERY different from what they will be in-game";
@@ -680,37 +689,37 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         if(y>=coreMinY&&y<=coreMaxY){
             //in Y range
             if(x>=plasmaMinX1&&z>=plasmaMinX1&&x<=plasmaMaxX2&&z<=plasmaMaxX2//within outer bounds
-                    &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
+                &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
                 return LocationCategory.PLASMA;
             }
             if(x>=plasmaMinX1-1&&z>=plasmaMinX1-1&&x<=plasmaMaxX2+1&&z<=plasmaMaxX2+1//within outer bounds
-                    &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
+                &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
                 return LocationCategory.INTERIOR;
             }
         }
         if(y>=coreMinY-1&&y<=coreMaxY+1){
             if(x>=plasmaMinX1&&z>=plasmaMinX1&&x<=plasmaMaxX2&&z<=plasmaMaxX2//within outer bounds
-                    &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
+                &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
                 return LocationCategory.INTERIOR;
             }
             if(x>=plasmaMinX1-1&&z>=plasmaMinX1-1&&x<=plasmaMaxX2+1&&z<=plasmaMaxX2+1//within outer bounds
-                    &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
+                &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
                 return LocationCategory.POLOID;
             }
         }
         if(y>=coreMinY-liningThickness&&y<=coreMaxY+liningThickness){
             if(x>=plasmaMinX1-liningThickness&&z>=plasmaMinX1-liningThickness&&x<=plasmaMaxX2+liningThickness&&z<=plasmaMaxX2+liningThickness//within outer bounds
-                    &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
+                &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
                 return LocationCategory.EXTERIOR;
             }
             if(x>=plasmaMinX1-(liningThickness+1)&&z>=plasmaMinX1-(liningThickness+1)&&x<=plasmaMaxX2+(liningThickness+1)&&z<=plasmaMaxX2+(liningThickness+1)//within outer bounds
-                    &&(x<=plasmaMaxX1+(liningThickness+1)||x>=plasmaMinX2-(liningThickness+1)||z<=plasmaMaxX1+(liningThickness+1)||z>=plasmaMinX2-(liningThickness+1))){//not within any inner bounds
+                &&(x<=plasmaMaxX1+(liningThickness+1)||x>=plasmaMinX2-(liningThickness+1)||z<=plasmaMaxX1+(liningThickness+1)||z>=plasmaMinX2-(liningThickness+1))){//not within any inner bounds
                 return LocationCategory.TOROID;
             }
         }
         if(y>=coreMinY-(liningThickness+1)&&y<=coreMaxY+(liningThickness+1)){
             if(x>=plasmaMinX1-liningThickness&&z>=plasmaMinX1-liningThickness&&x<=plasmaMaxX2+liningThickness&&z<=plasmaMaxX2+liningThickness//within outer bounds
-                    &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
+                &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
                 return LocationCategory.TOROID;
             }
         }
@@ -718,7 +727,7 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
         return LocationCategory.NONE;
     }
     public enum LocationCategory{
-        CORE,CONNECTOR,PLASMA,INTERIOR,POLOID,EXTERIOR,TOROID,NONE;
+        CORE, CONNECTOR, PLASMA, INTERIOR, POLOID, EXTERIOR, TOROID, NONE;
     }
     @Deprecated
     @Override
@@ -752,11 +761,11 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
     }
     @Override
     public void setBlock(int x, int y, int z, Block block){
-        if(isLocationValid((Block)block, x,y,z))super.setBlock(x, y, z, block);
+        if(isLocationValid((Block)block, x, y, z))super.setBlock(x, y, z, block);
     }
     @Override
     public void setBlockExact(int x, int y, int z, Block exact){
-        if(isLocationValid((Block)exact, x,y,z))super.setBlockExact(x, y, z, exact);
+        if(isLocationValid((Block)exact, x, y, z))super.setBlockExact(x, y, z, exact);
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
@@ -800,7 +809,8 @@ public class OverhaulFusionReactor extends Multiblock<Block> {
                                 int oldCooling = block.template.heatsink.cooling;
                                 int newCooling = newBlock.template.heatsink.cooling;
                                 if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
-                                else suggestor.task.max--;
+                                else
+                                    suggestor.task.max--;
                             }
                         }
                     }

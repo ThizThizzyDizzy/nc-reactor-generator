@@ -292,6 +292,10 @@ public class MenuCredits extends Menu{
         gap(2);
         text("LWJGL", 1.125);
         gap(2);
+        text("JDA (when running as discord bot)", 1.125);
+        gap(2);
+        text("reflections", 1.125);
+        gap(2);
         text("DSSL", 1.125);
         text("by tomdodd4598");
         gap(2);

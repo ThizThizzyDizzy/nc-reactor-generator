@@ -92,7 +92,9 @@ public class MenuPickReference extends MenuDialog{
             tabs.add(new Button("Modules", true).addAction(() -> {
                 list.components.clear();
                 for(Supplier<NCPFModule> module : modules){
-                    list.add(new NCPFElementComponent(new NCPFElement(new NCPFModuleElement(module))).addButton(">", null, () -> {
+                    NCPFElement element = new NCPFElement();
+                    element.definition = new NCPFModuleElement(module);
+                    list.add(new NCPFElementComponent(element).addButton(">", null, () -> {
                         close();
                         onSelect.accept(new NCPFModuleReference(module));
                     }));

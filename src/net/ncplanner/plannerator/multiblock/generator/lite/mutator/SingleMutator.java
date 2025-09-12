@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.multiblock.generator.lite.mutator;
 import java.util.Random;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class SingleMutator<T extends LiteMultiblock> extends GeneratorMutator<T>{
     public SingleMutator(){
         super("single");

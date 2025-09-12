@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class FuelStatsModule extends NCPFStatsModule{
     public float efficiency;
     public int heat;

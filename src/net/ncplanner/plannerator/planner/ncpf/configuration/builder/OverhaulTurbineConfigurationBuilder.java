@@ -10,12 +10,12 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulTurbineSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule;
@@ -57,7 +57,8 @@ public class OverhaulTurbineConfigurationBuilder extends ConfigurationBuilder<Ov
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
     public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
-        BlockElement block = new BlockElement(definition);
+        BlockElement block = new BlockElement();
+        block.definition = definition;
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
@@ -129,8 +130,9 @@ public class OverhaulTurbineConfigurationBuilder extends ConfigurationBuilder<Ov
         }
     }
 
-    public Recipe recipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, double power, double coefficient){
-        Recipe recipe = new Recipe(new NCPFLegacyFluidElement(inputName));
+    public TurbineRecipe recipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, double power, double coefficient){
+        TurbineRecipe recipe = new TurbineRecipe();
+        recipe.definition = new NCPFLegacyFluidElement(inputName);
         recipe.stats.power = power;
         recipe.stats.coefficient = coefficient;
         recipe.stats.output = new NCPFElementReference(output);

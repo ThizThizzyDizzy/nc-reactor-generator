@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class BearingModule extends BlockFunctionModule{
     public BearingModule(){
         super("nuclearcraft:overhaul_turbine:bearing");

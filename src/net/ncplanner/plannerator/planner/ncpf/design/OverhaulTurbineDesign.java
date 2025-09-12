@@ -6,11 +6,14 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineDesign, OverhaulTurbine>{
-    public Recipe recipe;
+    public TurbineRecipe recipe;
     public BlockElement[][][] design;
     public OverhaulTurbineDesign(NCPFFile file){
         super(file);
@@ -23,7 +26,7 @@ public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineD
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        recipe = definition.recipe.copyTo(Recipe::new);
+        recipe = definition.recipe.copyTo(TurbineRecipe::new);
         match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulTurbineConfiguration::new).blocks);
     }
     @Override

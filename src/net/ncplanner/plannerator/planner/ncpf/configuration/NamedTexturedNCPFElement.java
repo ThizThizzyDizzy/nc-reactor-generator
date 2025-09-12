@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
@@ -9,25 +10,16 @@ public abstract class NamedTexturedNCPFElement extends NCPFElement{
     public DisplayNameModule names = new DisplayNameModule();
     public TextureModule texture = new TextureModule();
     public NamedTexturedNCPFElement(){
-    }
-    public NamedTexturedNCPFElement(NCPFElementDefinition definition){
-        super(definition);
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-        names = getModule(DisplayNameModule::new);
-        texture = getModule(TextureModule::new);
+        definePlanneratorModule(()->names, (m)->names = m, DisplayNameModule::new);
+        definePlanneratorModule(()->texture, (m)->texture = m, TextureModule::new);
     }
     @Override
-    public void convertToObject(NCPFObject ncpf){
-        setModules(names, texture);
-        super.convertToObject(ncpf);
-    }
-    @Override
-    public void removeModule(NCPFModule module){
-        if(module==names)names = null;
-        if(module==texture)texture = null;
-        super.removeModule(module);
+    public Supplier<NCPFModule>[] getPreferredModules(){
+        List<Supplier<NCPFModule>> list = new ArrayList<>();
+        definedPlanneratorModules.forEach((module) -> {
+            if(module.get.get()==names||module.get.get()==texture)return;
+            list.add(module.moduleSupplier);
+        });
+        return list.toArray(Supplier[]::new);
     }
 }

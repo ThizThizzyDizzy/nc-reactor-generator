@@ -3,6 +3,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.LiteGenerator;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class GeneratorSettingsModule<T extends LiteMultiblock> extends NCPFModule{
     public LiteGenerator<T> generator;
     public GeneratorSettingsModule(){

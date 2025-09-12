@@ -1,6 +1,10 @@
 package net.ncplanner.plannerator.planner.module;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -29,6 +33,8 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+import org.reflections.Reflections;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
@@ -67,12 +73,15 @@ public abstract class Module<T>{
     public boolean isActive(){
         return active;
     }
-    protected void onActivated(){}
-    protected void onDeactivated(){}
+    protected void onActivated(){
+    }
+    protected void onDeactivated(){
+    }
     public abstract String getDisplayName();
     public abstract String getDescription();
     /**
      * Calculate this module for a specified multiblock
+     *
      * @param m the multiblock to calculate
      * @return a String to add to the tooltip, or `null` if there is none
      */
@@ -90,50 +99,100 @@ public abstract class Module<T>{
     public final void addAddon(Addon addon, String link, String author){
         Configuration.addInternalAddon(addon, link, author);
     }
-    public final void registerNCPFConfiguration(Supplier<NCPFConfiguration> configuration){
-        NCPFConfigurationContainer.recognizedConfigurations.put(configuration.get().name, configuration);
-        NCPFConfigurationContainer.configOrder.add(configuration.get().name);
+    public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){
     }
-    public final void registerNCPFDesign(Supplier<NCPFDesignDefinition> design, Function<NCPFFile, Design> specificDesign){
-        NCPFDesign.recognizedDesigns.put(design.get().type, design);
-        Design.registeredDesigns.put(design.get().type, specificDesign);
+    public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){
     }
-    public final void registerNCPFElement(Supplier<NCPFElementDefinition> element){
-        NCPFElement.recognizedElements.put(element.get().type, element);
+    public final void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){
+        for(Multiblock m : registeredMultiblocks)multiblockTypes.add(m.newInstance(null));
     }
-    public final void registerNCPFModule(Supplier<NCPFModule> module){
-        NCPFModuleContainer.recognizedModules.put(module.get().name, module);
+    private final ArrayList<Multiblock> registeredMultiblocks = new ArrayList<>();
+    public final void registerNCPF(){
+        autoRegister(NCPFConfiguration.class, (config) -> config.name, NCPFConfigurationContainer.recognizedConfigurations, NCPFConfigurationContainer.configOrder);
+        autoRegister(NCPFDesignDefinition.class, (design) -> design.type, NCPFDesign.recognizedDesigns);
+        autoRegister(NCPFModule.class, (module) -> module.name, NCPFModuleContainer.recognizedModules);
+        autoRegister(NCPFElementDefinition.class, (element) -> element.type, NCPFElement.recognizedElements);
+        autoRegister(GeneratorMutator.class, (mutator) -> mutator.type, GeneratorMutator.registeredMutators);
+        autoRegister(Mutator.class, (mutator) -> mutator.type, Mutator.registeredMutators);
+        autoRegister(Operator.class, (operator) -> operator.getType(), Operator.registeredOperators);
+        autoRegister(Constant.class, (constant) -> constant.getType(), Constant.registeredConstants);
+        autoRegister(Condition.class, (condition) -> condition.type, Condition.registeredConditions);
+        autoRegister(Parameter.class, (parameter) -> parameter.type, Parameter.registeredParameters);
+        autoRegister(Multiblock.class, registeredMultiblocks);
+
+        Reflections reflections = new Reflections("net.ncplanner.plannerator");
+
+        try{
+            for(Class<?> type : reflections.getTypesAnnotatedWith(RegisterWith.class)){
+                if(type.getAnnotation(RegisterWith.class).module()!=getClass())continue;
+                if(Design.class.isAssignableFrom(type)){
+                    Class<? extends Design> specificType = (Class<? extends Design>)type;
+                    ParameterizedType superType = (ParameterizedType)specificType.getGenericSuperclass();
+                    Class<? extends NCPFDesignDefinition> designDefinitionType = (Class<? extends NCPFDesignDefinition>)superType.getActualTypeArguments()[0];
+                    Constructor<? extends Design> constructor = specificType.getConstructor(NCPFFile.class);
+                    Function<NCPFFile, Design> function = (ncpf) -> {
+                        try{
+                            return constructor.newInstance(ncpf);
+                        }catch(InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex){
+                            throw new RuntimeException(ex);
+                        }
+                    };
+                    Design.registeredDesigns.put(designDefinitionType.getConstructor().newInstance().type, function);
+                }
+            }
+        }catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex){
+            throw new RuntimeException(ex);
+        }
     }
-    public final void registerGeneratorMutator(Supplier<GeneratorMutator> mutator){
-        GeneratorMutator.registeredMutators.put(mutator.get().type, mutator);
+    private <T> void autoRegister(Class<T> classType, ArrayList<T> instanceList){
+        autoRegister(classType, null, null, null, instanceList);
     }
-    public final void registerMutator(Supplier<Mutator> mutator){
-        Mutator.registeredMutators.put(mutator.get().type, mutator);
+    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry){
+        autoRegister(classType, keyFunc, registry, null, null);
     }
-    public final void registerOperator(Supplier<Operator> operator){
-        Operator.registeredOperators.put(operator.get().getType(), operator);
+    @Deprecated // this was for the old generator, unused now.
+    public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){
     }
-    public final void registerConstant(Supplier<Constant> constant){
-        Constant.registeredConstants.put(constant.get().getType(), constant);
+    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList){
+        autoRegister(classType, keyFunc, registry, keyList, null);
     }
-    public final void registerCondition(Supplier<Condition> condition){
-        Condition.registeredConditions.put(condition.get().type, condition);
+    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList, ArrayList<T> instanceList){
+        Reflections reflections = new Reflections("net.ncplanner.plannerator");
+        try{
+            for(Class<?> type : reflections.getTypesAnnotatedWith(RegisterWith.class)){
+                if(type.getAnnotation(RegisterWith.class).module()!=getClass())continue;
+                if(classType.isAssignableFrom(type)){
+                    Class<? extends T> specificType = (Class<? extends T>)type;
+                    Constructor<? extends T> constructor = specificType.getConstructor();
+                    Supplier<T> supplier = () -> {
+                        try{
+                            return constructor.newInstance();
+                        }catch(InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException ex){
+                            throw new RuntimeException(ex);
+                        }
+                    };
+                    T instance = supplier.get();
+                    String key = keyFunc==null?null:keyFunc.apply(instance);
+                    if(registry!=null)registry.put(key, supplier);
+                    if(keyList!=null)keyList.add(key);
+                    if(instanceList!=null)instanceList.add(instance);
+                }
+            }
+        }catch(NoSuchMethodException|SecurityException|IllegalArgumentException ex){
+            throw new RuntimeException(ex);
+        }
     }
-    public final void registerParameter(Supplier<Parameter> parameter){
-        Parameter.registeredParameters.put(parameter.get().type, parameter);
-    }
-    public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){}
-    public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){}
-    public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){}
-    public void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){}//TODO replace with NCPF design registry
-    public void registerNCPF(){}
     public void setActive(boolean active){
         if(active)activate();
-        else deactivate();
+        else
+            deactivate();
     }
-    public void addTutorials(){}
-    public void addConfigurations(Task task){}
-    public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){}
+    public void addTutorials(){
+    }
+    public void addConfigurations(Task task){
+    }
+    public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){
+    }
     private ArrayList<Runnable> tasks = new ArrayList<>();
     protected void addConfigurationTask(Task t, String name, String filepath, String link, String author, String... alternatives){
         Task task = t.addSubtask(name);

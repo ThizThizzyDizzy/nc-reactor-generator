@@ -18,7 +18,10 @@ import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickEnum;
+import net.ncplanner.plannerator.planner.module.TiConModule;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = TiConModule.class)
 public class TinkerTool extends SimpleMultiblock<ToolPart>{
     private ToolType type;
     boolean valid;
@@ -34,6 +37,9 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     public TinkerTool(NCPFConfigurationContainer configuration, int type){
         super(configuration, type);
         this.type = ToolType.values()[type];
+    }
+    public TinkerTool(){
+        this(null, 0);
     }
     @Override
     protected void createBlockGrids(){
@@ -79,7 +85,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         miningLevel = MiningLevel.NONE;
     }
     @Override
-    public TinkerTool blankCopy() {
+    public TinkerTool blankCopy(){
         return newInstance(configuration, dimensions);
     }
     @Override
@@ -123,71 +129,71 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         double drawspeed = 0;
         double rangeMult = 0;
         for(int i = 0; i<type.cats.length; i++){
-            PartMaterial mat = getBlock(i,0,0).material;
+            PartMaterial mat = getBlock(i, 0, 0).material;
             switch(type.cats[i]){
                 case HANDLE:
-                    handleMod+=mat.handleMod;
-                    handleDurability+=mat.handleDurability;
+                    handleMod += mat.handleMod;
+                    handleDurability += mat.handleDurability;
                     handles++;
                     break;
                 case HEAD:
-                    headDurability+=mat.headDurability;
-                    headSpeed+=mat.miningSpeed;
-                    headAttack+=mat.attack;
-                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i,0,0).material.level.ordinal())];
+                    headDurability += mat.headDurability;
+                    headSpeed += mat.miningSpeed;
+                    headAttack += mat.attack;
+                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i, 0, 0).material.level.ordinal())];
                     heads++;
                     break;
                 case EXTRA:
-                    extraDurability+=mat.extraDurability;
+                    extraDurability += mat.extraDurability;
                     break;
-                    
+
                 case PLATES:
-                    handleMod+=mat.plateMod;
-                    handleDurability+=mat.plateDurability;
-                    plateToughness+=mat.plateToughness;
+                    handleMod += mat.plateMod;
+                    handleDurability += mat.plateDurability;
+                    plateToughness += mat.plateToughness;
                     handles++;
                     break;
                 case CORE:
-                    headDurability+=mat.coreDurability;
-                    coreDefense+=mat.coreDef;
+                    headDurability += mat.coreDurability;
+                    coreDefense += mat.coreDef;
                     heads++;
                     break;
                 case TRIM:
-                    extraDurability+=mat.trimDurability;
+                    extraDurability += mat.trimDurability;
                     break;
-                    
+
                 case ARROW_SHAFT:
-                    handleMod+=mat.arrowShaftMod;
-                    handleDurability+=mat.bonusAmmo;
+                    handleMod += mat.arrowShaftMod;
+                    handleDurability += mat.bonusAmmo;
                     break;
                 case FLETCHING:
-                    fletchingMod*=mat.fletchingModifier;
-                    fletchingAcc*=mat.fletchingAccuracy;
+                    fletchingMod *= mat.fletchingModifier;
+                    fletchingAcc *= mat.fletchingAccuracy;
                     break;
-                    
+
                 case BOW:
-                    headDurability+=mat.headDurability;
-                    headSpeed+=mat.miningSpeed;
-                    headAttack+=mat.attack;
-                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i,0,0).material.level.ordinal())];
+                    headDurability += mat.headDurability;
+                    headSpeed += mat.miningSpeed;
+                    headAttack += mat.attack;
+                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i, 0, 0).material.level.ordinal())];
                     heads++;
-                    drawspeed+=mat.bowDrawspeed;
-                    rangeMult+=mat.bowRangeMult;
-                    attack+=mat.attack;
+                    drawspeed += mat.bowDrawspeed;
+                    rangeMult += mat.bowRangeMult;
+                    attack += mat.attack;
                     break;
                 case BOWSTRING:
-                    handleMod+=mat.bowstringMod;
+                    handleMod += mat.bowstringMod;
                     handles++;
                     break;
                 default:
                     throw new IllegalArgumentException("Haven't added support for this yet: "+type.cats[i].toString());
             }
         }
-        handleMod/=handles;
-        headSpeed/=heads;
+        handleMod /= handles;
+        headSpeed /= heads;
         if(!Double.isFinite(handleMod))handleMod = 1;
-        durability = (int) ((handleDurability+headDurability+extraDurability)*handleMod*fletchingMod);
-        defense =  coreDefense;
+        durability = (int)((handleDurability+headDurability+extraDurability)*handleMod*fletchingMod);
+        defense = coreDefense;
         toughness = plateToughness;
         miningLevel = headLevel;
         miningSpeed = headSpeed;
@@ -200,14 +206,14 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     @Override
     public FormattedText getTooltip(boolean full){
         return new FormattedText(valid?"Durability: "+durability
-                                    +"\nMining Level: "+miningLevel.toString()
-                                    +"\nMining Speed: "+miningSpeed
-                                    +"\nAttack: "+attack
-                                    +"\nDefense: "+defense
-                                    +"\nToughness: "+toughness
-                                    +"\nAccuracy: "+accuracy
-                                    +"\nDrawspeed: "+drawspeed
-                                    +"\nRange: "+range:"Invalid");
+            +"\nMining Level: "+miningLevel.toString()
+            +"\nMining Speed: "+miningSpeed
+            +"\nAttack: "+attack
+            +"\nDefense: "+defense
+            +"\nToughness: "+toughness
+            +"\nAccuracy: "+accuracy
+            +"\nDrawspeed: "+drawspeed
+            +"\nRange: "+range:"Invalid");
     }
     @Override
     public String getDescriptionTooltip(){
@@ -215,7 +221,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     }
     @Override
     public Menu getResizeMenu(GUI gui, MenuEdit editor){
-        new MenuPickEnum<ToolType>(gui, gui.menu, ToolType.values(), (typ)->{
+        new MenuPickEnum<ToolType>(gui, gui.menu, ToolType.values(), (typ) -> {
             blockGrids.clear();
             type = typ;
             dimensions[0] = typ.ordinal();
@@ -237,14 +243,14 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         });
     }
     @Override
-    public void getSuggestors(ArrayList<Suggestor> suggestors) {
-        suggestors.add(new Suggestor<TinkerTool>("Completeness Suggestor", 1000, 1000l) {
+    public void getSuggestors(ArrayList<Suggestor> suggestors){
+        suggestors.add(new Suggestor<TinkerTool>("Completeness Suggestor", 1000, 1000l){
             @Override
             public String getDescription(){
                 return "Make sure all the parts are actually there";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     if(part!=null)continue;
@@ -255,7 +261,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 }
             }
         });
-        suggestors.add(new Suggestor<TinkerTool>("Mining Suggestor", 1000, 1000l) {
+        suggestors.add(new Suggestor<TinkerTool>("Mining Suggestor", 1000, 1000l){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<TinkerTool>("Mining Level", true, true){
@@ -282,7 +288,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 return "Maximize mining level, then mining speed";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     List<ToolPart> parts = getAvailableBlocks();
@@ -292,7 +298,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 }
             }
         });
-        suggestors.add(new Suggestor<TinkerTool>("Attack Suggestor", 1000, 1000l) {
+        suggestors.add(new Suggestor<TinkerTool>("Attack Suggestor", 1000, 1000l){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<TinkerTool>("Attack", true, true){
@@ -319,7 +325,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 return "Maximize damage";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     List<ToolPart> parts = getAvailableBlocks();
@@ -329,7 +335,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 }
             }
         });
-        suggestors.add(new Suggestor<TinkerTool>("Range Suggestor", 1000, 1000l) {
+        suggestors.add(new Suggestor<TinkerTool>("Range Suggestor", 1000, 1000l){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<TinkerTool>("Accuracy", true, true){
@@ -368,7 +374,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 return "Maximize bow range";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     List<ToolPart> parts = getAvailableBlocks();
@@ -378,7 +384,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 }
             }
         });
-        suggestors.add(new Suggestor<TinkerTool>("DPS Suggestor", 1000, 1000l) {
+        suggestors.add(new Suggestor<TinkerTool>("DPS Suggestor", 1000, 1000l){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<TinkerTool>("Accuracy", true, true){
@@ -411,7 +417,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 return "Maximize draw speed";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     List<ToolPart> parts = getAvailableBlocks();
@@ -421,7 +427,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 }
             }
         });
-        suggestors.add(new Suggestor<TinkerTool>("Defense Suggestor", 1000, 1000l) {
+        suggestors.add(new Suggestor<TinkerTool>("Defense Suggestor", 1000, 1000l){
             ArrayList<Priority> priorities = new ArrayList<>();
             {
                 priorities.add(new Priority<TinkerTool>("Defense", true, true){
@@ -448,7 +454,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                 return "Maximize Defense and Toughness";
             }
             @Override
-            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor) {
+            public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
                     ToolPart part = multiblock.getBlock(i, 0, 0);
                     List<ToolPart> parts = getAvailableBlocks();

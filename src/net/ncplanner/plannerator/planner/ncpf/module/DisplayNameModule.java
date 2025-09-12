@@ -1,13 +1,17 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class DisplayNameModule extends NCPFModule implements ElementModule{
     public String displayName;
     public DisplayNameModule(){
         super("plannerator:display_name");
     }
     @Override
-    public void conglomerate(NCPFModule addon){}
+    public void conglomerate(NCPFModule addon){
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         displayName = ncpf.getString("display_name");

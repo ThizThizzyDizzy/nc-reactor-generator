@@ -1,9 +1,12 @@
 package net.ncplanner.plannerator.ncpf.element;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFLegacyFluidElement extends NCPFSettingsElement{
     public String name = "";
     public NCPFLegacyFluidElement(){
         super("legacy_fluid");
-        addString("name", ()->name, (v)->name = v, "Name", Type.NAME);
+        addString("name", () -> name, (v) -> name = v, "Name", Type.NAME);
     }
     public NCPFLegacyFluidElement(String name){
         this();

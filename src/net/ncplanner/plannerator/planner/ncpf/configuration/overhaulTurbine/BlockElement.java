@@ -1,10 +1,4 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
-import java.util.List;
-import java.util.function.Supplier;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BearingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
@@ -27,56 +21,20 @@ public class BlockElement extends NamedTexturedNCPFElement{
     public CasingModule casing;
     public InletModule inlet;
     public OutletModule outlet;
-    public BlockElement(){}
-    public BlockElement(NCPFElementDefinition definition){
-        super(definition);
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-        blade = getModule(BladeModule::new);
-        stator = getModule(StatorModule::new);
-        coil = getModule(CoilModule::new);
-        bearing = getModule(BearingModule::new);
-        shaft = getModule(ShaftModule::new);
-        connector = getModule(ConnectorModule::new);
-        controller = getModule(ControllerModule::new);
-        casing = getModule(CasingModule::new);
-        inlet = getModule(InletModule::new);
-        outlet = getModule(OutletModule::new);
-    }
-    @Override
-    public void setReferences(List<NCPFElement> lst, boolean soft){
-        setModules(blade, stator, coil, bearing, shaft, connector, controller, casing, inlet, outlet);
-        super.setReferences(lst, soft);
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        setModules(blade, stator, coil, bearing, shaft, connector, controller, casing, inlet, outlet);
-        super.convertToObject(ncpf);
+    public BlockElement(){
+        definePlanneratorModule(() -> blade, (m) -> blade = m, BladeModule::new);
+        definePlanneratorModule(() -> stator, (m) -> stator = m, StatorModule::new);
+        definePlanneratorModule(() -> coil, (m) -> coil = m, CoilModule::new);
+        definePlanneratorModule(() -> bearing, (m) -> bearing = m, BearingModule::new);
+        definePlanneratorModule(() -> shaft, (m) -> shaft = m, ShaftModule::new);
+        definePlanneratorModule(() -> connector, (m) -> connector = m, ConnectorModule::new);
+        definePlanneratorModule(() -> controller, (m) -> controller = m, ControllerModule::new);
+        definePlanneratorModule(() -> casing, (m) -> casing = m, CasingModule::new);
+        definePlanneratorModule(() -> inlet, (m) -> inlet = m, InletModule::new);
+        definePlanneratorModule(() -> outlet, (m) -> outlet = m, OutletModule::new);
     }
     @Override
     public String getTitle(){
         return "Block";
-    }
-    @Override
-    public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{BladeModule::new, StatorModule::new,
-            CoilModule::new, BearingModule::new, ShaftModule::new, ConnectorModule::new, ControllerModule::new,
-            CasingModule::new, InletModule::new, OutletModule::new};
-    }
-    @Override
-    public void removeModule(NCPFModule module){
-        if(module==blade)blade = null;
-        if(module==stator)stator = null;
-        if(module==coil)coil = null;
-        if(module==bearing)bearing = null;
-        if(module==shaft)shaft = null;
-        if(module==connector)connector = null;
-        if(module==controller)controller = null;
-        if(module==casing)casing = null;
-        if(module==inlet)inlet = null;
-        if(module==outlet)outlet = null;
-        super.removeModule(module);
     }
 }

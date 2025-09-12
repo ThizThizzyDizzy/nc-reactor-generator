@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = FusionTestModule.class)
 public class HeatsinkModule extends BlockRulesModule{
     public int cooling;
     public HeatsinkModule(){
         super("plannerator:fusion_test:heatsink");
-        addInteger("cooling", ()->cooling, (v)->cooling = v, "Cooling");
+        addInteger("cooling", () -> cooling, (v) -> cooling = v, "Cooling");
     }
     @Override
     public String getFunctionName(){

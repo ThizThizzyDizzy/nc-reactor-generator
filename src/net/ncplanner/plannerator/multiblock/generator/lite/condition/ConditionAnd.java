@@ -5,6 +5,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingConditionList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class ConditionAnd extends Condition{
     public SettingConditionList conditions = new SettingConditionList(null, new ArrayList<>());
     public ConditionAnd(){

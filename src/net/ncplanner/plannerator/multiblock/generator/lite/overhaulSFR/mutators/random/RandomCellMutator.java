@@ -11,8 +11,11 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingSymmetry;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class RandomCellMutator extends Mutator<LiteOverhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
     public SettingBoolean addModerators = new SettingBoolean("Fill moderators to adjacent cells", true);
@@ -168,12 +171,12 @@ public class RandomCellMutator extends Mutator<LiteOverhaulSFR>{
         for(int i = 0; i<multiblock.configuration.blockDefinition.length; i++){
             for(BlockElement block : templates){
                 if((block.heatsink!=null)==(multiblock.configuration.blockCooling[i]!=0)
-                        &&(block.fuelCell!=null)==(multiblock.configuration.blockFuelCell[i])
-                        &&(block.moderator!=null)==(multiblock.configuration.blockModerator[i])
-                        &&(block.irradiator!=null)==(multiblock.configuration.blockIrradiator[i])
-                        &&(block.reflector!=null)==(multiblock.configuration.blockReflector[i])
-                        &&(block.neutronShield!=null)==(multiblock.configuration.blockShield[i])
-                        &&(block.conductor!=null)==(multiblock.configuration.blockConductor[i])){
+                    &&(block.fuelCell!=null)==(multiblock.configuration.blockFuelCell[i])
+                    &&(block.moderator!=null)==(multiblock.configuration.blockModerator[i])
+                    &&(block.irradiator!=null)==(multiblock.configuration.blockIrradiator[i])
+                    &&(block.reflector!=null)==(multiblock.configuration.blockReflector[i])
+                    &&(block.neutronShield!=null)==(multiblock.configuration.blockShield[i])
+                    &&(block.conductor!=null)==(multiblock.configuration.blockConductor[i])){
                     idxs.add(i+1);
                 }
             }

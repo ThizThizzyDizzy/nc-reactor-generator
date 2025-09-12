@@ -2,6 +2,9 @@ package net.ncplanner.plannerator.ncpf.element;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFModuleElement extends NCPFElementDefinition{
     public String name = "";
     public NCPFModuleElement(){
@@ -28,7 +31,7 @@ public class NCPFModuleElement extends NCPFElementDefinition{
     @Override
     public boolean matches(NCPFElementDefinition definition){
         if(definition instanceof NCPFModuleElement){
-            NCPFModuleElement other = (NCPFModuleElement) definition;
+            NCPFModuleElement other = (NCPFModuleElement)definition;
             return name.equals(other.name);
         }
         return false;

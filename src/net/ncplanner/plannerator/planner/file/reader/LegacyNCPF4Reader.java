@@ -8,6 +8,7 @@ import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
@@ -66,7 +67,7 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockReference(project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.get(index-1));
+                rule.target = new BlockReference(project.getConfiguration(UnderhaulSFRConfiguration::new).blocks.get(index-1));
             }
         }
         for(NCPFPlacementRule rule : overhaulSFRPostLoadMap.keySet()){
@@ -74,7 +75,7 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference(project.getConfiguration(OverhaulSFRConfiguration::new).blocks.get(index-1));
+                rule.target = new BlockReference(project.getConfiguration(OverhaulSFRConfiguration::new).blocks.get(index-1));
             }
         }
         for(NCPFPlacementRule rule : overhaulMSRPostLoadMap.keySet()){
@@ -82,7 +83,7 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
             if(index==0){
                 rule.target = new NCPFModuleReference(AirModule::new);
             }else{
-                rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference(project.getConfiguration(OverhaulMSRConfiguration::new).blocks.get(index-1));
+                rule.target = new BlockReference(project.getConfiguration(OverhaulMSRConfiguration::new).blocks.get(index-1));
             }
         }
         for(NCPFPlacementRule rule : overhaulTurbinePostLoadMap.keySet()){
@@ -90,7 +91,7 @@ public class LegacyNCPF4Reader extends LegacyNCPF5Reader {
             if(index==0){
                 rule.target = new NCPFModuleReference(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
             }else{
-                rule.target = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockReference(project.getConfiguration(OverhaulTurbineConfiguration::new).blocks.get(index-1));
+                rule.target = new BlockReference(project.getConfiguration(OverhaulTurbineConfiguration::new).blocks.get(index-1));
             }
         }
         //combine underhaul active coolers into one

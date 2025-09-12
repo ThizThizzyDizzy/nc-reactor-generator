@@ -8,10 +8,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFEle
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorStatsModule;
 public class IrradiatorRecipe extends NamedTexturedNCPFElement implements IBlockRecipe{
     public IrradiatorStatsModule stats = new IrradiatorStatsModule();
-    public IrradiatorRecipe(){}
-    public IrradiatorRecipe(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

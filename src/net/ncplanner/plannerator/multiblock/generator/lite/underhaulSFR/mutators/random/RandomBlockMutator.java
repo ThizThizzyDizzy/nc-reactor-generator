@@ -9,8 +9,11 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingSymmetry;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.UnderhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = UnderhaulModule.class)
 public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
     public SettingSymmetry symmetry = new SettingSymmetry();
@@ -56,7 +59,8 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
         indicies.init(multiblock.configuration.blockDisplayName, multiblock.configuration.blockDisplayTexture, "Air");
     }
     @Override
-    public void init(LiteUnderhaulSFR multiblock){}
+    public void init(LiteUnderhaulSFR multiblock){
+    }
     @Override
     public void importFrom(LiteUnderhaulSFR multiblock, NCPFConfigurationContainer container){
         UnderhaulSFRConfiguration config = container.getConfiguration(UnderhaulSFRConfiguration::new);
@@ -75,9 +79,9 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
         for(int i = 0; i<multiblock.configuration.blockDefinition.length; i++){
             for(BlockElement block : templates){
                 if((block.cooler!=null)==(multiblock.configuration.blockCooling[i]!=0)
-                        &&(block.fuelCell!=null)==(multiblock.configuration.blockFuelCell[i])
-                        &&(block.moderator!=null)==(multiblock.configuration.blockModerator[i])
-                        &&(block.activeCooler!=null)==(multiblock.configuration.blockActive[i]!=null)){
+                    &&(block.fuelCell!=null)==(multiblock.configuration.blockFuelCell[i])
+                    &&(block.moderator!=null)==(multiblock.configuration.blockModerator[i])
+                    &&(block.activeCooler!=null)==(multiblock.configuration.blockActive[i]!=null)){
                     idxs.add(i+1);
                 }
             }

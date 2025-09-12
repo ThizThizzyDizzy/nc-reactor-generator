@@ -10,15 +10,15 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.planner.StringUtil;
+import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ControllerModule;
@@ -58,7 +58,8 @@ public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<Overha
         return block(new NCPFLegacyBlockElement(name), displayName, texture);
     }
     public BlockBuilder block(NCPFElementDefinition definition, String displayName, String texture){
-        BlockElement block = new BlockElement(definition);
+        BlockElement block = new BlockElement();
+        block.definition = definition;
         block.names.displayName = displayName;
         block.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(displayName);
         block.texture.texture = TextureManager.getImage(texture);
@@ -154,7 +155,8 @@ public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<Overha
         parent.recipePorts.output = new BlockReference(out.block);
     }
     public HeaterRecipe heaterRecipe(BlockElement block, String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, int inputRate, int outputRate, int cooling){
-        HeaterRecipe recipe = new HeaterRecipe(new NCPFLegacyFluidElement(inputName));
+        HeaterRecipe recipe = new HeaterRecipe();
+        recipe.definition = new NCPFLegacyFluidElement(inputName);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
@@ -190,7 +192,8 @@ public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<Overha
         }
     }
     public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, NCPFElement output, float efficiency, float heat){
-        IrradiatorRecipe recipe = new IrradiatorRecipe(definition);
+        IrradiatorRecipe recipe = new IrradiatorRecipe();
+        recipe.definition = definition;
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
@@ -201,7 +204,8 @@ public class OverhaulMSRConfigurationBuilder extends ConfigurationBuilder<Overha
         return new IrradiatorRecipeBuilder(recipe);
     }
     public Fuel fuel(String inputName, String inputDisplayName, String inputTexture, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
-        Fuel fuel = new Fuel(new NCPFLegacyFluidElement(inputName));
+        Fuel fuel = new Fuel();
+        fuel.definition = new NCPFLegacyFluidElement(inputName);
         fuel.names.displayName = inputDisplayName;
         fuel.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         fuel.texture.texture = TextureManager.getImage(inputTexture);

@@ -10,11 +10,14 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.module.UnderhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = UnderhaulModule.class)
 public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign, UnderhaulSFR>{
     public Fuel fuel;
     public BlockElement[][][] design;
@@ -33,7 +36,7 @@ public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign,
         super.convertFromObject(ncpf);
         fuel = copy(definition.fuel, Fuel::new);
         match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(UnderhaulSFRConfiguration::new).blocks);
-        match3DArrayConditional(definition.blockRecipes, recipes = new ActiveCoolerRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement cooler)->matchElement(cooler).activeCoolerRecipes, (BlockElement cooler)->matchModule(cooler, ActiveCoolerModule::new));
+        match3DArrayConditional(definition.blockRecipes, recipes = new ActiveCoolerRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement cooler) -> matchElement(cooler).activeCoolerRecipes, (BlockElement cooler) -> matchModule(cooler, ActiveCoolerModule::new));
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
@@ -70,7 +73,7 @@ public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign,
     public void convertElements(){
         UnderhaulSFRConfiguration config = file.getConfiguration(UnderhaulSFRConfiguration::new);
         convertElements(design, config);
-        convertRecipes(design, recipes, (b)->b.activeCoolerRecipes, config);
+        convertRecipes(design, recipes, (b) -> b.activeCoolerRecipes, config);
         fuel = convertElement(fuel, config);
     }
     @Override

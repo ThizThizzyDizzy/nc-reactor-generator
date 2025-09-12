@@ -13,7 +13,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();
@@ -171,7 +171,8 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
                             }
                         }
                         if(mainRecipes!=null&&!mainRecipes.recipes.isEmpty()){
-                            NCPFElement replacedElement = new NCPFElement(element.definition);
+                            NCPFElement replacedElement = new NCPFElement();
+                            replacedElement.definition = element.definition;
                             replacedElement.setModule(mainRecipes);
                             replacedElements.add(replacedElement);
                         }
@@ -183,11 +184,7 @@ public class NCPFConfigurationContainer extends DefinedNCPFObject{
                 mainCfg.withModule(ConfigurationMetadataModule::new, (meta) -> {
                     meta.name = meta.version = null;
                 });
-                // Remove all configuration settings modules
-                for(Iterator<String> it = mainCfg.modules.modules.keySet().iterator(); it.hasNext();){
-                    if(it.next().endsWith("configuration_settings"))it.remove();
-                }
-                // Keep them from coming back
+                
                 mainCfg.removeSettings();
 
                 boolean empty = true;

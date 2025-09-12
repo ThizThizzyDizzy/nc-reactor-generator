@@ -4,6 +4,9 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class SettingPercent extends Parameter<Float> implements VariableNumber<Float>{
     private float value = 0;
     public SettingPercent(){

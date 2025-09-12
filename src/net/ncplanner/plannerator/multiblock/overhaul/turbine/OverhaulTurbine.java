@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -32,12 +31,15 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Recipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class OverhaulTurbine extends CuboidalMultiblock<Block>{
-    public Recipe recipe;
+    public TurbineRecipe recipe;
     public boolean rotorValid;
     private int bladeCount;//for invalid metering
     public float rotorEfficiency;
@@ -48,7 +50,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     private float coilEfficiency;
     private double totalEfficiency;
     private double totalFluidEfficiency;
-    private long totalOutput,safeOutput,unsafeOutput;
+    private long totalOutput, safeOutput, unsafeOutput;
     public ArrayList<Multiblock> inputs = new ArrayList<>();
     public double[] idealExpansion;
     public double[] actualExpansion;
@@ -72,7 +74,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public OverhaulTurbine(NCPFConfigurationContainer configuration){
         this(configuration, 3, 3, null);
     }
-    public OverhaulTurbine(NCPFConfigurationContainer configuration, int diameter, int length, Recipe recipe){
+    public OverhaulTurbine(NCPFConfigurationContainer configuration, int diameter, int length, TurbineRecipe recipe){
         super(configuration, diameter, diameter, length);
         this.recipe = recipe==null?(exists()?getSpecificConfiguration().recipes.get(0):null):recipe;
     }
@@ -159,10 +161,10 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public void expandDiameter(int i){
         if(getInternalWidth()+i>getMaxX())return;
         blockGrids.clear();
-        x+=i;
-        y+=i;
-        dimensions[0]+=i;
-        dimensions[1]+=i;
+        x += i;
+        y += i;
+        dimensions[0] += i;
+        dimensions[1] += i;
         createBlockGrids();
         history.clear();
         future.clear();
@@ -170,10 +172,10 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public void contractDiameter(int i){
         if(getInternalWidth()-i<getMinX())return;
         blockGrids.clear();
-        x-=i;
-        y-=i;
-        dimensions[0]-=i;
-        dimensions[1]-=i;
+        x -= i;
+        y -= i;
+        dimensions[0] -= i;
+        dimensions[1] -= i;
         createBlockGrids();
         history.clear();
         future.clear();
@@ -249,7 +251,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 int minBearingDiameter = getMinBearingDiameter();
                 int maxBearingDiameter = getMaxBearingDiameter();
                 Queue<Block> realToValidate = new Queue<>();
-                BEARING:for(int i = minBearingDiameter; i<=maxBearingDiameter; i+=2){
+                BEARING:
+                for(int i = minBearingDiameter; i<=maxBearingDiameter; i += 2){
                     Queue<Block> toValidate = new Queue<>();
                     int bearingMin = getExternalWidth()/2-i/2;
                     int bearingMax = getExternalWidth()/2+i/2-(i%2==0?1:0);
@@ -321,7 +324,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 bladeCount = 0;
                 for(BlockElement blade : blades){
                     if(blade==null)rotorValid = false;
-                    else bladeCount++;
+                    else
+                        bladeCount++;
                 }
                 if(rotorValid){
                     idealExpansion = new double[blades.length];
@@ -339,16 +343,16 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                             minStatorExpansion = Math.min(expansion, minStatorExpansion);
                         }else{
                             numberOfBlades++;
-                            numBlades+=bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
+                            numBlades += bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
                             minBladeExpansion = Math.min(expansion, minBladeExpansion);
                             maxBladeExpansion = Math.max(expansion, maxBladeExpansion);
                         }
                         idealExpansion[i] = MathUtil.pow(recipe.stats.coefficient, (i+.5f)/blades.length);
                         actualExpansion[i] = expansionSoFar*Math.sqrt(expansion);
-                        expansionSoFar*=expansion;
-                        rotorEfficiency+=blades[i].blade==null?0:blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
+                        expansionSoFar *= expansion;
+                        rotorEfficiency += blades[i].blade==null?0:blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
                     }
-                    rotorEfficiency/=numberOfBlades;
+                    rotorEfficiency /= numberOfBlades;
                     maxInput = numBlades*getSpecificConfiguration().settings.fluidPerBlade;
                     maxUnsafeInput = maxInput*2;
                     int effectiveMaxLength;
@@ -394,19 +398,19 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     for(int y = 1; y<=getInternalHeight(); y++){
                         Block in = getBlock(x, y, 0);
                         if(in!=null&&in.isCoil()&&in.isActive()){
-                            inputEff+=in.template.coil.efficiency;
+                            inputEff += in.template.coil.efficiency;
                             inputCoils++;
                         }
                         Block out = getBlock(x, y, getExternalDepth()-1);
                         if(out!=null&&out.isCoil()&&out.isActive()){
-                            outputEff+=out.template.coil.efficiency;
+                            outputEff += out.template.coil.efficiency;
                             outputCoils++;
                         }
                     }
                 }
                 int bearings = bearingDiameter*bearingDiameter;
-                inputEff/=Math.max(inputCoils, bearings/2);
-                outputEff/=Math.max(outputCoils, bearings/2);
+                inputEff /= Math.max(inputCoils, bearings/2);
+                outputEff /= Math.max(outputCoils, bearings/2);
                 if(Float.isNaN(inputEff))inputEff = 0;
                 if(Float.isNaN(outputEff))outputEff = 0;
                 coilEfficiency = (inputEff+outputEff)/2;
@@ -424,6 +428,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     /**
      * Calculates the coil
+     *
      * @param reactor the reactor
      * @return <code>true</code> if the coil state has changed
      */
@@ -473,19 +478,19 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         }
         if(rotorValid){
             tooltip = "Total output: "+totalOutput+" RF/t\n"
-                    + "Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
-                    + "Power Efficiency: "+MathUtil.round(totalFluidEfficiency, 2)+" RF/mb\n"
-                    + "Total Efficiency: "+MathUtil.percent(totalEfficiency, 2)+"\n"
-                    + "Rotor Efficiency: "+MathUtil.percent(rotorEfficiency, 2)+"\n"
-                    + "Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2)+"\n"
-                    + "Throughput Efficiency: "+MathUtil.percent(throughputEfficiency, 2)+"\n"
-                    + "Ideality Multiplier: "+MathUtil.percent(idealityMultiplier, 2);
+                +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
+                +"Power Efficiency: "+MathUtil.round(totalFluidEfficiency, 2)+" RF/mb\n"
+                +"Total Efficiency: "+MathUtil.percent(totalEfficiency, 2)+"\n"
+                +"Rotor Efficiency: "+MathUtil.percent(rotorEfficiency, 2)+"\n"
+                +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2)+"\n"
+                +"Throughput Efficiency: "+MathUtil.percent(throughputEfficiency, 2)+"\n"
+                +"Ideality Multiplier: "+MathUtil.percent(idealityMultiplier, 2);
         }else{
             tooltip = "Rotor Invalid!"+(blades==null?"":" ("+bladeCount+"/"+blades.length+")")+"\n"
-                    + "Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
-                    + "Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2);
+                +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
+                +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2);
         }
-        tooltip+=getModuleTooltip();
+        tooltip += getModuleTooltip();
         text.addText(tooltip, rotorValid?Core.theme.getTooltipTextColor():Core.theme.getTooltipInvalidTextColor());
         return text;
     }
@@ -550,7 +555,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     @Override
     protected void getMainParts(ArrayList<PartCount> parts){
         HashMap<Block, Integer> blocks = new HashMap<>();
-        FOR:for(Block block : getBlocks(true)){
+        FOR:
+        for(Block block : getBlocks(true)){
             for(Block b : blocks.keySet()){
                 if(b.isEqual(block)){
                     blocks.put(b, blocks.get(b)+1);
@@ -564,7 +570,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         }
     }
     @Override
-    protected void getExtraParts(ArrayList<PartCount> parts){}
+    protected void getExtraParts(ArrayList<PartCount> parts){
+    }
     @Override
     protected float[] getCubeBounds(Block block){
         int bearingMax = getExternalWidth()/2+bearingDiameter/2;
@@ -580,32 +587,32 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             float z2 = 1;
             if(block.template.stator!=null){
                 if(isXBlade){//side
-                    x1+=7/16f;
-                    x2-=7/16f;
-                    z1+=2/16f;
-                    z2-=2/16f;
+                    x1 += 7/16f;
+                    x2 -= 7/16f;
+                    z1 += 2/16f;
+                    z2 -= 2/16f;
                 }
                 if(isYBlade){//top
-                    y1+=7/16f;
-                    y2-=7/16f;
-                    z1+=2/16f;
-                    z2-=2/16f;
+                    y1 += 7/16f;
+                    y2 -= 7/16f;
+                    z1 += 2/16f;
+                    z2 -= 2/16f;
                 }
             }else{//blade
                 if(isXBlade){//side
-                    z1+=7/16f;
-                    z2-=7/16f;
-                    x1+=2/16f;
-                    x2-=2/16f;
+                    z1 += 7/16f;
+                    z2 -= 7/16f;
+                    x1 += 2/16f;
+                    x2 -= 2/16f;
                 }
                 if(isYBlade){//top
-                    z1+=7/16f;
-                    z2-=7/16f;
-                    y1+=2/16f;
-                    y2-=2/16f;
+                    z1 += 7/16f;
+                    z2 -= 7/16f;
+                    y1 += 2/16f;
+                    y2 -= 2/16f;
                 }
             }
-            return new float[]{x1,y1,z1,x2,y2,z2};
+            return new float[]{x1, y1, z1, x2, y2, z2};
         }
         return super.getCubeBounds(block);
     }
@@ -649,7 +656,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                             }
                             for(Block newBlock : blocks){
                                 if(newBlock.template.coil.efficiency>(block==null||!block.isCoil()?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
-                                else suggestor.task.max--;
+                                else
+                                    suggestor.task.max--;
                             }
                             if(block!=null){
                                 suggestor.task.max++;
@@ -864,6 +872,6 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     @Override
     public void setMultiblockRecipe(int recipeType, NCPFElement recipe){
-        this.recipe = (Recipe)recipe;
+        this.recipe = (TurbineRecipe)recipe;
     }
 }

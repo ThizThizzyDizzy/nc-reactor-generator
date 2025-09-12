@@ -16,31 +16,12 @@ import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceLineDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDecal;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
-import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.ClearInvalidMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random.RandomBlockMutator;
-import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.mutators.random.RandomCellMutator;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulMSRDesign;
-import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulSFRDesign;
-import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulMSRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulSFRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.OverhaulTurbineSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.*;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.*;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.*;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelStatsModule;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
 import net.ncplanner.plannerator.planner.tutorial.TutorialFileReader;
 public class OverhaulModule extends Module<Object>{
@@ -54,73 +35,6 @@ public class OverhaulModule extends Module<Object>{
     @Override
     public String getDescription(){
         return "All the base NuclearCraft: Overhauled multiblocks";
-    }
-    @Override
-    public void addMultiblockTypes(ArrayList multiblockTypes){
-        multiblockTypes.add(new OverhaulSFR());
-        multiblockTypes.add(new OverhaulMSR());
-        multiblockTypes.add(new OverhaulTurbine());
-    }
-    @Override
-    public void registerNCPF(){
-        registerNCPFConfiguration(OverhaulSFRConfiguration::new);
-        registerNCPFConfiguration(OverhaulMSRConfiguration::new);
-        registerNCPFConfiguration(OverhaulTurbineConfiguration::new);
-        registerNCPFDesign(NCPFOverhaulSFRDesign::new, OverhaulSFRDesign::new);
-        registerNCPFDesign(NCPFOverhaulMSRDesign::new, OverhaulMSRDesign::new);
-        registerNCPFDesign(NCPFOverhaulTurbineDesign::new, OverhaulTurbineDesign::new);
-        
-        registerNCPFModule(OverhaulSFRSettingsModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule::new);
-        registerNCPFModule(CoolantVentModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ControllerModule::new);
-        registerNCPFModule(FuelCellModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ModeratorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldModule::new);
-        registerNCPFModule(HeatsinkModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule::new);
-        registerNCPFModule(FuelStatsModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorStatsModule::new);
-        registerNCPFModule(CoolantRecipeStatsModule::new);
-        
-        registerNCPFModule(OverhaulMSRSettingsModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ConductorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.CasingModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ControllerModule::new);
-        registerNCPFModule(FuelVesselModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ReflectorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.ModeratorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronShieldModule::new);
-        registerNCPFModule(HeaterModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.NeutronSourceModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.PortModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.RecipePortsModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelStatsModule::new);
-        registerNCPFModule(HeaterStatsModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorStatsModule::new);
-        
-        registerNCPFModule(OverhaulTurbineSettingsModule::new);
-        registerNCPFModule(BladeModule::new);
-        registerNCPFModule(StatorModule::new);
-        registerNCPFModule(CoilModule::new);
-        registerNCPFModule(BearingModule::new);
-        registerNCPFModule(ShaftModule::new);
-        registerNCPFModule(ConnectorModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.ControllerModule::new);
-        registerNCPFModule(net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.CasingModule::new);
-        registerNCPFModule(InletModule::new);
-        registerNCPFModule(OutletModule::new);
-        registerNCPFModule(RecipeStatsModule::new);
-        
-        registerMutator(RandomBlockMutator::new);
-        registerMutator(ClearInvalidMutator::new);
-        registerMutator(RandomCellMutator::new);
     }
     @Override
     public void addTutorials(){

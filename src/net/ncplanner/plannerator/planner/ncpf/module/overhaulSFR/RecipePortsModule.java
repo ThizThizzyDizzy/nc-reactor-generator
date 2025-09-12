@@ -1,16 +1,13 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockReference;
-import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
-public class RecipePortsModule extends NCPFSettingsModule{
-    public BlockReference input;
-    public BlockReference output;
+import net.ncplanner.plannerator.planner.ncpf.module.NCPFRecipePortsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
+public class RecipePortsModule extends NCPFRecipePortsModule<BlockElement>{
     public RecipePortsModule(){
         super("nuclearcraft:overhaul_sfr:recipe_ports");
-        addReference("input", () -> input, (v) -> input = BlockReference.create((BlockElement)v), BlockReference::new, (r) -> input = r, "Input");
-        addReference("output", () -> output, (v) -> output = BlockReference.create((BlockElement)v), BlockReference::new, (r) -> output = r, "Output");
     }
     @Override
     public void setLocalReferences(DefinedNCPFModularObject parentObject){
@@ -19,13 +16,5 @@ public class RecipePortsModule extends NCPFSettingsModule{
             output.block.unToggled = input.block;
             input.block.parent = output.block.parent = (BlockElement)parentObject;
         }
-    }
-    @Override
-    public void conglomerate(NCPFModule addon){
-        throw new UnsupportedOperationException("Block ports may not be overwritten!");
-    }
-    @Override
-    public String getFriendlyName(){
-        return "Recipe Ports";
     }
 }

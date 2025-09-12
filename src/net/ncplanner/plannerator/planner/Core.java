@@ -23,11 +23,6 @@ import net.ncplanner.plannerator.graphics.Shader;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
-import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
-import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
-import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFDesign;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -535,14 +530,14 @@ public class Core{
             Module m = modules.get(i);
             Task t = moduleTasks.get(i);
             if(m.isActive()){
-                Task mt = t.addSubtask("Adding multiblock types");
                 Task nt = t.addSubtask("Registering NCPF objects");
+                Task mt = t.addSubtask("Adding multiblock types");
                 Task tt = t.addSubtask("Adding Tutorials");
                 Task ct = t.addSubtask("Adding configurations");
-                m.addMultiblockTypes(multiblockTypes);
-                mt.finish();
                 m.registerNCPF();
                 nt.finish();
+                m.addMultiblockTypes(multiblockTypes);
+                mt.finish();
                 m.addTutorials();
                 tt.finish();
                 m.addConfigurations(ct);
@@ -551,36 +546,6 @@ public class Core{
             t.finish();
         }
         task.finish();
-    }
-    public static boolean hasUnderhaulSFR(){
-        for(Multiblock m : multiblockTypes){
-            if(m instanceof UnderhaulSFR)return true;
-        }
-        return false;
-    }
-    public static boolean hasOverhaulSFR(){
-        for(Multiblock m : multiblockTypes){
-            if(m instanceof OverhaulSFR)return true;
-        }
-        return false;
-    }
-    public static boolean hasOverhaulMSR(){
-        for(Multiblock m : multiblockTypes){
-            if(m instanceof OverhaulMSR)return true;
-        }
-        return false;
-    }
-    public static boolean hasOverhaulTurbine(){
-        for(Multiblock m : multiblockTypes){
-            if(m instanceof OverhaulTurbine)return true;
-        }
-        return false;
-    }
-    public static boolean hasOverhaulFusion(){
-        for(Multiblock m : multiblockTypes){
-            if(m instanceof OverhaulFusionReactor)return true;
-        }
-        return false;
     }
     public static boolean hasAlpha(Image image){
         if(image==null)return false;

@@ -1,15 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ConductorModule;
@@ -23,7 +15,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronShieldMo
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.NeutronSourceModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.ReflectorModule;
-public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
+public class BlockElement extends BlockRecipesElement{
     public ConductorModule conductor;
     public CasingModule casing;
     public CoolantVentModule coolantVent;
@@ -44,67 +36,21 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
     public BlockElement unToggled;//not saved, the untoggled version of this block
     public BlockElement toggled;//not saved, the toggled version of this block
     public BlockElement(){
-    }
-    public BlockElement(NCPFElementDefinition definition){
-        super(definition);
-    }
-    @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-        conductor = getModule(ConductorModule::new);
-        casing = getModule(CasingModule::new);
-        coolantVent = getModule(CoolantVentModule::new);
-        controller = getModule(ControllerModule::new);
-        fuelCell = getModule(FuelCellModule::new);
-        irradiator = getModule(IrradiatorModule::new);
-        reflector = getModule(ReflectorModule::new);
-        moderator = getModule(ModeratorModule::new);
-        neutronShield = getModule(NeutronShieldModule::new);
-        heatsink = getModule(HeatsinkModule::new);
-        neutronSource = getModule(NeutronSourceModule::new);
-        port = getModule(PortModule::new);
-        recipePorts = getModule(RecipePortsModule::new);
-        if(fuelCell!=null)fuels = getRecipes(Fuel::new);
-        if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
-    }
-    @Override
-    public void conglomerate(DefinedNCPFModularObject addon){
-        super.conglomerate(addon);
-        if(fuelCell!=null)fuels = getRecipes(Fuel::new);
-        if(irradiator!=null)irradiatorRecipes = getRecipes(IrradiatorRecipe::new);
-    }
-    @Override
-    public void setReferences(List<NCPFElement> lst, boolean soft){
-        setModules(conductor, casing, coolantVent, controller, fuelCell, irradiator, reflector, moderator, neutronShield, heatsink, neutronSource, port, recipePorts);
-        super.setReferences(lst, soft);
-        if(parent!=null){
-            fuels = parent.fuels;
-            irradiatorRecipes = parent.irradiatorRecipes;
-        }
-        for(Fuel recipe : fuels)recipe.setReferences(lst, soft);
-        for(IrradiatorRecipe recipe : irradiatorRecipes)recipe.setReferences(lst, soft);
-        if(recipePorts!=null){
-            if(recipePorts.input!=null)recipePorts.input.block.fuels = fuels;
-            if(recipePorts.output!=null)recipePorts.output.block.fuels = fuels;
-        }
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        setModules(conductor, casing, coolantVent, controller, fuelCell, irradiator, reflector, moderator, neutronShield, heatsink, neutronSource, port, recipePorts);
-        setRecipes(fuels, irradiatorRecipes);
-        super.convertToObject(ncpf);
-    }
-    @Override
-    public List<? extends NCPFElement> getBlockRecipes(){
-        if(fuelCell!=null)return fuels;
-        if(irradiator!=null)return irradiatorRecipes;
-        if(parent!=null)return parent.getBlockRecipes();
-        return null;
-    }
-    @Override
-    public void clearBlockRecipes(){
-        fuels.clear();
-        irradiatorRecipes.clear();
+        definePlanneratorModule(() -> conductor, (m) -> conductor = m, ConductorModule::new);
+        definePlanneratorModule(() -> casing, (m) -> casing = m, CasingModule::new);
+        definePlanneratorModule(() -> coolantVent, (m) -> coolantVent = m, CoolantVentModule::new);
+        definePlanneratorModule(() -> controller, (m) -> controller = m, ControllerModule::new);
+        definePlanneratorModule(() -> fuelCell, (m) -> fuelCell = m, FuelCellModule::new);
+        definePlanneratorModule(() -> irradiator, (m) -> irradiator = m, IrradiatorModule::new);
+        definePlanneratorModule(() -> reflector, (m) -> reflector = m, ReflectorModule::new);
+        definePlanneratorModule(() -> moderator, (m) -> moderator = m, ModeratorModule::new);
+        definePlanneratorModule(() -> neutronShield, (m) -> neutronShield = m, NeutronShieldModule::new);
+        definePlanneratorModule(() -> heatsink, (m) -> heatsink = m, HeatsinkModule::new);
+        definePlanneratorModule(() -> neutronSource, (m) -> neutronSource = m, NeutronSourceModule::new);
+        definePlanneratorModule(() -> port, (m) -> port = m, PortModule::new);
+        definePlanneratorModule(() -> recipePorts, (m) -> recipePorts = m, RecipePortsModule::new);
+        definePlanneratorRecipes(getClass(), () -> fuelCell, (e) -> e.fuels, () -> recipePorts, (e, lst) -> e.fuels = lst, Fuel::new);
+        definePlanneratorRecipes(getClass(), () -> irradiator, (e) -> e.irradiatorRecipes, () -> recipePorts, (e, lst) -> e.irradiatorRecipes = lst, IrradiatorRecipe::new);
     }
     public boolean blocksLOS(){
         return fuelCell!=null||irradiator!=null||reflector!=null;
@@ -112,36 +58,8 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
     public boolean createsCluster(){
         return fuelCell!=null||irradiator!=null||neutronShield!=null;
     }
-    public void makePartial(List<Design> designs){
-        makePartial(fuels, designs);
-        makePartial(irradiatorRecipes, designs);
-    }
     @Override
-    public String getTitle(){
-        return "Block";
-    }
-    @Override
-    public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{ConductorModule::new, CasingModule::new,
-            CoolantVentModule::new, ControllerModule::new, FuelCellModule::new, IrradiatorModule::new, ReflectorModule::new,
-            ModeratorModule::new, NeutronShieldModule::new, HeatsinkModule::new, NeutronSourceModule::new, PortModule::new,
-            RecipePortsModule::new};
-    }
-    @Override
-    public void removeModule(NCPFModule module){
-        if(module==conductor)conductor = null;
-        if(module==casing)casing = null;
-        if(module==coolantVent)coolantVent = null;
-        if(module==controller)controller = null;
-        if(module==fuelCell)fuelCell = null;
-        if(module==irradiator)irradiator = null;
-        if(module==reflector)reflector = null;
-        if(module==moderator)moderator = null;
-        if(module==neutronShield)neutronShield = null;
-        if(module==heatsink)heatsink = null;
-        if(module==neutronSource)neutronSource = null;
-        if(module==port)port = null;
-        if(module==recipePorts)recipePorts = null;
-        super.removeModule(module);
+    public BlockRecipesElement getParent(){
+        return parent;
     }
 }

@@ -8,10 +8,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFEle
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelStatsModule;
 public class Fuel extends NamedTexturedNCPFElement implements IBlockRecipe{
     public FuelStatsModule stats = new FuelStatsModule();
-    public Fuel(){}
-    public Fuel(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

@@ -1,22 +1,14 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ControllerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.CoolerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ModeratorModule;
-public class BlockElement extends NamedTexturedNCPFElement implements BlockRecipesElement{
+public class BlockElement extends BlockRecipesElement{
     public CoolerModule cooler;
     public ActiveCoolerModule activeCooler;
     public FuelCellModule fuelCell;
@@ -24,66 +16,17 @@ public class BlockElement extends NamedTexturedNCPFElement implements BlockRecip
     public CasingModule casing;
     public ControllerModule controller;
     public List<ActiveCoolerRecipe> activeCoolerRecipes = new ArrayList<>();
-    public BlockElement(){}
-    public BlockElement(NCPFElementDefinition definition){
-        super(definition);
+    public BlockElement(){
+        definePlanneratorModule(() -> cooler, (m) -> cooler = m, CoolerModule::new);
+        definePlanneratorModule(() -> activeCooler, (m) -> activeCooler = m, ActiveCoolerModule::new);
+        definePlanneratorModule(() -> fuelCell, (m) -> fuelCell = m, FuelCellModule::new);
+        definePlanneratorModule(() -> moderator, (m) -> moderator = m, ModeratorModule::new);
+        definePlanneratorModule(() -> casing, (m) -> casing = m, CasingModule::new);
+        definePlanneratorModule(() -> controller, (m) -> controller = m, ControllerModule::new);
+        definePlanneratorRecipes(getClass(), () -> activeCooler, (e) -> e.activeCoolerRecipes, () -> null, (e, lst) -> e.activeCoolerRecipes = lst, ActiveCoolerRecipe::new);
     }
     @Override
-    public void convertFromObject(NCPFObject ncpf){
-        super.convertFromObject(ncpf);
-        cooler = getModule(CoolerModule::new);
-        activeCooler = getModule(ActiveCoolerModule::new);
-        fuelCell = getModule(FuelCellModule::new);
-        moderator = getModule(ModeratorModule::new);
-        casing = getModule(CasingModule::new);
-        controller = getModule(ControllerModule::new);
-        if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
-    }
-    @Override
-    public void conglomerate(DefinedNCPFModularObject addon){
-        super.conglomerate(addon);
-        if(activeCooler!=null)activeCoolerRecipes = getRecipes(ActiveCoolerRecipe::new);
-    }
-    @Override
-    public void setReferences(List<NCPFElement> lst, boolean soft){
-        setModules(cooler, activeCooler, fuelCell, moderator, casing, controller);
-        super.setReferences(lst, soft);
-        for(ActiveCoolerRecipe recipe : activeCoolerRecipes)recipe.setReferences(lst, soft);
-    }
-    @Override
-    public void convertToObject(NCPFObject ncpf){
-        setModules(cooler, activeCooler, fuelCell, moderator, casing, controller);
-        setRecipes(activeCoolerRecipes);
-        super.convertToObject(ncpf);
-    }
-    @Override
-    public List<? extends NCPFElement> getBlockRecipes(){
-        return activeCoolerRecipes;
-    }
-    @Override
-    public void clearBlockRecipes(){
-        activeCoolerRecipes.clear();
-    }
-    public void makePartial(List<Design> designs){
-        makePartial(activeCoolerRecipes, designs);
-    }
-    @Override
-    public String getTitle(){
-        return "Block";
-    }
-    @Override
-    public Supplier<NCPFModule>[] getPreferredModules(){
-        return new Supplier[]{CoolerModule::new, ActiveCoolerModule::new,
-            FuelCellModule::new, ModeratorModule::new, CasingModule::new, ControllerModule::new};
-    }
-    @Override
-    public void removeModule(NCPFModule module){
-        if(module==cooler)cooler = null;
-        if(module==activeCooler)activeCooler = null;
-        if(module==fuelCell)fuelCell = null;
-        if(module==moderator)moderator = null;
-        if(module==casing)casing = null;
-        if(module==controller)controller = null;
-        super.removeModule(module);
+    public BlockRecipesElement getParent(){
+        return null;
     }
 }

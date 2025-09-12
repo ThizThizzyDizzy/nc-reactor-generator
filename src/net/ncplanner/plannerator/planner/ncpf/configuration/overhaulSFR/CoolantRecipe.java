@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
@@ -8,10 +7,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFEle
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantRecipeStatsModule;
 public class CoolantRecipe extends NamedTexturedNCPFElement implements MultiblockRecipeElement{
     public CoolantRecipeStatsModule stats = new CoolantRecipeStatsModule();
-    public CoolantRecipe(){}
-    public CoolantRecipe(NCPFElementDefinition definition){
-        super(definition);
-    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);

@@ -15,7 +15,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 public class MenuAddon extends ConfigurationMenu{
     private final Addon addon;
     public MenuAddon(Menu parent, Configuration cnfg, Addon addon){

@@ -1,0 +1,47 @@
+package net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller;
+import java.util.List;
+import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
+public class ReservoirPortModule extends BlockFunctionModule{
+    public boolean output;
+    private NCPFElement otherPort;
+    public ReservoirPortModule(){
+        super("nuclearcraft:overhaul_distiller:reservoir_port");
+        addBoolean("output", () -> output, (v) -> output = v, "Output");
+    }
+    public ReservoirPortModule(boolean output){
+        this();
+        this.output = output;
+    }
+    @Override
+    public void setReferences(List<NCPFElement> lst, boolean soft){
+        for(NCPFElement elem : lst){
+            elem.withModule(ReservoirPortModule::new, (vent) -> {
+                if(vent.output!=output)otherPort = elem;
+            });
+        }
+    }
+    @Override
+    public void setLocalReferences(DefinedNCPFModularObject parentObject){
+        if(otherPort!=null){
+            BlockElement thisOne = (BlockElement)parentObject;
+            BlockElement other = (BlockElement)otherPort;
+            if(output){
+                thisOne.unToggled = other;
+                other.toggled = thisOne;
+            }else{
+                thisOne.toggled = other;
+                other.unToggled = thisOne;
+            }
+        }
+    }
+    @Override
+    public String getFunctionName(){
+        return "Reservoir Port";
+    }
+}

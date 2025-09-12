@@ -44,6 +44,7 @@ import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
@@ -51,6 +52,8 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
     private ArrayList<VesselGroup> vesselGroups = new ArrayList<>();
@@ -117,7 +120,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         this(null);
     }
     public OverhaulMSR(NCPFConfigurationContainer configuration){
-        this(configuration, 7, 5, 7);
+        this(configuration, configuration==null?0:configuration.getConfiguration(OverhaulMSRConfiguration::new).boundSize(7), configuration==null?0:configuration.getConfiguration(OverhaulMSRConfiguration::new).boundSize(5), configuration==null?0:configuration.getConfiguration(OverhaulMSRConfiguration::new).boundSize(7));
     }
     public OverhaulMSR(NCPFConfigurationContainer configuration, int x, int y, int z){
         super(configuration, x, y, z);
@@ -257,7 +260,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             }
                             if(!hasTarget){
                                 decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
-                                return; 
+                                return;
                             }
                         }
                         block.casingValid = true;
@@ -320,7 +323,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     for(Block b : group.blocks)sources.put(b, b.source);
                     group.clearData();
                     for(Block b : sources.keySet())b.source = sources.get(b);
-                    if(wasActive)lastActive+=group.size();
+                    if(wasActive)lastActive += group.size();
                     group.wasActive = wasActive;
                 }
                 fluxDecals = new Queue<>();
@@ -335,7 +338,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 int nowActive = 0;
                 for(VesselGroup group : vesselGroups){
-                    if(group.isActive())nowActive+=group.size();
+                    if(group.isActive())nowActive += group.size();
                     if(!group.wasActive){
                         group.neutronFlux = group.hadFlux;
                     }
@@ -370,10 +373,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             case 7://init vessels
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    group.positionalEfficiency*=group.getBunchingFactor();
+                    group.positionalEfficiency *= group.getBunchingFactor();
                     for(Block block : group.blocks){
                         if(block.fuel==null)continue;
-                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
+                        float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -406,38 +409,39 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             if(b.isFuelVesselActive()){
                                 if(alreadyProcessedGroups.contains(b.vesselGroup))continue;
                                 alreadyProcessedGroups.add(b.vesselGroup);
-                                fuelVessels+=b.vesselGroup.size();
-                                cluster.efficiency+=b.efficiency;
-                                cluster.totalHeat+=b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
-                                cluster.heatMult+=b.vesselGroup.getHeatMult();
+                                fuelVessels += b.vesselGroup.size();
+                                cluster.efficiency += b.efficiency;
+                                cluster.totalHeat += b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
+                                cluster.heatMult += b.vesselGroup.getHeatMult();
                             }
                             if(b.isHeaterActive()){
-                                cluster.totalCooling+=b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
+                                cluster.totalCooling += b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
                             }
                             if(b.isShieldActive()){
-                                cluster.totalHeat+=b.template.neutronShield.heatPerFlux*b.neutronFlux;
+                                cluster.totalHeat += b.template.neutronShield.heatPerFlux*b.neutronFlux;
                             }
                             if(b.isIrradiatorActive()){
-                                cluster.irradiation+=b.neutronFlux;
-                                cluster.totalHeat+=b.irradiatorRecipe.stats.heat*b.neutronFlux;
+                                cluster.irradiation += b.neutronFlux;
+                                cluster.totalHeat += b.irradiatorRecipe.stats.heat*b.neutronFlux;
                             }
                             calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                         }
-                        cluster.efficiency/=fuelVessels;
-                        cluster.heatMult/=fuelVessels;
+                        cluster.efficiency /= fuelVessels;
+                        cluster.heatMult /= fuelVessels;
                         if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
                         if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
                         cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
                         if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-                        else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-                        cluster.efficiency*=cluster.coolingPenaltyMult;
-                        totalFuelVessels+=fuelVessels;
-                        totalCooling+=cluster.totalCooling;
-                        totalHeat+=cluster.totalHeat;
-                        netHeat+=cluster.netHeat;
-                        totalEfficiency+=cluster.efficiency*fuelVessels;
-                        totalHeatMult+=cluster.heatMult*fuelVessels;
-                        totalIrradiation+=cluster.irradiation;
+                        else
+                            cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                        cluster.efficiency *= cluster.coolingPenaltyMult;
+                        totalFuelVessels += fuelVessels;
+                        totalCooling += cluster.totalCooling;
+                        totalHeat += cluster.totalHeat;
+                        netHeat += cluster.netHeat;
+                        totalEfficiency += cluster.efficiency*fuelVessels;
+                        totalHeatMult += cluster.heatMult*fuelVessels;
+                        totalIrradiation += cluster.irradiation;
                         if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         calcClusters.progress = (i+1)/(double)clusters.size();
                     }
@@ -446,8 +450,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 10://calculate stats
-                totalEfficiency/=totalFuelVessels;
-                totalHeatMult/=totalFuelVessels;
+                totalEfficiency /= totalFuelVessels;
+                totalHeatMult /= totalFuelVessels;
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
@@ -457,8 +461,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     calcStats.progress = i/(double)allBlocks.size()/2;
                 }
                 int volume = getInternalVolume();
-                sparsityMult = (float) (functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
-                totalEfficiency*=sparsityMult;
+                sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
+                totalEfficiency *= sparsityMult;
                 synchronized(clusters){
                     for(int i = 0; i<clusters.size(); i++){
                         Cluster c = clusters.get(i);
@@ -469,13 +473,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
                                     if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount+=out;
+                                        s.amount += out;
                                         found = true;
                                         break;
                                     }
                                 }
                                 if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
-                                totalTotalOutput+=out;
+                                totalTotalOutput += out;
                             }
                             calcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
                         }
@@ -530,7 +534,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             }
                             if(!hasTarget){
                                 decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
-                                return; 
+                                return;
                             }
                         }
                         block.casingValid = true;
@@ -588,7 +592,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     for(Block b : group.blocks)sources.put(b, b.source);
                     group.clearData();
                     for(Block b : sources.keySet())b.source = sources.get(b);
-                    if(wasActive)lastActive+=group.size();
+                    if(wasActive)lastActive += group.size();
                     group.wasActive = wasActive;
                 }
                 fluxDecals = new Queue<>();
@@ -604,7 +608,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 nowActive = 0;
                 for(VesselGroup group : vesselGroups){
-                    if(group.isActive())nowActive+=group.size();
+                    if(group.isActive())nowActive += group.size();
                     if(!group.wasActive){
                         group.neutronFlux = group.hadFlux;
                     }
@@ -639,10 +643,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             case 18://init vessels
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    group.positionalEfficiency*=group.getBunchingFactor();
+                    group.positionalEfficiency *= group.getBunchingFactor();
                     for(Block block : group.blocks){
                         if(block.fuel==null)continue;
-                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
+                        float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -675,38 +679,39 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             if(b.isFuelVesselActive()){
                                 if(alreadyProcessedGroups.contains(b.vesselGroup))continue;
                                 alreadyProcessedGroups.add(b.vesselGroup);
-                                fuelVessels+=b.vesselGroup.size();
-                                cluster.efficiency+=b.efficiency;
-                                cluster.totalHeat+=b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
-                                cluster.heatMult+=b.vesselGroup.getHeatMult();
+                                fuelVessels += b.vesselGroup.size();
+                                cluster.efficiency += b.efficiency;
+                                cluster.totalHeat += b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
+                                cluster.heatMult += b.vesselGroup.getHeatMult();
                             }
                             if(b.isHeaterActive()){
-                                cluster.totalCooling+=b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
+                                cluster.totalCooling += b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
                             }
                             if(b.isShieldActive()){
-                                cluster.totalHeat+=b.template.neutronShield.heatPerFlux*b.neutronFlux;
+                                cluster.totalHeat += b.template.neutronShield.heatPerFlux*b.neutronFlux;
                             }
                             if(b.isIrradiatorActive()){
-                                cluster.irradiation+=b.neutronFlux;
-                                cluster.totalHeat+=b.irradiatorRecipe.stats.heat*b.neutronFlux;
+                                cluster.irradiation += b.neutronFlux;
+                                cluster.totalHeat += b.irradiatorRecipe.stats.heat*b.neutronFlux;
                             }
                             calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                         }
-                        cluster.efficiency/=fuelVessels;
-                        cluster.heatMult/=fuelVessels;
+                        cluster.efficiency /= fuelVessels;
+                        cluster.heatMult /= fuelVessels;
                         if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
                         if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
                         cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
                         if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-                        else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-                        cluster.efficiency*=cluster.coolingPenaltyMult;
-                        totalFuelVessels+=fuelVessels;
-                        totalCooling+=cluster.totalCooling;
-                        totalHeat+=cluster.totalHeat;
-                        netHeat+=cluster.netHeat;
-                        totalEfficiency+=cluster.efficiency*fuelVessels;
-                        totalHeatMult+=cluster.heatMult*fuelVessels;
-                        totalIrradiation+=cluster.irradiation;
+                        else
+                            cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                        cluster.efficiency *= cluster.coolingPenaltyMult;
+                        totalFuelVessels += fuelVessels;
+                        totalCooling += cluster.totalCooling;
+                        totalHeat += cluster.totalHeat;
+                        netHeat += cluster.netHeat;
+                        totalEfficiency += cluster.efficiency*fuelVessels;
+                        totalHeatMult += cluster.heatMult*fuelVessels;
+                        totalIrradiation += cluster.irradiation;
                         if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         shutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
@@ -715,8 +720,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 21://calculate stats
-                totalEfficiency/=totalFuelVessels;
-                totalHeatMult/=totalFuelVessels;
+                totalEfficiency /= totalFuelVessels;
+                totalHeatMult /= totalFuelVessels;
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
@@ -726,8 +731,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     shutdownCalcStats.progress = i/(double)allBlocks.size()/2;
                 }
                 volume = getInternalVolume();
-                sparsityMult = (float) (functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
-                totalEfficiency*=sparsityMult;
+                sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
+                totalEfficiency *= sparsityMult;
                 synchronized(clusters){
                     for(int i = 0; i<clusters.size(); i++){
                         Cluster c = clusters.get(i);
@@ -738,13 +743,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
                                     if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount+=out;
+                                        s.amount += out;
                                         found = true;
                                         break;
                                     }
                                 }
                                 if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
-                                totalTotalOutput+=out;
+                                totalTotalOutput += out;
                             }
                             shutdownCalcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
                         }
@@ -799,7 +804,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             }
                             if(!hasTarget){
                                 decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
-                                return; 
+                                return;
                             }
                         }
                         block.casingValid = true;
@@ -856,7 +861,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     for(Block b : group.blocks)sources.put(b, b.source);
                     group.clearData();
                     for(Block b : sources.keySet())b.source = sources.get(b);
-                    if(wasActive)lastActive+=group.size();
+                    if(wasActive)lastActive += group.size();
                     group.wasActive = wasActive;
                 }
                 fluxDecals = new Queue<>();
@@ -872,7 +877,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 nowActive = 0;
                 for(VesselGroup group : vesselGroups){
-                    if(group.isActive())nowActive+=group.size();
+                    if(group.isActive())nowActive += group.size();
                     if(!group.wasActive){
                         group.neutronFlux = group.hadFlux;
                     }
@@ -907,10 +912,10 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             case 29://init vessels
                 for(int i = 0; i<vesselGroups.size(); i++){
                     VesselGroup group = vesselGroups.get(i);
-                    group.positionalEfficiency*=group.getBunchingFactor();
+                    group.positionalEfficiency *= group.getBunchingFactor();
                     for(Block block : group.blocks){
                         if(block.fuel==null)continue;
-                        float criticalityModifier = (float) (1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
+                        float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(group.neutronFlux-2*block.vesselGroup.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*group.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
                         if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     }
@@ -943,38 +948,39 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             if(b.isFuelVesselActive()){
                                 if(alreadyProcessedGroups.contains(b.vesselGroup))continue;
                                 alreadyProcessedGroups.add(b.vesselGroup);
-                                fuelVessels+=b.vesselGroup.size();
-                                cluster.efficiency+=b.efficiency;
-                                cluster.totalHeat+=b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
-                                cluster.heatMult+=b.vesselGroup.getHeatMult();
+                                fuelVessels += b.vesselGroup.size();
+                                cluster.efficiency += b.efficiency;
+                                cluster.totalHeat += b.vesselGroup.moderatorLines*b.fuel.stats.heat*b.vesselGroup.getBunchingFactor();
+                                cluster.heatMult += b.vesselGroup.getHeatMult();
                             }
                             if(b.isHeaterActive()){
-                                cluster.totalCooling+=b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
+                                cluster.totalCooling += b.heaterRecipe==null?0:b.heaterRecipe.stats.cooling;
                             }
                             if(b.isShieldActive()){
-                                cluster.totalHeat+=b.template.neutronShield.heatPerFlux*b.neutronFlux;
+                                cluster.totalHeat += b.template.neutronShield.heatPerFlux*b.neutronFlux;
                             }
                             if(b.isIrradiatorActive()){
-                                cluster.irradiation+=b.neutronFlux;
-                                cluster.totalHeat+=b.irradiatorRecipe.stats.heat*b.neutronFlux;
+                                cluster.irradiation += b.neutronFlux;
+                                cluster.totalHeat += b.irradiatorRecipe.stats.heat*b.neutronFlux;
                             }
                             calcClusters.progress = (i+j/(double)cluster.blocks.size())/(double)clusters.size();
                         }
-                        cluster.efficiency/=fuelVessels;
-                        cluster.heatMult/=fuelVessels;
+                        cluster.efficiency /= fuelVessels;
+                        cluster.heatMult /= fuelVessels;
                         if(Double.isNaN(cluster.efficiency))cluster.efficiency = 0;
                         if(Double.isNaN(cluster.heatMult))cluster.heatMult = 0;
                         cluster.netHeat = cluster.totalHeat-cluster.totalCooling;
                         if(cluster.totalCooling==0)cluster.coolingPenaltyMult = 1;
-                        else cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
-                        cluster.efficiency*=cluster.coolingPenaltyMult;
-                        totalFuelVessels+=fuelVessels;
-                        totalCooling+=cluster.totalCooling;
-                        totalHeat+=cluster.totalHeat;
-                        netHeat+=cluster.netHeat;
-                        totalEfficiency+=cluster.efficiency*fuelVessels;
-                        totalHeatMult+=cluster.heatMult*fuelVessels;
-                        totalIrradiation+=cluster.irradiation;
+                        else
+                            cluster.coolingPenaltyMult = Math.min(1, (cluster.totalHeat+getSpecificConfiguration().settings.coolingEfficiencyLeniency)/(float)cluster.totalCooling);
+                        cluster.efficiency *= cluster.coolingPenaltyMult;
+                        totalFuelVessels += fuelVessels;
+                        totalCooling += cluster.totalCooling;
+                        totalHeat += cluster.totalHeat;
+                        netHeat += cluster.netHeat;
+                        totalEfficiency += cluster.efficiency*fuelVessels;
+                        totalHeatMult += cluster.heatMult*fuelVessels;
+                        totalIrradiation += cluster.irradiation;
                         if(cluster.totalHeat==0)cluster.isConnectedToWall = true;
                         partialShutdownCalcClusters.progress = (i+1)/(double)clusters.size();
                     }
@@ -983,14 +989,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 calcStep++;
                 return true;
             case 32://calculate stats
-                totalEfficiency/=totalFuelVessels;
-                totalHeatMult/=totalFuelVessels;
+                totalEfficiency /= totalFuelVessels;
+                totalHeatMult /= totalFuelVessels;
                 if(Double.isNaN(totalEfficiency))totalEfficiency = 0;
                 if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
                 functionalBlocks = 0;
                 ArrayList<NCPFElement> inputPortRecipes = new ArrayList<>();
                 ArrayList<NCPFElement> outputPortRecipes = new ArrayList<>();
-                BLOCK:for(int i = 0; i<allBlocks.size(); i++){
+                BLOCK:
+                for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
                     if(block.template.port==null)continue;
                     if(block.getRecipe()!=null){
@@ -1002,7 +1009,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     }
                     partialShutdownCalcStats.progress = i/(double)allBlocks.size()/4;
                 }
-                BLOCK:for(int i = 0; i<allBlocks.size(); i++){
+                BLOCK:
+                for(int i = 0; i<allBlocks.size(); i++){
                     Block block = allBlocks.get(i);
                     if(block.isFunctional())functionalBlocks++;
                     if(block.template.parent!=null)continue;
@@ -1013,8 +1021,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     partialShutdownCalcStats.progress = 0.25+i/(double)allBlocks.size()/4;
                 }
                 volume = getInternalVolume();
-                sparsityMult = (float) (functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
-                totalEfficiency*=sparsityMult;
+                sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
+                totalEfficiency *= sparsityMult;
                 synchronized(clusters){
                     for(int i = 0; i<clusters.size(); i++){
                         Cluster c = clusters.get(i);
@@ -1025,13 +1033,13 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 boolean found = false;
                                 for(FluidStack s : totalOutput){
                                     if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount+=out;
+                                        s.amount += out;
                                         found = true;
                                         break;
                                     }
                                 }
                                 if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
-                                totalTotalOutput+=out;
+                                totalTotalOutput += out;
                             }
                             calcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
                         }
@@ -1069,8 +1077,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 Block block = getBlock(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i);
                 if(block==null)break;
                 if(block.isModerator()){
-                    flux+=block.template.moderator.flux;
-                    efficiency+=block.template.moderator.efficiency;
+                    flux += block.template.moderator.flux;
+                    efficiency += block.template.moderator.efficiency;
                     length++;
                     continue;
                 }
@@ -1079,20 +1087,20 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     continue;
                 }
                 if(block.isShield()){
-                    efficiency+=block.template.neutronShield.efficiency;
+                    efficiency += block.template.neutronShield.efficiency;
                     length++;
                     continue;
                 }
                 if(block.isFuelVessel()){
                     if(length==0)break;
                     if(block.fuel==null)break;
-                    block.vesselGroup.neutronFlux+=flux;
+                    block.vesselGroup.neutronFlux += flux;
                     block.vesselGroup.moderatorLines++;
-                    if(flux>0)block.vesselGroup.positionalEfficiency+=efficiency/length;
+                    if(flux>0)block.vesselGroup.positionalEfficiency += efficiency/length;
                     int f = 0;
                     for(int j = 1; j<i; j++){
                         Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
+                        if(b.isModerator())f += b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1102,19 +1110,19 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 if(block.isReflector()){
                     if(length==0)break;
                     if(length>getSpecificConfiguration().settings.neutronReach/2)break;
-                    that.vesselGroup.neutronFlux+=flux*2*block.template.reflector.reflectivity;
-                    if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.template.reflector.efficiency;
+                    that.vesselGroup.neutronFlux += flux*2*block.template.reflector.reflectivity;
+                    if(flux>0)that.vesselGroup.positionalEfficiency += efficiency/length*block.template.reflector.efficiency;
                     that.vesselGroup.moderatorLines++;
                     int f = 0;
                     for(int j = 1; j<i; j++){
                         Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
+                        if(b.isModerator())f += b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     f = 0;
                     for(int j = i-1; j>=1; j--){
                         Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux*block.template.reflector.reflectivity;
+                        if(b.isModerator())f += b.template.moderator.flux*block.template.reflector.reflectivity;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1125,11 +1133,11 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(length==0)break;
                     if(block.irradiatorRecipe==null)break;
                     that.vesselGroup.moderatorLines++;
-                    if(flux>0)that.vesselGroup.positionalEfficiency+=efficiency/length*block.irradiatorRecipe.stats.efficiency;
+                    if(flux>0)that.vesselGroup.positionalEfficiency += efficiency/length*block.irradiatorRecipe.stats.efficiency;
                     int f = 0;
                     for(int j = 1; j<i; j++){
                         Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
-                        if(b.isModerator())f+=b.template.moderator.flux;
+                        if(b.isModerator())f += b.template.moderator.flux;
                         fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
                     }
                     fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
@@ -1156,7 +1164,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 boolean skip = false;
                 if(block.isModerator()){
                     length++;
-                    flux+=block.template.moderator.flux;
+                    flux += block.template.moderator.flux;
                     if(i==1)toActivate.enqueue(block);
                     toValidate.enqueue(block);
                     skip = true;
@@ -1180,7 +1188,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(length==0)break;
                     if(block.fuel==null)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        b.neutronFlux += shieldFluxes.get(b);
                     }
                     for(Block b : toActivate){
                         b.moderatorActive = true;
@@ -1200,7 +1208,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     block.reflectorActive = true;
                     if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=flux*(1+block.template.reflector.reflectivity);
+                        b.neutronFlux += flux*(1+block.template.reflector.reflectivity);
                     }
                     for(Block b : toActivate){
                         b.moderatorActive = true;
@@ -1218,9 +1226,9 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     if(length==0)break;
                     if(block.irradiatorRecipe==null)break;
                     for(Block b : shieldFluxes.keySet()){
-                        b.neutronFlux+=shieldFluxes.get(b);
+                        b.neutronFlux += shieldFluxes.get(b);
                     }
-                    block.neutronFlux+=flux;
+                    block.neutronFlux += flux;
                     if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
                     for(Block b : toActivate){
                         b.moderatorActive = true;
@@ -1241,6 +1249,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     }
     /**
      * Calculates the heater
+     *
      * @param block the block
      * @param addDecals whether or not to add decals
      * @return <code>true</code> if the heater state has changed
@@ -1269,7 +1278,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             return (int)(o2.amount-o1.amount);
         });
         for(FluidStack stack : outputList){
-            if(full)outs+="\n "+Math.round(stack.amount)+" mb/t of "+stack.getDisplayName();
+            if(full)outs += "\n "+Math.round(stack.amount)+" mb/t of "+stack.getDisplayName();
         }
         synchronized(clusters){
             int validClusters = 0;
@@ -1293,15 +1302,15 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 }
             }
             text.addText("Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
-                    + "Total Heat: "+totalHeat+"H/t\n"
-                    + "Total Cooling: "+totalCooling+"H/t\n"
-                    + "Net Heat: "+netHeat+"H/t\n"
-                    + "Overall Efficiency: "+MathUtil.percent(totalEfficiency, 0)+"\n"
-                    + "Overall Heat Multiplier: "+MathUtil.percent(totalHeatMult, 0)+"\n"
-                    + "Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
-                    + "Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
-                    + "Total Irradiation: "+totalIrradiation+"\n"
-                    + "Shutdown Factor: "+MathUtil.percent(shutdownFactor, 2), Core.theme.getTooltipTextColor());
+                +"Total Heat: "+totalHeat+"H/t\n"
+                +"Total Cooling: "+totalCooling+"H/t\n"
+                +"Net Heat: "+netHeat+"H/t\n"
+                +"Overall Efficiency: "+MathUtil.percent(totalEfficiency, 0)+"\n"
+                +"Overall Heat Multiplier: "+MathUtil.percent(totalHeatMult, 0)+"\n"
+                +"Sparsity Penalty Multiplier: "+Math.round(sparsityMult*10000)/10000d+"\n"
+                +"Clusters: "+(validClusters==clusters.size()?clusters.size():(validClusters+"/"+clusters.size()))+"\n"
+                +"Total Irradiation: "+totalIrradiation+"\n"
+                +"Shutdown Factor: "+MathUtil.percent(shutdownFactor, 2), Core.theme.getTooltipTextColor());
             text.addText(getModuleTooltip()+"\n");
             for(BlockElement b : getSpecificConfiguration().blocks){
                 if(b.port!=null)continue;
@@ -1309,19 +1318,19 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 for(Fuel f : b.fuels){
                     int i = getRecipeCount(f);
                     if(i>0){
-                        txt+="\n"+f.getDisplayName()+": "+i;
+                        txt += "\n"+f.getDisplayName()+": "+i;
                     }
                 }
                 for(IrradiatorRecipe r : b.irradiatorRecipes){
                     int i = getRecipeCount(r);
                     if(i>0){
-                        txt+="\n"+r.getDisplayName()+": "+i;
+                        txt += "\n"+r.getDisplayName()+": "+i;
                     }
                 }
                 for(HeaterRecipe r : b.heaterRecipes){
                     int i = getRecipeCount(r);
                     if(i>0){
-                        txt+="\n"+r.getDisplayName()+": "+i;
+                        txt += "\n"+r.getDisplayName()+": "+i;
                     }
                 }
                 if(!txt.isEmpty())text.addText(txt);
@@ -1348,9 +1357,9 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 for(String str : order){
                     int count = counts.get(str);
                     String s;
-                    if(count==1)s="\n\n"+str;
+                    if(count==1)s = "\n\n"+str;
                     else{
-                        s="\n\n"+count+" similar clusters:\n\n"+str;
+                        s = "\n\n"+count+" similar clusters:\n\n"+str;
                     }
                     text.addText(s, colors.get(str));
                 }
@@ -1395,7 +1404,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             NCPFElement recipe = block.getRecipe();
             if(recipe==null)continue;
             if(counts.containsKey(recipe))counts.put(recipe, counts.get(recipe)+1);
-            else counts.put(recipe, 1);
+            else
+                counts.put(recipe, 1);
         }
         return counts;
     }
@@ -1424,7 +1434,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 b.cluster = this;
             }
         }
-        private Cluster(){}
+        private Cluster(){
+        }
         private boolean isValid(){
             return isConnectedToWall&&isCreated();
         }
@@ -1454,11 +1465,11 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             if(!isCreated())return "Invalid cluster!";
             if(!isValid())return "Cluster is not connected to the casing!";
             return "Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
-                + "Total Heating: "+totalHeat+"H/t\n"
-                + "Total Cooling: "+totalCooling+"H/t\n"
-                + "Net Heating: "+netHeat+"H/t\n"
-                + "Heat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
-                + "Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
+                +"Total Heating: "+totalHeat+"H/t\n"
+                +"Total Cooling: "+totalCooling+"H/t\n"
+                +"Net Heating: "+netHeat+"H/t\n"
+                +"Heat Multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+                +"Cooling penalty mult: "+Math.round(coolingPenaltyMult*10000)/10000d;
         }
         private Cluster copy(OverhaulMSR newMSR){
             Cluster copy = new Cluster();
@@ -1484,7 +1495,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         public float positionalEfficiency;
         public int hadFlux;
         public boolean wasActive;
-        public int openFaces = -1; 
+        public int openFaces = -1;
         public VesselGroup(Block block){
             blocks.addAll(toList(getBlocks(block)));
             int fuelCriticality = 0;
@@ -1495,7 +1506,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             }
             criticality = fuelCriticality*getSurfaceFactor();
         }
-        private VesselGroup(){}
+        private VesselGroup(){
+        }
         public boolean contains(Block block){
             return blocks.contains(block);
         }
@@ -1504,7 +1516,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
          */
         private HashMap<Integer, ArrayList<Block>> getBlocks(Block start){
             //layer zero
-            HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+            HashMap<Integer, ArrayList<Block>> results = new HashMap<>();
             ArrayList<Block> zero = new ArrayList<>();
             if(start.isFuelVessel()){
                 zero.add(start);
@@ -1519,8 +1531,9 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     lastLayer.add(start);
                 }
                 for(Block block : lastLayer){
-                    FOR:for(int j = 0; j<6; j++){
-                        int dx=0,dy=0,dz=0;
+                    FOR:
+                    for(int j = 0; j<6; j++){
+                        int dx = 0, dy = 0, dz = 0;
                         switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
                             case 0:
                                 dx = -1;
@@ -1544,7 +1557,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                 throw new IllegalArgumentException("How did this happen?");
                         }
                         if(!OverhaulMSR.this.contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                        Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                        Block newBlock = getBlock(block.x+dx, block.y+dy, block.z+dz);
                         if(newBlock==null)continue;
                         if(!newBlock.isEqual(start))continue;//not the same block
                         if(!newBlock.isFuelVessel()||newBlock.fuel!=start.fuel){//that's not part of this bunch
@@ -1582,7 +1595,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
             if(openFaces==-1){
                 int open = 0;
                 for(Block b1 : blocks){
-                    DIRECTION:for(Direction d : Direction.values()){
+                    DIRECTION:
+                    for(Direction d : Direction.values()){
                         int x = b1.x+d.x;
                         int y = b1.y+d.y;
                         int z = b1.z+d.z;
@@ -1644,7 +1658,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
      */
     private HashMap<Integer, ArrayList<Block>> getClusterBlocks(Block start, boolean useConductors){
         //layer zero
-        HashMap<Integer, ArrayList<Block>>results = new HashMap<>();
+        HashMap<Integer, ArrayList<Block>> results = new HashMap<>();
         ArrayList<Block> zero = new ArrayList<>();
         if(start.canCluster()||(useConductors&&start.isConductor())){
             zero.add(start);
@@ -1659,8 +1673,9 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 lastLayer.add(start);
             }
             for(Block block : lastLayer){
-                FOR:for(int j = 0; j<6; j++){
-                    int dx=0,dy=0,dz=0;
+                FOR:
+                for(int j = 0; j<6; j++){
+                    int dx = 0, dy = 0, dz = 0;
                     switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
                         case 0:
                             dx = -1;
@@ -1684,7 +1699,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             throw new IllegalArgumentException("How did this happen?");
                     }
                     if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                    Block newBlock = getBlock(block.x+dx,block.y+dy,block.z+dz);
+                    Block newBlock = getBlock(block.x+dx, block.y+dy, block.z+dz);
                     if(newBlock==null)continue;
                     if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
                         continue;
@@ -1715,7 +1730,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return results;
     }
     /**
-     * Converts the tiered search returned by getBlocks into a list of blocks.<br>
+     * Converts the tiered search returned by getBlocks into a list of
+     * blocks.<br>
      * Also from my tree feller
      */
     private static ArrayList<Block> toList(HashMap<Integer, ArrayList<Block>> blocks){
@@ -1763,7 +1779,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
         return true;
     }
     @Override
-    protected void getExtraParts(ArrayList<PartCount> parts){}
+    protected void getExtraParts(ArrayList<PartCount> parts){
+    }
     @Override
     public String getDescriptionTooltip(){
         return "Overhaul MSRs are Molten Salt Fission reactors in NuclearCraft: Overhauled";
@@ -1822,7 +1839,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 }
                 int[] vesselCount = new int[1];
                 multiblock.forEachInternalPosition((x, y, z) -> {
-                    Block b = multiblock.getBlock(x,y,z);
+                    Block b = multiblock.getBlock(x, y, z);
                     if(b!=null&&b.isFuelVessel()){
                         vesselCount[0]++;
                     }
@@ -1838,7 +1855,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             ve.fuel = vessel.fuel;
                             actions.add(new SetblockAction(x, y, z, ve));
                             SetblocksAction multi = new SetblocksAction(moderator);
-                            DIRECTION:for(Direction d : Direction.values()){
+                            DIRECTION:
+                            for(Direction d : Direction.values()){
                                 ArrayList<int[]> toSet = new ArrayList<>();
                                 boolean yep = false;
                                 for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
@@ -1856,7 +1874,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                                         }
                                     }
                                     if(i<=getSpecificConfiguration().settings.neutronReach){
-                                        toSet.add(new int[]{X,Y,Z});
+                                        toSet.add(new int[]{X, Y, Z});
                                     }
                                 }
                                 if(yep){
@@ -1882,7 +1900,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
+                        return (int)Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
@@ -1911,15 +1929,16 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 suggestor.setCount(count*6*moderators.size());
                 for(Block block : multiblock.getBlocks()){
                     if(!block.isFuelVessel())continue;
-                    DIRECTION:for(Direction d : Direction.values()){
+                    DIRECTION:
+                    for(Direction d : Direction.values()){
                         ArrayList<Block> line = new ArrayList<>();
                         int x = block.x;
                         int y = block.y;
                         int z = block.z;
                         for(int i = 0; i<getSpecificConfiguration().settings.neutronReach+1; i++){
-                            x+=d.x;
-                            y+=d.y;
-                            z+=d.z;
+                            x += d.x;
+                            y += d.y;
+                            z += d.z;
                             Block b = multiblock.getBlock(x, y, z);
                             if(b==null){
                                 suggestor.task.max--;
@@ -1959,7 +1978,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 priorities.add(new Priority<OverhaulMSR>("Efficiency", true, true){
                     @Override
                     protected double doCompare(OverhaulMSR main, OverhaulMSR other){
-                        return (int) Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
+                        return (int)Math.round(main.totalEfficiency*10000-other.totalEfficiency*10000);
                     }
                 });
                 priorities.add(new Priority<OverhaulMSR>("Irradiation", true, true){
@@ -2015,7 +2034,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                 for(Iterator<Block> it = heaters.iterator(); it.hasNext();){
                     Block block = it.next();
                     if(!block.isHeater())it.remove();
-                    else block.heaterRecipe = block.template.heaterRecipes.get(0);
+                    else
+                        block.heaterRecipe = block.template.heaterRecipes.get(0);
                 }
                 int[] count = new int[1];
                 multiblock.forEachInternalPosition((x, y, z) -> {
@@ -2033,7 +2053,8 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                             if(block!=null&&block.isHeaterActive())oldCooling = block.heaterRecipe.stats.cooling;
                             int newCooling = newBlock.heaterRecipe.stats.cooling;
                             if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.getTexture()));
-                            else suggestor.task.max--;
+                            else
+                                suggestor.task.max--;
                         }
                     }
                 });

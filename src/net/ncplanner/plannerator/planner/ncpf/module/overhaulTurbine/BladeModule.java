@@ -1,13 +1,16 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = OverhaulModule.class)
 public class BladeModule extends BlockFunctionModule implements ElementStatsModule{
     public float efficiency;
     public float expansion;
     public BladeModule(){
         super("nuclearcraft:overhaul_turbine:blade");
-        addFloat("efficiency", ()->efficiency, (v)->efficiency = v, "Efficiency");
-        addFloat("expansion", ()->expansion, (v)->expansion = v, "Expansion");
+        addFloat("efficiency", () -> efficiency, (v) -> efficiency = v, "Efficiency");
+        addFloat("expansion", () -> expansion, (v) -> expansion = v, "Expansion");
     }
     @Override
     public String getFunctionName(){

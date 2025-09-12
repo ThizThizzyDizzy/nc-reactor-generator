@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@RegisterWith(module = CoreModule.class)
 public class NCPFBlockRecipesModule extends NCPFModule{
     public ArrayList<NCPFElement> recipes = new ArrayList<>();
     public NCPFBlockRecipesModule(){

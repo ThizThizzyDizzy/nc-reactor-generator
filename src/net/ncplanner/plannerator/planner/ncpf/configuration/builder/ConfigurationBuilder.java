@@ -6,7 +6,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
-import net.ncplanner.plannerator.planner.ncpf.module.ConfigurationMetadataModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
@@ -25,7 +25,8 @@ public class ConfigurationBuilder<T extends NCPFConfiguration>{
         return configuration;
     }
     public ElementBuilder globalElement(NCPFElementDefinition definition, String displayName, String texture){
-        NCPFElement element = new NCPFElement(definition);
+        NCPFElement element = new NCPFElement();
+        element.definition = definition;
         element.withModuleOrCreate(DisplayNameModule::new, (m) -> m.displayName = displayName);
         element.withModuleOrCreate(TextureModule::new, (t) -> t.texture = TextureManager.getImage(texture));
         configuration.withModuleOrCreate(GlobalElementsModule::new, (m) -> m.elements.add(element));
