@@ -331,7 +331,7 @@ public class LegacyNCPFWriter extends FormatWriter{
             recipe.setConfig("input", inputCfg);
             recipe.setConfig("output", inputCfg);//...don't worry about it, it's fine
             recipe.setInt("heat", r.stats.heat);
-            recipe.setFloat("outputRatio", r.stats.outputRatio);
+            recipe.setFloat("outputRatio", r.getRecipeDefinition().getOutputRatio());
             coolantRecipes.addConfig(recipe);
         }
         config.setConfigList("coolantRecipes", coolantRecipes);

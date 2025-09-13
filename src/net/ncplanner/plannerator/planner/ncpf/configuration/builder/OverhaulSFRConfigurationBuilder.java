@@ -3,13 +3,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
@@ -186,22 +183,24 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
             return this;
         }
     }
-    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, NCPFElement output, float efficiency, float heat){
+    public IrradiatorRecipeBuilder irradiatorRecipe(NCPFElementDefinition definition, String inputDisplayName, String inputTexture, NCPFElementDefinition output, float efficiency, float heat){
         IrradiatorRecipe recipe = new IrradiatorRecipe();
-        recipe.definition = definition;
+        recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(definition, 1));
+        recipe.getRecipeDefinition().outputs.add(new NCPFElementStack(output, 1));
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         recipe.stats.efficiency = efficiency;
         recipe.stats.heat = heat;
-        recipe.stats.output = new NCPFElementReference(output);
         for(BlockElement b : configuration.blocks)if(b.irradiator!=null)b.irradiatorRecipes.add(recipe);
         return new IrradiatorRecipeBuilder(recipe);
     }
     public Fuel fuel(String inputOredict, String inputName, String inputDisplayName, String inputTexture, String outputOredict, String outputName, String outputDisplayName, String outputTexture, float efficiency, int heat, int time, int criticality, boolean selfPriming){
         Fuel fuel = new Fuel();
-        fuel.definition = new NCPFOredictElement(inputOredict);
-        globalElement(new NCPFLegacyItemElement(inputName), inputDisplayName, inputTexture).oredict(inputOredict);
+        fuel.getRecipeDefinition().inputs.add(new NCPFElementStack(globalElement(new NCPFOredictElement(inputOredict), inputDisplayName, inputTexture).build().definition, 1));
+        fuel.getRecipeDefinition().outputs.add(new NCPFElementStack(globalElement(new NCPFOredictElement(outputOredict), outputDisplayName, outputTexture).build().definition, 1));
+        globalElement(legacyItem(inputName).build(), inputDisplayName, inputTexture).oredict(inputOredict);
+        globalElement(legacyItem(outputName).build(), outputDisplayName, outputTexture).oredict(outputOredict);
         fuel.names.displayName = inputDisplayName;
         fuel.withModuleOrCreate(LegacyNamesModule::new, (legacyNames)->{
             legacyNames.legacyNames.add(inputDisplayName);
@@ -214,24 +213,22 @@ public class OverhaulSFRConfigurationBuilder extends ConfigurationBuilder<Overha
         fuel.stats.criticality = criticality;
         fuel.stats.selfPriming = selfPriming;
         
-        fuel.stats.output = new NCPFElementReference(globalElement(new NCPFOredictElement(outputOredict), outputDisplayName, outputTexture).build());
-        globalElement(legacyItem(outputName).build(), outputDisplayName, outputTexture).oredict(outputOredict);
         for(BlockElement b : configuration.blocks)if(b.fuelCell!=null)b.fuels.add(fuel);
         return fuel;
     }
 
-    public CoolantRecipe coolantRecipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, int heat, float outputRatio){
-        return coolantRecipe(new NCPFLegacyFluidElement(inputName), inputDisplayName, inputTexture, output, heat, outputRatio);
+    public CoolantRecipe coolantRecipe(String inputName, String inputDisplayName, String inputTexture, NCPFElementDefinition output, int heat, int inputRate, int outputRate){
+        return coolantRecipe(globalElement(legacyFluid(inputName).build(), inputDisplayName, inputTexture).build().definition, inputDisplayName, inputTexture, output, heat, inputRate, outputRate);
     }
-    public CoolantRecipe coolantRecipe(NCPFElementDefinition input, String inputDisplayName, String inputTexture, NCPFElement output, int heat, float outputRatio){
+    public CoolantRecipe coolantRecipe(NCPFElementDefinition input, String inputDisplayName, String inputTexture, NCPFElementDefinition output, int heat, int inputRate, int outputRate){
         CoolantRecipe recipe = new CoolantRecipe();
+        recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(input, inputRate));
+        recipe.getRecipeDefinition().outputs.add(new NCPFElementStack(output, outputRate));
         recipe.definition = input;
         recipe.stats.heat = heat;
-        recipe.stats.outputRatio = outputRatio;
-        recipe.stats.output = new NCPFElementReference(output);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
-        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName+" to "+output.getDisplayName());
+        recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName+" to "+configuration.tryFindElementDetails(output).getDisplayName());
         recipe.texture.texture = TextureManager.getImage(inputTexture);
         configuration.coolantRecipes.add(recipe);
         return recipe;

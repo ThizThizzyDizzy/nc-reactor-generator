@@ -1,7 +1,9 @@
 package net.ncplanner.plannerator.ncpf.io;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingVariable;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
@@ -53,6 +55,16 @@ public class NCPFObject extends HashMap<String, Object>{
             ncpf.add(object);
         }
         setNCPFList(key, ncpf);
+    }
+    
+    public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSetOrEmpty(String key, Supplier<T> objectSupplier){
+        return (V)new HashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
+    }
+    public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSet(String key, Supplier<T> objectSupplier){
+        return (V)new HashSet<T>(getDefinedNCPFList(key, objectSupplier));
+    }
+    public <T extends DefinedNCPFObject> void setDefinedNCPFSet(String key, Set<T> set){
+        setDefinedNCPFList(key, new ArrayList<>(set));
     }
 
     public <T extends DefinedNCPFObject> void getDefined3DArray(String name, T[][][] array, List<T> indicies){

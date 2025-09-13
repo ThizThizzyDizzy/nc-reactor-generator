@@ -5,9 +5,11 @@ import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
+import net.ncplanner.plannerator.planner.MathUtil;
 import static net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader.loadNCPFTexture;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Design;
@@ -445,9 +447,10 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe();
-                recipe.definition = new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input"));
+                int[] amounts = MathUtil.makeIntegerRatio(1, readOutputRatio(coolantRecipeCfg, "outputRatio"));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input")), amounts[0]));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("output")), amounts[1]));
                 recipe.stats.heat = coolantRecipeCfg.get("heat");
-                recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
                 configuration.coolantRecipes.add(recipe);
             }
         }
@@ -699,9 +702,10 @@ public class LegacyNCPF9Reader extends LegacyNCPF10Reader {
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe();
-                recipe.definition = new NCPFLegacyFluidElement(coolantRecipeCfg.get("input"));
+                int[] amounts = MathUtil.makeIntegerRatio(1, readOutputRatio(coolantRecipeCfg, "outputRatio"));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("input")), amounts[0]));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(coolantRecipeCfg.getString("output")), amounts[1]));
                 recipe.stats.heat = coolantRecipeCfg.get("heat");
-                recipe.stats.outputRatio = readOutputRatio(coolantRecipeCfg, "outputRatio");
                 configuration.coolantRecipes.add(recipe);
             }
         }

@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFRecipeElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -28,6 +29,7 @@ import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.MenuResizeFusion;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
@@ -36,7 +38,6 @@ import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuResizeFusion;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = FusionTestModule.class)
 public class OverhaulFusionReactor extends Multiblock<Block>{
     public CoolantRecipe coolantRecipe;
@@ -278,7 +279,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         sparsityMult = (float)(functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
         totalOutput *= sparsityMult;
         totalEfficiency *= sparsityMult;
-        totalOutput /= coolantRecipe.stats.heat/coolantRecipe.stats.outputRatio;
+        totalOutput /= coolantRecipe.stats.heat/((NCPFRecipeElement)coolantRecipe.definition).getOutputRatio();
         calcStats.finish();
         return false;
     }
@@ -289,7 +290,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             for(Cluster c : clusters){
                 if(c.isValid())validClusters++;
             }
-            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of "+coolantRecipe.stats.getOutputDisplayName()+"\n"
+            FormattedText text = new FormattedText("Total output: "+totalOutput+" mb/t of whatever "+coolantRecipe.getDisplayName()+" gets turned into\n"
                 +"Total Heat: "+totalHeat+"H/t\n"
                 +"Total Cooling: "+totalCooling+"H/t\n"
                 +"Net Heat: "+netHeat+"H/t\n"

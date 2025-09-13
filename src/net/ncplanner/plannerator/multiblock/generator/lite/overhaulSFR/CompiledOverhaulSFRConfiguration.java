@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
+import net.ncplanner.plannerator.ncpf.element.NCPFRecipeElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
@@ -30,7 +31,6 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
     private final ArrayList<BlockAndRecipe> rawBlocksWithRecipes = new ArrayList<>();
     public NCPFElementDefinition[] coolantRecipeDefinition;
     public String[] coolantRecipeDisplayName;
-    public String[] coolantRecipeOutputDisplayName;
     public int[] coolantRecipeHeat;
     public float[] coolantRecipeOutputRatio;
     public Image[] coolantRecipeTexture;
@@ -105,7 +105,6 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
     private void compile(){
         coolantRecipeDefinition = new NCPFElementDefinition[rawCoolantRecipes.size()];
         coolantRecipeDisplayName = new String[rawCoolantRecipes.size()];
-        coolantRecipeOutputDisplayName = new String[rawCoolantRecipes.size()];
         coolantRecipeHeat = new int[rawCoolantRecipes.size()];
         coolantRecipeOutputRatio = new float[rawCoolantRecipes.size()];
         coolantRecipeTexture = new Image[rawCoolantRecipes.size()];
@@ -114,9 +113,8 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
             CoolantRecipe recipe = rawCoolantRecipes.get(i);
             coolantRecipeDefinition[i] = recipe.definition;
             coolantRecipeDisplayName[i] = recipe.getDisplayName();
-            coolantRecipeOutputDisplayName[i] = recipe.stats.getOutputDisplayName();
             coolantRecipeHeat[i] = recipe.stats.heat;
-            coolantRecipeOutputRatio[i] = recipe.stats.outputRatio;
+            coolantRecipeOutputRatio[i] = ((NCPFRecipeElement)recipe.definition).getOutputRatio();
             coolantRecipeTexture[i] = recipe.getTexture();
             coolantRecipeDisplayTexture[i] = recipe.getDisplayTexture();
         }

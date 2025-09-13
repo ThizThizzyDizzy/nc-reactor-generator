@@ -237,7 +237,7 @@ public class HellrageWriter extends FormatWriter{
                 dims.set("Y", reactor.getInternalHeight());
                 dims.set("Z", reactor.getInternalDepth());
                 data.set("InteriorDimensions", dims);
-                data.set("CoolantRecipeName", reactor.coolantRecipe.getDisplayName()+" to "+reactor.coolantRecipe.stats.getOutputDisplayName());
+                data.set("CoolantRecipeName", reactor.coolantRecipe.getDisplayName()+" to "+ncpf.getConfiguration(OverhaulSFRConfiguration::new).tryFindElementDetails(reactor.coolantRecipe.getAnyOutput().definition).getDisplayName());
                 hellrage.set("Data", data);
                 try{
                     hellrage.write(stream);

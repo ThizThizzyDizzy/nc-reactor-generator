@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.defined.field.DefinedNCPFField;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.defined.field.DefinedPlanneratorField;
-import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public final String name;
     public NCPFConfiguration(String name){
@@ -108,6 +108,18 @@ public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
             }
         }
         return null;
+    }
+    public NCPFElement tryFindElementDetails(NCPFElementDefinition definition){
+        for(List<NCPFElement> elems : getAllElementsISaidAllElements()){
+            for(NCPFElement elem : elems){
+                if(elem.definition.matches(definition))return elem;
+            }
+        }
+        
+        // always return SOMETHING, even if nothing was found.
+        NCPFElement element = new NCPFElement();
+        element.definition = definition;
+        return element;
     }
     public List<NCPFElement>[] getMultiblockRecipes(){
         ArrayList<List<NCPFElement>> lists = new ArrayList<>();

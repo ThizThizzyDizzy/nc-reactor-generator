@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.RecipeStatsModule;
-public class TurbineRecipe extends NamedTexturedNCPFElement implements MultiblockRecipeElement{
+public class TurbineRecipe extends RecipeElement implements MultiblockRecipeElement{
     public RecipeStatsModule stats = new RecipeStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

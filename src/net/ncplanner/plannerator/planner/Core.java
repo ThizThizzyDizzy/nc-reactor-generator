@@ -512,11 +512,12 @@ public class Core{
         refreshModules(new Task(""));
     }
     public static void refreshModules(Task task){
-        ArrayList<Task> moduleTasks = new ArrayList<>();
         Task clean = task.addSubtask("Cleaning up");
-        for(Module m : modules){
-            moduleTasks.add(task.addSubtask("Initialize "+m.name));
-        }
+        Task nt = task.addSubtask("Registering NCPF objects");
+        Task mt = task.addSubtask("Adding multiblock types");
+        Task tt = task.addSubtask("Adding Tutorials");
+        Task ct = task.addSubtask("Adding configurations");
+        
         multiblockTypes.clear();
         Tutorial.init();
         Configuration.clearConfigurations();
@@ -526,25 +527,61 @@ public class Core{
         NCPFElement.recognizedElements.clear();
         NCPFModuleContainer.recognizedModules.clear();
         clean.finish();
-        for(int i = 0; i<modules.size(); i++){
-            Module m = modules.get(i);
-            Task t = moduleTasks.get(i);
-            if(m.isActive()){
-                Task nt = t.addSubtask("Registering NCPF objects");
-                Task mt = t.addSubtask("Adding multiblock types");
-                Task tt = t.addSubtask("Adding Tutorials");
-                Task ct = t.addSubtask("Adding configurations");
-                m.registerNCPF();
-                nt.finish();
-                m.addMultiblockTypes(multiblockTypes);
-                mt.finish();
-                m.addTutorials();
-                tt.finish();
-                m.addConfigurations(ct);
-                ct.finish();
+        
+        ArrayList<Module> activeModules = new ArrayList<>();
+        for(Module m : modules)if(m.isActive())activeModules.add(m);
+        {
+            ArrayList<Task> moduleTasks = new ArrayList<>();
+            for(Module m : activeModules){
+                moduleTasks.add(nt.addSubtask(m.name));
             }
-            t.finish();
+            for(int i = 0; i<activeModules.size(); i++){
+                Module m = activeModules.get(i);
+                Task t = moduleTasks.get(i);
+                m.registerNCPF();
+                t.finish();
+            }
         }
+        nt.finish();
+        {
+            ArrayList<Task> moduleTasks = new ArrayList<>();
+            for(Module m : activeModules){
+                moduleTasks.add(mt.addSubtask(m.name));
+            }
+            for(int i = 0; i<activeModules.size(); i++){
+                Module m = activeModules.get(i);
+                Task t = moduleTasks.get(i);
+                m.addMultiblockTypes(multiblockTypes);
+                t.finish();
+            }
+        }
+        mt.finish();
+        {
+            ArrayList<Task> moduleTasks = new ArrayList<>();
+            for(Module m : activeModules){
+                moduleTasks.add(tt.addSubtask(m.name));
+            }
+            for(int i = 0; i<activeModules.size(); i++){
+                Module m = activeModules.get(i);
+                Task t = moduleTasks.get(i);
+                m.addTutorials();
+                t.finish();
+            }
+        }
+        tt.finish();
+        {
+            ArrayList<Task> moduleTasks = new ArrayList<>();
+            for(Module m : activeModules){
+                moduleTasks.add(ct.addSubtask(m.name));
+            }
+            for(int i = 0; i<activeModules.size(); i++){
+                Module m = activeModules.get(i);
+                Task t = moduleTasks.get(i);
+                m.addConfigurations(ct);
+                t.finish();
+            }
+        }
+        ct.finish();
         task.finish();
     }
     public static boolean hasAlpha(Image image){

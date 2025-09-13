@@ -751,7 +751,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
         for(int i = 0; i<clusters.size(); i++){
             if(clusters.get(i).isValid())validClusters++;
         }
-        return "Total output: "+totalOutput+" mb/t of "+configuration.coolantRecipeOutputDisplayName[coolantRecipe]+"\n"
+        return "Total output: "+totalOutput+" mb/t\n"
                 + "Total Heat: "+totalHeat+"H/t\n"
                 + "Total Cooling: "+totalCooling+"H/t\n"
                 + "Net Heat: "+netHeat+"H/t\n"

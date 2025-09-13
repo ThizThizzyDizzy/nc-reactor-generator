@@ -2,11 +2,14 @@ package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public abstract class NCPFSettingsElement extends NCPFElementDefinition{
@@ -33,6 +36,13 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         gets.put(name, get);
         sets.put(name, set);
         types.put(name, Type.ELEMENT_LIST);
+        titles.put(name, title);
+    }
+    public void addElementStacks(String name, Supplier<HashSet<NCPFElementStack>> get, Consumer<HashSet<NCPFElementStack>> set, String title){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.ELEMENT_STACK_SET);
         titles.put(name, title);
     }
     public void addMetadata(Supplier<Integer> get, Consumer<Integer> set){
@@ -76,7 +86,7 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                     ((Consumer<String>)set).accept(ncpf.getString(setting));
                     break;
                 case ELEMENT_LIST:
-                    NCPFList list = ncpf.getNCPFList("elements");
+                    NCPFList list = ncpf.getNCPFList(setting);
                     ArrayList<NCPFElementDefinition> definitions = new ArrayList<>();
                     for(int i = 0; i<list.size(); i++){
                         NCPFObject obj = list.getNCPFObject(i);
@@ -85,6 +95,9 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                         definitions.add(definition);
                     }
                     ((Consumer<ArrayList<NCPFElementDefinition>>)set).accept(definitions);
+                    break;
+                case ELEMENT_STACK_SET:
+                    ((Consumer<HashSet<NCPFElementStack>>)set).accept(ncpf.getDefinedNCPFSet(setting, NCPFElementStack::new));
                     break;
                 default:
                     throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
@@ -122,7 +135,10 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                         def.convertToObject(obj);
                         list.add(obj);
                     }
-                    ncpf.set("elements", list);
+                    ncpf.set(setting, list);
+                    break;
+                case ELEMENT_STACK_SET:
+                    ncpf.setDefinedNCPFSet(setting, ((Supplier<HashSet<NCPFElementStack>>)get).get());
                     break;
                 default:
                     throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
@@ -154,6 +170,31 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                         }
                     }
                 }
+                if(val1 instanceof Set&&val2 instanceof Set){
+                    Set s1 = (Set)val1;
+                    Set s2 = (Set)val2;
+                    equal = s1.size()==s2.size();
+                    if(equal){
+                        for(Object elem1 : s1){
+                            int count1 = 0;
+                            for(Object elem1Again : s1){
+                                if(elem1 instanceof NCPFElementDefinition&&elem1Again instanceof NCPFElementDefinition){
+                                    if(((NCPFElementDefinition)elem1).matches((NCPFElementDefinition)elem1Again))count1++;
+                                }else
+                                    equal = false;
+                            }
+
+                            int count2 = 0;
+                            for(Object elem2 : s2){
+                                if(elem1 instanceof NCPFElementDefinition&&elem2 instanceof NCPFElementDefinition){
+                                    if(((NCPFElementDefinition)elem1).matches((NCPFElementDefinition)elem2))count2++;
+                                }else
+                                    equal = false;
+                            }
+                            equal &= count1==count2;
+                        }
+                    }
+                }
                 if(!equal)return false;
             }
             return true;
@@ -169,7 +210,7 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         return "["+s.substring(1)+"]";
     }
     public static enum Type{
-        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true);
+        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true), ELEMENT_STACK_SET(true);
         public final boolean special;
         private Type(){
             this(false);

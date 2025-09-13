@@ -3,12 +3,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
-import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
@@ -130,12 +128,12 @@ public class OverhaulTurbineConfigurationBuilder extends ConfigurationBuilder<Ov
         }
     }
 
-    public TurbineRecipe recipe(String inputName, String inputDisplayName, String inputTexture, NCPFElement output, double power, double coefficient){
+    public TurbineRecipe recipe(String inputName, String inputDisplayName, String inputTexture, NCPFElementDefinition output, double power, double coefficient, int inputRate, int outputRate){
         TurbineRecipe recipe = new TurbineRecipe();
-        recipe.definition = new NCPFLegacyFluidElement(inputName);
+        recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(globalElement(legacyFluid(inputName).build(), inputDisplayName, inputTexture).build().definition, inputRate));
+        recipe.getRecipeDefinition().outputs.add(new NCPFElementStack(output, outputRate));
         recipe.stats.power = power;
         recipe.stats.coefficient = coefficient;
-        recipe.stats.output = new NCPFElementReference(output);
         recipe.names.displayName = inputDisplayName;
         recipe.getOrCreateModule(LegacyNamesModule::new).legacyNames.add(inputDisplayName);
         recipe.texture.texture = TextureManager.getImage(inputTexture);

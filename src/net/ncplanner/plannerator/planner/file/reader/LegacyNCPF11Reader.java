@@ -16,6 +16,7 @@ import net.ncplanner.plannerator.config2.ConfigNumberList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -23,11 +24,12 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
@@ -42,11 +44,11 @@ import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulFusionSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulMSRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulTurbineSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.UnderhaulSFRSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantVentModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulTurbine.BladeModule;
@@ -880,10 +882,10 @@ public class LegacyNCPF11Reader implements FormatReader {
                 Config inputCfg = coolantRecipeCfg.getConfig("input");
                 Config outputCfg = coolantRecipeCfg.getConfig("output");
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe();
-                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
-                //TODO output
+                int[] amounts = MathUtil.makeIntegerRatio(1, coolantRecipeCfg.getFloat("outputRatio"));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(inputCfg.getString("name")), amounts[0]));
+                recipe.getRecipeDefinition().outputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(outputCfg.getString("name")), amounts[1]));
                 recipe.stats.heat = coolantRecipeCfg.getInt("heat");
-                recipe.stats.outputRatio = coolantRecipeCfg.getFloat("outputRatio");
                 recipe.names.displayName = inputCfg.getString("displayName");
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");
@@ -1283,10 +1285,12 @@ public class LegacyNCPF11Reader implements FormatReader {
             for(int i = 0; i<coolantRecipes.size(); i++){
                 Config coolantRecipeCfg = coolantRecipes.getConfig(i);
                 Config inputCfg = coolantRecipeCfg.getConfig("input");
+                Config outputCfg = coolantRecipeCfg.getConfig("output");
                 net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recipe = new net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe();
-                recipe.definition = new NCPFLegacyFluidElement(inputCfg.getString("name"));
+                int[] amounts = MathUtil.makeIntegerRatio(1, coolantRecipeCfg.getFloat("outputRatio"));
+                recipe.getRecipeDefinition().inputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(inputCfg.getString("name")), amounts[0]));
+                recipe.getRecipeDefinition().outputs.add(new NCPFElementStack(new NCPFLegacyFluidElement(outputCfg.getString("name")), amounts[1]));
                 recipe.stats.heat = coolantRecipeCfg.getInt("heat");
-                recipe.stats.outputRatio = coolantRecipeCfg.getFloat("outputRatio");
                 recipe.names.displayName = inputCfg.getString("displayName");
                 if(inputCfg.hasProperty("legacyNames")){
                     ConfigList names = inputCfg.getConfigList("legacyNames");

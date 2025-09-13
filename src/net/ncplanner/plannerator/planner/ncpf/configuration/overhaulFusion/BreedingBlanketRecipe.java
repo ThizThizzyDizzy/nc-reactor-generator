@@ -3,9 +3,9 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion.BreedingBlanketStatsModule;
-public class BreedingBlanketRecipe extends NamedTexturedNCPFElement implements IBlockRecipe{
+public class BreedingBlanketRecipe extends RecipeElement implements IBlockRecipe{
     public BreedingBlanketStatsModule stats = new BreedingBlanketStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

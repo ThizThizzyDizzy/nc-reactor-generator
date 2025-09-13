@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.multiblock.overhaul.fissionmsr;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,7 +7,6 @@ import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
-import net.ncplanner.plannerator.multiblock.FluidStack;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
 import net.ncplanner.plannerator.multiblock.editor.Action;
@@ -33,6 +31,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -45,6 +44,7 @@ import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
@@ -52,7 +52,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.HeaterRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public ArrayList<Cluster> clusters = new ArrayList<>();
@@ -66,7 +65,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     public int totalIrradiation;
     public int functionalBlocks;
     public float sparsityMult;
-    public ArrayList<FluidStack> totalOutput = new ArrayList<>();
+    public ArrayList<NCPFElementStack> totalOutput = new ArrayList<>();
     public float totalTotalOutput;
     public float shutdownFactor;
     private HashMap<Block, Boolean> shieldsWere = new HashMap<>();//used for shield check
@@ -469,16 +468,18 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(int j = 0; j<c.blocks.size(); j++){
                             Block b = c.blocks.get(j);
                             if(b.template.heater!=null&&b.heaterRecipe!=null){
-                                float out = c.efficiency*sparsityMult;//TODO output rate?
-                                boolean found = false;
-                                for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount += out;
-                                        found = true;
-                                        break;
+                                float out = c.efficiency*sparsityMult;
+                                for(NCPFElementStack output : b.heaterRecipe.getRecipeDefinition().outputs){
+                                    boolean found = false;
+                                    for(NCPFElementStack stack : totalOutput){
+                                        if(stack.definition.matches(output.definition)){
+                                            stack.amount += out * output.amount;
+                                            found = true;
+                                            break;
+                                        }
                                     }
+                                    if(!found)totalOutput.add(new NCPFElementStack(output));
                                 }
-                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
                                 totalTotalOutput += out;
                             }
                             calcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
@@ -739,16 +740,18 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(int j = 0; j<c.blocks.size(); j++){
                             Block b = c.blocks.get(j);
                             if(b.template.heater!=null&&b.heaterRecipe!=null){
-                                float out = c.efficiency*sparsityMult;//TODO output rate?
-                                boolean found = false;
-                                for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount += out;
-                                        found = true;
-                                        break;
+                                float out = c.efficiency*sparsityMult;
+                                for(NCPFElementStack output : b.heaterRecipe.getRecipeDefinition().outputs){
+                                    boolean found = false;
+                                    for(NCPFElementStack stack : totalOutput){
+                                        if(stack.definition.matches(output.definition)){
+                                            stack.amount += out * output.amount;
+                                            found = true;
+                                            break;
+                                        }
                                     }
+                                    if(!found)totalOutput.add(new NCPFElementStack(output));
                                 }
-                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
                                 totalTotalOutput += out;
                             }
                             shutdownCalcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
@@ -1029,16 +1032,18 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                         for(int j = 0; j<c.blocks.size(); j++){
                             Block b = c.blocks.get(j);
                             if(b.template.heater!=null&&b.heaterRecipe!=null){
-                                float out = c.efficiency*sparsityMult;//TODO output rate?
-                                boolean found = false;
-                                for(FluidStack s : totalOutput){
-                                    if(s.name.equals(b.heaterRecipe.stats.getOutputName())){
-                                        s.amount += out;
-                                        found = true;
-                                        break;
+                                float out = c.efficiency*sparsityMult;
+                                for(NCPFElementStack output : b.heaterRecipe.getRecipeDefinition().outputs){
+                                    boolean found = false;
+                                    for(NCPFElementStack stack : totalOutput){
+                                        if(stack.definition.matches(output.definition)){
+                                            stack.amount += out * output.amount;
+                                            found = true;
+                                            break;
+                                        }
                                     }
+                                    if(!found)totalOutput.add(new NCPFElementStack(output));
                                 }
-                                if(!found)totalOutput.add(new FluidStack(b.heaterRecipe.stats.getOutputName(), b.heaterRecipe.stats.getOutputDisplayName(), out));
                                 totalTotalOutput += out;
                             }
                             calcStats.progress = 0.5+(i/(double)clusters.size()+j/(double)c.blocks.size()/clusters.size())/2;
@@ -1272,14 +1277,6 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
     @Override
     public FormattedText getTooltip(boolean full){
         if(this.showDetails!=null)full = this.showDetails;
-        String outs = "";
-        ArrayList<FluidStack> outputList = new ArrayList<>(totalOutput);
-        Collections.sort(outputList, (o1, o2) -> {
-            return (int)(o2.amount-o1.amount);
-        });
-        for(FluidStack stack : outputList){
-            if(full)outs += "\n "+Math.round(stack.amount)+" mb/t of "+stack.getDisplayName();
-        }
         synchronized(clusters){
             int validClusters = 0;
             for(Cluster c : clusters){
@@ -1301,7 +1298,7 @@ public class OverhaulMSR extends CuboidalMultiblock<Block>{
                     text.addText(" "+missingOutputPorts.get(key).getDisplayName()+" - "+key.getDisplayName(), Core.theme.getTooltipInvalidTextColor());
                 }
             }
-            text.addText("Total output: "+Math.round(totalTotalOutput)+" mb/t"+outs+"\n"
+            text.addText("Total output: "+Math.round(totalTotalOutput)+" mb/t\n"
                 +"Total Heat: "+totalHeat+"H/t\n"
                 +"Total Cooling: "+totalCooling+"H/t\n"
                 +"Net Heat: "+netHeat+"H/t\n"

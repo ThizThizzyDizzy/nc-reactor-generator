@@ -3,9 +3,9 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.RecipeStatsModule;
-public class DistillerRecipe extends NamedTexturedNCPFElement implements MultiblockRecipeElement{
+public class DistillerRecipe extends RecipeElement implements MultiblockRecipeElement{
     public RecipeStatsModule stats = new RecipeStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

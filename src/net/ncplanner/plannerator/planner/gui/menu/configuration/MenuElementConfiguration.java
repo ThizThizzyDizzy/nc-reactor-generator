@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.configuration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,50 +10,53 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementReference;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement;
-import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
-import net.ncplanner.plannerator.planner.gui.menu.component.Label;
-import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
-import net.ncplanner.plannerator.planner.gui.menu.component.TextureButton;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
-import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickElementDefinition;
-import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
-import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
-import static net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement.Type;
+import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement.Type;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.IconButton;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.LayoutPanel;
+import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
+import net.ncplanner.plannerator.planner.gui.menu.component.TextureButton;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListButtonsLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.ListLayout;
+import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuModifyElementDefinition;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuModifyElementStack;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickElementDefinition;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickReference;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockRulesModule;
+import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.RecipesBlockModule;
+import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import org.lwjgl.glfw.GLFW;
 public class MenuElementConfiguration extends ConfigurationMenu{
     public MenuElementConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFElement element){
         super(parent, configuration, element.getDisplayName(), new SplitLayout(SplitLayout.Y_AXIS, 0, 192, 0));
         NCPFElement parnt = null;
-        FOR:for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
+        FOR:
+        for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
             if(confg==config)break;
             for(List<NCPFElement> elems : confg.getElements()){
                 for(NCPFElement elem : elems){
@@ -69,7 +73,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             ((SplitLayout)content).minSize1 = 0;
         }else{
             SplitLayout definition = add(new SplitLayout(SplitLayout.X_AXIS, 0, 192, 0));
-            definition.add(new TextureButton(()->element.getOrCreateModule(TextureModule::new).texture, (img)->element.getOrCreateModule(TextureModule::new).texture = img));
+            definition.add(new TextureButton(() -> element.getOrCreateModule(TextureModule::new).texture, (img) -> element.getOrCreateModule(TextureModule::new).texture = img));
             SplitLayout definitionList = definition.add(new SplitLayout(SplitLayout.Y_AXIS, 0, 48, 0));
             SplitLayout definitionHeader = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, 0.3f));
             definitionHeader.add(new Button(element.definition.getTypeName(), true).addAction(() -> {
@@ -81,16 +85,18 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             definitionHeader.add(new TextBox(element.getOrCreateModule(DisplayNameModule::new).displayName, true, "Display Name").onChange((t) -> {
                 element.getOrCreateModule(DisplayNameModule::new).displayName = t;
             }));
-            if(element.definition instanceof NCPFSettingsElement){//TODO this is a mess... Replace this with the fancy new dialog you're about to make for lists
+            if(element.definition instanceof NCPFSettingsElement){//TODO this is a mess... Replace this with the fancy new dialog you're about to make for lists    // Made that a while ago, still need to do this... patching stack set into it instead lol
                 NCPFSettingsElement def = (NCPFSettingsElement)element.definition;
                 String blockstate = null;
                 String metadata = null;
                 String elementList = null;
+                ArrayList<String> elementStackSets = new ArrayList<>();
                 for(String key : def.types.keySet()){
                     Type type = def.types.get(key);
                     if(type==Type.METADATA)metadata = key;
                     if(type==Type.BLOCKSTATE)blockstate = key;
                     if(type==Type.ELEMENT_LIST)elementList = key;
+                    if(type==Type.ELEMENT_STACK_SET)elementStackSets.add(key);
                 }
                 SplitLayout definitionFields = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, blockstate==null?1:0.7f));
                 ListLayout defFields = definitionFields.add(new ListLayout(48));
@@ -100,7 +106,8 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     Consumer<String> set = def.sets.get(setting);
                     TextBox box = new TextBox(get.get(), true, def.titles.get(setting)).onChange((s) -> {
                         if(s.isEmpty())set.accept(null);
-                        else set.accept(s);
+                        else
+                            set.accept(s);
                     });
                     if(metadata!=null){
                         SplitLayout line = defFields.add(new SplitLayout(SplitLayout.X_AXIS, 0.7f));
@@ -108,17 +115,19 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                         Consumer<Integer> setMeta = def.sets.get(metadata);
                         line.add(box);
                         Integer meta = getMeta.get();
-                        line.add(new TextBox(meta!=null?""+meta:"", true, "Metadata").setIntFilter().allowEmpty().onChange((s)->{
+                        line.add(new TextBox(meta!=null?""+meta:"", true, "Metadata").setIntFilter().allowEmpty().onChange((s) -> {
                             Integer val = null;
                             try{
                                 val = Integer.valueOf(s);
-                            }catch(NumberFormatException ex){}
+                            }catch(NumberFormatException ex){
+                            }
                             setMeta.accept(val);
                         }));
                         metadata = null;
-                    }else defFields.add(box);
+                    }else
+                        defFields.add(box);
                 }
-                if(defFields.components.isEmpty()&&elementList!=null)definitionFields.components.remove(defFields);
+                if(defFields.components.isEmpty()&&(elementList!=null||!elementStackSets.isEmpty()))definitionFields.components.remove(defFields);
                 if(elementList!=null){
                     Supplier<ArrayList<NCPFElementDefinition>> getState = def.gets.get(elementList);
                     Consumer<ArrayList<NCPFElementDefinition>> setState = def.sets.get(elementList);
@@ -139,23 +148,64 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 refresh();
                             }));
                             buttons.add(new IconButton("pencil", true).addAction(() -> {
-                                new MenuModifyElementDefinition(gui, this, elem, ()->{
+                                new MenuModifyElementDefinition(gui, this, elem, () -> {
                                     refresh();
-                                },null).open();
+                                }, null).open();
                             }));
                         }
                     });
                     GridLayout buttons = elementsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
                     buttons.add(new Button("Add Element", true).addAction(() -> {
                         new MenuPickElementDefinition(gui, this, (newDef) -> {
-                            new MenuModifyElementDefinition(gui, this, newDef, ()->{
+                            new MenuModifyElementDefinition(gui, this, newDef, () -> {
                                 list.add(newDef);
                                 setState.accept(list);
                                 refresh();
                             }, null).open();
                         }).open();
                     }));
-                };
+                }
+                if(!elementStackSets.isEmpty()){
+                    GridLayout elementsContainer = definitionFields.add(new GridLayout(elementStackSets.size(), 1));
+                    for(String elementStackSet : elementStackSets){
+                        Supplier<HashSet<NCPFElementStack>> getState = def.gets.get(elementStackSet);
+                        Consumer<HashSet<NCPFElementStack>> setState = def.sets.get(elementStackSet);
+                        BorderLayout elementsPanel = elementsContainer.add(new BorderLayout());
+                        elementsPanel.add(new Label(def.titles.get(elementStackSet), true), BorderLayout.TOP, 40);
+                        SingleColumnList elementsList = elementsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
+                        HashSet<NCPFElementStack> list = getState.get();
+                        onOpen(() -> {
+                            elementsList.components.clear();
+                            for(NCPFElementStack elem : list){
+                                LayeredLayout stateComp = elementsList.add(new LayeredLayout());
+                                stateComp.height = 48;
+                                stateComp.add(new Label(elem.toString(), true));
+                                ListButtonsLayout buttons = stateComp.add(new ListButtonsLayout());
+                                buttons.add(new IconButton("delete", true).addAction(() -> {
+                                    list.remove(elem);
+                                    setState.accept(list);
+                                    refresh();
+                                }));
+                                buttons.add(new IconButton("pencil", true).addAction(() -> {
+                                    new MenuModifyElementStack(gui, this, elem, () -> {
+                                        refresh();
+                                    }, null).open();
+                                }));
+                            }
+                        });
+                        GridLayout buttons = elementsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
+                        buttons.add(new Button("Add Element Stack", true).addAction(() -> {
+                            new MenuPickElementDefinition(gui, this, (newDef) -> {
+                                NCPFElementStack stack = new NCPFElementStack(newDef);
+                                new MenuModifyElementStack(gui, this, stack, () -> {
+                                    list.add(stack);
+                                    setState.accept(list);
+                                    refresh();
+                                }, null).open();
+                            }).open();
+                        }));
+                    }
+                }
                 if(blockstate!=null){
                     Supplier<HashMap<String, Object>> getState = def.gets.get(blockstate);
                     Consumer<HashMap<String, Object>> setState = def.sets.get(blockstate);
@@ -179,21 +229,24 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     });
                     GridLayout buttons = blockstatePanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
                     buttons.add(new Button("Add State", true).addAction(() -> {
-                        new MenuInputDialog(gui, this, "", "Key").addButton("OK", (key)->{
+                        new MenuInputDialog(gui, this, "", "Key").addButton("OK", (key) -> {
                             if(key.isBlank())return;
-                            new MenuInputDialog(gui, this, "", "Value").addButton("OK", (val)->{
+                            new MenuInputDialog(gui, this, "", "Value").addButton("OK", (val) -> {
                                 Object value = val;
                                 try{
                                     value = Integer.valueOf(val);
-                                }catch(NumberFormatException ex){}
+                                }catch(NumberFormatException ex){
+                                }
                                 map.put(key, value);
                                 setState.accept(map);
                                 refresh();
                             }, true).addButton("Cancel").open();
                         }).addButton("Cancel").open();
                     }));
-                }else definitionFields.add(new Panel());
-            }else definitionList.add(new Panel());
+                }else
+                    definitionFields.add(new Panel());
+            }else
+                definitionList.add(new Panel());
         }
         SplitLayout settings = add(new SplitLayout(SplitLayout.Y_AXIS, 1f));
         GridLayout moduleLists = settings.add(new GridLayout(0, 1));
@@ -214,7 +267,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 if(recipeModule!=null){
                     BlockRecipesElement recelement = (BlockRecipesElement)element;
                     recelement.clearBlockRecipes();//clear cached recipes, use module only
-                    element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                    element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module) -> {
                         for(NCPFElement elem : module.recipes){
                             recipesList.add(new NCPFElementComponent(elem).addIconButton("delete", "Delete "+elem.getTitle(), () -> {
                                 module.recipes.remove(elem);
@@ -229,7 +282,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     recipesListContainer.add(new Label(recipe.getTitle()+"s ("+recipesList.components.size()+")"), BorderLayout.TOP, 48);
                     recipesListContainer.add(recipesList, BorderLayout.CENTER);
                     recipesListContainer.add(new Button("Add "+recipe.getTitle(), true).addAction(() -> {
-                        element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                        element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module) -> {
                             module.recipes.add(recipe);
                             gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, recipe));
                         });
@@ -318,10 +371,10 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 rulesList.components.clear();
                 lists.splitPos = 0.5f;
                 if(recipeModule!=null){
-                    lists.splitPos+=0.5f;
+                    lists.splitPos += 0.5f;
                     BlockRecipesElement recelement = (BlockRecipesElement)element;
                     recelement.clearBlockRecipes();//clear cached recipes, use module only
-                    element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                    element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module) -> {
                         for(NCPFElement elem : module.recipes){
                             recipesList.add(new NCPFElementComponent(elem).addIconButton("delete", "Delete "+elem.getTitle(), () -> {
                                 module.recipes.remove(elem);
@@ -336,7 +389,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                     recipesListContainer.add(new Label(recipe.getTitle()+"s"), BorderLayout.TOP, 48);
                     recipesListContainer.add(recipesList, BorderLayout.CENTER);
                     recipesListContainer.add(new Button("Add "+recipe.getTitle(), true).addAction(() -> {
-                        element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module)->{
+                        element.withModuleOrCreate(NCPFBlockRecipesModule::new, (module) -> {
                             module.recipes.add(recipe);
                             gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, recipe));
                         });
@@ -344,7 +397,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 }
                 if(rulesModule!=null){
                     List<NCPFPlacementRule> rules = rulesModule.rules;
-                    lists.splitPos-=0.5f;
+                    lists.splitPos -= 0.5f;
                     for(NCPFPlacementRule rule : rules){
                         rulesList.add(new NCPFPlacementRuleComponent(rule).addButton("delete", "Delete Rule", () -> {
                             rules.remove(rule);

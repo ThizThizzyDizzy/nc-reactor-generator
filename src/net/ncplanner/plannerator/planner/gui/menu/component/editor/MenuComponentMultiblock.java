@@ -1,7 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
-import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.FluidStack;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.Core;
@@ -35,8 +33,7 @@ public class MenuComponentMultiblock extends Component{
     @Override
     public void draw(double deltaTime){
         Renderer renderer = new Renderer();
-        ArrayList<FluidStack> outs = new ArrayList<>();//TODO global recipe stuff
-        boolean has = false;
+        //TODO global recipe stuff
         if(isFocused){
             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));

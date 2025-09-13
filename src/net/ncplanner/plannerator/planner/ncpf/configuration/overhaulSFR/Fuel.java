@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelStatsModule;
-public class Fuel extends NamedTexturedNCPFElement implements IBlockRecipe{
+public class Fuel extends RecipeElement implements IBlockRecipe{
     public FuelStatsModule stats = new FuelStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){
