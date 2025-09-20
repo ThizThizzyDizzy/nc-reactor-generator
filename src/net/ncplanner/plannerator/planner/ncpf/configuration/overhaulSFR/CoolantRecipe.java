@@ -3,9 +3,9 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.LegacyRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CoolantRecipeStatsModule;
-public class CoolantRecipe extends RecipeElement implements MultiblockRecipeElement{
+public class CoolantRecipe extends LegacyRecipeElement implements MultiblockRecipeElement{
     public CoolantRecipeStatsModule stats = new CoolantRecipeStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

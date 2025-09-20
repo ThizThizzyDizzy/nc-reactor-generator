@@ -3,9 +3,9 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.MultiblockRecipeElement;
-import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.LegacyRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.FuelStatsModule;
-public class Fuel extends RecipeElement implements MultiblockRecipeElement{
+public class Fuel extends LegacyRecipeElement implements MultiblockRecipeElement{
     public FuelStatsModule stats = new FuelStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

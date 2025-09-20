@@ -3,9 +3,9 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.ncpf.configuration.RecipeElement;
+import net.ncplanner.plannerator.planner.ncpf.configuration.LegacyRecipeElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterStatsModule;
-public class HeaterRecipe extends RecipeElement implements IBlockRecipe{
+public class HeaterRecipe extends LegacyRecipeElement implements IBlockRecipe{
     public HeaterStatsModule stats = new HeaterStatsModule();
     @Override
     public void convertFromObject(NCPFObject ncpf){

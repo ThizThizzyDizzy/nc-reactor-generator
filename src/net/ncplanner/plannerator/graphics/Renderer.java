@@ -24,6 +24,7 @@ public class Renderer{
     private static Shader shader;
     private static Stack<Bound> boundStack = new Stack<>();
     private static Matrix4fStack modelMatStack = new Matrix4fStack(64);
+    private Matrix4f modelMatrixOverride;
     private static final HashMap<String, Element> elements = new HashMap<>();
     static{
         elements.put("cube", new Element(){
@@ -1552,7 +1553,7 @@ public class Renderer{
         return new Matrix4f().setTranslation(x, y, 0).scaleXY(scaleX, scaleY);
     }
     public void model(Matrix4f matrix){
-        setExactModelMatrix(modelMatStack.mul(matrix, matrix));
+        setExactModelMatrix((modelMatrixOverride==null?modelMatStack:modelMatrixOverride).mul(matrix, new Matrix4f()));
     }
     public void pushModel(Matrix4f matrix){
         modelMatStack.pushMatrix();
@@ -1573,6 +1574,14 @@ public class Renderer{
     public void resetModelMatrix(){
         model(new Matrix4f());
     }
+    private void setModelMatrixOverride(Matrix4f matrix){
+        modelMatrixOverride = matrix;
+        resetModelMatrix();
+    }
+    private void resetModelMatrixOverride(){
+        modelMatrixOverride = null;
+        resetModelMatrix();
+    }
     public void view(Matrix4f matrix){
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderID, "view"), false, matrix.get(new float[16]));
     }
@@ -1591,17 +1600,7 @@ public class Renderer{
         else shader.setUniform4f("noTex", 0f, 0f, 0f, 0f);
     }
     public void bound(float left, float top, float right, float bottom){
-        boundStack.push(new Bound(modelMatStack.get(new Matrix4f())){
-            @Override
-            void draw(){
-                int w = Core.gui.getWidth();
-                int h = Core.gui.getHeight();
-                fillRect(-w, -h, left, h);
-                fillRect(left, -h, right, top);
-                fillRect(left, bottom, right, Core.gui.getHeight());
-                fillRect(right, -h, Core.gui.getWidth(), Core.gui.getHeight());
-            }
-        });
+        boundStack.push(new Bound(modelMatStack.get(new Matrix4f()), left, top, right, bottom));
         redrawStencil();
     }
     public void translate(float x, float y){
@@ -1623,14 +1622,14 @@ public class Renderer{
         glDepthMask(false);
         for(int i = 0; i<boundStack.size(); i++){
             Bound bound = boundStack.get(i);
-            setExactModelMatrix(bound.modelMatrix);
-            bound.draw();
+            setModelMatrixOverride(bound.modelMatrix);
+            bound.draw(this);
         }
         glStencilFunc(GL_NOTEQUAL, 1, 0xff);
         glDepthMask(true);
         glColorMask(true, true, true, true);
         glStencilMask(0x00);
-        resetModelMatrix();
+        resetModelMatrixOverride();
     }
     public void unTranslate(){
         modelMatStack.popMatrix();
@@ -1686,12 +1685,27 @@ public class Renderer{
         if(!elements.containsKey(name))throw new IllegalArgumentException("Cannot draw element: "+name+" does not exist!");
         elements.get(name).draw();
     }
-    private static abstract class Bound{
+    private static class Bound{
         private final Matrix4f modelMatrix;
-        public Bound(Matrix4f modelMatrix){
+        private final float left;
+        private final float top;
+        private final float right;
+        private final float bottom;
+        public Bound(Matrix4f modelMatrix, float left, float top, float right, float bottom){
             this.modelMatrix = modelMatrix;
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
         }
-        abstract void draw();
+        void draw(Renderer r){
+            int w = Core.gui.getWidth();
+            int h = Core.gui.getHeight();
+            r.fillRect(-w, -h, left, h);
+            r.fillRect(left, -h, right, top);
+            r.fillRect(left, bottom, right, Core.gui.getHeight());
+            r.fillRect(right, -h, Core.gui.getWidth(), Core.gui.getHeight());
+        }
     }
     @Deprecated
     public void drawModel(Model model){

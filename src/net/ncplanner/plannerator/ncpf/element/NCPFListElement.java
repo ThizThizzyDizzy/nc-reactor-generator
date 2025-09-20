@@ -23,4 +23,12 @@ public class NCPFListElement extends NCPFSettingsElement{
     public String getTypeName(){
         return "List";
     }
+    @Override
+    public boolean canHaveAmount(){
+        return false;
+    }
+    @Override
+    public NCPFElementDefinition getRecipeContainedAlternative(){
+        return new NCPFStackListElement();
+    }
 }

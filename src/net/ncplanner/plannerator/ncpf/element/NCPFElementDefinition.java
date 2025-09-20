@@ -26,4 +26,15 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
     public ArrayList<String> getLegacyNames(){
         return new ArrayList<>(Arrays.asList(toString()));
     }
+    public boolean canHaveAmount(){
+        return true;
+    }
+    /**
+     * If this element should have special handling as part of a recipe, get the special handling alternative
+     * @return an empty instance of the alternative.
+     * @see NCPFListElement
+     */
+    public NCPFElementDefinition getRecipeContainedAlternative(){
+        return this;
+    }
 }

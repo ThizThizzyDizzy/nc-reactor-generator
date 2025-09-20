@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.CompiledPlacementRule
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
-import net.ncplanner.plannerator.ncpf.element.NCPFRecipeElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyRecipeElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
@@ -114,7 +114,7 @@ public class CompiledOverhaulSFRConfiguration implements CompiledConfiguration{
             coolantRecipeDefinition[i] = recipe.definition;
             coolantRecipeDisplayName[i] = recipe.getDisplayName();
             coolantRecipeHeat[i] = recipe.stats.heat;
-            coolantRecipeOutputRatio[i] = ((NCPFRecipeElement)recipe.definition).getOutputRatio();
+            coolantRecipeOutputRatio[i] = ((NCPFLegacyRecipeElement)recipe.definition).getOutputRatio();
             coolantRecipeTexture[i] = recipe.getTexture();
             coolantRecipeDisplayTexture[i] = recipe.getDisplayTexture();
         }

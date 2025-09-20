@@ -1,8 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -24,9 +26,11 @@ public class MenuModifyElementDefinition extends MenuDialog{
     private final ArrayList<Runnable> onOpen = new ArrayList<>();
     public MenuModifyElementDefinition(GUI gui, Menu parent, NCPFElementDefinition element, Runnable onConfirm, Runnable onCancel){
         super(gui, parent);
-        addButton("Cancel", () -> {
-            if(onCancel!=null)onCancel.run();
-        }, true);
+        if(onCancel!=null){
+            addButton("Cancel", () -> {
+                onCancel.run();
+            }, true);
+        }
         addButton("Done", ()->{
             onConfirm.run();
         }, true);
@@ -39,11 +43,15 @@ public class MenuModifyElementDefinition extends MenuDialog{
             String blockstate = null;
             String metadata = null;
             String elementList = null;
+            ArrayList<String> elementStackSets = new ArrayList<>();
+            ArrayList<String> elementStackLists = new ArrayList<>();
             for(String key : def.types.keySet()){
                 NCPFSettingsElement.Type type = def.types.get(key);
                 if(type==NCPFSettingsElement.Type.METADATA)metadata = key;
                 if(type==NCPFSettingsElement.Type.BLOCKSTATE)blockstate = key;
                 if(type==NCPFSettingsElement.Type.ELEMENT_LIST)elementList = key;
+                if(type==NCPFSettingsElement.Type.ELEMENT_STACK_SET)elementStackSets.add(key);
+                if(type==NCPFSettingsElement.Type.ELEMENT_STACK_LIST)elementStackLists.add(key);
             }
             SplitLayout definitionFields = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, blockstate==null?1:0.7f));
             ListLayout defFields = definitionFields.add(new ListLayout(48));
@@ -71,8 +79,7 @@ public class MenuModifyElementDefinition extends MenuDialog{
                     metadata = null;
                 }else defFields.add(box);
             }
-            if(defFields.components.isEmpty()&&elementList!=null)definitionFields.components.remove(defFields);
-            //this is broken and I don't care to fix it because you shouldn't be nesting lists or blockstates in lists anyway x.x
+            if(defFields.components.isEmpty()&&(elementList!=null||!elementStackSets.isEmpty()||!elementStackLists.isEmpty()))definitionFields.components.remove(defFields);
             if(elementList!=null){
                 Supplier<ArrayList<NCPFElementDefinition>> getState = def.gets.get(elementList);
                 Consumer<ArrayList<NCPFElementDefinition>> setState = def.sets.get(elementList);
@@ -106,10 +113,92 @@ public class MenuModifyElementDefinition extends MenuDialog{
                             list.add(newDef);
                             setState.accept(list);
                             refresh();
-                        }, null).open();
+                        }, ()->{}).open();
                     }).open();
                 }));
-            };
+            }
+            if(!elementStackSets.isEmpty()){
+                GridLayout elementsContainer = definitionFields.add(new GridLayout(elementStackSets.size(), 1));
+                for(String elementStackSet : elementStackSets){
+                    Supplier<HashSet<NCPFElementStack>> getState = def.gets.get(elementStackSet);
+                    Consumer<HashSet<NCPFElementStack>> setState = def.sets.get(elementStackSet);
+                    BorderLayout elementsPanel = elementsContainer.add(new BorderLayout());
+                    elementsPanel.add(new Label(def.titles.get(elementStackSet), true), BorderLayout.TOP, 40);
+                    SingleColumnList elementsList = elementsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
+                    HashSet<NCPFElementStack> list = getState.get();
+                    onOpen(() -> {
+                        elementsList.components.clear();
+                        for(NCPFElementStack elem : list){
+                            LayeredLayout stateComp = elementsList.add(new LayeredLayout());
+                            stateComp.height = 48;
+                            stateComp.add(new Label(elem.toString(), true));
+                            ListButtonsLayout buttons = stateComp.add(new ListButtonsLayout());
+                            buttons.add(new IconButton("delete", true).addAction(() -> {
+                                list.remove(elem);
+                                setState.accept(list);
+                                refresh();
+                            }));
+                            buttons.add(new IconButton("pencil", true).addAction(() -> {
+                                new MenuModifyElementStack(gui, this, elem, () -> {
+                                    refresh();
+                                }, null).open();
+                            }));
+                        }
+                    });
+                    GridLayout buttons = elementsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
+                    buttons.add(new Button("Add Element Stack", true).addAction(() -> {
+                        new MenuPickElementDefinition(gui, this, (newDef) -> {
+                            NCPFElementStack stack = new NCPFElementStack(newDef.getRecipeContainedAlternative());
+                            new MenuModifyElementStack(gui, this, stack, () -> {
+                                list.add(stack);
+                                setState.accept(list);
+                                refresh();
+                            }, ()->{}).open();
+                        }).open();
+                    }));
+                }
+            }
+            if(!elementStackLists.isEmpty()){
+                GridLayout elementsContainer = definitionFields.add(new GridLayout(elementStackLists.size(), 1));
+                for(String elementStackList : elementStackLists){
+                    Supplier<ArrayList<NCPFElementStack>> getState = def.gets.get(elementStackList);
+                    Consumer<ArrayList<NCPFElementStack>> setState = def.sets.get(elementStackList);
+                    BorderLayout elementsPanel = elementsContainer.add(new BorderLayout());
+                    elementsPanel.add(new Label(def.titles.get(elementStackList), true), BorderLayout.TOP, 40);
+                    SingleColumnList elementsList = elementsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
+                    ArrayList<NCPFElementStack> list = getState.get();
+                    onOpen(() -> {
+                        elementsList.components.clear();
+                        for(NCPFElementStack elem : list){
+                            LayeredLayout stateComp = elementsList.add(new LayeredLayout());
+                            stateComp.height = 48;
+                            stateComp.add(new Label(elem.toString(), true));
+                            ListButtonsLayout buttons = stateComp.add(new ListButtonsLayout());
+                            buttons.add(new IconButton("delete", true).addAction(() -> {
+                                list.remove(elem);
+                                setState.accept(list);
+                                refresh();
+                            }));
+                            buttons.add(new IconButton("pencil", true).addAction(() -> {
+                                new MenuModifyElementStack(gui, this, elem, () -> {
+                                    refresh();
+                                }, null).open();
+                            }));
+                        }
+                    });
+                    GridLayout buttons = elementsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 40);
+                    buttons.add(new Button("Add Element Stack", true).addAction(() -> {
+                        new MenuPickElementDefinition(gui, this, (newDef) -> {
+                            NCPFElementStack stack = new NCPFElementStack(newDef.getRecipeContainedAlternative());
+                            new MenuModifyElementStack(gui, this, stack, () -> {
+                                list.add(stack);
+                                setState.accept(list);
+                                refresh();
+                            }, ()->{}).open();
+                        }).open();
+                    }));
+                }
+            }
             if(blockstate!=null){
                 Supplier<HashMap<String, Object>> getState = def.gets.get(blockstate);
                 Consumer<HashMap<String, Object>> setState = def.sets.get(blockstate);

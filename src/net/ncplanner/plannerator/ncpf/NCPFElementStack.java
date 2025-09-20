@@ -20,20 +20,24 @@ public class NCPFElementStack extends DefinedNCPFModularObject{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        definition = NCPFElement.recognizedElements.getOrDefault(ncpf.getString("type"), UnknownNCPFElement::new).get();
-        amount = ncpf.getInteger("amount");
+        definition = NCPFElement.recognizedElements.getOrDefault(ncpf.getString("type"), UnknownNCPFElement::new).get().getRecipeContainedAlternative();
+        if(definition.canHaveAmount()){
+            amount = ncpf.getInteger("amount");
+        }
         definition.convertFromObject(ncpf);
         super.convertFromObject(ncpf);
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         ncpf.setString("type", definition.type);
-        ncpf.setInteger("amount", amount);
+        if(definition.canHaveAmount()){
+            ncpf.setInteger("amount", amount);
+        }
         definition.convertToObject(ncpf);
         super.convertToObject(ncpf);
     }
     @Override
     public String toString(){
-        return definition.toString()+"*"+amount;
+        return definition.canHaveAmount()?definition.toString()+"*"+amount:definition.toString();
     }
 }

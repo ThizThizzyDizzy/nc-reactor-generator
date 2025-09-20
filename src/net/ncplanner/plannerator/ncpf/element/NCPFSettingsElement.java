@@ -38,6 +38,13 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         types.put(name, Type.ELEMENT_LIST);
         titles.put(name, title);
     }
+    public void addElementStacksList(String name, Supplier<ArrayList<NCPFElementStack>> get, Consumer<ArrayList<NCPFElementStack>> set, String title){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.ELEMENT_STACK_LIST);
+        titles.put(name, title);
+    }
     public void addElementStacks(String name, Supplier<HashSet<NCPFElementStack>> get, Consumer<HashSet<NCPFElementStack>> set, String title){
         settings.add(name);
         gets.put(name, get);
@@ -99,6 +106,9 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                 case ELEMENT_STACK_SET:
                     ((Consumer<HashSet<NCPFElementStack>>)set).accept(ncpf.getDefinedNCPFSet(setting, NCPFElementStack::new));
                     break;
+                case ELEMENT_STACK_LIST:
+                    ((Consumer<ArrayList<NCPFElementStack>>)set).accept(ncpf.getDefinedNCPFList(setting, NCPFElementStack::new));
+                    break;
                 default:
                     throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
             }
@@ -139,6 +149,9 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
                     break;
                 case ELEMENT_STACK_SET:
                     ncpf.setDefinedNCPFSet(setting, ((Supplier<HashSet<NCPFElementStack>>)get).get());
+                    break;
+                case ELEMENT_STACK_LIST:
+                    ncpf.setDefinedNCPFList(setting, ((Supplier<ArrayList<NCPFElementStack>>)get).get());
                     break;
                 default:
                     throw new AssertionError("You forgot to add save/load to that ("+types.get(setting).name()+")");
@@ -210,7 +223,7 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         return "["+s.substring(1)+"]";
     }
     public static enum Type{
-        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true), ELEMENT_STACK_SET(true);
+        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true), ELEMENT_STACK_SET(true), ELEMENT_STACK_LIST(true);
         public final boolean special;
         private Type(){
             this(false);

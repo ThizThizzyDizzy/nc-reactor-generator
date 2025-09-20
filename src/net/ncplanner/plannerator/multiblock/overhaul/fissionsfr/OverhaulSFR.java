@@ -33,7 +33,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
-import net.ncplanner.plannerator.ncpf.element.NCPFRecipeElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFLegacyRecipeElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -446,7 +446,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
                 totalOutput *= sparsityMult;
                 totalEfficiency *= sparsityMult;
-                totalOutput /= coolantRecipe.stats.heat/((NCPFRecipeElement)coolantRecipe.definition).getOutputRatio();
+                totalOutput /= coolantRecipe.stats.heat/((NCPFLegacyRecipeElement)coolantRecipe.definition).getOutputRatio();
                 calcStats.finish();
                 calcStep++;
                 return true;
@@ -682,7 +682,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
                 totalOutput *= sparsityMult;
                 totalEfficiency *= sparsityMult;
-                totalOutput /= coolantRecipe.stats.heat/((NCPFRecipeElement)coolantRecipe.definition).getOutputRatio();
+                totalOutput /= coolantRecipe.stats.heat/((NCPFLegacyRecipeElement)coolantRecipe.definition).getOutputRatio();
                 shutdownCalcStats.finish();
                 calcShutdown.finish();
                 offOutput = totalOutput;
@@ -938,7 +938,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 sparsityMult = (float)(functionalBlocks/(float)volume>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
                 totalOutput *= sparsityMult;
                 totalEfficiency *= sparsityMult;
-                totalOutput /= coolantRecipe.stats.heat/((NCPFRecipeElement)coolantRecipe.definition).getOutputRatio();
+                totalOutput /= coolantRecipe.stats.heat/((NCPFLegacyRecipeElement)coolantRecipe.definition).getOutputRatio();
                 partialShutdownCalcStats.finish();
                 calcPartialShutdown.finish();
                 shutdownFactor = 1-(offOutput/totalOutput);
