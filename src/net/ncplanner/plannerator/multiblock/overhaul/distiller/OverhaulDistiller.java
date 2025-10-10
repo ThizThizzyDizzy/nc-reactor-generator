@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock.overhaul.distiller;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
@@ -196,5 +197,15 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     @Override
     public void setMultiblockRecipe(int recipeType, NCPFElement recipe){
         this.recipe = (DistillerRecipe)recipe;
+    }
+    @Override
+    public void applyMultiblockSymmetry(int x, int y, int z, BlockPosConsumer consumer){
+        if(x==0||y==0||z==0||x==getExternalWidth()-1||y==getExternalHeight()-1||z==getExternalDepth()-1)return;
+        for(int X = 1; X<getExternalWidth()-1; X++){
+            for(int Z = 1; Z<getExternalDepth()-1; Z++){
+                if(x==X&&z==Z)continue; // skip the one you already have
+                consumer.accept(X, y, Z);
+            }
+        }
     }
 }

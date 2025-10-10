@@ -9,7 +9,7 @@ public class EditorSymmetry extends Symmetry{
     public StandardSymmetry standard = new StandardSymmetry();
     @Override
     public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
-        editor.getMultiblock().applyMultiblockSymmetry(x, y, z, w, h, d, consumer);
+        editor.getMultiblock().applyMultiblockSymmetry(x, y, z, consumer);
         standard.apply(x, y, z, w, h, d, consumer);
     }
 }

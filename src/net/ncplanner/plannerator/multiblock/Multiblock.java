@@ -815,7 +815,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return new NCPFElement[0];
     }
     public void setMultiblockRecipe(int recipeType, NCPFElement recipe){}
-    public void applyMultiblockSymmetry(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
+    public void applyMultiblockSymmetry(int x, int y, int z, BlockPosConsumer consumer){
     }
     private static class GraphLink{
         private final AbstractBlock b1;
