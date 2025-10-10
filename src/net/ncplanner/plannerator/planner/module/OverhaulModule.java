@@ -74,7 +74,6 @@ public class OverhaulModule extends Module<Object>{
         addAddonTask(t, "Spicy Heat Sinks (Stable)", "configurations/addons/spicy_heat_sinks_stable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks", "Cn-285");
         addAddonTask(t, "Spicy Heat Sinks (Unstable)", "configurations/addons/spicy_heat_sinks_unstable.ncpf.json", "https://www.curseforge.com/minecraft/customization/spicy-heat-sinks", "Cn-285");
         addAddonTask(t, "Nuclear Additions", "configurations/addons/nuclear_additions.ncpf.json", "https://www.curseforge.com/minecraft/customization/nuclear-additions", "john_shepard22");
-        //TODO Nuclear Additions (don't forget to update the credits!)
         runTasks();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
