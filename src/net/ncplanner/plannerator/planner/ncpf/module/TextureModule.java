@@ -16,6 +16,7 @@ public class TextureModule extends NCPFModule implements ElementModule{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
+        if("true".equals(System.getProperty("plannerator.skipTextures")))return;
         texture = Image.fromBase64(ncpf.getString("texture"));
     }
     @Override
