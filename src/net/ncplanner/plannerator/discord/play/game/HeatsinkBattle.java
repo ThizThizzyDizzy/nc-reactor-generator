@@ -68,10 +68,11 @@ public class HeatsinkBattle extends Game{
         basis = multis.get(new Random().nextInt(multis.size())).copy();
         this.config = basis.configuration;
         basis.recalculate();
-        basis.forEachPosition((x, y, z) -> {
-            AbstractBlock b = basis.getBlock(x, y, z);
+        basis.forEachPosition((ps) -> {
+            BlockPos pos = (BlockPos)ps;
+            AbstractBlock b = basis.getBlock(pos);
             if(b==null)return;
-            if(!b.isValid())basis.setBlock(x, y, z, null);
+            if(!b.isValid())basis.setBlock(pos, null);
         });
         if(basis instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)basis).buildDefaultCasing();
@@ -80,14 +81,16 @@ public class HeatsinkBattle extends Game{
         basis.metadata.clear();
         current = basis.copy();
         if(current instanceof CuboidalMultiblock){
-            ((CuboidalMultiblock)current).forEachInternalPosition((x, y, z) -> {
-                AbstractBlock b = current.getBlock(x, y, z);
-                if(b!=null&&!b.isCore())current.setBlock(x, y, z, null);//remove all non core blocks
+            ((CuboidalMultiblock)current).forEachInternalPosition((ps) -> {
+                BlockPos pos = (BlockPos)ps;
+                AbstractBlock b = current.getBlock(pos);
+                if(b!=null&&!b.isCore())current.setBlock(pos, null);//remove all non core blocks
             });
         }else{
-            current.forEachPosition((x, y, z) -> {
-                AbstractBlock b = current.getBlock(x, y, z);
-                if(b!=null&&!b.isCore())current.setBlock(x, y, z, null);//remove all non core blocks
+            current.forEachPosition((ps) -> {
+                BlockPos pos = (BlockPos)ps;
+                AbstractBlock b = current.getBlock(pos);
+                if(b!=null&&!b.isCore())current.setBlock(pos, null);//remove all non core blocks
             });
         }
         for(AbstractBlock b : ((Multiblock<AbstractBlock>)current).getAvailableBlocks()){
@@ -214,9 +217,11 @@ public class HeatsinkBattle extends Game{
             String[] strs = message.getContentStripped().split(" ", 4);
             if(strs.length<4)return;//ignore
             try{
-                int x = Integer.parseInt(strs[0]);
-                int y = Integer.parseInt(strs[1]);
-                int z = Integer.parseInt(strs[2]);
+                BlockPos pos = new BlockPos(
+                    Integer.parseInt(strs[0]),
+                    Integer.parseInt(strs[1]),
+                    Integer.parseInt(strs[2])
+                );
                 String blockName = strs[3];
                 AbstractBlock block = null;
                 ArrayList<AbstractBlock> searched = new ArrayList<>();
@@ -231,7 +236,7 @@ public class HeatsinkBattle extends Game{
                     message.getChannel().sendMessage("Found one searchable result; using "+searched.get(0).getName()).queue();
                     block = searched.get(0);
                 }
-                if(!current.contains(x, y, z)){
+                if(!current.contains(pos)){
                     message.getChannel().sendMessage(strip(message.getAuthor().getName())+" tried to steal a block by placing it outside the reactor! (-100 points)").queue();
                     scores.set(turn, scores.get(turn)-100);
                 }else{
@@ -241,15 +246,15 @@ public class HeatsinkBattle extends Game{
                             scores.set(turn, scores.get(turn)-200);
                         }else message.getChannel().sendMessage("Invalid block! You may only use Coolers/Heatsinks/Heaters!").queue();
                     }else{
-                        AbstractBlock currentBlock = current.getBlock(x, y, z);
+                        AbstractBlock currentBlock = current.getBlock(pos);
                         if(currentBlock==null||!currentBlock.isValid()||isHeatsink(currentBlock)){
                             int oldHeat = getHeat();
-                            current.setBlock(x, y, z, block.newInstance(x, y, z));
+                            current.setBlock(pos, block.newInstance(pos));
                             current.getBlocks(true);
                             current.recalculate();
                             int diff = oldHeat-getHeat();
                             scores.set(turn, scores.get(turn)+diff);
-                            credit.put(new BlockPos(x, y, z), turn);
+                            credit.put(pos, turn);
                             String mess = "No net change!";
                             if(diff>0)mess = "Cooled down! (+"+diff+" points)";
                             if(diff<0)mess = "Temperature Increased! ("+diff+" points)";
@@ -342,8 +347,8 @@ public class HeatsinkBattle extends Game{
         HashSet<NCPFElement> templates = new HashSet<>();
         for(BlockPos pos : credit.keySet()){
             if(credit.get(pos)!=i)continue;//that's for a different player
-            if(!current.contains(pos.x, pos.y, pos.z))continue;//not in the reactor
-            AbstractBlock b = current.getBlock(pos.x, pos.y, pos.z);
+            if(!current.contains(pos))continue;//not in the reactor
+            AbstractBlock b = current.getBlock(pos);
             if(b==null)continue;//air
             if(!b.isValid())continue;//not valid
             templates.add(b.getTemplate());

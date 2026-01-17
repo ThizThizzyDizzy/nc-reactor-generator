@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
@@ -54,29 +55,29 @@ public class FusionTestModule extends Module<Object>{
                     renderer.fillRect(x, y, x+width, y+height);
                     renderer.setColor(primaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
-                    if(!top||!left||!cluster.contains(b.x-1, b.y, b.z-1)){//top left
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
                         renderer.fillRect(x, y, x+border, y+border);
                     }
                     if(!top){//top
                         renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
                     }
-                    if(!top||!right||!cluster.contains(b.x+1, b.y, b.z-1)){//top right
+                    if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
                         renderer.fillRect(x+width-border, y, x+width, y+border);
                     }
                     if(!right){//right
                         renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
                     }
-                    if(!bottom||!right||!cluster.contains(b.x+1, b.y, b.z+1)){//bottom right
+                    if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
                         renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
                     }
                     if(!bottom){//bottom
                         renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
                     }
-                    if(!bottom||!left||!cluster.contains(b.x-1, b.y, b.z+1)){//bottom left
+                    if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
                         renderer.fillRect(x, y+height-border, x+border, y+height);
                     }
                     if(!left){//left
@@ -93,10 +94,10 @@ public class FusionTestModule extends Module<Object>{
                 if(secondaryColor!=null){
                     renderer.setColor(secondaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
                     if(!top){//top
                         renderer.fillRect(x+border, y, x+width/2-border, y+border);
                         renderer.fillRect(x+width/2+border, y, x+width-border, y+border);

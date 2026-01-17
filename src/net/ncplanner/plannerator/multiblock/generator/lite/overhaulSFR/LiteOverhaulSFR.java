@@ -620,8 +620,8 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
         dims[0] = sfr.getInternalWidth();
         dims[1] = sfr.getInternalHeight();
         dims[2] = sfr.getInternalDepth();
-        sfr.forEachInternalPosition((x, y, z) -> {
-            Block block = sfr.getBlock(x, y, z);
+        sfr.forEachInternalPosition((pos) -> {
+            Block block = sfr.getBlock(pos);
             NCPFElementDefinition definition = block==null?null:block.template.definition;
             NCPFElementDefinition recipe = block==null?null:(block.fuel==null?(block.irradiatorRecipe==null?null:block.irradiatorRecipe.definition):block.fuel.definition);
             int b = -1;
@@ -630,7 +630,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
                     if(recipe==null||configuration.blockRecipe[i].matches(recipe))b = i;
                 }
             }
-            blocks[x-1][y-1][z-1] = b;
+            blocks[pos.x-1][pos.y-1][pos.z-1] = b;
         });
         int r = 0;
         for(int i = 0; i<configuration.coolantRecipeDefinition.length; i++){
@@ -672,14 +672,14 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
         }
         calculate();
         OverhaulSFR sfr = new OverhaulSFR(configg, dims[0], dims[1], dims[2], coolantRecipe);
-        sfr.forEachInternalPosition((x, y, z) -> {
-            int block = blocks[x-1][y-1][z-1];
-            if(moderatorValid[x-1][y-1][z-1]+blockActive[x-1][y-1][z-1]<=0)block = -1;
+        sfr.forEachInternalPosition((pos) -> {
+            int block = blocks[pos.x-1][pos.y-1][pos.z-1];
+            if(moderatorValid[pos.x-1][pos.y-1][pos.z-1]+blockActive[pos.x-1][pos.y-1][pos.z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : config.blocks){
                     if(b.definition.matches(configuration.blockDefinition[block])){
-                        bl = new Block(configg, x, y, z, b);
+                        bl = new Block(configg, pos, b);
                         NCPFElementDefinition recip = configuration.blockRecipe[block];
                         if(recip!=null){
                             for(Fuel fuel : b.fuels){
@@ -693,7 +693,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
                     }
                 }
             }
-            sfr.setBlock(x, y, z, bl);
+            sfr.setBlock(pos, bl);
         });
         if(Core.autoBuildCasing)sfr.buildDefaultCasing();
         return sfr;

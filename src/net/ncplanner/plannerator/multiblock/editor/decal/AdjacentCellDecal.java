@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class AdjacentCellDecal extends Decal{
     private final Direction cellDirection;
-    public AdjacentCellDecal(int x, int y, int z, Direction cellDirection){
-        super(x, y, z);
+    public AdjacentCellDecal(BlockPos pos, Direction cellDirection){
+        super(pos);
         this.cellDirection = cellDirection;
     }
     @Override

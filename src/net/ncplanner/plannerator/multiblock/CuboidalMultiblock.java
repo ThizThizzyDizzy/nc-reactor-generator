@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.MathUtil;
@@ -37,14 +38,14 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
     public void getEditorSpaces(ArrayList<EditorSpace<T>> editorSpaces){
         editorSpaces.add(new EditorSpace<T>(0, 0, 0, x+1, y+1, z+1){
             @Override
-            public boolean isSpaceValid(T block, int x, int y, int z){
+            public boolean isSpaceValid(T block, BlockPos pos){
                 if(block==null)return true;
-                boolean x0 = x==0;
-                boolean y0 = y==0;
-                boolean z0 = z==0;
-                boolean x1 = x==CuboidalMultiblock.this.x+1;
-                boolean y1 = y==CuboidalMultiblock.this.y+1;
-                boolean z1 = z==CuboidalMultiblock.this.z+1;
+                boolean x0 = pos.x==0;
+                boolean y0 = pos.y==0;
+                boolean z0 = pos.z==0;
+                boolean x1 = pos.x==CuboidalMultiblock.this.x+1;
+                boolean y1 = pos.y==CuboidalMultiblock.this.y+1;
+                boolean z1 = pos.z==CuboidalMultiblock.this.z+1;
                 if(x0||y0||z0||x1||y1||z1){
                     if(x0&&y0||x0&&z0||x0&&x1||x0&&y1||x0&&z1||y0&&z0||y0&&x1||y0&&y1||y0&&z1||z0&&x1||z0&&y1||z0&&z1||x1&&y1||x1&&z1||y1&&z1){
                         return canBePlacedInCasingEdge(block);
@@ -96,55 +97,49 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
         int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
         return compactBits<spaciousBits;
     }
-    public void forEachInternalPosition(BlockPosConsumer func){
-        for(int x = 1; x<=getInternalWidth(); x++){
-            for(int y = 1; y<=getInternalHeight(); y++){
-                for(int z = 1; z<=getInternalDepth(); z++){
-                    func.accept(x, y, z);
-                }
-            }
-        }
+    public void forEachInternalPosition(Consumer<BlockPos> func){
+        BoundingBox.around(new BlockPos(1,1,1), new BlockPos(getInternalWidth(), getInternalHeight(), getInternalDepth())).forEachPosition(func);
     }
-    public void forEachCasingPosition(BlockPosConsumer func){
-        forEachPosition((x, y, z) -> {
-            boolean x0 = x==0;
-            boolean y0 = y==0;
-            boolean z0 = z==0;
-            boolean x1 = x==this.x+1;
-            boolean y1 = y==this.y+1;
-            boolean z1 = z==this.z+1;
+    public void forEachCasingPosition(Consumer<BlockPos> func){
+        forEachPosition((pos) -> {
+            boolean x0 = pos.x==0;
+            boolean y0 = pos.y==0;
+            boolean z0 = pos.z==0;
+            boolean x1 = pos.x==this.x+1;
+            boolean y1 = pos.y==this.y+1;
+            boolean z1 = pos.z==this.z+1;
             if(x0||y0||z0||x1||y1||z1){
-                func.accept(x, y, z);
+                func.accept(pos);
             }
         });
     }
-    public void forEachCasingEdgePosition(BlockPosConsumer func){
-        forEachPosition((x, y, z) -> {
-            boolean x0 = x==0;
-            boolean y0 = y==0;
-            boolean z0 = z==0;
-            boolean x1 = x==this.x+1;
-            boolean y1 = y==this.y+1;
-            boolean z1 = z==this.z+1;
+    public void forEachCasingEdgePosition(Consumer<BlockPos> func){
+        forEachPosition((pos) -> {
+            boolean x0 = pos.x==0;
+            boolean y0 = pos.y==0;
+            boolean z0 = pos.z==0;
+            boolean x1 = pos.x==this.x+1;
+            boolean y1 = pos.y==this.y+1;
+            boolean z1 = pos.z==this.z+1;
             if(x0||y0||z0||x1||y1||z1){
                 if(x0&&y0||x0&&z0||x0&&x1||x0&&y1||x0&&z1||y0&&z0||y0&&x1||y0&&y1||y0&&z1||z0&&x1||z0&&y1||z0&&z1||x1&&y1||x1&&z1||y1&&z1){
-                    func.accept(x, y, z);
+                    func.accept(pos);
                 }
             }
         });
     }
-    public void forEachCasingFacePosition(BlockPosConsumer func){
-        forEachPosition((x, y, z) -> {
-            boolean x0 = x==0;
-            boolean y0 = y==0;
-            boolean z0 = z==0;
-            boolean x1 = x==this.x+1;
-            boolean y1 = y==this.y+1;
-            boolean z1 = z==this.z+1;
+    public void forEachCasingFacePosition(Consumer<BlockPos> func){
+        forEachPosition((pos) -> {
+            boolean x0 = pos.x==0;
+            boolean y0 = pos.y==0;
+            boolean z0 = pos.z==0;
+            boolean x1 = pos.x==this.x+1;
+            boolean y1 = pos.y==this.y+1;
+            boolean z1 = pos.z==this.z+1;
             if(x0||y0||z0||x1||y1||z1){
                 if(x0&&y0||x0&&z0||x0&&x1||x0&&y1||x0&&z1||y0&&z0||y0&&x1||y0&&y1||y0&&z1||z0&&x1||z0&&y1||z0&&z1||x1&&y1||x1&&z1||y1&&z1){
                 }else{
-                    func.accept(x, y, z);
+                    func.accept(pos);
                 }
             }
         });
@@ -152,232 +147,73 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
     public int getInternalVolume(){
         return getInternalWidth()*getInternalHeight()*getInternalDepth();
     }
-    public void expandRight(int i){
-        if(getInternalWidth()+i>getMaxX())return;
+    public void expand(int i, Direction direction){
+        if(getInternalWidth()+i*Math.abs(direction.x)>getMaxX())return;
+        if(getInternalHeight()+i*Math.abs(direction.y)>getMaxY())return;
+        if(getInternalDepth()+i*Math.abs(direction.z)>getMaxZ())return;
         HashMap<BlockPos, T> cache = cache();
         blockGrids.clear();
-        dimensions[0]+=i;
-        x+=i;
+        dimensions[0]+=i*Math.abs(direction.x);
+        dimensions[1]+=i*Math.abs(direction.y);
+        dimensions[2]+=i*Math.abs(direction.z);
+        x+=i*Math.abs(direction.x);
+        y+=i*Math.abs(direction.y);
+        z+=i*Math.abs(direction.z);
         createBlockGrids();
         for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bx==x-i+1)bx+=i;
-            setBlock(bx, by, bz, block);
-        };
+            int ox = 0;
+            int oy = 0;
+            int oz = 0;
+            if(direction.x<0)ox = pos.x>0?i:0;
+            if(direction.x>0)ox = pos.x==x-i+1?i:0;
+            if(direction.y<0)oy = pos.y>0?i:0;
+            if(direction.y>0)oy = pos.y==y-i+1?i:0;
+            if(direction.z<0)oz = pos.z>0?i:0;
+            if(direction.z>0)oz = pos.z==z-i+1?i:0;
+            setBlock(pos.offset(ox, oy, oz), cache.get(pos));
+        }
         history.clear();
         future.clear();
         clearCaches();
     }
-    public void expandLeft(int i){
-        if(getInternalWidth()+i>getMaxX())return;
+    public void delete(int deletePos, Axis axis){
+        if(getInternalWidth()-axis.x<getMinX())return;
+        if(getInternalHeight()-axis.y<getMinY())return;
+        if(getInternalDepth()-axis.z<getMinZ())return;
         HashMap<BlockPos, T> cache = cache();
         blockGrids.clear();
-        dimensions[0]+=i;
-        x+=i;
+        dimensions[0]-=axis.x;
+        dimensions[1]-=axis.y;
+        dimensions[2]-=axis.z;
+        x-=axis.x;
+        y-=axis.y;
+        z-=axis.z;
         createBlockGrids();
         for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bx>0)bx+=i;
-            setBlock(bx, by, bz, block);
-        };
+            int p = pos.x*axis.x+pos.y*axis.y+pos.z*axis.z;
+            if(p==deletePos+1)continue;
+            setBlock(pos.offset(p>deletePos+1?-axis.x:0, p>deletePos+1?-axis.y:0, p>deletePos+1?-axis.z:0), cache.get(pos));
+        }
         history.clear();
         future.clear();
         clearCaches();
     }
-    public void expandUp(int i){
-        if(getInternalHeight()+i>getMaxY())return;
+    public void insert(int insertPos, Axis axis){
+        if(getInternalWidth()+axis.x>getMaxX())return;
+        if(getInternalHeight()+axis.y>getMaxY())return;
+        if(getInternalDepth()+axis.z>getMaxZ())return;
         HashMap<BlockPos, T> cache = cache();
         blockGrids.clear();
-        dimensions[1]+=i;
-        y+=i;
+        dimensions[0]+=axis.x;
+        dimensions[1]+=axis.y;
+        dimensions[2]+=axis.z;
+        x+=axis.x;
+        y+=axis.y;
+        z+=axis.z;
         createBlockGrids();
         for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(by==y-i+1)by+=i;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void exandDown(int i){
-        if(getInternalHeight()+i>getMaxY())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[1]+=i;
-        y+=i;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(by>0)by+=i;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void expandToward(int i){
-        if(getInternalDepth()+i>getMaxZ())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[2]+=i;
-        z+=i;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bz==z-i+1)bz+=i;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void expandAway(int i){
-        if(getInternalDepth()+i>getMaxZ())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[2]+=i;
-        z+=i;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bz>0)bz+=i;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void deleteX(int X){
-        if(getInternalWidth()<=getMinX())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[0]--;
-        x--;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bx==X+1)continue;
-            if(bx>X+1)bx--;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void deleteY(int Y){
-        if(getInternalHeight()<=getMinY())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[1]--;
-        y--;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(by==Y+1)continue;
-            if(by>Y+1)by--;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void deleteZ(int Z){
-        if(getInternalDepth()<=getMinZ())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[2]--;
-        z--;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bz==Z+1)continue;
-            if(bz>Z+1)bz--;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void insertX(int X){
-        if(getInternalWidth()>=getMaxX())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[0]++;
-        x++;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bx>X)bx++;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void insertY(int Y){
-        if(getInternalHeight()>=getMaxY())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[1]++;
-        y++;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(by>Y)by++;
-            setBlock(bx, by, bz, block);
-        };
-        history.clear();
-        future.clear();
-        clearCaches();
-    }
-    public void insertZ(int Z){
-        if(getInternalDepth()>=getMaxZ())return;
-        HashMap<BlockPos, T> cache = cache();
-        blockGrids.clear();
-        dimensions[2]++;
-        z++;
-        createBlockGrids();
-        for(BlockPos pos : cache.keySet()){
-            T block = cache.get(pos);
-            int bx = pos.x;
-            int by = pos.y;
-            int bz = pos.z;
-            if(bz>Z)bz++;
-            setBlock(bx, by, bz, block);
+            int p = pos.x*axis.x+pos.y*axis.y+pos.z*axis.z;
+            setBlock(pos.offset(p>insertPos?axis.x:0, p>insertPos?axis.y:0, p>insertPos?axis.z:0), cache.get(pos));
         }
         history.clear();
         future.clear();
@@ -397,8 +233,8 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
     }
     private HashMap<BlockPos, T> cache(){
         HashMap<BlockPos, T> cache = new HashMap<>();
-        forEachPosition((x, y, z) -> {
-            cache.put(new BlockPos(x,y,z), getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            cache.put(pos, getBlock(pos));
         });
         return cache;
     }
@@ -412,8 +248,8 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
         buildDefaultCasing();
     }
     @Override
-    public boolean shouldHideWithCasing(int x, int y, int z){
-        return x==0||y==0||z==0||x==getExternalWidth()-1||y==getExternalHeight()-1||z==getExternalDepth()-1;
+    public boolean shouldHideWithCasing(BlockPos pos){
+        return pos.x==0||pos.y==0||pos.z==0||pos.x==getExternalWidth()-1||pos.y==getExternalHeight()-1||pos.z==getExternalDepth()-1;
     }
     @Override
     public BoundingBox getBoundingBox(boolean includeCasing){

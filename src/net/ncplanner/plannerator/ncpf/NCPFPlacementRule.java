@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Edge;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -228,10 +228,10 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
                 return num >= min && num <= max;
             case AXIAL:
                 for(Axis axis : Axis.axes){
-                    if(!reactor.contains(block.x - axis.x, block.y - axis.y, block.z - axis.z))continue;
-                    if(!reactor.contains(block.x + axis.x, block.y + axis.y, block.z + axis.z))continue;
-                    AbstractBlock b1 = reactor.getBlock(block.x - axis.x, block.y - axis.y, block.z - axis.z);
-                    AbstractBlock b2 = reactor.getBlock(block.x + axis.x, block.y + axis.y, block.z + axis.z);
+                    if(!reactor.contains(block.pos.offset(axis, -1)))continue;
+                    if(!reactor.contains(block.pos.offset(axis, 1)))continue;
+                    AbstractBlock b1 = reactor.getBlock(block.pos.offset(axis, -1));
+                    AbstractBlock b2 = reactor.getBlock(block.pos.offset(axis, 1));
                     if (isAirMatch) {
                         if (b1 == null && b2 == null) num++;
                     } else {
@@ -245,8 +245,8 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
             case EDGE:
                 boolean[] dirs = new boolean[Direction.values().length];
                 for (Direction d : Direction.values()) {
-                    if(!reactor.contains(block.x + d.x, block.y + d.y, block.z + d.z))continue;
-                    AbstractBlock b = reactor.getBlock(block.x + d.x, block.y + d.y, block.z + d.z);
+                    if(!reactor.contains(block.pos.offset(d)))continue;
+                    AbstractBlock b = reactor.getBlock(block.pos.offset(d));
                     if (isAirMatch) {
                         if (b == null) dirs[d.ordinal()] = true;
                     } else {

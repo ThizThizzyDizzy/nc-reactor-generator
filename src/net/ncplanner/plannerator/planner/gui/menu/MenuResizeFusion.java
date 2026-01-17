@@ -69,8 +69,8 @@ public class MenuResizeFusion extends Menu{
         multibwauk.components.clear();
         BoundingBox bbox = multiblock.getBoundingBox();
         int depth = bbox.getDepth();
-        multiblock.forEachPosition((x, y, z) -> {
-            multibwauk.add(new MenuComponentVisibleBlock((x+1)*CELL_SIZE, (1+z+(y*(depth+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, x, y, z));
+        multiblock.forEachPosition((pos) -> {
+            multibwauk.add(new MenuComponentVisibleBlock((pos.x+1)*CELL_SIZE, (1+pos.z+(pos.y*(depth+1)))*CELL_SIZE, CELL_SIZE, CELL_SIZE, multiblock, pos));
         });
         multibwauk.add(new Component(0, 0, 0, 0){
             @Override

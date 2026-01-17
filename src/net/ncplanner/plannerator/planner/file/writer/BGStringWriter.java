@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -97,8 +98,8 @@ public class BGStringWriter extends StringFormatWriter{
                         int X = x-bbox.x1;
                         int Y = y-bbox.y1;
                         int Z = z-bbox.z1;
-                        if(multi.contains(x, y, z)){
-                            AbstractBlock block = multi.getBlock(x, y, z);
+                        if(multi.contains(new BlockPos(x, y, z))){
+                            AbstractBlock block = multi.getBlock(new BlockPos(x, y, z));
                             if(block==null)continue;
                             //<editor-fold defaultstate="collapsed" desc="Validation">
                             if(multi instanceof OverhaulSFR){

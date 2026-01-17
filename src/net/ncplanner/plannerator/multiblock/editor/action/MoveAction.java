@@ -3,19 +3,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class MoveAction extends Action<Multiblock>{
     private final Editor editor;
     private final int id;
-    private final ArrayList<int[]> blocksToMove = new ArrayList<>();
-    private final ArrayList<int[]> selection = new ArrayList<>();
-    private final HashMap<int[], AbstractBlock> was = new HashMap<>();
+    private final ArrayList<BlockPos> blocksToMove = new ArrayList<>();
+    private final ArrayList<BlockPos> selection = new ArrayList<>();
+    private final HashMap<BlockPos, AbstractBlock> was = new HashMap<>();
     private final int dx;
     private final int dy;
     private final int dz;
-    public MoveAction(Editor editor, int id, Collection<int[]> blocksToMove, Collection<int[]> selection, int dy, int dx, int dz){
+    public MoveAction(Editor editor, int id, Collection<BlockPos> blocksToMove, Collection<BlockPos> selection, int dy, int dx, int dz){
         synchronized(blocksToMove){
             this.blocksToMove.addAll(blocksToMove);
         }
@@ -30,31 +31,31 @@ public class MoveAction extends Action<Multiblock>{
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
-        ArrayList<int[]> movedSelection = new ArrayList<>();
-        for(int[] loc : blocksToMove){
-            int[] movedLoc = new int[]{loc[0]+dx, loc[1]+dy, loc[2]+dz};
-            if(multiblock.contains(movedLoc[0], movedLoc[1], movedLoc[2])){
-                AbstractBlock to = multiblock.getBlock(movedLoc[0], movedLoc[1], movedLoc[2]);
-                was.put(new int[]{movedLoc[0], movedLoc[1], movedLoc[2]}, to);
+        ArrayList<BlockPos> movedSelection = new ArrayList<>();
+        for(BlockPos loc : blocksToMove){
+            BlockPos movedLoc = loc.offset(dx,dy,dz);
+            if(multiblock.contains(movedLoc)){
+                AbstractBlock to = multiblock.getBlock(movedLoc);
+                was.put(movedLoc, to);
             }
         }
-        for(int[] loc : selection){
-            int[] movedLoc = new int[]{loc[0]+dx, loc[1]+dy, loc[2]+dz};
-            if(multiblock.contains(movedLoc[0], movedLoc[1], movedLoc[2])){
+        for(BlockPos loc : selection){
+            BlockPos movedLoc = loc.offset(dx,dy,dz);
+            if(multiblock.contains(movedLoc)){
                 movedSelection.add(movedLoc);
             }
         }
-        for(int[] loc : selection){
-            was.put(loc, multiblock.getBlock(loc[0], loc[1], loc[2]));
-            multiblock.setBlock(loc[0], loc[1], loc[2], null);
+        for(BlockPos loc : selection){
+            was.put(loc, multiblock.getBlock(loc));
+            multiblock.setBlock(loc, null);
         }
-        for(int[] loc : blocksToMove){
+        for(BlockPos loc : blocksToMove){
             AbstractBlock bl = null;
-            for(int[] i : was.keySet()){
-                if(i[0]==loc[0]&&i[1]==loc[1]&&i[2]==loc[2])bl = was.get(i);
+            for(BlockPos i : was.keySet()){
+                if(i.equals(loc))bl = was.get(i);
             }
-            if(multiblock.contains(loc[0]+dx, loc[1]+dy, loc[2]+dz)){
-                multiblock.setBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz, bl);
+            if(multiblock.contains(loc.offset(dx,dy,dz))){
+                multiblock.setBlock(loc.offset(dx,dy,dz), bl);
             }
         }
         synchronized(editor.getSelection(id)){
@@ -64,8 +65,8 @@ public class MoveAction extends Action<Multiblock>{
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        for(int[] loc : was.keySet()){
-            multiblock.setBlockExact(loc[0], loc[1], loc[2], was.get(loc));
+        for(BlockPos loc : was.keySet()){
+            multiblock.setBlockExact(loc, was.get(loc));
         }
         synchronized(editor.getSelection(id)){
             editor.getSelection(id).clear();
@@ -74,11 +75,11 @@ public class MoveAction extends Action<Multiblock>{
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
-        for(int[] loc : blocksToMove){
-            AbstractBlock from = multiblock.getBlock(loc[0], loc[1], loc[2]);
+        for(BlockPos loc : blocksToMove){
+            AbstractBlock from = multiblock.getBlock(loc);
             if(from!=null)blocks.add(from);
-            if(multiblock.contains(loc[0]+dx, loc[1]+dy, loc[2]+dz)){
-                AbstractBlock to = multiblock.getBlock(loc[0]+dx, loc[1]+dy, loc[2]+dz);
+            if(multiblock.contains(loc.offset(dx,dy,dz))){
+                AbstractBlock to = multiblock.getBlock(loc.offset(dx,dy,dz));
                 if(to==null)continue;
                 if(!blocks.contains(to)){
                     blocks.add(to);

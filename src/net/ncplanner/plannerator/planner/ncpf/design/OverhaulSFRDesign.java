@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
 import java.util.Set;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -11,6 +12,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
@@ -18,7 +20,6 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, OverhaulSFR>{
     public CoolantRecipe coolantRecipe;
@@ -66,10 +67,10 @@ public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, O
             for(int y = 0; y<design[x].length; y++){
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]==null)continue;
-                    Block block = new Block(file.conglomeration, x, y, z, design[x][y][z]);
+                    Block block = new Block(file.conglomeration, new BlockPos(x, y, z), design[x][y][z]);
                     block.fuel = fuels[x][y][z];
                     block.irradiatorRecipe = irradiatorRecipes[x][y][z];
-                    sfr.setBlock(x, y, z, block);
+                    sfr.setBlock(new BlockPos(x, y, z), block);
                 }
             }
         }

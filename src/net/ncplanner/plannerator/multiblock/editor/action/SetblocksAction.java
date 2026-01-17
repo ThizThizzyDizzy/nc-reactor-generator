@@ -6,8 +6,8 @@ import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 public class SetblocksAction extends Action<Multiblock>{
     public final HashSet<BlockPos> locations = new HashSet<>();
     public final AbstractBlock block;
@@ -18,24 +18,24 @@ public class SetblocksAction extends Action<Multiblock>{
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         for(BlockPos loc : locations){
-            if(allowUndo)was.put(loc, multiblock.getBlock(loc.x, loc.y, loc.z));
-            multiblock.setBlock(loc.x, loc.y, loc.z, block);
+            if(allowUndo)was.put(loc, multiblock.getBlock(loc));
+            multiblock.setBlock(loc, block);
         }
     }
     @Override
     public void doUndo(Multiblock multiblock){
         for(BlockPos loc : was.keySet()){
-            multiblock.setBlockExact(loc.x, loc.y, loc.z, was.get(loc));
+            multiblock.setBlockExact(loc, was.get(loc));
         }
     }
-    public SetblocksAction add(int x, int y, int z){
-        locations.add(new BlockPos(x,y,z));
+    public SetblocksAction add(BlockPos pos){
+        locations.add(pos);
         return this;
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         for(BlockPos loc : locations){
-            AbstractBlock b = multiblock.getBlock(loc.x, loc.y, loc.z);
+            AbstractBlock b = multiblock.getBlock(loc);
             if(b!=null)blocks.add(b);
         }
     }
@@ -54,13 +54,9 @@ public class SetblocksAction extends Action<Multiblock>{
         return false;
     }
     public void symmetrize(Multiblock multiblock, Symmetry symmetry){
-        ArrayList<BlockPos> newLocs = new ArrayList<>();
+        HashSet<BlockPos> newLocs = new HashSet<>();
         BoundingBox bbox = multiblock.getBoundingBox();
-        locations.forEach((t) -> {
-            symmetry.apply(t.x, t.y, t.z, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
-                newLocs.add(new BlockPos(x,y,z));
-            });
-        });
+        locations.forEach((t) -> symmetry.apply(t, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), newLocs::add));
         locations.addAll(newLocs);
     }
 }

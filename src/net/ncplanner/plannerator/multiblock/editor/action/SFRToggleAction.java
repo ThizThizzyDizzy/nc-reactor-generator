@@ -20,6 +20,6 @@ public class SFRToggleAction extends Action<OverhaulSFR>{
     }
     @Override
     public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
-        blocks.add(multiblock.getBlock(block.x, block.y, block.z));
+        blocks.add(multiblock.getBlock(block.pos));
     }
 }

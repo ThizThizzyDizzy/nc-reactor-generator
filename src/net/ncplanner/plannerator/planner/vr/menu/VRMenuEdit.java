@@ -3,6 +3,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
@@ -10,7 +11,6 @@ import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.ClearSelectionAction;
@@ -22,6 +22,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.multiblock.symmetry.EditorSymmetry;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
@@ -63,7 +64,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public final HashMap<Integer, ArrayList<EditorTool>> editorTools = new HashMap<>();
     private final Multiblock multiblock;
     public HashMap<Integer, ArrayList<ClipboardEntry>> clipboard = new HashMap<>();
-    public final HashMap<Integer, ArrayList<int[]>> selection = new HashMap<>();
+    public final HashMap<Integer, HashSet<BlockPos>> selection = new HashMap<>();
     private HashMap<Integer, EditorTool> copy = new HashMap<>();
     private HashMap<Integer, EditorTool> cut = new HashMap<>();
     private HashMap<Integer, EditorTool> paste = new HashMap<>();
@@ -159,7 +160,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         return clipboard.get(id);
     }
     @Override
-    public ArrayList<int[]> getSelection(int id){
+    public HashSet<BlockPos> getSelection(int id){
         if(!selection.containsKey(id)){
             createTools(id);
         }
@@ -183,35 +184,23 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         selectedBlock.put(id, 0);
         selectedBlockRecipe.put(id, 0);
         editorTools.put(id, tools);
-        selection.put(id, new ArrayList<>());
+        selection.put(id, new HashSet<>());
         copy.put(id, new CopyTool(this, id));
         cut.put(id, new CutTool(this, id));
         paste.put(id, new PasteTool(this, id));
         refreshToolPanels();
     }
     @Override
-    public void addSelection(int id, ArrayList<int[]> sel){
+    public void addSelection(int id, ArrayList<BlockPos> sel){
         synchronized(selection){
-            for(int[] is : selection.get(id)){
-                for(Iterator<int[]> it = sel.iterator(); it.hasNext();){
-                    int[] i = it.next();
-                    if(i[0]==is[0]&&i[1]==is[1]&&i[2]==is[2]){
-                        it.remove();
-                    }
-                }
-            }
             selection.get(id).addAll(sel);
         }
     }
     @Override
-    public boolean isSelected(int id, int x, int y, int z){
+    public boolean isSelected(int id, BlockPos pos){
         synchronized(selection){
-            for(int[] s : selection.get(id)){
-                if(s==null)continue;//THIS SHOULD NEVER HAPPEN but it does anyway
-                if(s[0]==x&&s[1]==y&&s[2]==z)return true;
-            }
+            return selection.get(id).contains(pos);
         }
-        return false;
     }
     @Override
     public boolean hasSelection(int id){
@@ -224,19 +213,19 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         action(new ClearSelectionAction(this, id), true);
     }
     @Override
-    public void select(int id, int x1, int y1, int z1, int x2, int y2, int z2){
-        ArrayList<int[]> is = new ArrayList<>();
-        for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
-            for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
-                for(int z = Math.min(z1,z2); z<=Math.max(z1,z2); z++){
-                    is.add(new int[]{x,y,z});
+    public void select(int id, BlockPos p1, BlockPos p2){
+        ArrayList<BlockPos> is = new ArrayList<>();
+        for(int x = Math.min(p1.x,p2.x); x<=Math.max(p1.x,p2.x); x++){
+            for(int y = Math.min(p1.y,p2.y); y<=Math.max(p1.y,p2.y); y++){
+                for(int z = Math.min(p1.z,p2.z); z<=Math.max(p1.z,p2.z); z++){
+                    is.add(new BlockPos(x,y,z));
                 }
             }
         }
         select(id, is);
     }
     @Override
-    public void copySelection(int id, int x, int y, int z){
+    public void copySelection(int id, BlockPos pos){
         synchronized(clipboard){
             clipboard.get(id).clear();
             synchronized(selection){
@@ -247,10 +236,10 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                     }
                     return;
                 }
-                if(x==-1||y==-1||z==-1)return;
-                for(int[] is : selection.get(id)){
-                    AbstractBlock b = multiblock.getBlock(is[0], is[1], is[2]);
-                    clipboard.get(id).add(new ClipboardEntry(is[0]-x, is[1]-y, is[2]-z, b==null?null:b.copy(b.x-x, b.y-y, b.z-z)));
+                if(pos.x==-1||pos.y==-1||pos.z==-1)return;
+                for(BlockPos is : selection.get(id)){
+                    AbstractBlock b = multiblock.getBlock(is);
+                    clipboard.get(id).add(new ClipboardEntry(is.offset(pos, -1), b==null?null:b.copy(b.pos.offset(pos, -1))));
                 }
             }
         }
@@ -260,7 +249,7 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         }
     }
     @Override
-    public void cutSelection(int id, int x, int y, int z){
+    public void cutSelection(int id, BlockPos pos){
         synchronized(clipboard){
             clipboard.get(id).clear();
         }
@@ -273,11 +262,11 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
                 return;
             }
         }
-        copySelection(id, x,y,z);
+        copySelection(id, pos);
         SetblocksAction ac = new SetblocksAction(null);
         synchronized(selection){
-            for(int[] i : selection.get(id)){
-                ac.add(i[0], i[1], i[2]);
+            for(BlockPos i : selection.get(id)){
+                ac.add(i);
             }
         }
         action(ac, true);
@@ -294,17 +283,17 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     public void setblocks(int id, SetblocksAction set){
         for(Iterator<BlockPos> it = set.locations.iterator(); it.hasNext();){
             BlockPos b = it.next();
-            if(hasSelection(id)&&!isSelected(id, b.x, b.y, b.z))it.remove();
+            if(hasSelection(id)&&!isSelected(id, b))it.remove();
             else if(isControlPressed(id)){
                 if(set.block==null){
-                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).matches(getSelectedBlock(0)))it.remove();
+                    if(multiblock.getBlock(b)!=null&&!multiblock.getBlock(b).matches(getSelectedBlock(0)))it.remove();
                 }else{
-                    if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!isShiftPressed(id)){
+                    if(multiblock.getBlock(b)!=null&&!isShiftPressed(id)){
                         it.remove();
-                    }else if(multiblock.getBlock(b.x, b.y, b.z)!=null&&!multiblock.getBlock(b.x, b.y, b.z).canBeQuickReplaced()){
+                    }else if(multiblock.getBlock(b)!=null&&!multiblock.getBlock(b).canBeQuickReplaced()){
                         it.remove();
-                    }else if(multiblock.getBlock(b.x, b.y, b.z)==null||multiblock.getBlock(b.x, b.y, b.z)!=null&&isShiftPressed(id)){
-                        if(!multiblock.isValid(set.block, b.x, b.y, b.z))it.remove();
+                    }else if(multiblock.getBlock(b)==null||multiblock.getBlock(b)!=null&&isShiftPressed(id)){
+                        if(!multiblock.isValid(set.block, b))it.remove();
                     }
                 }
             }
@@ -315,120 +304,120 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         action(set, true);
     }
     @Override
-    public void selectGroup(int id, int x, int y, int z){
-        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+    public void selectGroup(int id, BlockPos pos){
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(pos));
         if(g==null){
             selectAll(id);
             return;
         }
-        ArrayList<int[]> is = new ArrayList<>();
+        ArrayList<BlockPos> is = new ArrayList<>();
         for(AbstractBlock b : g){
-            is.add(new int[]{b.x,b.y,b.z});
+            is.add(b.pos);
         }
         select(id, is);
     }
     @Override
-    public void deselectGroup(int id, int x, int y, int z){
-        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(x, y, z));
+    public void deselectGroup(int id, BlockPos pos){
+        ArrayList<AbstractBlock> g = multiblock.getGroup(multiblock.getBlock(pos));
         if(g==null){
             deselectAll(id);
             return;
         }
-        ArrayList<int[]> is = new ArrayList<>();
+        ArrayList<BlockPos> is = new ArrayList<>();
         for(AbstractBlock b : g){
-            is.add(new int[]{b.x,b.y,b.z});
+            is.add(b.pos);
         }
         deselect(id, is);
     }
     @Override
-    public void selectCluster(int id, int x, int y, int z){
+    public void selectCluster(int id, BlockPos pos){
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
-            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             select(id, is);
         }
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
-            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             select(id, is);
         }
         if(multiblock instanceof OverhaulFusionReactor){
             OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
-            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
+            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             select(id, is);
         }
     }
     @Override
-    public void deselectCluster(int id, int x, int y, int z){
+    public void deselectCluster(int id, BlockPos pos){
         if(multiblock instanceof OverhaulSFR){
             OverhaulSFR osfr = (OverhaulSFR) multiblock;
-            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(x, y, z));
+            OverhaulSFR.Cluster c = osfr.getCluster(osfr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             deselect(id, is);
         }
         if(multiblock instanceof OverhaulMSR){
             OverhaulMSR omsr = (OverhaulMSR) multiblock;
-            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(x, y, z));
+            OverhaulMSR.Cluster c = omsr.getCluster(omsr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             deselect(id, is);
         }
         if(multiblock instanceof OverhaulFusionReactor){
             OverhaulFusionReactor ofr = (OverhaulFusionReactor) multiblock;
-            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(x, y, z));
+            OverhaulFusionReactor.Cluster c = ofr.getCluster(ofr.getBlock(pos));
             if(c==null)return;
-            ArrayList<int[]> is = new ArrayList<>();
+            ArrayList<BlockPos> is = new ArrayList<>();
             for(AbstractBlock b : c.blocks){
-                is.add(new int[]{b.x,b.y,b.z});
+                is.add(b.pos);
             }
             deselect(id, is);
         }
     }
     @Override
-    public void deselect(int id, int x1, int y1, int z1, int x2, int y2, int z2){
-        ArrayList<int[]> is = new ArrayList<>();
-        for(int x = Math.min(x1,x2); x<=Math.max(x1,x2); x++){
-            for(int y = Math.min(y1,y2); y<=Math.max(y1,y2); y++){
-                for(int z = Math.min(z1,z2); z<=Math.max(z1,z2); z++){
-                    is.add(new int[]{x,y,z});
+    public void deselect(int id, BlockPos p1, BlockPos p2){
+        ArrayList<BlockPos> is = new ArrayList<>();
+        for(int x = Math.min(p1.x,p2.x); x<=Math.max(p1.x,p2.x); x++){
+            for(int y = Math.min(p1.y,p2.y); y<=Math.max(p1.y,p2.y); y++){
+                for(int z = Math.min(p1.z,p2.z); z<=Math.max(p1.z,p2.z); z++){
+                    is.add(new BlockPos(x,y,z));
                 }
             }
         }
         deselect(id, is);
     }
-    public void select(int id, ArrayList<int[]> is){
+    public void select(int id, ArrayList<BlockPos> is){
         if(isControlPressed(id)){
             action(new SelectAction(this, id, is), true);
         }else{
             action(new SetSelectionAction(this, id, is), true);
         }
     }
-    public void setSelection(int id, ArrayList<int[]> is){
+    public void setSelection(int id, ArrayList<BlockPos> is){
         action(new SetSelectionAction(this, id, is), true);
     }
-    public void deselect(int id, ArrayList<int[]> is){
+    public void deselect(int id, ArrayList<BlockPos> is){
         if(!isControlPressed(id)){
             clearSelection(id);
             return;
@@ -567,9 +556,9 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
         }
     }
     private void selectAll(int id){
-        ArrayList<int[]> sel = new ArrayList<>();
-        multiblock.forEachPosition((x, y, z) -> {
-            sel.add(new int[]{x,y,z});
+        ArrayList<BlockPos> sel = new ArrayList<>();
+        multiblock.forEachPosition((pos) -> {
+            sel.add((BlockPos)pos);
         });
         setSelection(id, sel);
     }

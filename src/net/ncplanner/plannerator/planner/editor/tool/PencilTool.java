@@ -3,24 +3,25 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
-import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class PencilTool extends EditorTool{
     public PencilTool(Editor editor, int id){
         super(editor, id);
     }
-    private int[] leftDragStart;
+    private BlockPos leftDragStart;
     private Object leftStart = null;
-    private int[] rightDragStart;
+    private BlockPos rightDragStart;
     private Object rightStart = null;
-    private ArrayList<int[]> leftSelectedBlocks = new ArrayList<>();
-    private ArrayList<int[]> rightSelectedBlocks = new ArrayList<>();
+    private ArrayList<BlockPos> leftSelectedBlocks = new ArrayList<>();
+    private ArrayList<BlockPos> rightSelectedBlocks = new ArrayList<>();
     @Override
     public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
@@ -30,33 +31,33 @@ public class PencilTool extends EditorTool{
     public void mouseReset(EditorSpace editorSpace, int button){
         if(button==0&&leftDragStart==null)return;
         if(button==1&&rightDragStart==null)return;
-        mouseReleased(null, editorSpace, 0, 0, 0, button);//allow you to release outside the editor grid and still place blocks
+        mouseReleased(null, editorSpace, null, button);//allow you to release outside the editor grid and still place blocks
     }
     @Override
-    public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mousePressed(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
         AbstractBlock selected = editor.getSelectedBlock(id);
         if(button==0){
             synchronized(leftSelectedBlocks){
-                if(editorSpace.isSpaceValid(selected, x, y, z))leftSelectedBlocks.add(new int[]{x,y,z});
-                leftDragStart = new int[]{x,y,z};
+                if(editorSpace.isSpaceValid(selected, pos))leftSelectedBlocks.add(pos);
+                leftDragStart = pos;
                 leftStart = obj;
             }
         }
         if(button==1){
             synchronized(rightSelectedBlocks){
-                rightSelectedBlocks.add(new int[]{x,y,z});
-                rightDragStart = new int[]{x,y,z};
+                rightSelectedBlocks.add(pos);
+                rightDragStart = pos;
                 rightStart = obj;
             }
         }
     }
     @Override
-    public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
         if(button==0){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
             synchronized(leftSelectedBlocks){
-                for(int[] i : leftSelectedBlocks){
-                    set.add(i[0], i[1], i[2]);
+                for(BlockPos p : leftSelectedBlocks){
+                    set.add(p);
                 }
             }
             set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
@@ -65,8 +66,8 @@ public class PencilTool extends EditorTool{
         if(button==1){
             SetblocksAction set = new SetblocksAction(null);
             synchronized(rightSelectedBlocks){
-                for(int[] i : rightSelectedBlocks){
-                    set.add(i[0], i[1], i[2]);
+                for(BlockPos p : rightSelectedBlocks){
+                    set.add(p);
                 }
             }
             set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
@@ -88,44 +89,44 @@ public class PencilTool extends EditorTool{
         }
     }
     @Override
-    public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mouseDragged(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
         if(button==0){
             if(obj!=leftStart){
-                leftDragStart = new int[]{x,y,z};
+                leftDragStart = pos;
                 leftStart = obj;
             }
             if(leftDragStart!=null){
-                if(leftDragStart[0]==x&&leftDragStart[1]==y&&leftDragStart[2]==z)return;
-                raytrace(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
-                    if(X==leftDragStart[0]&&Y==leftDragStart[1]&&Z==leftDragStart[2])return;
-                    if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), X, Y, Z))return;
+                if(leftDragStart.equals(pos))return;
+                raytrace(leftDragStart, pos, (P) -> {
+                    if(P.equals(leftDragStart))return;
+                    if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), P))return;
                     synchronized(leftSelectedBlocks){
-                        for(int[] i : leftSelectedBlocks){
-                            if(i[0]==X&&i[1]==Y&&i[2]==Z)return;
+                        for(BlockPos p : leftSelectedBlocks){
+                            if(p.equals(P))return;
                         }
-                        leftSelectedBlocks.add(new int[]{X,Y,Z});
+                        leftSelectedBlocks.add(P);
                     }
                 });
-                leftDragStart = new int[]{x,y,z};
+                leftDragStart = pos;
             }
         }
         if(button==1){
             if(obj!=rightStart){
-                rightDragStart = new int[]{x,y,z};
+                rightDragStart = pos;
                 rightStart = obj;
             }
             if(rightDragStart!=null){
-                if(rightDragStart[0]==x&&rightDragStart[1]==y&&rightDragStart[2]==z)return;
-                raytrace(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
-                    if(X==rightDragStart[0]&&Y==rightDragStart[1]&&Z==rightDragStart[2])return;
+                if(rightDragStart.equals(pos))return;
+                raytrace(rightDragStart, pos, (P) -> {
+                    if(P.equals(rightDragStart))return;
                     synchronized(rightSelectedBlocks){
-                        for(int[] i : rightSelectedBlocks){
-                            if(i[0]==X&&i[1]==Y&&i[2]==Z)return;
+                        for(BlockPos p : rightSelectedBlocks){
+                            if(p.equals(P))return;
                         }
-                        rightSelectedBlocks.add(new int[]{X,Y,Z});
+                        rightSelectedBlocks.add(P);
                     }
                 }, false);
-                rightDragStart = new int[]{x,y,z};
+                rightDragStart = pos;
             }
         }
     }
@@ -137,15 +138,12 @@ public class PencilTool extends EditorTool{
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         renderer.setWhite(.5f);
         synchronized(leftSelectedBlocks){
-            for(int[] i : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
-                int bx = i[0];
-                int by = i[1];
-                int bz = i[2];
+            for(BlockPos p : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
                 Axis xAxis = axis.get2DXAxis();
                 Axis yAxis = axis.get2DYAxis();
-                int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-                int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-                int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                int sx = p.x*xAxis.x+p.y*xAxis.y+p.z*xAxis.z-x1;
+                int sy = p.x*yAxis.x+p.y*yAxis.y+p.z*yAxis.z-y1;
+                int sz = p.x*axis.x+p.y*axis.y+p.z*axis.z;
                 if(sz!=layer)continue;
                 if(sx<0||sx>x2)continue;
                 if(sy<0||sy>y2)continue;
@@ -154,15 +152,12 @@ public class PencilTool extends EditorTool{
         }
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
-            for(int[] i : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
-                int bx = i[0];
-                int by = i[1];
-                int bz = i[2];
+            for(BlockPos p : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
                 Axis xAxis = axis.get2DXAxis();
                 Axis yAxis = axis.get2DYAxis();
-                int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-                int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-                int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                int sx = p.x*xAxis.x+p.y*xAxis.y+p.z*xAxis.z-x1;
+                int sy = p.x*yAxis.x+p.y*yAxis.y+p.z*yAxis.z-y1;
+                int sz = p.x*axis.x+p.y*axis.y+p.z*axis.z;
                 if(sz!=layer)continue;
                 if(sx<0||sx>x2)continue;
                 if(sy<0||sy>y2)continue;
@@ -176,15 +171,15 @@ public class PencilTool extends EditorTool{
         renderer.setWhite(.5f);
         float border = blockSize/64;
         synchronized(leftSelectedBlocks){
-            for(int[] i : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
-                renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, texture);
+            for(BlockPos p : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
+                renderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, texture);
             }
         }
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
-            for(int[] i : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
-                if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;
-                renderer.drawCube(x+i[0]*blockSize-border, y+i[1]*blockSize-border, z+i[2]*blockSize-border, x+(i[0]+1)*blockSize+border, y+(i[1]+1)*blockSize+border, z+(i[2]+1)*blockSize+border, null);
+            for(BlockPos p : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
+                if(editor.getMultiblock().getBlock(p)==null)continue;
+                renderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, null);
             }
         }
         renderer.setWhite();
@@ -194,17 +189,17 @@ public class PencilTool extends EditorTool{
         return "Pencil tool (P)\nUse this tool to draw blocks one at a time\nHold CTRL to only place blocks where they are valid";
     }
     @Override
-    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos){}
     @Override
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){
         leftStart = rightStart = null;
     }
-    private Iterable<int[]> symmetrize(ArrayList<int[]> blocks, Symmetry symmetry){
-        HashSet<int[]> set = new HashSet<>();
+    private Iterable<BlockPos> symmetrize(ArrayList<BlockPos> blocks, Symmetry symmetry){
+        HashSet<BlockPos> set = new HashSet<>();
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
         blocks.forEach((t) -> {
-            symmetry.apply(t[0], t[1], t[2], bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
-                set.add(new int[]{x,y,z});
+            symmetry.apply(t, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (pos) -> {
+                set.add(pos);
             });
         });
         return set;

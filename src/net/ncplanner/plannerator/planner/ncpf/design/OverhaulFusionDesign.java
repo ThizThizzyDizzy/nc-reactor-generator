@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
 import java.util.Set;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
@@ -7,12 +8,12 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BreedingBlanketRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = FusionTestModule.class)
 public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinition, OverhaulFusionReactor>{
     public int innerRadius, coreSize, toroidWidth, liningThickness;
@@ -74,9 +75,9 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
             for(int y = 0; y<design[x].length; y++){
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]==null)continue;
-                    Block block = new Block(file.conglomeration, x, y, z, design[x][y][z]);
+                    Block block = new Block(file.conglomeration, new BlockPos(x, y, z), design[x][y][z]);
                     block.breedingBlanketRecipe = breedingBlanketRecipes[x][y][z];
-                    reactor.setBlock(x, y, z, block);
+                    reactor.setBlock(new BlockPos(x, y, z), block);
                 }
             }
         }

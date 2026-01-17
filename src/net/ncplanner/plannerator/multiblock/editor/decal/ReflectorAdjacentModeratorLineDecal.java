@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class ReflectorAdjacentModeratorLineDecal extends Decal{
     private final Direction direction;
-    public ReflectorAdjacentModeratorLineDecal(int x, int y, int z, Direction direction){
-        super(x, y, z);
+    public ReflectorAdjacentModeratorLineDecal(BlockPos pos, Direction direction){
+        super(pos);
         this.direction = direction;
     }
     @Override

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -35,7 +36,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
     private static final float resonatingMax = .75f;
     private float resonatingTick = 0;
     private float resonatingAlpha = 0;
-    private final HashMap<Integer, int[]> deviceover = new HashMap<>();
+    private final HashMap<Integer, BlockPos> deviceover = new HashMap<>();
     public final float blockSize;
     private final EditorSpace editorSpace;
     private final ArrayList<EditorOverlay> overlays = new ArrayList<>();
@@ -74,38 +75,39 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
             renderer.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,width+blockSize/32,height+blockSize/32,depth+blockSize/32,blockSize/24);
             for(int id : deviceover.keySet()){
-                int[] mouseover = deviceover.get(id);
+                BlockPos mouseover = deviceover.get(id);
                 if(!isDeviceOver.contains(id))mouseover = null;
                 if(mouseover!=null){
-                    if(!multiblock.contains(mouseover[0],mouseover[1],mouseover[2]))mouseover = null;
+                    if(!multiblock.contains(mouseover))mouseover = null;
                 }
                 if(mouseover==null)deviceover.remove(id);
                 else deviceover.put(id, mouseover);
             }
         }
-        multiblock.forEachPosition((x, y, z) -> {//solid stuff
-            AbstractBlock block = multiblock.getBlock(x, y, z);
-            int xx = x;
-            int yy = y;
-            int zz = z;
+        multiblock.forEachPosition((ps) -> {//solid stuff
+            BlockPos pos = (BlockPos)ps;
+            AbstractBlock block = multiblock.getBlock(pos);
+            final int x = pos.x;
+            final int y = pos.y;
+            final int z = pos.z;
             float X = x*blockSize;
             float Y = y*blockSize;
             float Z = z*blockSize;
             float border = blockSize/16;
             if(block!=null){
                 block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
-                    if(!multiblock.contains(xx+t.x, yy+t.y, zz+t.z))return true;
-                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
+                    if(!multiblock.contains(pos.offset(t)))return true;
+                    AbstractBlock b = multiblock.getBlock(pos.offset(t));
                     return b==null;
                 });
             }
             for(int id : editor.editorTools.keySet()){
-                if(isSelected(id, x, y, z)){
+                if(isSelected(id, pos)){
                     renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id));
                     renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                        boolean d1 = isSelected(id, xx+t[0].x, yy+t[0].y, zz+t[0].z);
-                        boolean d2 = isSelected(id, xx+t[1].x, yy+t[1].y, zz+t[1].z);
-                        boolean d3 = isSelected(id, xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                        boolean d1 = isSelected(id, pos.offset(t[0]));
+                        boolean d2 = isSelected(id, pos.offset(t[1]));
+                        boolean d3 = isSelected(id, pos.offset(t[0]).offset(t[1]));
                         if(d1&&d2&&!d3)return true;//both sides, but not the corner
                         if(!d1&&!d2)return true;//neither side
                         return false;
@@ -116,9 +118,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 ArrayList<Function<Direction[], Boolean>> edgeFuncs = new ArrayList<>();
                 boolean selected = false;
                 for(Suggestion s : editor.getSuggestions()){
-                    if(s.affects(x, y, z)){
+                    if(s.affects(pos)){
                         if(s.selected&&s.result!=null){
-                            AbstractBlock b = s.result.getBlock(x, y, z);
+                            AbstractBlock b = s.result.getBlock(pos);
                             renderer.setWhite(resonatingAlpha+.5f);
                             float brdr = blockSize/64;
                             if(b==null){
@@ -131,9 +133,9 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                         }
                         if(s.selected)selected = true;
                         edgeFuncs.add((t) -> {
-                            boolean d1 = s.affects(xx+t[0].x, yy+t[0].y, zz+t[0].z);
-                            boolean d2 = s.affects(xx+t[1].x, yy+t[1].y, zz+t[1].z);
-                            boolean d3 = s.affects(xx+t[0].x+t[1].x, yy+t[0].y+t[1].y, zz+t[0].z+t[1].z);
+                            boolean d1 = s.affects(pos.offset(t[0]));
+                            boolean d2 = s.affects(pos.offset(t[1]));
+                            boolean d3 = s.affects(pos.offset(t[0]).offset(t[1]));
                             if(d1&&d2&&!d3)return true;//both sides, but not the corner
                             if(!d1&&!d2)return true;//neither side
                             return false;
@@ -154,19 +156,19 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         synchronized(deviceover){
             for(int id : deviceover.keySet()){
                 if(id==VR.k_unTrackedDeviceIndex_Hmd)continue;//don't do mouseover for headset
-                int[] mouseover = deviceover.get(id);
+                BlockPos mouseover = deviceover.get(id);
                 if(mouseover!=null){
                     renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
-                    editor.getSymmetry().apply(mouseover[0], mouseover[1], mouseover[2], multiblock.getBoundingBox(), (bx, by, bz) -> {
-                        float X = bx*blockSize;
-                        float Y = by*blockSize;
-                        float Z = bz*blockSize;
+                    editor.getSymmetry().apply(mouseover, multiblock.getBoundingBox(), (bpos) -> {
+                        float X = bpos.x*blockSize;
+                        float Y = bpos.y*blockSize;
+                        float Z = bpos.z*blockSize;
                         float border = blockSize/16;
                         renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
                     });
-                    float X = mouseover[0]*blockSize;
-                    float Y = mouseover[1]*blockSize;
-                    float Z = mouseover[2]*blockSize;
+                    float X = mouseover.x*blockSize;
+                    float Y = mouseover.y*blockSize;
+                    float Z = mouseover.z*blockSize;
                     float border = blockSize/16;
                     renderer.setColor(Core.theme.getEditorMouseoverLineColor());
                     X+=blockSize/2;
@@ -181,11 +183,12 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                 }
             }
         }
-        multiblock.forEachPosition((x, y, z) -> {//transparent stuff
-            AbstractBlock block = multiblock.getBlock(x, y, z);
-            int xx = x;
-            int yy = y;
-            int zz = z;
+        multiblock.forEachPosition((ps) -> {//transparent stuff
+            BlockPos pos = (BlockPos)ps;
+            AbstractBlock block = multiblock.getBlock(pos);
+            final int x = pos.x;
+            final int y = pos.y;
+            final int z = pos.z;
             float X = x*blockSize;
             float Y = y*blockSize;
             float Z = z*blockSize;
@@ -200,17 +203,17 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
                     }
                 }
             }
-            if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(x, y, z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+            if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
                 renderer.setWhite();
                 renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImageRaw("/textures/overhaul/fusion/plasma.png"), (t) -> {
-                    AbstractBlock b = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
-                    return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(xx+t.x, yy+t.y, zz+t.z)!=OverhaulFusionReactor.LocationCategory.PLASMA;
+                    AbstractBlock b = multiblock.getBlock(pos.offset(t));
+                    return b==null&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos.offset(t))!=OverhaulFusionReactor.LocationCategory.PLASMA;
                 });
             }
             for(int id : editor.editorTools.keySet()){
                 if(editor.isControlPressed(id)&&editor.getSelectedTool(id).isEditTool()){
                     if(block==null||(editor.isShiftPressed(id)&&block.canBeQuickReplaced())){
-                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(id), x, y, z)&&multiblock.isValid(editor.getSelectedBlock(id), x, y, z)){
+                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(id), pos)&&multiblock.isValid(editor.getSelectedBlock(id), pos)){
                             editor.getSelectedBlock(id).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, null, (t) -> {
                                 return true;
                             });
@@ -220,16 +223,16 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
             for(Object o : multiblock.decals){
                 Decal decal = (Decal)o;
-                if(decal.x==x&&decal.y==y&&decal.z==z){
+                if(decal.pos.equals(pos)){
                     decal.render3D(renderer, X, Y, Z, blockSize);
                 }
             }
             for(int id : editor.editorTools.keySet()){
-                if(isSelected(id, x, y, z)){
+                if(isSelected(id, pos)){
                     renderer.setColor(editor.convertToolColor(Core.theme.getSelectionColor(), id), .5f);
                     renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
-                        AbstractBlock o = multiblock.getBlock(xx+t.x, yy+t.y, zz+t.z);
-                        return !isSelected(id, xx+t.x, yy+t.y, zz+t.z)&&o==null;
+                        AbstractBlock o = multiblock.getBlock(pos.offset(t));
+                        return !isSelected(id, pos.offset(t))&&o==null;
                     });
                 }
             }
@@ -246,7 +249,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         float y = pos.y;
         float z = pos.z;
         synchronized(deviceover){
-            deviceover.put(device, new int[]{(int)(x/blockSize),(int)(y/blockSize),(int)(z/blockSize)});
+            deviceover.put(device, new BlockPos((int)(x/blockSize),(int)(y/blockSize),(int)(z/blockSize)));
         }
         for(int i : gui.buttonsWereDown.get(device)){
             deviceDragged(device, matrix, i);
@@ -256,7 +259,7 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         int blockX = Math.max(bbox.x1, Math.min(bbox.x2, (int)(x/blockSize)));
         int blockY = Math.max(bbox.y1, Math.min(bbox.y2, (int)(y/blockSize)));
         int blockZ = Math.max(bbox.z1, Math.min(bbox.z2, (int)(z/blockSize)));
-        editor.getSelectedTool(device).mouseMoved(this, editorSpace, blockX, blockY, blockZ);
+        editor.getSelectedTool(device).mouseMoved(this, editorSpace, new BlockPos(blockX, blockY, blockZ));
     }
     @Override
     public void onDeviceMovedElsewhere(int device, Matrix4f matrix){
@@ -273,17 +276,14 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Trigger)mButton = 0;
         if(button==VR.EVRButtonId_k_EButton_SteamVR_Touchpad)mButton = 1;
         if(mButton==-1)return;
-        int[] mouseover;
+        BlockPos mouseover;
         synchronized(deviceover){
             if(!deviceover.containsKey(device))return;
             mouseover = deviceover.get(device);
         }
-        int blockX = mouseover[0];
-        int blockY = mouseover[1];
-        int blockZ = mouseover[2];
         if(pressed){
             boolean didSomething = false;
-            AbstractBlock block = multiblock.getBlock(blockX, blockY, blockZ);
+            AbstractBlock block = multiblock.getBlock(mouseover);
             if(editor.getSelectedTool(device).isEditTool()&&editor.isShiftPressed(device)&&block!=null){
                 if(multiblock instanceof OverhaulSFR){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
@@ -304,10 +304,10 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
             }
             if(!didSomething){
                 //TODO VR: PICK BLOCK
-                editor.getSelectedTool(device).mousePressed(this, editorSpace, blockX, blockY, blockZ, mButton);
+                editor.getSelectedTool(device).mousePressed(this, editorSpace, mouseover, mButton);
             }
         }else{
-            editor.getSelectedTool(device).mouseReleased(this, editorSpace, blockX, blockY, blockZ, mButton);
+            editor.getSelectedTool(device).mouseReleased(this, editorSpace, mouseover, mButton);
         }
     }
     private void deviceDragged(int device, Matrix4f matrix, int button){
@@ -323,16 +323,16 @@ public class VRMenuComponentEditorGrid extends VRMenuComponent{
         int blockX = Math.max(bbox.x1, Math.min(bbox.x2, (int)(x/blockSize)));
         int blockY = Math.max(bbox.y1, Math.min(bbox.y2, (int)(y/blockSize)));
         int blockZ = Math.max(bbox.z1, Math.min(bbox.z2, (int)(z/blockSize)));
-        editor.getSelectedTool(device).mouseDragged(this, editorSpace, blockX, blockY, blockZ, mButton);
+        editor.getSelectedTool(device).mouseDragged(this, editorSpace, new BlockPos(blockX, blockY, blockZ), mButton);
     }
-    public boolean isSelected(int id, int x, int y, int z){
-        return editor.isSelected(id, x, y, z);
+    public boolean isSelected(int id, BlockPos pos){
+        return editor.isSelected(id, pos);
     }
     @Override
     public String getTooltip(int device){
         if(!deviceover.containsKey(device))return null;
-        int[] mouseover = deviceover.get(device);
-        AbstractBlock block = multiblock.getBlock(mouseover[0],mouseover[1],mouseover[2]);
+        BlockPos mouseover = deviceover.get(device);
+        AbstractBlock block = multiblock.getBlock(mouseover);
         return block==null?null:block.getTooltip(multiblock);
     }
 }

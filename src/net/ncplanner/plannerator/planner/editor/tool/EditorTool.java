@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.planner.editor.tool;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
-import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
+import net.ncplanner.plannerator.multiblock.BlockPos;
+import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.Editor;
 import org.joml.Matrix4f;
@@ -26,10 +29,10 @@ public abstract class EditorTool{
         renderer.popModel();
     }//TODO VR: make this abstract fancy tool rendering
     public abstract void mouseReset(EditorSpace editorSpace, int button);
-    public abstract void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
-    public abstract void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
-    public abstract void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button);
-    public abstract void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z);
+    public abstract void mousePressed(Object obj, EditorSpace editorSpace, BlockPos pos, int button);
+    public abstract void mouseReleased(Object obj, EditorSpace editorSpace, BlockPos pos, int button);
+    public abstract void mouseDragged(Object obj, EditorSpace editorSpace, BlockPos pos, int button);
+    public abstract void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos);
     public abstract void mouseMovedElsewhere(Object obj, EditorSpace editorSpace);
     public abstract void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture);
     public abstract void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture);
@@ -38,69 +41,42 @@ public abstract class EditorTool{
     public static interface TraceStep{
         public void step(int x, int z);
     }
-    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, boolean includeFirst){
-        int xDiff = toX-fromX;
-        int yDiff = toY-fromY;
-        int zDiff = toZ-fromZ;
-        double dist = Math.sqrt(MathUtil.pow(fromX-toX, 2)+MathUtil.pow(fromY-toY, 2)+MathUtil.pow(fromZ-toZ, 2));
-        ArrayList<int[]> steps = new ArrayList<>();
-        if(!includeFirst)steps.add(new int[]{fromX,fromY,fromZ});
+    public void raytrace(BlockPos from, BlockPos to, Consumer<BlockPos> step, boolean includeFirst){
+        int xDiff = to.x-from.x;
+        int yDiff = to.y-from.y;
+        int zDiff = to.z-from.z;
+        double dist = Math.sqrt(MathUtil.pow(from.x-to.x, 2)+MathUtil.pow(from.y-to.y, 2)+MathUtil.pow(from.z-to.z, 2));
+        ArrayList<BlockPos> steps = new ArrayList<>();
+        if(!includeFirst)steps.add(from);
         FOR:for(float r = 0; r<1; r+=.25/dist){
-            int x = Math.round(fromX+xDiff*r);
-            int y = Math.round(fromY+yDiff*r);
-            int z = Math.round(fromZ+zDiff*r);
-            for(int[] stp : steps){
-                if(x==stp[0]&&y==stp[1]&&z==stp[2])continue FOR;
+            int x = Math.round(from.x+xDiff*r);
+            int y = Math.round(from.y+yDiff*r);
+            int z = Math.round(from.z+zDiff*r);
+            for(BlockPos stp : steps){
+                if(x==stp.x&&y==stp.y&&z==stp.z)continue FOR;
             }
-            steps.add(new int[]{x, y, z});
-            step.step(x, y, z);
+            BlockPos pos = new BlockPos(x, y, z);
+            steps.add(pos);
+            step.accept(pos);
         }
     }
-    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step){
-        raytrace(fromX, fromY, fromZ, toX, toY, toZ, step, true);
+    public void raytrace(BlockPos from, BlockPos to, Consumer<BlockPos> step){
+        raytrace(from, to, step, true);
     }
-    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, boolean includeFirst, Symmetry symmetry, int width, int height, int depth){
-        raytrace(fromX, fromY, fromZ, toX, toY, toZ, (x, y, z) -> {
-            symmetry.apply(x, y, z, width, height, depth, (X, Y, Z) -> {
-                step.step(X, Y, Z);
-            });
+    public void raytrace(BlockPos from, BlockPos to, Consumer<BlockPos> step, boolean includeFirst, Symmetry symmetry, int width, int height, int depth){
+        raytrace(from, to, (pos) -> {
+            symmetry.apply(pos, width, height, depth, step::accept);
         }, includeFirst);
     }
-    public void raytrace(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, Symmetry symmetry, int width, int height, int depth){
-        raytrace(fromX, fromY, fromZ, toX, toY, toZ, step, true, symmetry, width, height, depth);
+    public void raytrace(BlockPos from, BlockPos to, Consumer<BlockPos> step, Symmetry symmetry, int width, int height, int depth){
+        raytrace(from, to, step, true, symmetry, width, height, depth);
     }
-    public static interface TraceStep3{
-        public void step(int x, int y, int z);
+    public void foreach(BlockPos from, BlockPos to, Consumer<BlockPos> step){
+        BoundingBox.around(from, to).forEachPosition(step::accept);
     }
-    public void foreach(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step){
-        if(toX<fromX){
-            int from = toX;
-            toX = fromX;
-            fromX = from;
-        }
-        if(toY<fromY){
-            int from = toY;
-            toY = fromY;
-            fromY = from;
-        }
-        if(toZ<fromZ){
-            int from = toZ;
-            toZ = fromZ;
-            fromZ = from;
-        }
-        for(int x = fromX; x<=toX; x++){
-            for(int y = fromY; y<=toY; y++){
-                for(int z = fromZ; z<=toZ; z++){
-                    step.step(x, y, z);
-                }
-            }
-        }
-    }
-    public void foreach(int fromX, int fromY, int fromZ, int toX, int toY, int toZ, TraceStep3 step, Symmetry symmetry, int width, int height, int depth){
-        foreach(fromX, fromY, fromZ, toX, toY, toZ, (x, y, z) -> {
-            symmetry.apply(x, y, z, width, height, depth, (X, Y, Z) -> {
-                step.step(X, Y, Z);
-            });
+    public void foreach(BlockPos from, BlockPos to, Consumer<BlockPos> step, Symmetry symmetry, int width, int height, int depth){
+        foreach(from, to, (pos) -> {
+            symmetry.apply(pos, width, height, depth, step::accept);
         });
     }
 }

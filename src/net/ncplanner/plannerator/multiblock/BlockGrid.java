@@ -21,40 +21,30 @@ public class BlockGrid<T extends AbstractBlock>{
     public int getDepth(){
         return blocks[0][0].length;
     }
-    public boolean contains(int x, int y, int z){
-        if(x<this.x||y<this.y||z<this.z)return false;
-        return x-this.x<getWidth()&&y-this.y<getHeight()&&z-this.z<getDepth();
+    public boolean contains(BlockPos pos){
+        if(pos.x<this.x||pos.y<this.y||pos.z<this.z)return false;
+        return pos.x-this.x<getWidth()&&pos.y-this.y<getHeight()&&pos.z-this.z<getDepth();
     }
-    public T getBlock(int x, int y, int z){
-        if(!contains(x, y, z))throw new IndexOutOfBoundsException("Position ("+x+","+y+","+z+") is not in this block grid! check contains(...) first!");
+    public T getBlock(BlockPos pos){
+        if(!contains(pos))throw new IndexOutOfBoundsException("Position "+pos.toString()+" is not in this block grid! check contains(...) first!");
         return (T)blocks[x-this.x][y-this.y][z-this.z];
+    }
+    public BoundingBox getBoundingBox(){
+        return new BoundingBox(x, y, z, x+getWidth()-1, y+getHeight()-1, z+getDepth()-1);
     }
     public ArrayList<T> getBlocks(){
         ArrayList<T> blox = new ArrayList<>();
-        for(int x = 0; x<getWidth(); x++){
-            for(int y = 0; y<getHeight(); y++){
-                for(int z = 0; z<getDepth(); z++){
-                    T block = getBlock(this.x+x, this.y+y, this.z+z);
-                    if(block!=null)blox.add(block);
-                }
-            }
-        }
+        getBoundingBox().forEachPosition(pos->{
+            T block = getBlock(pos);
+            if(block!=null)blox.add(block);
+        });
         return blox;
     }
-    public void setBlock(int x, int y, int z, T block){
-        if(!contains(x, y, z))throw new IndexOutOfBoundsException("Position ("+x+","+y+","+z+") is not in this block grid! check contains(...) first!");
+    public void setBlock(BlockPos pos, T block){
+        if(!contains(pos))throw new IndexOutOfBoundsException("Position "+pos.toString()+" is not in this block grid! check contains(...) first!");
         blocks[x-this.x][y-this.y][z-this.z] = block;
     }
     public int getVolume(){
         return getWidth()*getHeight()*getDepth();
-    }
-    public void forEachPosition(BlockPosConsumer func){
-        for(int x = 0; x<getWidth(); x++){
-            for(int y = 0; y<getHeight(); y++){
-                for(int z = 0; z<getDepth(); z++){
-                    func.accept(this.x+x, this.y+y, this.z+z);
-                }
-            }
-        }
     }
 }

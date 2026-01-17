@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.action.SetSelectionAction;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
 import net.ncplanner.plannerator.planner.Core;
@@ -214,17 +215,27 @@ public class NCPTTutorial extends Tutorial{
                             moveEditor.tools.setSelectedIndex(0);
                             moveEditor.parts.setSelectedIndex(1);
                             move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
-                            moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), true, false);
-                            ArrayList<int[]> selection = new ArrayList<>();
-                            selection.add(new int[]{0, 0, 1});
-                            selection.add(new int[]{1, 0, 1});
-                            selection.add(new int[]{2, 0, 1});
-                            selection.add(new int[]{0, 0, 2});
-                            selection.add(new int[]{1, 0, 2});
-                            selection.add(new int[]{2, 0, 2});
-                            selection.add(new int[]{0, 0, 3});
-                            selection.add(new int[]{1, 0, 3});
-                            selection.add(new int[]{2, 0, 3});
+                            moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0))
+                                .add(new BlockPos(0, 0, 1))
+                                .add(new BlockPos(1, 0, 1))
+                                .add(new BlockPos(2, 0, 1))
+                                .add(new BlockPos(0, 0, 2))
+                                .add(new BlockPos(1, 0, 2))
+                                .add(new BlockPos(2, 0, 2))
+                                .add(new BlockPos(0, 0, 3))
+                                .add(new BlockPos(1, 0, 3))
+                                .add(new BlockPos(2, 0, 3))
+                            , true, false);
+                            ArrayList<BlockPos> selection = new ArrayList<>();
+                            selection.add(new BlockPos(0, 0, 1));
+                            selection.add(new BlockPos(1, 0, 1));
+                            selection.add(new BlockPos(2, 0, 1));
+                            selection.add(new BlockPos(0, 0, 2));
+                            selection.add(new BlockPos(1, 0, 2));
+                            selection.add(new BlockPos(2, 0, 2));
+                            selection.add(new BlockPos(0, 0, 3));
+                            selection.add(new BlockPos(1, 0, 3));
+                            selection.add(new BlockPos(2, 0, 3));
                             moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), true, false);
                             moveEditor.render2d(0);
                             moveEditor.render2d(0);
@@ -276,17 +287,27 @@ public class NCPTTutorial extends Tutorial{
                     if(t==undoTime){
                         grid.editor.multiblock.undo(true);
                         if(grid==move){
-                            grid.editor.multiblock.action(new SetblocksAction(grid.editor.getSelectedBlock(0)).add(0, 0, 1).add(1, 0, 1).add(2, 0, 1).add(0, 0, 2).add(1, 0, 2).add(2, 0, 2).add(0, 0, 3).add(1, 0, 3).add(2, 0, 3), true, false);
-                            ArrayList<int[]> selection = new ArrayList<>();
-                            selection.add(new int[]{0, 0, 1});
-                            selection.add(new int[]{1, 0, 1});
-                            selection.add(new int[]{2, 0, 1});
-                            selection.add(new int[]{0, 0, 2});
-                            selection.add(new int[]{1, 0, 2});
-                            selection.add(new int[]{2, 0, 2});
-                            selection.add(new int[]{0, 0, 3});
-                            selection.add(new int[]{1, 0, 3});
-                            selection.add(new int[]{2, 0, 3});
+                            grid.editor.multiblock.action(new SetblocksAction(grid.editor.getSelectedBlock(0))
+                                .add(new BlockPos(0, 0, 1))
+                                .add(new BlockPos(1, 0, 1))
+                                .add(new BlockPos(2, 0, 1))
+                                .add(new BlockPos(0, 0, 2))
+                                .add(new BlockPos(1, 0, 2))
+                                .add(new BlockPos(2, 0, 2))
+                                .add(new BlockPos(0, 0, 3))
+                                .add(new BlockPos(1, 0, 3))
+                                .add(new BlockPos(2, 0, 3))
+                            , true, false);
+                            ArrayList<BlockPos> selection = new ArrayList<>();
+                            selection.add(new BlockPos(0, 0, 1));
+                            selection.add(new BlockPos(1, 0, 1));
+                            selection.add(new BlockPos(2, 0, 1));
+                            selection.add(new BlockPos(0, 0, 2));
+                            selection.add(new BlockPos(1, 0, 2));
+                            selection.add(new BlockPos(2, 0, 2));
+                            selection.add(new BlockPos(0, 0, 3));
+                            selection.add(new BlockPos(1, 0, 3));
+                            selection.add(new BlockPos(2, 0, 3));
                             grid.editor.multiblock.action(new SetSelectionAction(grid.editor, 0, selection), true, false);
                         }
                     }

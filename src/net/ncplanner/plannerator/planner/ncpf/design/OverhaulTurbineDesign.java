@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
 import java.util.Set;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
@@ -7,10 +8,10 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineDesign, OverhaulTurbine>{
     public TurbineRecipe recipe;
@@ -42,8 +43,8 @@ public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineD
             for(int y = 0; y<design[x].length; y++){
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]==null)continue;
-                    Block block = new Block(file.conglomeration, x, y, z, design[x][y][z]);
-                    turbine.setBlock(x, y, z, block);
+                    Block block = new Block(file.conglomeration, new BlockPos(x, y, z), design[x][y][z]);
+                    turbine.setBlock(new BlockPos(x, y, z), block);
                 }
             }
         }

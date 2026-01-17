@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.multiblock.overhaul.distiller;
 import java.util.ArrayList;
 import java.util.List;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
+import java.util.function.Consumer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
@@ -76,9 +77,9 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         Block window = null;
         Block controller = null;
         for(BlockElement template : getSpecificConfiguration().blocks){
-            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributer==null)window = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), null, template);
+            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributer==null)window = new Block(getConfiguration(), null, template);
+            if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
         }
         final Block theCasing = casing;
         final Block theWindow = window==null?casing:window;
@@ -87,23 +88,23 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         for(Block block : getBlocks()){
             if(block.template.controller!=null)hasPlacedTheController[0] = true;
         }
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null){
-                if(getBlock(x, y, z).template!=theCasing.template&&getBlock(x, y, z).template!=theWindow.template)return;
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null){
+                if(getBlock(pos).template!=theCasing.template&&getBlock(pos).template!=theWindow.template)return;
             }
             if(!hasPlacedTheController[0]){
-                setBlock(x, y, z, theController);
+                setBlock(pos, theController);
                 hasPlacedTheController[0] = true;
                 return;
             }
         });
-        forEachCasingEdgePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theCasing);
+        forEachCasingEdgePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theCasing);
         });
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theWindow);
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theWindow);
         });
     }
     @Override
@@ -118,7 +119,7 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     public void getAvailableBlocks(List<Block> blocks){
         if(getSpecificConfiguration()==null)return;
         for(BlockElement block : getSpecificConfiguration().blocks){
-            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), null, block));
         }
     }
     @Override
@@ -143,8 +144,8 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulDistiller doCopy(){
         OverhaulDistiller copy = blankCopy();
-        forEachPosition((x, y, z) -> {
-            copy.setBlock(x, y, z, getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            copy.setBlock(pos, getBlock(pos));
         });
         return copy;
     }
@@ -183,8 +184,8 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulDistillerDesign convertToDesign(){
         OverhaulDistillerDesign design = new OverhaulDistillerDesign(Core.project, x, y, z);
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
             design.design[x][y][z] = block==null?null:block.template;
         });
         design.recipe = recipe;
@@ -199,12 +200,12 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         this.recipe = (DistillerRecipe)recipe;
     }
     @Override
-    public void applyMultiblockSymmetry(int x, int y, int z, BlockPosConsumer consumer){
-        if(x==0||y==0||z==0||x==getExternalWidth()-1||y==getExternalHeight()-1||z==getExternalDepth()-1)return;
+    public void applyMultiblockSymmetry(BlockPos pos, Consumer<BlockPos> consumer){
+        if(pos.x==0||pos.y==0||pos.z==0||pos.x==getExternalWidth()-1||pos.y==getExternalHeight()-1||pos.z==getExternalDepth()-1)return;
         for(int X = 1; X<getExternalWidth()-1; X++){
             for(int Z = 1; Z<getExternalDepth()-1; Z++){
-                if(x==X&&z==Z)continue; // skip the one you already have
-                consumer.accept(X, y, Z);
+                if(pos.x==X&&pos.z==Z)continue; // skip the one you already have
+                consumer.accept(new BlockPos(X, pos.y, Z));
             }
         }
     }

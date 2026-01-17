@@ -1,9 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
+import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -76,8 +77,8 @@ public class MenuComponentEditorGrid extends Component{
         resonatingAlpha = (float) (-Math.cos(2*Math.PI*resonatingTick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
         super.render2d(deltaTime);
     }
-    private void forEachMouseover(BlockPosConsumer func){
-        int[] bmo = mouseover==null?null:toBlockCoords(mouseover[0], mouseover[1]);
+    private void forEachMouseover(Consumer<BlockPos> func){
+        BlockPos bmo = mouseover==null?null:gridToBlockCoords(mouseover[0], mouseover[1]);
         if(mouseover==null){
             for(Component comp : editor.multibwauk.components){
                 if(comp instanceof MenuComponentEditorGrid){
@@ -89,13 +90,13 @@ public class MenuComponentEditorGrid extends Component{
                     if(grid.y1!=y1)continue;
                     if(grid.y2!=y2)continue;
                     if(grid.mouseover==null)continue;
-                    bmo = grid.toBlockCoords(grid.mouseover[0], grid.mouseover[1]);
+                    bmo = grid.gridToBlockCoords(grid.mouseover[0], grid.mouseover[1]);
                     break;
                 }
             }
         }
         if(bmo==null)return;
-        editor.getSymmetry().apply(bmo[0], bmo[1], bmo[2], multiblock.getBoundingBox(), func);
+        editor.getSymmetry().apply(bmo, multiblock.getBoundingBox(), func);
     }
     @Override
     public void draw(double deltaTime){
@@ -108,8 +109,8 @@ public class MenuComponentEditorGrid extends Component{
             blockSize = (int) Math.min(width/blocksWide, height/blocksHigh);
             renderer.setColor(Core.theme.getEditorBackgroundColor());
             renderer.fillRect(x,y,x+width,y+height);
-            forEachMouseover((bx, by, bz) -> {
-                int[] coords = toMouseCoords(bx, by, bz);
+            forEachMouseover((pos) -> {
+                int[] coords = toMouseCoords(pos);
                 if(coords==null)return;
                 renderer.setColor(Core.theme.getEditorBackgroundMouseoverColor());
                 renderer.fillRect(x+coords[0]*blockSize, y+coords[1]*blockSize, x+(coords[0]+1)*blockSize, y+(coords[1]+1)*blockSize);
@@ -128,11 +129,13 @@ public class MenuComponentEditorGrid extends Component{
         }
         for(int x = 0; x<blocksWide; x++){
             for(int y = 0; y<blocksHigh; y++){
-                int bx = (x+x1)*xAxis.x+(y+y1)*yAxis.x+layer*axis.x;
-                int by = (x+x1)*xAxis.y+(y+y1)*yAxis.y+layer*axis.y;
-                int bz = (x+x1)*xAxis.z+(y+y1)*yAxis.z+layer*axis.z;
-                if(!multiblock.contains(bx, by, bz))continue;
-                AbstractBlock block = multiblock.getBlock(bx, by, bz);
+                BlockPos pos = new BlockPos(
+                    (x+x1)*xAxis.x+(y+y1)*yAxis.x+layer*axis.x,
+                    (x+x1)*xAxis.y+(y+y1)*yAxis.y+layer*axis.y,
+                    (x+x1)*xAxis.z+(y+y1)*yAxis.z+layer*axis.z
+                );
+                if(!multiblock.contains(pos))continue;
+                AbstractBlock block = multiblock.getBlock(pos);
                 float X = this.x+x*blockSize;
                 float Y = this.y+y*blockSize;
                 if(block!=null){
@@ -142,13 +145,13 @@ public class MenuComponentEditorGrid extends Component{
                         renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
                     }
                 }
-                if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(bx, by, bz)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
                     renderer.setWhite();
                     renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma"), X, Y, X+blockSize, Y+blockSize);
                 }
                 if(Core.isControlPressed()&&editor.getSelectedTool(0).isEditTool()){
                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), bx, by, bz)&&multiblock.isValid(editor.getSelectedBlock(0), bx, by, bz)){
+                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), pos)&&multiblock.isValid(editor.getSelectedBlock(0), pos)){
                             editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha, multiblock);
                         }
                     }
@@ -156,7 +159,7 @@ public class MenuComponentEditorGrid extends Component{
                 synchronized(multiblock.decals){
                     for(Object o : multiblock.decals){
                         Decal decal = (Decal)o;
-                        if(decal.x==bx&&decal.y==by&&decal.z==bz){
+                        if(decal.pos.equals(pos)){
                             decal.render(renderer, X, Y, blockSize);
                         }
                     }
@@ -165,7 +168,7 @@ public class MenuComponentEditorGrid extends Component{
                     if(!overlay.isActive())continue;
                     for(Object o : overlay.decals){
                         Decal decal = (Decal)o;
-                        if(decal.x==bx&&decal.y==by&&decal.z==bz){
+                        if(decal.pos.equals(pos)){
                             decal.render(renderer, X, Y, blockSize);
                         }
                     }
@@ -209,7 +212,7 @@ public class MenuComponentEditorGrid extends Component{
                     for(Suggestion s : editor.getSuggestions()){
                         if(affects(s, x, y)){
                             if(s.selected&&s.result!=null){
-                                AbstractBlock b = s.result.getBlock(bx, by, bz);
+                                AbstractBlock b = s.result.getBlock(pos);
                                 renderer.setWhite(resonatingAlpha+.5f);
                                 if(b==null){
                                     renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
@@ -249,8 +252,8 @@ public class MenuComponentEditorGrid extends Component{
         }
         editor.getSelectedTool(0).drawGhosts(renderer, editorSpace, x1, y1, x2, y2, blocksWide, blocksHigh, axis, layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?null:editor.getSelectedBlock(0).getTexture()));
         synchronized(synchronizer){
-            forEachMouseover((x, y, z) -> {
-                int[] coords = toMouseCoords(x, y, z);
+            forEachMouseover((pos) -> {
+                int[] coords = toMouseCoords(pos);
                 if(coords==null)return;
                 float X = this.x+coords[0]*blockSize;
                 float Y = this.y+coords[1]*blockSize;
@@ -295,20 +298,26 @@ public class MenuComponentEditorGrid extends Component{
             }
         }
     }
-    public int[] toBlockCoords(int sx, int sy){
-        sx+=x1;
-        sy+=y1;
+    public BlockPos gridToBlockCoords(int sx, int sy){
+        return rawToBlockCoords(sx+x1, sy+y1); // convert (0,0) grid-space to (x1,y1)
+    }
+    public BlockPos mouseToBlockCoords(double x, double y){
+        int sx = Math.max(x1, Math.min(x2, x1+(int) (x/blockSize)));
+        int sy = Math.max(y1, Math.min(y2, y1+(int) (y/blockSize)));
+        return rawToBlockCoords(sx, sy);
+    }
+    public BlockPos rawToBlockCoords(int sx, int sy){
         int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
         int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
         int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
-        return new int[]{bx,by,bz};
+        return new BlockPos(bx, by, bz);
     }
-    public int[] toMouseCoords(int bx, int by, int bz){
-        int sx = xAxis.x*bx+xAxis.y*by+xAxis.z*bz-x1;
-        int sy = yAxis.x*bx+yAxis.y*by+yAxis.z*bz-y1;
-        if(axis.x!=0&&bx!=layer)return null;
-        if(axis.y!=0&&by!=layer)return null;
-        if(axis.z!=0&&bz!=layer)return null;
+    public int[] toMouseCoords(BlockPos pos){
+        int sx = xAxis.x*pos.x+xAxis.y*pos.y+xAxis.z*pos.z-x1;
+        int sy = yAxis.x*pos.x+yAxis.y*pos.y+yAxis.z*pos.z-y1;
+        if(axis.x!=0&&pos.x!=layer)return null;
+        if(axis.y!=0&&pos.y!=layer)return null;
+        if(axis.z!=0&&pos.z!=layer)return null;
         if(sx<x1)return null;
         if(sx>x2)return null;
         if(sy<y1)return null;
@@ -327,12 +336,7 @@ public class MenuComponentEditorGrid extends Component{
         if(Double.isNaN(x)||Double.isNaN(y)){
             return;
         }
-        int sx = Math.max(x1, Math.min(x2, x1+(int) (x/blockSize)));
-        int sy = Math.max(y1, Math.min(y2, y1+(int) (y/blockSize)));
-        int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
-        int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
-        int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
-        editor.getSelectedTool(0).mouseMoved(this, editorSpace, bx, by, bz);
+        editor.getSelectedTool(0).mouseMoved(this, editorSpace, mouseToBlockCoords(x, y));
     }
     @Override
     public void onCursorExited(){
@@ -345,13 +349,9 @@ public class MenuComponentEditorGrid extends Component{
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
         super.onMouseButton(x, y, button, action, mods);
-        int sx = Math.max(x1, Math.min(x2, x1+(int) (x/blockSize)));
-        int sy = Math.max(y1, Math.min(y2, y1+(int) (y/blockSize)));
-        int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
-        int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
-        int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
+        BlockPos pos = mouseToBlockCoords(x, y);
         if(action==GLFW_PRESS){
-            AbstractBlock block = multiblock.getBlock(bx, by, bz);
+            AbstractBlock block = multiblock.getBlock(pos);
             boolean didSomething = false;
             if(editor.getSelectedTool(0).isEditTool()&&Core.isShiftPressed()&&block!=null){
                 if(multiblock instanceof OverhaulSFR){
@@ -409,50 +409,39 @@ public class MenuComponentEditorGrid extends Component{
                 if(button==GLFW_MOUSE_BUTTON_MIDDLE){
                     editor.setSelectedBlock(block);
                 }
-                editor.getSelectedTool(0).mousePressed(this, editorSpace, bx, by, bz, button);
+                editor.getSelectedTool(0).mousePressed(this, editorSpace, pos, button);
             }
         }else{
-            if(isMouseFocused)editor.getSelectedTool(0).mouseReleased(this, editorSpace, bx, by, bz, button);
+            if(isMouseFocused)editor.getSelectedTool(0).mouseReleased(this, editorSpace, pos, button);
         }
     }
     public void mouseDragged(double x, double y, int button){
         if(button!=0&&button!=1)return;
-        int sx = Math.max(x1, Math.min(x2, x1+(int) (x/blockSize)));
-        int sy = Math.max(y1, Math.min(y2, y1+(int) (y/blockSize)));
-        int bx = sx*xAxis.x+sy*yAxis.x+layer*axis.x;
-        int by = sx*xAxis.y+sy*yAxis.y+layer*axis.y;
-        int bz = sx*xAxis.z+sy*yAxis.z+layer*axis.z;
-        editor.getSelectedTool(0).mouseDragged(this, editorSpace, bx, by, bz, button);
+        editor.getSelectedTool(0).mouseDragged(this, editorSpace, mouseToBlockCoords(x, y), button);
     }
     public boolean isSelected(int x, int y){
         x+=x1;
         y+=y1;
         if(x<x1||y<y1||x>x2||y>y2)return false;
-        int bx = x*xAxis.x+y*yAxis.x+layer*axis.x;
-        int by = x*xAxis.y+y*yAxis.y+layer*axis.y;
-        int bz = x*xAxis.z+y*yAxis.z+layer*axis.z;
-        return editor.isSelected(0, bx, by, bz);
+        return editor.isSelected(0, rawToBlockCoords(x, y));
     }
     private boolean affects(Suggestion s, int x, int y){
         x+=x1;
         y+=y1;
         if(x<x1||y<y1||x>x2||y>y2)return false;
-        int bx = x*xAxis.x+y*yAxis.x+layer*axis.x;
-        int by = x*xAxis.y+y*yAxis.y+layer*axis.y;
-        int bz = x*xAxis.z+y*yAxis.z+layer*axis.z;
-        return s.affects(bx, by, bz);
+        return s.affects(rawToBlockCoords(x, y));
     }
     @Override
     public String getTooltip(){
         synchronized(synchronizer){
             if(mouseover==null)return null;
-            int[] b = toBlockCoords(mouseover[0], mouseover[1]);
-            if(!multiblock.contains(b[0], b[1], b[2]))return null;
-            AbstractBlock block = multiblock.getBlock(b[0],b[1],b[2]);
+            BlockPos b = gridToBlockCoords(mouseover[0], mouseover[1]);
+            if(!multiblock.contains(b))return null;
+            AbstractBlock block = multiblock.getBlock(b);
             String tooltip = "";
             for(Object o : multiblock.decals){
                 Decal decal = (Decal)o;
-                if(decal.x==b[0]&&decal.y==b[1]&&decal.z==b[2]){
+                if(decal.pos.equals(b)){
                     tooltip+=decal.getTooltip()+"\n";
                 }
             }

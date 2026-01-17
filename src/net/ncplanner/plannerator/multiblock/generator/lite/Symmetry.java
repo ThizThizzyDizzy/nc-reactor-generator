@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.lite;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
+import java.util.function.Consumer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingBoolean;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
@@ -22,14 +23,14 @@ public class Symmetry extends DefinedNCPFObject implements ThingWithSettings{
         return settings[i];
     }
     private final net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry symmetry = new net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry(false, false, false, false, false, false);
-    public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
+    public void apply(int x, int y, int z, int w, int h, int d, Consumer<BlockPos> consumer){
         symmetry.mx = mx.get();
         symmetry.my = my.get();
         symmetry.mz = mz.get();
         symmetry.rx180 = rx180.get();
         symmetry.ry180 = ry180.get();
         symmetry.rz180 = rz180.get();
-        symmetry.apply(x, y, z, w, h, d, consumer);
+        symmetry.apply(new BlockPos(x, y, z), w, h, d, consumer);
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){

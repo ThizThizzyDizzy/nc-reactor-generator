@@ -20,6 +20,6 @@ public class MSRToggleAction extends Action<OverhaulMSR>{
     }
     @Override
     public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
-        blocks.add(multiblock.getBlock(block.x, block.y, block.z));
+        blocks.add(multiblock.getBlock(block.pos));
     }
 }

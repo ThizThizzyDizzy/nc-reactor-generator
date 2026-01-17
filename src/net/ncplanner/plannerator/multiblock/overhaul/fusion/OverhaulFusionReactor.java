@@ -6,6 +6,7 @@ import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockGrid;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
@@ -106,8 +107,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
         editorSpaces.add(new EditorSpace<Block>(0, 0, 0, width-1, height-1, width-1){
             @Override
-            public boolean isSpaceValid(Block block, int x, int y, int z){
-                return isLocationValid(block, x, y, z);
+            public boolean isSpaceValid(Block block, BlockPos pos){
+                return isLocationValid(block, pos);
             }
             @Override
             public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
@@ -131,16 +132,16 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         final Block cor = core;
         final Block con = connector;
         final Block elec = electromagnet;
-        forEachPosition((x, y, z) -> {
-            switch(getLocationCategory(x, y, z)){
+        forEachPosition((pos) -> {
+            switch(getLocationCategory(pos)){
                 case CORE:
-                    setBlock(x, y, z, cor);
+                    setBlock(pos, cor);
                 case CONNECTOR:
-                    setBlock(x, y, z, con);
+                    setBlock(pos, con);
                     break;
                 case POLOID:
                 case TOROID:
-                    setBlock(x, y, z, elec);
+                    setBlock(pos, elec);
                     break;
                 case PLASMA:
                 case NONE:
@@ -166,7 +167,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void getAvailableBlocks(List<Block> blocks){
         if(getSpecificConfiguration()==null)return;
         for(BlockElement block : getSpecificConfiguration().blocks){
-            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), null, block));
         }
     }
     @Override
@@ -266,14 +267,14 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         if(Double.isNaN(totalHeatMult))totalHeatMult = 0;
         functionalBlocks = 0;
         for(Block block : allBlocks){
-            LocationCategory cat = getLocationCategory(block.x, block.y, block.z);
+            LocationCategory cat = getLocationCategory(block.pos);
             if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR){
                 if(block.isFunctional())functionalBlocks++;
             }
         }
         int[] volume = new int[1];
-        forEachPosition((x, y, z) -> {
-            LocationCategory cat = getLocationCategory(x, y, z);
+        forEachPosition((pos) -> {
+            LocationCategory cat = getLocationCategory(pos);
             if(cat==LocationCategory.INTERIOR||cat==LocationCategory.EXTERIOR)volume[0]++;
         });
         sparsityMult = (float)(functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
@@ -347,10 +348,10 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return new Cluster(block);
     }
     public boolean isPoloidal(Block b){
-        return b!=null&&getLocationCategory(b.x, b.y, b.z)==LocationCategory.POLOID;
+        return b!=null&&getLocationCategory(b.pos)==LocationCategory.POLOID;
     }
     public boolean isToroidal(Block b){
-        return b!=null&&getLocationCategory(b.x, b.y, b.z)==LocationCategory.TOROID;
+        return b!=null&&getLocationCategory(b.pos)==LocationCategory.TOROID;
     }
     public void increaseInnerRadius(){
         if(innerRadius>=getSpecificConfiguration().settings.maxInnerRadius)return;
@@ -487,16 +488,16 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         public boolean contains(Block block){
             return blocks.contains(block);
         }
-        public boolean contains(int x, int y, int z){
+        public boolean contains(BlockPos pos){
             for(Block b : blocks){
-                if(b.x==x&&b.y==y&&b.z==z)return true;
+                if(b.pos.equals(pos))return true;
             }
             return false;
         }
         private boolean wallCheck(ArrayList<Block> blocks){
             for(Block block : blocks){
                 for(Direction d : Direction.values()){
-                    Block b = getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+                    Block b = getBlock(block.pos.offset(d));
                     if(b!=null&&b.isConnector())return true;
                 }
             }
@@ -516,7 +517,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         private Cluster copy(OverhaulFusionReactor newReactor){
             Cluster copy = new Cluster();
             for(Block b : blocks){
-                copy.blocks.add(newReactor.getBlock(b.x, b.y, b.z));
+                copy.blocks.add(newReactor.getBlock(b.pos));
             }
             copy.isConnectedToWall = isConnectedToWall;
             copy.totalOutput = totalOutput;
@@ -558,32 +559,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             }
             for(Block block : lastLayer){
                 FOR:
-                for(int j = 0; j<6; j++){
-                    int dx = 0, dy = 0, dz = 0;
-                    switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
-                        case 0:
-                            dx = -1;
-                            break;
-                        case 1:
-                            dx = 1;
-                            break;
-                        case 2:
-                            dy = -1;
-                            break;
-                        case 3:
-                            dy = 1;
-                            break;
-                        case 4:
-                            dz = -1;
-                            break;
-                        case 5:
-                            dz = 1;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("How did this happen?");
-                    }
-                    if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                    Block newBlock = getBlock(block.x+dx, block.y+dy, block.z+dz);
+                for(Direction d : Direction.values()){
+                    if(!contains(block.pos.offset(d)))continue;
+                    Block newBlock = getBlock(block.pos.offset(d));
                     if(newBlock==null)continue;
                     if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
                         continue;
@@ -632,8 +610,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     @Override
     public OverhaulFusionReactor doCopy(){
         OverhaulFusionReactor copy = blankCopy();
-        forEachPosition((x, y, z) -> {
-            copy.setBlock(x, y, z, getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            copy.setBlock(pos, getBlock(pos));
         });
         synchronized(clusters){
             for(Cluster cluster : clusters){
@@ -667,7 +645,7 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public String getDescriptionTooltip(){
         return "A fusion reactor for Nuclearcraft: Overhauled\nTHESE DO NOT EXIST INGAME!\nThis is just a prototype, and is VERY different from what they will be in-game";
     }
-    public LocationCategory getLocationCategory(int x, int y, int z){
+    public LocationCategory getLocationCategory(BlockPos pos){
         //old; make and use local variables >.>
         int width = getWidth(innerRadius, coreSize, toroidWidth, liningThickness);
         int height = getHeight(innerRadius, coreSize, toroidWidth, liningThickness);
@@ -677,50 +655,50 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         int coreMaxY = (height+coreSize)/2-1;
         int coreMinZ = (width-coreSize)/2;
         int coreMaxZ = (width+coreSize)/2-1;
-        if(x>=coreMinX-1&&y>=coreMinY&&z>=coreMinZ&&x<=coreMaxX+1&&y<=coreMaxY&&z<=coreMaxZ)return LocationCategory.CORE;
-        if(x>=coreMinX&&y>=coreMinY-1&&z>=coreMinZ&&x<=coreMaxX&&y<=coreMaxY+1&&z<=coreMaxZ)return LocationCategory.CORE;
-        if(x>=coreMinX&&y>=coreMinY&&z>=coreMinZ-1&&x<=coreMaxX&&y<=coreMaxY&&z<=coreMaxZ+1)return LocationCategory.CORE;
+        if(pos.x>=coreMinX-1&&pos.y>=coreMinY&&pos.z>=coreMinZ&&pos.x<=coreMaxX+1&&pos.y<=coreMaxY&&pos.z<=coreMaxZ)return LocationCategory.CORE;
+        if(pos.x>=coreMinX&&pos.y>=coreMinY-1&&pos.z>=coreMinZ&&pos.x<=coreMaxX&&pos.y<=coreMaxY+1&&pos.z<=coreMaxZ)return LocationCategory.CORE;
+        if(pos.x>=coreMinX&&pos.y>=coreMinY&&pos.z>=coreMinZ-1&&pos.x<=coreMaxX&&pos.y<=coreMaxY&&pos.z<=coreMaxZ+1)return LocationCategory.CORE;
         int connectorLength = innerRadius+liningThickness+1;
-        if(x>=coreMinX-connectorLength-1&&y>=coreMinY&&z>=coreMinZ&&x<=coreMaxX+connectorLength+1&&y<=coreMaxY&&z<=coreMaxZ)return LocationCategory.CONNECTOR;
-        if(x>=coreMinX&&y>=coreMinY&&z>=coreMinZ-connectorLength-1&&x<=coreMaxX&&y<=coreMaxY&&z<=coreMaxZ+connectorLength+1)return LocationCategory.CONNECTOR;
+        if(pos.x>=coreMinX-connectorLength-1&&pos.y>=coreMinY&&pos.z>=coreMinZ&&pos.x<=coreMaxX+connectorLength+1&&pos.y<=coreMaxY&&pos.z<=coreMaxZ)return LocationCategory.CONNECTOR;
+        if(pos.x>=coreMinX&&pos.y>=coreMinY&&pos.z>=coreMinZ-connectorLength-1&&pos.x<=coreMaxX&&pos.y<=coreMaxY&&pos.z<=coreMaxZ+connectorLength+1)return LocationCategory.CONNECTOR;
         int plasmaMinX1 = coreMinX-connectorLength-1-toroidWidth;
         int plasmaMaxX1 = coreMinX-connectorLength-2;
         int plasmaMinX2 = coreMaxX+connectorLength+2;
         int plasmaMaxX2 = coreMaxX+connectorLength+1+toroidWidth;
-        if(y>=coreMinY&&y<=coreMaxY){
+        if(pos.y>=coreMinY&&pos.y<=coreMaxY){
             //in Y range
-            if(x>=plasmaMinX1&&z>=plasmaMinX1&&x<=plasmaMaxX2&&z<=plasmaMaxX2//within outer bounds
-                &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
+            if(pos.x>=plasmaMinX1&&pos.z>=plasmaMinX1&&pos.x<=plasmaMaxX2&&pos.z<=plasmaMaxX2//within outer bounds
+                &&(pos.x<=plasmaMaxX1||pos.x>=plasmaMinX2||pos.z<=plasmaMaxX1||pos.z>=plasmaMinX2)){//not within any inner bounds
                 return LocationCategory.PLASMA;
             }
-            if(x>=plasmaMinX1-1&&z>=plasmaMinX1-1&&x<=plasmaMaxX2+1&&z<=plasmaMaxX2+1//within outer bounds
-                &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
+            if(pos.x>=plasmaMinX1-1&&pos.z>=plasmaMinX1-1&&pos.x<=plasmaMaxX2+1&&pos.z<=plasmaMaxX2+1//within outer bounds
+                &&(pos.x<=plasmaMaxX1+1||pos.x>=plasmaMinX2-1||pos.z<=plasmaMaxX1+1||pos.z>=plasmaMinX2-1)){//not within any inner bounds
                 return LocationCategory.INTERIOR;
             }
         }
-        if(y>=coreMinY-1&&y<=coreMaxY+1){
-            if(x>=plasmaMinX1&&z>=plasmaMinX1&&x<=plasmaMaxX2&&z<=plasmaMaxX2//within outer bounds
-                &&(x<=plasmaMaxX1||x>=plasmaMinX2||z<=plasmaMaxX1||z>=plasmaMinX2)){//not within any inner bounds
+        if(pos.y>=coreMinY-1&&pos.y<=coreMaxY+1){
+            if(pos.x>=plasmaMinX1&&pos.z>=plasmaMinX1&&pos.x<=plasmaMaxX2&&pos.z<=plasmaMaxX2//within outer bounds
+                &&(pos.x<=plasmaMaxX1||pos.x>=plasmaMinX2||pos.z<=plasmaMaxX1||pos.z>=plasmaMinX2)){//not within any inner bounds
                 return LocationCategory.INTERIOR;
             }
-            if(x>=plasmaMinX1-1&&z>=plasmaMinX1-1&&x<=plasmaMaxX2+1&&z<=plasmaMaxX2+1//within outer bounds
-                &&(x<=plasmaMaxX1+1||x>=plasmaMinX2-1||z<=plasmaMaxX1+1||z>=plasmaMinX2-1)){//not within any inner bounds
+            if(pos.x>=plasmaMinX1-1&&pos.z>=plasmaMinX1-1&&pos.x<=plasmaMaxX2+1&&pos.z<=plasmaMaxX2+1//within outer bounds
+                &&(pos.x<=plasmaMaxX1+1||pos.x>=plasmaMinX2-1||pos.z<=plasmaMaxX1+1||pos.z>=plasmaMinX2-1)){//not within any inner bounds
                 return LocationCategory.POLOID;
             }
         }
-        if(y>=coreMinY-liningThickness&&y<=coreMaxY+liningThickness){
-            if(x>=plasmaMinX1-liningThickness&&z>=plasmaMinX1-liningThickness&&x<=plasmaMaxX2+liningThickness&&z<=plasmaMaxX2+liningThickness//within outer bounds
-                &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
+        if(pos.y>=coreMinY-liningThickness&&pos.y<=coreMaxY+liningThickness){
+            if(pos.x>=plasmaMinX1-liningThickness&&pos.z>=plasmaMinX1-liningThickness&&pos.x<=plasmaMaxX2+liningThickness&&pos.z<=plasmaMaxX2+liningThickness//within outer bounds
+                &&(pos.x<=plasmaMaxX1+liningThickness||pos.x>=plasmaMinX2-liningThickness||pos.z<=plasmaMaxX1+liningThickness||pos.z>=plasmaMinX2-liningThickness)){//not within any inner bounds
                 return LocationCategory.EXTERIOR;
             }
-            if(x>=plasmaMinX1-(liningThickness+1)&&z>=plasmaMinX1-(liningThickness+1)&&x<=plasmaMaxX2+(liningThickness+1)&&z<=plasmaMaxX2+(liningThickness+1)//within outer bounds
-                &&(x<=plasmaMaxX1+(liningThickness+1)||x>=plasmaMinX2-(liningThickness+1)||z<=plasmaMaxX1+(liningThickness+1)||z>=plasmaMinX2-(liningThickness+1))){//not within any inner bounds
+            if(pos.x>=plasmaMinX1-(liningThickness+1)&&pos.z>=plasmaMinX1-(liningThickness+1)&&pos.x<=plasmaMaxX2+(liningThickness+1)&&pos.z<=plasmaMaxX2+(liningThickness+1)//within outer bounds
+                &&(pos.x<=plasmaMaxX1+(liningThickness+1)||pos.x>=plasmaMinX2-(liningThickness+1)||pos.z<=plasmaMaxX1+(liningThickness+1)||pos.z>=plasmaMinX2-(liningThickness+1))){//not within any inner bounds
                 return LocationCategory.TOROID;
             }
         }
-        if(y>=coreMinY-(liningThickness+1)&&y<=coreMaxY+(liningThickness+1)){
-            if(x>=plasmaMinX1-liningThickness&&z>=plasmaMinX1-liningThickness&&x<=plasmaMaxX2+liningThickness&&z<=plasmaMaxX2+liningThickness//within outer bounds
-                &&(x<=plasmaMaxX1+liningThickness||x>=plasmaMinX2-liningThickness||z<=plasmaMaxX1+liningThickness||z>=plasmaMinX2-liningThickness)){//not within any inner bounds
+        if(pos.y>=coreMinY-(liningThickness+1)&&pos.y<=coreMaxY+(liningThickness+1)){
+            if(pos.x>=plasmaMinX1-liningThickness&&pos.z>=plasmaMinX1-liningThickness&&pos.x<=plasmaMaxX2+liningThickness&&pos.z<=plasmaMaxX2+liningThickness//within outer bounds
+                &&(pos.x<=plasmaMaxX1+liningThickness||pos.x>=plasmaMinX2-liningThickness||pos.z<=plasmaMaxX1+liningThickness||pos.z>=plasmaMinX2-liningThickness)){//not within any inner bounds
                 return LocationCategory.TOROID;
             }
         }
@@ -740,8 +718,8 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     public void openVRResizeMenu(VRGUI gui, VRMenuEdit editor){
         gui.open(new VRMenuResizeFusion(gui, editor, this));
     }
-    public boolean isLocationValid(Block block, int x, int y, int z){
-        switch(getLocationCategory(x, y, z)){
+    public boolean isLocationValid(Block block, BlockPos pos){
+        switch(getLocationCategory(pos)){
             case CONNECTOR:
                 return block!=null&&block.isConnector();
             case CORE:
@@ -757,16 +735,16 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
             case TOROID:
                 return block!=null&&block.isElectromagnet();
             default:
-                throw new IllegalArgumentException("Unknown location category: "+getLocationCategory(x, y, z).name()+"!");
+                throw new IllegalArgumentException("Unknown location category: "+getLocationCategory(pos).name()+"!");
         }
     }
     @Override
-    public void setBlock(int x, int y, int z, Block block){
-        if(isLocationValid((Block)block, x, y, z))super.setBlock(x, y, z, block);
+    public void setBlock(BlockPos pos, Block block){
+        if(isLocationValid((Block)block, pos))super.setBlock(pos, block);
     }
     @Override
-    public void setBlockExact(int x, int y, int z, Block exact){
-        if(isLocationValid((Block)exact, x, y, z))super.setBlockExact(x, y, z, exact);
+    public void setBlockExact(BlockPos pos, Block exact){
+        if(isLocationValid((Block)exact, pos))super.setBlockExact(pos, exact);
     }
     @Override
     public void getSuggestors(ArrayList<Suggestor> suggestors){
@@ -793,23 +771,23 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
                     if(!b.isHeatsink())it.remove();
                 }
                 int[] count = new int[1];
-                forEachPosition((x, y, z) -> {
-                    if(getLocationCategory(x, y, z)==LocationCategory.EXTERIOR||getLocationCategory(x, y, z)==LocationCategory.INTERIOR){
-                        Block block = multiblock.getBlock(x, y, z);
+                forEachPosition((pos) -> {
+                    if(getLocationCategory(pos)==LocationCategory.EXTERIOR||getLocationCategory(pos)==LocationCategory.INTERIOR){
+                        Block block = multiblock.getBlock(pos);
                         if(block==null||block.canBeQuickReplaced()){
                             count[0]++;
                         }
                     }
                 });
                 suggestor.setCount(count[0]*blocks.size());
-                multiblock.forEachPosition((x, y, z) -> {
-                    if(getLocationCategory(x, y, z)==LocationCategory.EXTERIOR||getLocationCategory(x, y, z)==LocationCategory.INTERIOR){
+                multiblock.forEachPosition((pos) -> {
+                    if(getLocationCategory(pos)==LocationCategory.EXTERIOR||getLocationCategory(pos)==LocationCategory.INTERIOR){
                         for(Block newBlock : blocks){
-                            Block block = multiblock.getBlock(x, y, z);
+                            Block block = multiblock.getBlock(pos);
                             if(block==null||block.canBeQuickReplaced()){
                                 int oldCooling = block.template.heatsink.cooling;
                                 int newCooling = newBlock.template.heatsink.cooling;
-                                if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newCooling>oldCooling&&multiblock.isValid(newBlock, pos))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(pos, newBlock), priorities));
                                 else
                                     suggestor.task.max--;
                             }
@@ -828,17 +806,17 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         return null;
     }
     @Override
-    public boolean shouldHideWithCasing(int x, int y, int z){
-        return getLocationCategory(x, y, z)==LocationCategory.TOROID;
+    public boolean shouldHideWithCasing(BlockPos pos){
+        return getLocationCategory(pos)==LocationCategory.TOROID;
     }
     @Override
     public OverhaulFusionDesign convertToDesign(){
         OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
-            design.design[x][y][z] = block==null?null:block.template;
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
             if(block!=null){
-                design.breedingBlanketRecipes[x][y][z] = block.breedingBlanketRecipe;
+                design.breedingBlanketRecipes[pos.x][pos.y][pos.z] = block.breedingBlanketRecipe;
             }
         });
         design.recipe = recipe;

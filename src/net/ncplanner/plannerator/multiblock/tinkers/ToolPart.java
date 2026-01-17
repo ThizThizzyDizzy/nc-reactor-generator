@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.multiblock.tinkers;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.SimpleBlock;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 public class ToolPart extends SimpleBlock{
     public PartType type;
     public PartMaterial material;
-    public ToolPart(NCPFConfigurationContainer configuration, int x, int y, int z, PartType type, PartMaterial material){
-        super(configuration, x, y, z);
+    public ToolPart(NCPFConfigurationContainer configuration, BlockPos pos, PartType type, PartMaterial material){
+        super(configuration, pos);
         this.type = type;
         this.material = material;
     }
@@ -17,8 +17,8 @@ public class ToolPart extends SimpleBlock{
         return getName()+material.getTooltips(type);
     }
     @Override
-    public AbstractBlock newInstance(int x, int y, int z){
-        return new ToolPart(configuration, x, y, z, type, material);
+    public AbstractBlock newInstance(BlockPos pos){
+        return new ToolPart(configuration, pos, type, material);
     }
     @Override
     public String getName(){

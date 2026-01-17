@@ -1,11 +1,12 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class ClearSelectionAction extends Action<Multiblock>{
-    public final ArrayList<int[]> was = new ArrayList<>();
+    public final ArrayList<BlockPos> was = new ArrayList<>();
     private final Editor editor;
     private final int id;
     public ClearSelectionAction(Editor editor, int id){

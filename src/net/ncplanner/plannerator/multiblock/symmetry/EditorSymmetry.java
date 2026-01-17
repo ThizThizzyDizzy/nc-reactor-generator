@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.symmetry;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
+import java.util.function.Consumer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class EditorSymmetry extends Symmetry{
     private final Editor editor;
@@ -8,8 +9,8 @@ public class EditorSymmetry extends Symmetry{
     }
     public StandardSymmetry standard = new StandardSymmetry();
     @Override
-    public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
-        editor.getMultiblock().applyMultiblockSymmetry(x, y, z, consumer);
-        standard.apply(x, y, z, w, h, d, consumer);
+    public void apply(BlockPos pos, int w, int h, int d, Consumer<BlockPos> consumer){
+        editor.getMultiblock().applyMultiblockSymmetry(pos, consumer);
+        standard.apply(pos, w, h, d, consumer);
     }
 }

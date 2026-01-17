@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.discord.play.Game;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
@@ -62,10 +63,11 @@ public class Hangman extends Game{
         basis = multis.get(new Random().nextInt(multis.size())).copy();
         this.config = basis.configuration;
         basis.recalculate();
-        basis.forEachPosition((x, y, z) -> {
-            AbstractBlock b = basis.getBlock(x, y, z);
+        basis.forEachPosition((ps) -> {
+            BlockPos pos = (BlockPos)ps;
+            AbstractBlock b = basis.getBlock(pos);
             if(b==null)return;
-            if(!b.isValid())basis.setBlock(x, y, z, null);
+            if(!b.isValid())basis.setBlock(pos, null);
         });
         if(basis instanceof CuboidalMultiblock){
             ((CuboidalMultiblock)basis).buildDefaultCasing();
@@ -213,7 +215,7 @@ public class Hangman extends Game{
         boolean valid = false;
         for(AbstractBlock block : blocks){
             if(block.isEqual(b)){
-                current.setBlock(block.x, block.y, block.z, block);
+                current.setBlock(block.pos, block);
                 valid = true;
             }
         }
@@ -222,7 +224,7 @@ public class Hangman extends Game{
             if(badGuesses>=maxGuesses){
                 ArrayList<AbstractBlock> missed = new ArrayList<>();
                 FOR:for(AbstractBlock bl : blocks){
-                    if(current.getBlock(bl.x, bl.y, bl.z)!=null)continue;//got that one right
+                    if(current.getBlock(bl.pos)!=null)continue;//got that one right
                     for(AbstractBlock miss : missed){
                         if(miss.isEqual(bl))continue FOR;
                     }

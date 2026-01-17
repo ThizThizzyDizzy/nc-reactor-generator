@@ -6,6 +6,9 @@ public enum Direction{
     NX(-1,0,0),
     NY(0,-1,0),
     NZ(0,0,-1);
+    public static Direction get(BlockPos p1, BlockPos p2){
+        return get(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
+    }
     public static Direction get(int x1, int y1, int z1, int x2, int y2, int z2){
         return get(x2-x1, y2-y1, z2-z1);
     }

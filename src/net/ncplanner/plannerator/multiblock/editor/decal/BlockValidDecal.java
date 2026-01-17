@@ -1,10 +1,11 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class BlockValidDecal extends Decal{
-    public BlockValidDecal(int x, int y, int z){
-        super(x, y, z);
+    public BlockValidDecal(BlockPos pos){
+        super(pos);
     }
     @Override
     public void render(Renderer renderer, float x, float y, float blockSize){

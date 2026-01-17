@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.ActionResult;
@@ -67,19 +68,19 @@ public abstract class Multiblock<T extends AbstractBlock>{
         createBlockGrids();
     }
     protected abstract void createBlockGrids();
-    public T getBlock(int x, int y, int z){
+    public T getBlock(BlockPos pos){
         for(BlockGrid<T> grid : blockGrids){
-            if(grid.contains(x,y,z))return grid.getBlock(x,y,z);
+            if(grid.contains(pos))return grid.getBlock(pos);
         }
-        throw new IndexOutOfBoundsException("Position ("+x+","+y+","+z+") is not in this multiblock! check contains(...) first!");
+        throw new IndexOutOfBoundsException("Position "+pos.toString()+" is not in this multiblock! check contains(...) first!");
     }
-    public void setBlock(int x, int y, int z, T block){
-        setBlockExact(x, y, z, block==null?null:(T)block.copy(x, y, z));
+    public void setBlock(BlockPos pos, T block){
+        setBlockExact(pos, block==null?null:(T)block.copy(pos));
     }
-    public void setBlockExact(int x, int y, int z, T block){
+    public void setBlockExact(BlockPos pos, T block){
         for(BlockGrid<T> grid : blockGrids){
-            if(grid.contains(x,y,z)){
-                grid.setBlock(x, y, z, block);//block==null?null:(T)block.copy(x, y, z));//dunno why this was the same as setBlock :thonk:
+            if(grid.contains(pos)){
+                grid.setBlock(pos, block);//block==null?null:(T)block.copy(x, y, z));//dunno why this was the same as setBlock :thonk:
                 return;
             }
         }
@@ -247,13 +248,13 @@ public abstract class Multiblock<T extends AbstractBlock>{
         if(!includeCasing){
             for(Iterator<T> it = blocks.iterator(); it.hasNext();){
                 T block = it.next();
-                if(shouldHideWithCasing(block.x, block.y, block.z))it.remove();
+                if(shouldHideWithCasing(block.pos))it.remove();
             }
         }
         Collections.sort(blocks, (T o1, T o2) -> {
-            if(o1.y!=o2.y)return o1.y-o2.y;
-            int d1 = o1.z-o1.x;
-            int d2 = o2.z-o2.x;
+            if(o1.pos.y!=o2.pos.y)return o1.pos.y-o2.pos.y;
+            int d1 = o1.pos.z-o1.pos.x;
+            int d2 = o2.pos.z-o2.pos.x;
             return d1-d2;
         });
         AbstractBlock last = null;
@@ -266,7 +267,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
             last = block;
         }
     }
-    public boolean shouldHideWithCasing(int x, int y, int z){
+    public boolean shouldHideWithCasing(BlockPos pos){
         return false;
     }
     protected float[] getCubeBounds(T block){
@@ -274,20 +275,19 @@ public abstract class Multiblock<T extends AbstractBlock>{
     }
     protected void drawCube(T block, boolean inOrder, boolean includeCasing){
         Renderer renderer = new Renderer();
-        int x = block.x;
-        int y = block.y;
-        int z = block.z;
+        BlockPos pos = block.pos;
         boolean invertedInOrder = inOrder;
         inOrder = false;
         float[] bounds = getCubeBounds(block);
-        float x1 = x+bounds[0];
-        float y1 = y+bounds[1];
-        float z1 = z+bounds[2];
-        float x2 = x+bounds[3];
-        float y2 = y+bounds[4];
-        float z2 = z+bounds[5];
+        float x1 = pos.x+bounds[0];
+        float y1 = pos.y+bounds[1];
+        float z1 = pos.z+bounds[2];
+        float x2 = pos.x+bounds[3];
+        float y2 = pos.y+bounds[4];
+        float z2 = pos.z+bounds[5];
         //xy +z
-        if(!inOrder&&(!contains(x,y,z+1)||shouldHideWithCasing(x,y,z+1)||block.shouldRenderFace(getBlock(x, y, z+1)))){
+        BlockPos offsetPos = pos.offset(0,0,1);
+        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z2),
                     new Vector3f(x1, y2, z2),
@@ -300,7 +300,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(0, 0, 1));
         }
         //xy -z
-        if(!invertedInOrder&&(!contains(x,y,z-1)||shouldHideWithCasing(x,y,z-1)||block.shouldRenderFace(getBlock(x,y,z-1)))){
+        offsetPos = pos.offset(0,0,-1);
+        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x2, y1, z1),
@@ -313,7 +314,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(0, 0, -1));
         }
         //xz +y
-        if(!inOrder&&(!contains(x,y+1,z)||shouldHideWithCasing(x,y+1,z)||block.shouldRenderFace(getBlock(x, y+1, z)))){
+        offsetPos = pos.offset(0,1,0);
+        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x1, y2, z1),
                     new Vector3f(x2, y2, z1),
@@ -326,7 +328,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(0, 1, 0));
         }
         //xz -y
-        if(!invertedInOrder&&(!contains(x,y-1,z)||shouldHideWithCasing(x,y-1,z)||block.shouldRenderFace(getBlock(x, y-1, z)))){
+        offsetPos = pos.offset(0,-1,0);
+        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x1, y1, z2),
@@ -339,7 +342,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(0, -1, 0));
         }
         //yz +x
-        if(!inOrder&&(!contains(x+1,y,z)||shouldHideWithCasing(x+1,y,z)||block.shouldRenderFace(getBlock(x+1, y, z)))){
+        offsetPos = pos.offset(1,0,0);
+        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x2, y1, z1),
                     new Vector3f(x2, y1, z2),
@@ -352,7 +356,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector3f(1, 0, 0));
         }
         //yz -x
-        if(!invertedInOrder&&(!contains(x-1,y,z)||shouldHideWithCasing(x-1,y,z)||block.shouldRenderFace(getBlock(x-1, y, z)))){
+        offsetPos = pos.offset(-1,0,0);
+        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x1, y2, z1),
@@ -500,7 +505,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         }
         Set<T> actual = new HashSet<>();
         for(T t : affected){
-            T b = getBlock(t.x, t.y, t.z);
+            T b = getBlock(t.pos);
             if(b==null)continue;
             actual.add(b);
         }
@@ -542,12 +547,12 @@ public abstract class Multiblock<T extends AbstractBlock>{
     public int count(Object o){
         if(o==null){
             int[] total = new int[1];
-            forEachPosition((x,y,z) -> {
-                AbstractBlock block = getBlock(x,y,z);
+            forEachPosition((pos) -> {
+                AbstractBlock block = getBlock(pos);
                 for(Action a : queue){
                     if(a instanceof SetblockAction){
                         SetblockAction set = (SetblockAction)a;
-                        if(set.x==x&&set.y==y&&set.z==z)block = set.block;
+                        if(set.pos.equals(pos))block = set.block;
                     }
                 }
                 if(block==null)total[0]++;
@@ -560,8 +565,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
         if(o instanceof NCPFElement){
             int[] count = new int[1];
             NCPFElement r = (NCPFElement)o;
-            forEachPosition((x, y, z) -> {
-                T b = getBlock(x, y, z);
+            forEachPosition((pos) -> {
+                T b = getBlock(pos);
                 if(b==null)return;
                 if(b.getRecipe()==r)count[0]++;
             });
@@ -571,12 +576,12 @@ public abstract class Multiblock<T extends AbstractBlock>{
     }
     public int getBlocks(T type){
         int[] total = new int[1];
-        forEachPosition((x, y, z) -> {
-            AbstractBlock block = getBlock(x, y, z);
+        forEachPosition((pos) -> {
+            AbstractBlock block = getBlock(pos);
             for(Action a : queue){
                 if(a instanceof SetblockAction){
                     SetblockAction set = (SetblockAction)a;
-                    if(set.x==x&&set.y==y&&set.z==z)block = set.block;
+                    if(set.pos.equals(pos))block = set.block;
                 }
             }
             if(block==null)return;
@@ -632,13 +637,11 @@ public abstract class Multiblock<T extends AbstractBlock>{
      * Checks if a block's placement rules are valid in a specific location.
      * <strong>Returns false for blocks without placement rules.</strong>
      * @param block The block to check
-     * @param x the X position to check
-     * @param y the Y position to check
-     * @param z the Z position to check
+     * @param pos the position to check
      * @return true if the block has rules, and all rules are valid at the specified position
      */
-    public boolean isValid(AbstractBlock block, int x, int y, int z){
-        AbstractBlock b = block.newInstance(x, y, z);
+    public boolean isValid(AbstractBlock block, BlockPos pos){
+        AbstractBlock b = block.newInstance(pos);
         List<NCPFPlacementRule> rules = b.getRules();
         if(rules.isEmpty())return false;
         for(NCPFPlacementRule rule : rules){
@@ -648,11 +651,11 @@ public abstract class Multiblock<T extends AbstractBlock>{
         }
         return true;
     }
-    public boolean isValid(AbstractBlock block, int x, int y, int z, T assumingBlock, int assumingX, int assumingY, int assumingZ){
-        T was = getBlock(assumingX, assumingY, assumingZ);
-        setBlockExact(assumingX, assumingY, assumingZ, assumingBlock);
-        boolean ret = isValid(block, x, y, z);
-        setBlockExact(assumingX, assumingY, assumingZ, was);
+    public boolean isValid(AbstractBlock block, BlockPos pos, T assumingBlock, BlockPos assumingPos){
+        T was = getBlock(assumingPos);
+        setBlockExact(assumingPos, assumingBlock);
+        boolean ret = isValid(block, pos);
+        setBlockExact(assumingPos, was);
         return ret;
     }
     public abstract String getDescriptionTooltip();
@@ -667,10 +670,10 @@ public abstract class Multiblock<T extends AbstractBlock>{
         if(!isShapeEqual(other))return false;
         boolean[] isEqual = new boolean[1];
         isEqual[0] = true;
-        forEachPosition((x, y, z) -> {
+        forEachPosition((pos) -> {
             if(!isEqual[0])return;
-            AbstractBlock a = getBlock(x, y, z);
-            AbstractBlock b = other.getBlock(x, y, z);
+            AbstractBlock a = getBlock(pos);
+            AbstractBlock b = other.getBlock(pos);
             if(a==b)return;//all good
             if(a==null||b==null)isEqual[0] = false;//if they were both null, a==b already caught it
             if(!a.isEqual(b))isEqual[0] = false;
@@ -695,34 +698,20 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return spaces;
     }
     public abstract void getEditorSpaces(ArrayList<EditorSpace<T>> editorSpaces);
-    public void forEachPosition(BlockPosConsumer func){
+    public void forEachPosition(Consumer<BlockPos> func){
         for(BlockGrid<T> grid : blockGrids){
-            grid.forEachPosition(func);
+            grid.getBoundingBox().forEachPosition(func);
         }
     }
     public BoundingBox getBoundingBox(){
         return getBoundingBox(true);
     }
     public BoundingBox getBoundingBox(boolean includeCasing){
-        int minX = Integer.MAX_VALUE;
-        int minY = Integer.MAX_VALUE;
-        int minZ = Integer.MAX_VALUE;
-        int maxX = Integer.MIN_VALUE;
-        int maxY = Integer.MIN_VALUE;
-        int maxZ = Integer.MIN_VALUE;
-        for(BlockGrid grid : blockGrids){
-            minX = Math.min(minX,grid.x);
-            minY = Math.min(minY,grid.y);
-            minZ = Math.min(minZ,grid.z);
-            maxX = Math.max(maxX, grid.x+grid.getWidth()-1);
-            maxY = Math.max(maxY, grid.y+grid.getHeight()-1);
-            maxZ = Math.max(maxZ, grid.z+grid.getDepth()-1);
-        }
-        return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+        return BoundingBox.around(BlockGrid::getBoundingBox, blockGrids.toArray(BlockGrid[]::new));
     }
-    public boolean contains(int x, int y, int z){
+    public boolean contains(BlockPos pos){
         for(BlockGrid grid : blockGrids){
-            if(grid.contains(x, y, z))return true;
+            if(grid.contains(pos))return true;
         }
         return false;
     }
@@ -760,8 +749,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
             if(b1.getName().contains("Port"))continue;
             if(b1.getName().contains("Vent"))continue;
             for(Direction d : Direction.values()){
-                if(contains(b1.x+d.x, b1.y+d.y, b1.z+d.z)){
-                    AbstractBlock b2 = getBlock(b1.x+d.x, b1.y+d.y, b1.z+d.z);
+                if(contains(b1.pos.offset(d))){
+                    AbstractBlock b2 = getBlock(b1.pos.offset(d));
                     if(b2==null)continue;
                     if(b2.getName().contains("Casing"))continue;
                     if(b2.getName().contains("Glass"))continue;
@@ -815,7 +804,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return new NCPFElement[0];
     }
     public void setMultiblockRecipe(int recipeType, NCPFElement recipe){}
-    public void applyMultiblockSymmetry(int x, int y, int z, BlockPosConsumer consumer){
+    public void applyMultiblockSymmetry(BlockPos pos, Consumer<BlockPos> consumer){
     }
     private static class GraphLink{
         private final AbstractBlock b1;

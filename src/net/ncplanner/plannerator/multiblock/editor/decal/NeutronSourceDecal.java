@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class NeutronSourceDecal extends Decal{
     private final Direction sourceDirection;
-    public NeutronSourceDecal(int x, int y, int z, Direction sourceDirection){
-        super(x, y, z);
+    public NeutronSourceDecal(BlockPos pos, Direction sourceDirection){
+        super(pos);
         this.sourceDirection = sourceDirection;
     }
     @Override

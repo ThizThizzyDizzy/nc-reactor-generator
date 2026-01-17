@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.editor.tool;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
@@ -9,8 +10,8 @@ public class CopyTool extends EditorTool{
     public CopyTool(Editor editor, int id){
         super(editor, id);
     }
-    private int[] dragStart;
-    private int[] dragEnd;
+    private BlockPos dragStart;
+    private BlockPos dragEnd;
     @Override
     public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
@@ -26,12 +27,12 @@ public class CopyTool extends EditorTool{
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(dragEnd!=null&&dragStart!=null){
             float border = 1/8f;
-            int minBX = Math.min(dragStart[0], dragEnd[0]);
-            int minBY = Math.min(dragStart[1], dragEnd[1]);
-            int minBZ = Math.min(dragStart[2], dragEnd[2]);
-            int maxBX = Math.max(dragStart[0], dragEnd[0]);
-            int maxBY = Math.max(dragStart[1], dragEnd[1]);
-            int maxBZ = Math.max(dragStart[2], dragEnd[2]);
+            int minBX = Math.min(dragStart.x, dragEnd.x);
+            int minBY = Math.min(dragStart.y, dragEnd.y);
+            int minBZ = Math.min(dragStart.z, dragEnd.z);
+            int maxBX = Math.max(dragStart.x, dragEnd.x);
+            int maxBY = Math.max(dragStart.y, dragEnd.y);
+            int maxBZ = Math.max(dragStart.z, dragEnd.z);
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
             int minSX = Math.max(0,Math.min(x2,minBX*xAxis.x+minBY*xAxis.y+minBZ*xAxis.z-x1));
@@ -61,22 +62,22 @@ public class CopyTool extends EditorTool{
         if(button==0)dragStart = dragEnd = null;
     }
     @Override
-    public void mousePressed(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mousePressed(Object layer, EditorSpace editorSpace, BlockPos pos, int button){
         editor.clearSelection(id);
-        if(button==0)dragStart = new int[]{x,y,z};
+        if(button==0)dragStart = pos;
     }
     @Override
-    public void mouseReleased(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mouseReleased(Object layer, EditorSpace editorSpace, BlockPos pos, int button){
         if(button==0&&dragStart!=null){
-            editor.select(id, dragStart[0], dragStart[1], dragStart[2], x, y, z);
-            editor.copySelection(id, (dragStart[0]+x)/2, (dragStart[1]+y)/2, (dragStart[2]+z)/2);
+            editor.select(id, dragStart, pos);
+            editor.copySelection(id, new BlockPos((dragStart.x+pos.x)/2, (dragStart.y+pos.y)/2, (dragStart.y+pos.z)/2));
             editor.clearSelection(id);
         }
         mouseReset(editorSpace, button);
     }
     @Override
-    public void mouseDragged(Object layer, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)dragEnd = new int[]{x,y,z};
+    public void mouseDragged(Object layer, EditorSpace editorSpace, BlockPos pos, int button){
+        if(button==0)dragEnd = pos;
     }
     @Override
     public boolean isEditTool(){
@@ -87,7 +88,7 @@ public class CopyTool extends EditorTool{
         return "Copy tool\nUse this to select an area to copy\nOnce an area is selected, click to paste that selection";
     }
     @Override
-    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos){}
     @Override
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){}
 }

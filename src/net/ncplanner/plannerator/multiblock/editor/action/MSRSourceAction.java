@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 public class MSRSourceAction extends Action<OverhaulMSR>{
     private final Block vessel;
-    private int[] pWas;
+    private BlockPos pWas;
     private Block was;
     private final BlockElement source;
     public MSRSourceAction(Block cell, BlockElement source){
@@ -17,26 +18,26 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
     public void doApply(OverhaulMSR multiblock, boolean allowUndo){
         if(vessel.source!=null){
             if(allowUndo){
-                pWas = new int[]{vessel.source.x,vessel.source.y,vessel.source.z};
+                pWas = vessel.source.pos;
                 was = vessel.source;
             }
-            multiblock.setBlock(vessel.source.x, vessel.source.y, vessel.source.z, source==null?null:new Block(multiblock.getConfiguration(), vessel.source.x, vessel.source.y, vessel.source.z, source));
+            multiblock.setBlock(vessel.source.pos, source==null?null:new Block(multiblock.getConfiguration(), vessel.source.pos, source));
         }else{
             if(source==null)return;
             Block bWas = vessel.addNeutronSource(multiblock, source);
             if(bWas==null)return;
             if(allowUndo){
-                pWas = new int[]{bWas.x,bWas.y,bWas.z};
+                pWas = bWas.pos;
                 was = bWas.template.neutronSource!=null?null:bWas;
             }
         }
     }
     @Override
     public void doUndo(OverhaulMSR multiblock){
-        if(pWas!=null)multiblock.setBlockExact(pWas[0], pWas[1], pWas[2], was);
+        if(pWas!=null)multiblock.setBlockExact(pWas, was);
     }
     @Override
     public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
-        blocks.add(multiblock.getBlock(vessel.x, vessel.y, vessel.z));
+        blocks.add(multiblock.getBlock(vessel.pos));
     }
 }

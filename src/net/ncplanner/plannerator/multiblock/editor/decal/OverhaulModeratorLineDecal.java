@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
@@ -7,8 +8,8 @@ public class OverhaulModeratorLineDecal extends Decal{
     private final Direction direction;
     private final int flux;
     private final float efficiency;
-    public OverhaulModeratorLineDecal(int x, int y, int z, Direction direction, int flux, float efficiency){
-        super(x, y, z);
+    public OverhaulModeratorLineDecal(BlockPos pos, Direction direction, int flux, float efficiency){
+        super(pos);
         this.direction = direction;
         this.flux = flux;
         this.efficiency = efficiency;

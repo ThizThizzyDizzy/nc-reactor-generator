@@ -1,12 +1,13 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
 import net.ncplanner.plannerator.graphics.Renderer;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
 public class CellFluxDecal extends Decal{
     public final int flux;
     public final int criticality;
-    public CellFluxDecal(int x, int y, int z, int flux, int criticality){
-        super(x, y, z);
+    public CellFluxDecal(BlockPos pos, int flux, int criticality){
+        super(pos);
         this.flux = flux;
         this.criticality = criticality;
     }

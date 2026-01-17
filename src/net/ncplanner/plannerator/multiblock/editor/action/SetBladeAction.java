@@ -25,7 +25,7 @@ public class SetBladeAction extends Action<OverhaulTurbine>{
                     boolean isXBlade = x>=bearingMin&&x<=bearingMax;
                     boolean isYBlade = y>=bearingMin&&y<=bearingMax;
                     if(isXBlade&&isYBlade)continue;//that's the bearing
-                    if(isXBlade||isYBlade)was.put(new BlockPos(x, y, z), multiblock.getBlock(x, y, z));
+                    if(isXBlade||isYBlade)was.put(new BlockPos(x, y, z), multiblock.getBlock(new BlockPos(x, y, z)));
                 }
             }
         }
@@ -34,7 +34,7 @@ public class SetBladeAction extends Action<OverhaulTurbine>{
     @Override
     public void doUndo(OverhaulTurbine multiblock){
         for(BlockPos pos : was.keySet()){
-            multiblock.setBlockExact(pos.x, pos.y, pos.z, was.get(pos));
+            multiblock.setBlockExact(pos, was.get(pos));
         }
     }
     @Override

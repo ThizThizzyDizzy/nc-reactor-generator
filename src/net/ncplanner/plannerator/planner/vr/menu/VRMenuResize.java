@@ -2,7 +2,9 @@ package net.ncplanner.plannerator.planner.vr.menu;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
+import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.vr.VRGUI;
@@ -101,36 +103,40 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         super.render(renderer, tdpb, deltaTime);
     }
     public void expand(int x, int y, int z){
-        if(x>0)multiblock.expandRight(x);
-        if(x<0)multiblock.expandLeft(-x);
-        if(y>0)multiblock.expandUp(y);
-        if(y<0)multiblock.exandDown(-y);
-        if(z>0)multiblock.expandToward(z);
-        if(z<0)multiblock.expandAway(-z);
+        for(Direction direction : Direction.values()){
+            if(Math.signum(direction.x)==Math.signum(x)
+                &&Math.signum(direction.y)==Math.signum(y)
+                &&Math.signum(direction.z)==Math.signum(z)){
+                int xMagnitude = x*direction.x;
+                int yMagnitude = y*direction.y;
+                int zMagnitude = z*direction.z;
+                multiblock.expand(xMagnitude+yMagnitude+zMagnitude, direction);
+            }
+        }
         onOpened();
     }
     private void deleteX(int x){
-        multiblock.deleteX(x);
+        multiblock.delete(x, Axis.X);
         onOpened();
     }
     private void deleteY(int y){
-        multiblock.deleteY(y);
+        multiblock.delete(y, Axis.Y);
         onOpened();
     }
     private void deleteZ(int z){
-        multiblock.deleteZ(z);
+        multiblock.delete(z, Axis.Z);
         onOpened();
     }
     private void insertX(int x){
-        multiblock.insertX(x);
+        multiblock.insert(x, Axis.X);
         onOpened();
     }
     private void insertY(int y){
-        multiblock.insertY(y);
+        multiblock.insert(y, Axis.Y);
         onOpened();
     }
     private void insertZ(int z){
-        multiblock.insertZ(z);
+        multiblock.insert(z, Axis.Z);
         onOpened();
     }
     private static class VRMenuComponentPlusButton extends VRMenuComponentButton{

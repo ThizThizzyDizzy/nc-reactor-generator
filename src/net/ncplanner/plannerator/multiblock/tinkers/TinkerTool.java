@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockGrid;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.SimpleMultiblock;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblockAction;
@@ -19,8 +20,8 @@ import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickEnum;
 import net.ncplanner.plannerator.planner.module.TiConModule;
-import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 @RegisterWith(module = TiConModule.class)
 public class TinkerTool extends SimpleMultiblock<ToolPart>{
     private ToolType type;
@@ -70,7 +71,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             if(!found)continue;
             for(PartMaterial mat : PartMaterial.values()){
                 if(mat.incompatibilities.contains(typ))continue;
-                blocks.add(new ToolPart(configuration, 0, 0, 0, typ, mat));
+                blocks.add(new ToolPart(configuration, null, typ, mat));
             }
         }
     }
@@ -91,8 +92,8 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     @Override
     public TinkerTool doCopy(){
         TinkerTool copy = blankCopy();
-        forEachPosition((x, y, z) -> {
-            copy.setBlock(x, y, z, getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            copy.setBlock(pos, getBlock(pos));
         });
         copy.valid = valid;
         copy.durability = durability;
@@ -106,7 +107,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     @Override
     public boolean doCalculationStep(List<ToolPart> blocks, boolean addDecals){
         for(int i = 0; i<type.parts.length; i++){
-            if(getBlock(i, 0, 0)==null){
+            if(getBlock(new BlockPos(i, 0, 0))==null){
                 valid = false;
                 return false;
             }
@@ -129,7 +130,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
         double drawspeed = 0;
         double rangeMult = 0;
         for(int i = 0; i<type.cats.length; i++){
-            PartMaterial mat = getBlock(i, 0, 0).material;
+            PartMaterial mat = getBlock(new BlockPos(i, 0, 0)).material;
             switch(type.cats[i]){
                 case HANDLE:
                     handleMod += mat.handleMod;
@@ -140,7 +141,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                     headDurability += mat.headDurability;
                     headSpeed += mat.miningSpeed;
                     headAttack += mat.attack;
-                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i, 0, 0).material.level.ordinal())];
+                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(new BlockPos(i, 0, 0)).material.level.ordinal())];
                     heads++;
                     break;
                 case EXTRA:
@@ -175,7 +176,7 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
                     headDurability += mat.headDurability;
                     headSpeed += mat.miningSpeed;
                     headAttack += mat.attack;
-                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(i, 0, 0).material.level.ordinal())];
+                    headLevel = MiningLevel.values()[Math.max(headLevel.ordinal(), getBlock(new BlockPos(i, 0, 0)).material.level.ordinal())];
                     heads++;
                     drawspeed += mat.bowDrawspeed;
                     rangeMult += mat.bowRangeMult;
@@ -233,8 +234,8 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
     public void getEditorSpaces(ArrayList<EditorSpace<ToolPart>> editorSpaces){
         editorSpaces.add(new EditorSpace<ToolPart>(0, 0, 0, type.parts.length-1, 0, 0){
             @Override
-            public boolean isSpaceValid(ToolPart part, int x, int y, int z){
-                return part.type==type.parts[x];
+            public boolean isSpaceValid(ToolPart part, BlockPos pos){
+                return part.type==type.parts[pos.x];
             }
             @Override
             public void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize){
@@ -252,11 +253,11 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     if(part!=null)continue;
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("Add "+p.getName(), new SetblockAction(i, 0, 0, p), null));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("Add "+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), null));
                     }
                 }
             }
@@ -290,10 +291,10 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(i, 0, 0, p), priorities));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), priorities));
                     }
                 }
             }
@@ -327,10 +328,10 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(i, 0, 0, p), priorities));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), priorities));
                     }
                 }
             }
@@ -376,10 +377,10 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(i, 0, 0, p), priorities));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), priorities));
                     }
                 }
             }
@@ -419,10 +420,10 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(i, 0, 0, p), priorities));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), priorities));
                     }
                 }
             }
@@ -456,10 +457,10 @@ public class TinkerTool extends SimpleMultiblock<ToolPart>{
             @Override
             public void generateSuggestions(TinkerTool multiblock, Suggestor.SuggestionAcceptor suggestor){
                 for(int i = 0; i<type.cats.length; i++){
-                    ToolPart part = multiblock.getBlock(i, 0, 0);
+                    ToolPart part = multiblock.getBlock(new BlockPos(i, 0, 0));
                     List<ToolPart> parts = getAvailableBlocks();
                     for(ToolPart p : parts){
-                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(i, 0, 0, p), priorities));
+                        if(p.type==type.parts[i])suggestor.suggest(new Suggestion("M:"+(part==null?"+ ":part.getName()+" -> ")+p.getName(), new SetblockAction(new BlockPos(i, 0, 0), p), priorities));
                     }
                 }
             }

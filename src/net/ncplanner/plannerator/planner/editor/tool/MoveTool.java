@@ -3,8 +3,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.CopyAction;
@@ -15,8 +16,8 @@ public class MoveTool extends EditorTool{
     public MoveTool(Editor editor, int id){
         super(editor, id);
     }
-    private int[] leftDragStart;
-    private int[] leftDragEnd;
+    private BlockPos leftDragStart;
+    private BlockPos leftDragEnd;
     @Override
     public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
@@ -35,15 +36,12 @@ public class MoveTool extends EditorTool{
         if(leftDragStart!=null&&leftDragEnd!=null){
             if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
-                    for(int[] i : editor.getSelection(id)){
-                        int bx = i[0];
-                        int by = i[1];
-                        int bz = i[2];
+                    for(BlockPos p : editor.getSelection(id)){
                         Axis xAxis = axis.get2DXAxis();
                         Axis yAxis = axis.get2DYAxis();
-                        int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-                        int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-                        int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                        int sx = p.x*xAxis.x+p.y*xAxis.y+p.z*xAxis.z-x1;
+                        int sy = p.x*yAxis.x+p.y*yAxis.y+p.z*yAxis.z-y1;
+                        int sz = p.x*axis.x+p.y*axis.y+p.z*axis.z;
                         if(sz!=layer)continue;
                         if(sx<0||sx>x2)continue;
                         if(sy<0||sy>y2)continue;
@@ -51,26 +49,24 @@ public class MoveTool extends EditorTool{
                     }
                 }
             }
-            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
+            BlockPos diff = leftDragEnd.offset(leftDragStart, -1);
             synchronized(editor.getSelection(id)){
-                for(int[] i : editor.getSelection(id)){
-                    int bx = i[0]+diff[0];
-                    int by = i[1]+diff[1];
-                    int bz = i[2]+diff[2];
+                for(BlockPos p : editor.getSelection(id)){
+                    BlockPos op = p.offset(diff);
                     BoundingBox bbox = editor.getMultiblock().getBoundingBox();
-                    if(bx<bbox.x1||bx>bbox.x2)continue;
-                    if(by<bbox.y1||by>bbox.y2)continue;
-                    if(bz<bbox.z1||bz>bbox.z2)continue;
+                    if(op.x<bbox.x1||op.x>bbox.x2)continue;
+                    if(op.y<bbox.y1||op.y>bbox.y2)continue;
+                    if(op.z<bbox.z1||op.z>bbox.z2)continue;
                     Axis xAxis = axis.get2DXAxis();
                     Axis yAxis = axis.get2DYAxis();
-                    int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-                    int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-                    int sz = bx*axis.x+by*axis.y+bz*axis.z;
+                    int sx = op.x*xAxis.x+op.y*xAxis.y+op.z*xAxis.z-x1;
+                    int sy = op.x*yAxis.x+op.y*yAxis.y+op.z*yAxis.z-y1;
+                    int sz = op.x*axis.x+op.y*axis.y+op.z*axis.z;
                     if(sz!=layer)continue;
                     if(sx<0||sx>x2)continue;
                     if(sy<0||sy>y2)continue;
-                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    if(!editorSpace.isSpaceValid(b, bx, by, bz))continue;
+                    AbstractBlock b = editor.getMultiblock().getBlock(p);
+                    if(!editorSpace.isSpaceValid(b, op))continue;
                     if(b!=null)renderer.setWhite(.5f);
                     else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
                     renderer.drawImage(b==null?null:b.getTexture(), x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
@@ -86,27 +82,25 @@ public class MoveTool extends EditorTool{
             float border = blockSize/64;
             if(!editor.isControlPressed(id)){
                 synchronized(editor.getSelection(id)){
-                    for(int[] i : editor.getSelection(id)){
-                        if(editor.getMultiblock().getBlock(i[0], i[1], i[2])==null)continue;//already air
-                        renderer.drawCube(x+i[0]*blockSize-border/2, y+i[1]*blockSize-border/2, z+i[2]*blockSize-border/2, x+(i[0]+1)*blockSize+border/2, y+(i[1]+1)*blockSize+border/2, z+(i[2]+1)*blockSize+border/2, null);
+                    for(BlockPos p : editor.getSelection(id)){
+                        if(editor.getMultiblock().getBlock(p)==null)continue;//already air
+                        renderer.drawCube(x+p.x*blockSize-border/2, y+p.y*blockSize-border/2, z+p.z*blockSize-border/2, x+(p.x+1)*blockSize+border/2, y+(p.y+1)*blockSize+border/2, z+(p.z+1)*blockSize+border/2, null);
                     }
                 }
             }
-            int[] diff = new int[]{leftDragEnd[0]-leftDragStart[0], leftDragEnd[1]-leftDragStart[1], leftDragEnd[2]-leftDragStart[2]};
+            BlockPos diff = leftDragEnd.offset(leftDragStart, -1);
             synchronized(editor.getSelection(id)){
-                for(int[] i : editor.getSelection(id)){
-                    int bx = i[0]+diff[0];
-                    int by = i[1]+diff[1];
-                    int bz = i[2]+diff[2];
+                for(BlockPos p : editor.getSelection(id)){
+                    BlockPos op = p.offset(diff);
                     BoundingBox bbox = editor.getMultiblock().getBoundingBox();
-                    if(bx<bbox.x1||bx>bbox.x2)continue;
-                    if(by<bbox.y1||by>bbox.y2)continue;
-                    if(bz<bbox.z1||bz>bbox.z2)continue;
-                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    if(b==null&&editor.getMultiblock().getBlock(bx, by, bz)==null)continue;//already air, don't need to higlight air again
+                    if(op.x<bbox.x1||op.x>bbox.x2)continue;
+                    if(op.y<bbox.y1||op.y>bbox.y2)continue;
+                    if(op.z<bbox.z1||op.z>bbox.z2)continue;
+                    AbstractBlock b = editor.getMultiblock().getBlock(p);
+                    if(b==null&&editor.getMultiblock().getBlock(op)==null)continue;//already air, don't need to higlight air again
                     if(b!=null)renderer.setWhite(.5f);
                     else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-                    renderer.drawCube(x+bx*blockSize-border, y+by*blockSize-border, z+bz*blockSize-border, x+(bx+1)*blockSize+border, y+(by+1)*blockSize+border, z+(bz+1)*blockSize+border, b==null?null:b.getTexture());
+                    renderer.drawCube(x+op.x*blockSize-border, y+op.y*blockSize-border, z+op.z*blockSize-border, x+(op.x+1)*blockSize+border, y+(op.y+1)*blockSize+border, z+(op.z+1)*blockSize+border, b==null?null:b.getTexture());
                 }
             }
         }
@@ -117,32 +111,29 @@ public class MoveTool extends EditorTool{
         if(button==0)leftDragStart = leftDragEnd = null;
     }
     @Override
-    public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)leftDragStart = new int[]{x,y,z};
+    public void mousePressed(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
+        if(button==0)leftDragStart = pos;
     }
     @Override
-    public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
         if(leftDragStart!=null&&leftDragEnd!=null){
-            int dx = leftDragEnd[0]-leftDragStart[0], dy = leftDragEnd[1]-leftDragStart[1], dz = leftDragEnd[2]-leftDragStart[2];
+            BlockPos d = leftDragEnd.offset(leftDragStart, -1);
             if(button==0&&leftDragStart!=null&&leftDragEnd!=null){
-                ArrayList<int[]> selection = new ArrayList<>(editor.getSelection(id));
-                for(Iterator<int[]> it = selection.iterator(); it.hasNext();){
-                    int[] i = it.next();
-                    AbstractBlock b = editor.getMultiblock().getBlock(i[0], i[1], i[2]);
-                    int bx = i[0]+dx;
-                    int by = i[1]+dy;
-                    int bz = i[2]+dz;
-                    if(!editorSpace.isSpaceValid(b, bx, by, bz))it.remove();
+                ArrayList<BlockPos> selection = new ArrayList<>(editor.getSelection(id));
+                for(Iterator<BlockPos> it = selection.iterator(); it.hasNext();){
+                    BlockPos p = it.next();
+                    AbstractBlock b = editor.getMultiblock().getBlock(p);
+                    if(!editorSpace.isSpaceValid(b, p.offset(d)))it.remove();
                 }
-                if(editor.isControlPressed(id))editor.action(new CopyAction(editor, id, selection, editor.getSelection(id), dx, dy, dz), true);
-                else editor.action(new MoveAction(editor, id, selection, editor.getSelection(id), dx, dy, dz), true);
+                if(editor.isControlPressed(id))editor.action(new CopyAction(editor, id, selection, editor.getSelection(id), d.x, d.y, d.z), true);
+                else editor.action(new MoveAction(editor, id, selection, editor.getSelection(id), d.x, d.y, d.z), true);
             }
         }
         mouseReset(editorSpace, button);
     }
     @Override
-    public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)leftDragEnd = new int[]{x,y,z};
+    public void mouseDragged(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
+        if(button==0)leftDragEnd = pos;
     }
     @Override
     public boolean isEditTool(){
@@ -153,7 +144,7 @@ public class MoveTool extends EditorTool{
         return "Move tool (M)\nUse this to move or copy selections\nHold Ctrl to copy selections\nHold Ctrl+Shift to copy selection, and keep the old selection";
     }
     @Override
-    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos){}
     @Override
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){}
 }

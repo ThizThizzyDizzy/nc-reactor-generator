@@ -10,9 +10,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = UnderhaulModule.class)
 public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
@@ -31,8 +31,8 @@ public class RandomBlockMutator extends Mutator<LiteUnderhaulSFR>{
     @Override
     public void run(LiteUnderhaulSFR multiblock, Random rand){
         int block = indicies.get()[rand.nextInt(indicies.get().length)]-1;
-        symmetry.get().apply(rand.nextInt(multiblock.dims[0]), rand.nextInt(multiblock.dims[1]), rand.nextInt(multiblock.dims[2]), multiblock.dims[0], multiblock.dims[1], multiblock.dims[2], (x, y, z) -> {
-            multiblock.blocks[x][y][z] = block;
+        symmetry.get().apply(rand.nextInt(multiblock.dims[0]), rand.nextInt(multiblock.dims[1]), rand.nextInt(multiblock.dims[2]), multiblock.dims[0], multiblock.dims[1], multiblock.dims[2], (pos) -> {
+            multiblock.blocks[pos.x][pos.y][pos.z] = block;
         });
     }
     @Override

@@ -4,6 +4,7 @@ import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
@@ -25,14 +26,14 @@ public class Block extends AbstractBlock{
     public float heatMult;//heating blankets
     public float efficiency;//heating blankets
     public OverhaulFusionReactor.Cluster cluster;
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
-        super(configuration, x, y, z);
+    public Block(NCPFConfigurationContainer configuration, BlockPos pos, BlockElement template){
+        super(configuration, pos);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public AbstractBlock newInstance(int x, int y, int z){
-        return new Block(getConfiguration(), x, y, z, template);
+    public AbstractBlock newInstance(BlockPos pos){
+        return new Block(getConfiguration(), pos, template);
     }
     @Override
     public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){
@@ -118,9 +119,9 @@ public class Block extends AbstractBlock{
             if(primaryColor!=null){
                 renderer.setColor(primaryColor);
                 renderer.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
-                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
-                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
-                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
+                    boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
+                    boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));
                     if(d1&&d2&&!d3)return true;//both sides, but not the corner
                     if(!d1&&!d2)return true;//neither side
                     return false;
@@ -136,9 +137,9 @@ public class Block extends AbstractBlock{
             if(secondaryColor!=null){
                 renderer.setColor(secondaryColor);
                 renderer.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
-                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
-                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
-                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
+                    boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
+                    boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));
                     if(d1&&d2&&!d3)return true;//both sides, but not the corner
                     if(!d1&&!d2)return true;//neither side
                     return false;
@@ -209,7 +210,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
-        Block copy = new Block(getConfiguration(), x, y, z, template);
+        Block copy = new Block(getConfiguration(), pos, template);
         copy.breedingBlanketRecipe = breedingBlanketRecipe;
         copy.breedingBlanketValid = breedingBlanketValid;
         copy.breedingBlanketAugmented = breedingBlanketAugmented;
@@ -237,18 +238,14 @@ public class Block extends AbstractBlock{
         breedingBlanketValid = true;//shrug
         efficiencyMult = 1;
         FOR:for(Direction d : Direction.values()){
-            int X = x+d.x;
-            int Y = y+d.y;
-            int Z = z+d.z;
+            BlockPos pos = this.pos.offset(d);
             boolean foundPlasma = false;
-            while(reactor.getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+            while(reactor.getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
                 foundPlasma = true;
-                X+=d.x;
-                Y+=d.y;
-                Z+=d.z;
+                pos = pos.offset(d);
             }
             if(!foundPlasma)continue;
-            Block b = reactor.getBlock(X, Y, Z);
+            Block b = reactor.getBlock(pos);
             if(b==null)continue;
             if(b.isReflector()){
                 b.reflectorValid = true;
@@ -262,7 +259,7 @@ public class Block extends AbstractBlock{
         heatMult = 1;
         efficiency = 1;
         for(Direction d : Direction.values()){
-            Block b = reactor.getBlock(x+d.x, y+d.y, z+d.z);
+            Block b = reactor.getBlock(pos.offset(d));
             if(b==null)continue;
             if(b.isBreedingBlanket()){
                 if(b.breedingBlanketRecipe==null)continue;//empty blanket

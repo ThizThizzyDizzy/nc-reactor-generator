@@ -1,5 +1,9 @@
 package net.ncplanner.plannerator.multiblock;
+import java.util.function.Consumer;
 public class BlockPos{
+    public static int taxicabDistance(BlockPos a, BlockPos b){
+        return Math.abs(a.x-b.x)+Math.abs(a.y-b.y)+Math.abs(a.z-b.z);
+    }
     public final int x;
     public final int y;
     public final int z;
@@ -23,31 +27,40 @@ public class BlockPos{
         hash = 89*hash+this.z;
         return hash;
     }
-    public static void forEachInCell(int x1, int y1, int z1, int x2, int y2, int z2, BlockPosConsumer onCorner, BlockPosConsumer onEdge, BlockPosConsumer onFace, BlockPosConsumer onCenter){
-        if(x1>x2){
-            forEachInCell(x2, y1, z1, x1, y2, z2, onCorner, onEdge, onFace, onCenter);
-            return;
-        }
-        if(y1>y2){
-            forEachInCell(x1, y2, z1, x2, y1, z2, onCorner, onEdge, onFace, onCenter);
-            return;
-        }
-        if(z1>z2){
-            forEachInCell(x1, y1, z2, x2, y2, z1, onCorner, onEdge, onFace, onCenter);
-            return;
-        }
-        BlockPosConsumer[] consumers = new BlockPosConsumer[]{onCenter, onFace, onEdge, onCorner};
-        for(int x = x1; x<=x2; x++){
-            for(int y = y1; y<=y2; y++){
-                for(int z = z1; z<=z2; z++){
-                    int cornerness = 0;
-                    if(x==x1||x==x2)cornerness++;
-                    if(y==y1||y==y2)cornerness++;
-                    if(z==z1||z==z2)cornerness++;
-                    if(consumers[cornerness]!=null)
-                        consumers[cornerness].accept(x, y, z);
-                }
-            }
-        }
+    public static void forEachInCell(int x1, int y1, int z1, int x2, int y2, int z2, Consumer<BlockPos> onCorner, Consumer<BlockPos> onEdge, Consumer<BlockPos> onFace, Consumer<BlockPos> onCenter){
+        Consumer<BlockPos>[] consumers = new Consumer[]{onCenter, onFace, onEdge, onCorner};
+        BoundingBox.around(new BlockPos(x1,y1,z1), new BlockPos(x2,y2,z2)).forEachPosition((pos)->{
+            int cornerness = 0;
+            if(pos.x==x1||pos.x==x2)cornerness++;
+            if(pos.y==y1||pos.y==y2)cornerness++;
+            if(pos.z==z1||pos.z==z2)cornerness++;
+            if(consumers[cornerness]!=null)
+                consumers[cornerness].accept(pos);
+        });
+    }
+    @Override
+    public String toString(){
+        return "("+x+","+y+","+z+")";
+    }
+    public BlockPos offset(int x, int y, int z){
+        return new BlockPos(this.x+x, this.y+y, this.z+z);
+    }
+    public BlockPos offset(Direction d){
+        return offset(d.x, d.y, d.z);
+    }
+    public BlockPos offset(Direction d, int i){
+        return offset(d.x*i, d.y*i, d.z*i);
+    }
+    public BlockPos offset(BlockPos pos){
+        return offset(pos.x,pos.y,pos.z);
+    }
+    public BlockPos offset(Axis axis, int i){
+        return offset(axis.x*i, axis.y*i, axis.z*i);
+    }
+    public BlockPos offset(BlockPos p, int i){
+        return offset(p.x*i, p.y*i, p.z*i);
+    }
+    public int taxicab(BlockPos pos){
+        return Math.abs(x-pos.x)+Math.abs(y-pos.y)+Math.abs(z-pos.z);
     }
 }

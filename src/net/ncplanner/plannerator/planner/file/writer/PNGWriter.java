@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.discord.Bot;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.PartCount;
@@ -136,16 +137,16 @@ public class PNGWriter extends ImageFormatWriter{
                             int X = x+bbox.x1;
                             int Y = y+bbox.y1;
                             int Z = z+bbox.z1;
-                            if(!Core.imageExportCasing&&mb.shouldHideWithCasing(X,Y,Z))continue;
-                            AbstractBlock b = mb.getBlock(X, Y, Z);
+                            if(!Core.imageExportCasing&&mb.shouldHideWithCasing(new BlockPos(X,Y,Z)))continue;
+                            AbstractBlock b = mb.getBlock(new BlockPos(X,Y,Z));
                             if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
-                            if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(X, Y, Z)==OverhaulFusionReactor.LocationCategory.PLASMA){
+                            if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(new BlockPos(X,Y,Z))==OverhaulFusionReactor.LocationCategory.PLASMA){
                                 bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);
                             }
                             for(EditorOverlay o : overlays){
                                 if(!o.isActive())continue;
                                 for(Decal d : (Queue<Decal>)o.decals){
-                                    if(d.x==X&&d.y==Y&&d.z==Z){
+                                    if(d.pos.equals(new BlockPos(X,Y,Z))){
                                         d.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
                                     }
                                 }

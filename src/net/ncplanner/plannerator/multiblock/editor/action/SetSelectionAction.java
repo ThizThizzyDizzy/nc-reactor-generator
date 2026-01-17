@@ -3,19 +3,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class SetSelectionAction extends Action<Multiblock>{
-    public final ArrayList<int[]> was = new ArrayList<>();
+    public final ArrayList<BlockPos> was = new ArrayList<>();
     private final int id;
-    public final ArrayList<int[]> sel = new ArrayList<>();
+    public final ArrayList<BlockPos> sel = new ArrayList<>();
     private final Editor editor;
-    public SetSelectionAction(Editor editor, int id, Collection<int[]> sel){
+    public SetSelectionAction(Editor editor, int id, Collection<BlockPos> sel){
         this.editor = editor;
-        for (Iterator<int[]> it = sel.iterator(); it.hasNext();) {
-            int[] i = it.next();
-            if(!editor.getMultiblock().contains(i[0], i[1], i[2]))it.remove();
+        for (Iterator<BlockPos> it = sel.iterator(); it.hasNext();) {
+            BlockPos i = it.next();
+            if(!editor.getMultiblock().contains(i))it.remove();
         }
         this.sel.addAll(sel);
         this.id = id;

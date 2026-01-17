@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -145,7 +146,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     public void getAvailableBlocks(List<Block> blocks){
         if(getSpecificConfiguration()==null)return;
         for(BlockElement block : getSpecificConfiguration().blocks){
-            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), null, block));
         }
     }
     @Override
@@ -221,11 +222,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 hasInputVent = hasOutputVent = false;
                 missingInputPorts.clear();
                 missingOutputPorts.clear();
-                forEachCasingPosition((x, y, z) -> {
-                    Block block = getBlock(x, y, z);
+                forEachCasingPosition((pos) -> {
+                    Block block = getBlock(pos);
                     if(block==null||!block.isCasing()){
                         missingCasings++;
-                        if(addDecals)decals.enqueue(new MissingCasingDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
                     }
                     if(block!=null&&block.isCasing()){
                         if(block.template.coolantVent!=null&&block.template.coolantVent.output)hasOutputVent = true;
@@ -239,30 +240,30 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                                 int i = 0;
                                 while(true){
                                     i++;
-                                    if(!contains(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i))break;
-                                    Block b = getBlock(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i);
+                                    if(!contains(block.pos.offset(d,i)))break;
+                                    Block b = getBlock(block.pos.offset(d,i));
                                     if(b==null)continue;//air
                                     if(b.template.fuelCell!=null){
                                         hasTarget = true;
                                         b.source = block;
                                         if(addDecals){
-                                            decals.enqueue(new NeutronSourceTargetDecal(block.x, block.y, block.z, d));
+                                            decals.enqueue(new NeutronSourceTargetDecal(block.pos, d));
                                             for(int j = 1; j<i; j++){
-                                                decals.enqueue(new NeutronSourceLineDecal(block.x+d.x*j, block.y+d.y*j, block.z+d.z*j, d));
+                                                decals.enqueue(new NeutronSourceLineDecal(block.pos.offset(d,j), d));
                                             }
-                                            decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                                            decals.enqueue(new NeutronSourceDecal(b.pos, d.getOpposite()));
                                         }
                                     }
                                     if(b.template.blocksLOS())break;
                                 }
                             }
                             if(!hasTarget){
-                                decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
+                                decals.enqueue(new NeutronSourceNoTargetDecal(block.pos));
                                 return;
                             }
                         }
                         block.casingValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(pos));
                     }
                 });
                 calcCasing.finish();
@@ -290,7 +291,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     propogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : blocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 propogateFlux.finish();
@@ -316,7 +317,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     rePropogateFlux.progress = i/(double)blocks.size();
                 }
                 for(Block block : blocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 int nowActive = 0;
@@ -359,7 +360,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(block.isFuelCell()&&block.fuel!=null){
                         float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(block.neutronFlux-2*block.fuel.stats.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     }
                     initCells.progress = i/(double)blocks.size();
                 }
@@ -461,11 +462,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 hasInputVent = hasOutputVent = false;
                 missingInputPorts.clear();
                 missingOutputPorts.clear();
-                forEachCasingPosition((x, y, z) -> {
-                    Block block = getBlock(x, y, z);
+                forEachCasingPosition((pos) -> {
+                    Block block = getBlock(pos);
                     if(block==null||!block.isCasing()){
                         missingCasings++;
-                        if(addDecals)decals.enqueue(new MissingCasingDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
                     }
                     if(block!=null&&block.isCasing()){
                         if(block.template.coolantVent!=null&&block.template.coolantVent.output)hasOutputVent = true;
@@ -479,30 +480,30 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                                 int i = 0;
                                 while(true){
                                     i++;
-                                    if(!contains(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i))break;
-                                    Block b = getBlock(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i);
+                                    if(!contains(block.pos.offset(d,i)))break;
+                                    Block b = getBlock(block.pos.offset(d,i));
                                     if(b==null)continue;//air
                                     if(b.template.fuelCell!=null){
                                         hasTarget = true;
                                         b.source = block;
                                         if(addDecals){
-                                            decals.enqueue(new NeutronSourceTargetDecal(block.x, block.y, block.z, d));
+                                            decals.enqueue(new NeutronSourceTargetDecal(block.pos, d));
                                             for(int j = 1; j<i; j++){
-                                                decals.enqueue(new NeutronSourceLineDecal(block.x+d.x*j, block.y+d.y*j, block.z+d.z*j, d));
+                                                decals.enqueue(new NeutronSourceLineDecal(block.pos.offset(d,j), d));
                                             }
-                                            decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                                            decals.enqueue(new NeutronSourceDecal(b.pos, d.getOpposite()));
                                         }
                                     }
                                     if(b.template.blocksLOS())break;
                                 }
                             }
                             if(!hasTarget){
-                                decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
+                                decals.enqueue(new NeutronSourceNoTargetDecal(block.pos));
                                 return;
                             }
                         }
                         block.casingValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(pos));
                     }
                 });
                 shutdownCalcCasing.finish();
@@ -525,7 +526,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     shutdownPropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
                 shutdownPropogateFlux.finish();
@@ -551,7 +552,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     shutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.template.fuelCell!=null)fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 for(Decal d : fluxDecals)shutdownFluxDecals.enqueue(d);
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
@@ -595,7 +596,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(block.isFuelCell()&&block.fuel!=null){
                         float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(block.neutronFlux-2*block.fuel.stats.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     }
                     shutdownInitCells.progress = i/(double)allBlocks.size();
                 }
@@ -697,11 +698,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 hasInputVent = hasOutputVent = false;
                 missingInputPorts.clear();
                 missingOutputPorts.clear();
-                forEachCasingPosition((x, y, z) -> {
-                    Block block = getBlock(x, y, z);
+                forEachCasingPosition((pos) -> {
+                    Block block = getBlock(pos);
                     if(block==null||!block.isCasing()){
                         missingCasings++;
-                        if(addDecals)decals.enqueue(new MissingCasingDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
                     }
                     if(block!=null&&block.isCasing()){
                         if(block.template.coolantVent!=null&&block.template.coolantVent.output)hasOutputVent = true;
@@ -715,30 +716,30 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                                 int i = 0;
                                 while(true){
                                     i++;
-                                    if(!contains(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i))break;
-                                    Block b = getBlock(block.x+d.x*i, block.y+d.y*i, block.z+d.z*i);
+                                    if(!contains(block.pos.offset(d,i)))break;
+                                    Block b = getBlock(block.pos.offset(d,i));
                                     if(b==null)continue;//air
                                     if(b.isFuelCell()){
                                         hasTarget = true;
                                         b.source = block;
                                         if(addDecals){
-                                            decals.enqueue(new NeutronSourceTargetDecal(block.x, block.y, block.z, d));
+                                            decals.enqueue(new NeutronSourceTargetDecal(block.pos, d));
                                             for(int j = 1; j<i; j++){
-                                                decals.enqueue(new NeutronSourceLineDecal(block.x+d.x*j, block.y+d.y*j, block.z+d.z*j, d));
+                                                decals.enqueue(new NeutronSourceLineDecal(block.pos.offset(d,j), d));
                                             }
-                                            decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                                            decals.enqueue(new NeutronSourceDecal(b.pos, d.getOpposite()));
                                         }
                                     }
                                     if(b.template.blocksLOS())break;
                                 }
                             }
                             if(!hasTarget){
-                                decals.enqueue(new NeutronSourceNoTargetDecal(block.x, block.y, block.z));
+                                decals.enqueue(new NeutronSourceNoTargetDecal(block.pos));
                                 return;
                             }
                         }
                         block.casingValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(pos));
                     }
                 });
                 partialShutdownCalcCasing.finish();
@@ -759,7 +760,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     partialShutdownPropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.isFuelCell())fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.isFuelCell())fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 for(Decal d : fluxDecals)initialFluxDecals.enqueue(d);
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
@@ -786,7 +787,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     partialShutdownRePropogateFlux.progress = i/(double)allBlocks.size();
                 }
                 for(Block block : allBlocks){
-                    if(block.isFuelCell())fluxDecals.enqueue(new CellFluxDecal(block.x, block.y, block.z, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
+                    if(block.isFuelCell())fluxDecals.enqueue(new CellFluxDecal(block.pos, block.neutronFlux, block.fuel==null?0:block.fuel.stats.criticality));
                 }
                 for(Decal d : fluxDecals)finalFluxDecals.enqueue(d);
                 if(addDecals)for(Decal d : fluxDecals)decals.enqueue(d);
@@ -830,7 +831,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(block.isFuelCell()&&block.fuel!=null){
                         float criticalityModifier = (float)(1/(1+MathUtil.exp(2*(block.neutronFlux-2*block.fuel.stats.criticality))));
                         block.efficiency = block.fuel.stats.efficiency*block.positionalEfficiency*(block.source==null?1:block.source.template.neutronSource.efficiency)*criticalityModifier;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     }
                     partialShutdownInitCells.progress = i/(double)allBlocks.size();
                 }
@@ -961,8 +962,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
             int length = 0;
             float efficiency = 0;
             for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
-                if(!contains(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i))break;
-                Block block = getBlock(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i);
+                if(!contains(that.pos.offset(d,i)))break;
+                Block block = getBlock(that.pos.offset(d,i));
                 if(block==null)break;
                 if(block.isModerator()){
                     flux += block.template.moderator.flux;
@@ -983,11 +984,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(flux>0)block.positionalEfficiency += efficiency/length;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        Block b = getBlock(that.pos.offset(d,j));
                         f += b.template.moderator==null?0:b.template.moderator.flux;//could be a shield
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.pos.offset(d,j), d, f, efficiency/length));
                     }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.pos, d, efficiency/length));
                     propogateNeutronFlux(block, false, fluxDecals, initialPropogation);
                     break;
                 }
@@ -999,18 +1000,18 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     that.moderatorLines++;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        Block b = getBlock(that.pos.offset(d,j));
                         if(b.template.moderator!=null)f += b.template.moderator.flux;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.pos.offset(d,j), d, f, efficiency/length));
                     }
                     f = 0;
                     for(int j = i-1; j>=1; j--){
-                        Block b = getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j);
+                        Block b = getBlock(that.pos.offset(d,j));
                         if(b.template.moderator!=null)f += b.template.moderator.flux*block.template.reflector.reflectivity;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.pos.offset(d,j), d.getOpposite(), (int)(flux*block.template.reflector.reflectivity)+f, efficiency/length));
                     }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    fluxDecals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.pos, d, efficiency/length));
+                    fluxDecals.enqueue(new ReflectorAdjacentModeratorLineDecal(block.pos, d.getOpposite()));
                     break;
                 }
                 if(block.isIrradiator()){
@@ -1020,11 +1021,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(flux>0)that.positionalEfficiency += efficiency/length*block.irradiatorRecipe.stats.efficiency;
                     int f = 0;
                     for(int j = 1; j<i; j++){
-                        f += getBlock(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j).template.moderator.flux;
-                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.x+d.x*j, that.y+d.y*j, that.z+d.z*j, d, f, efficiency/length));
+                        f += getBlock(that.pos.offset(d,j)).template.moderator.flux;
+                        fluxDecals.enqueue(new OverhaulModeratorLineDecal(that.pos.offset(d,j), d, f, efficiency/length));
                     }
-                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.x, that.y, that.z, d, efficiency/length));
-                    fluxDecals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.x, block.y, block.z, d.getOpposite()));
+                    fluxDecals.enqueue(new AdjacentModeratorLineDecal(that.pos, d, efficiency/length));
+                    fluxDecals.enqueue(new IrradiatorAdjacentModeratorLineDecal(block.pos, d.getOpposite()));
                     break;
                 }
                 break;
@@ -1041,8 +1042,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
             Queue<Block> toActivate = new Queue<>();
             Queue<Block> toValidate = new Queue<>();
             for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
-                if(!contains(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i))break;
-                Block block = getBlock(that.x+d.x*i, that.y+d.y*i, that.z+d.z*i);
+                if(!contains(that.pos.offset(d,i)))break;
+                Block block = getBlock(that.pos.offset(d,i));
                 if(block==null)break;
                 boolean skip = false;
                 if(block.isModerator()){
@@ -1057,7 +1058,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(i==1)toActivate.enqueue(block);
                     toValidate.enqueue(block);
                     block.shieldActive = true;
-                    if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                    if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     shieldFluxes.put(block, flux);
                     skip = true;
                 }
@@ -1071,12 +1072,12 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     for(Block b : toActivate){
                         b.moderatorActive = true;
                         if(addDecals){
-                            decals.enqueue(new ModeratorActiveDecal(b.x, b.y, b.z, d.getOpposite()));
+                            decals.enqueue(new ModeratorActiveDecal(b.pos, d.getOpposite()));
                         }
                     }
                     for(Block b : toValidate){
                         b.moderatorValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(b.x, b.y, b.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
                     }
                     break;
                 }
@@ -1084,19 +1085,19 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(length==0)break;
                     if(length>getSpecificConfiguration().settings.neutronReach/2)break;
                     block.reflectorActive = true;
-                    if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                    if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     for(Block b : shieldFluxes.keySet()){
                         b.neutronFlux += flux*(1+block.template.reflector.reflectivity);
                     }
                     for(Block b : toActivate){
                         b.moderatorActive = true;
                         if(addDecals){
-                            decals.enqueue(new ModeratorActiveDecal(b.x, b.y, b.z, d.getOpposite()));
+                            decals.enqueue(new ModeratorActiveDecal(b.pos, d.getOpposite()));
                         }
                     }
                     for(Block b : toValidate){
                         b.moderatorValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(b.x, b.y, b.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
                     }
                     break;
                 }
@@ -1107,16 +1108,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         b.neutronFlux += shieldFluxes.get(b);
                     }
                     block.neutronFlux += flux;
-                    if(addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+                    if(addDecals)decals.enqueue(new BlockValidDecal(block.pos));
                     for(Block b : toActivate){
                         b.moderatorActive = true;
                         if(addDecals){
-                            decals.enqueue(new ModeratorActiveDecal(b.x, b.y, b.z, d.getOpposite()));
+                            decals.enqueue(new ModeratorActiveDecal(b.pos, d.getOpposite()));
                         }
                     }
                     for(Block b : toValidate){
                         b.moderatorValid = true;
-                        if(addDecals)decals.enqueue(new BlockValidDecal(b.x, b.y, b.z));
+                        if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
                     }
                     break;
                 }
@@ -1137,12 +1138,12 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         boolean wasValid = block.heatsinkValid;
         for(NCPFPlacementRule rule : block.getRules()){
             if(!rule.isValid(block, this)){
-                if(block.heatsinkValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
+                if(block.heatsinkValid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.pos));
                 block.heatsinkValid = false;
                 return wasValid!=block.heatsinkValid;
             }
         }
-        if(!block.heatsinkValid&&addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+        if(!block.heatsinkValid&&addDecals)decals.enqueue(new BlockValidDecal(block.pos));
         block.heatsinkValid = true;
         return wasValid!=block.heatsinkValid;
     }
@@ -1269,7 +1270,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     public OverhaulMSR convertToMSR() throws MissingConfigurationEntryException{
         OverhaulMSR msr = new OverhaulMSR(configuration, getInternalWidth(), getInternalHeight(), getInternalDepth());
         for(Block b : getBlocks(true)){
-            msr.setBlockExact(b.x, b.y, b.z, b.convertToMSR());
+            msr.setBlockExact(b.pos, b.convertToMSR());
         }
         msr.metadata.putAll(metadata);
         return msr;
@@ -1306,16 +1307,16 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         public boolean contains(Block block){
             return blocks.contains(block);
         }
-        public boolean contains(int x, int y, int z){
+        public boolean contains(BlockPos pos){
             for(Block b : blocks){
-                if(b.x==x&&b.y==y&&b.z==z)return true;
+                if(b.pos.equals(pos))return true;
             }
             return false;
         }
         private boolean wallCheck(ArrayList<Block> blocks){
             for(Block block : blocks){
-                if(block.x==1||block.y==1||block.z==1)return true;
-                if(block.x==getInternalWidth()||block.y==getInternalHeight()||block.z==getInternalDepth())return true;
+                if(block.pos.x==1||block.pos.y==1||block.pos.z==1)return true;
+                if(block.pos.x==getInternalWidth()||block.pos.y==getInternalHeight()||block.pos.z==getInternalDepth())return true;
             }
             return false;
         }
@@ -1333,7 +1334,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         private Cluster copy(OverhaulSFR newSFR){
             Cluster copy = new Cluster();
             for(Block b : blocks){
-                copy.blocks.add(newSFR.getBlock(b.x, b.y, b.z));
+                copy.blocks.add(newSFR.getBlock(b.pos));
             }
             copy.isConnectedToWall = isConnectedToWall;
             copy.totalOutput = totalOutput;
@@ -1376,32 +1377,9 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
             }
             for(Block block : lastLayer){
                 FOR:
-                for(int j = 0; j<6; j++){
-                    int dx = 0, dy = 0, dz = 0;
-                    switch(j){//This is a primitive version of the Direction class used in other places here, but I'll just leave it as it is
-                        case 0:
-                            dx = -1;
-                            break;
-                        case 1:
-                            dx = 1;
-                            break;
-                        case 2:
-                            dy = -1;
-                            break;
-                        case 3:
-                            dy = 1;
-                            break;
-                        case 4:
-                            dz = -1;
-                            break;
-                        case 5:
-                            dz = 1;
-                            break;
-                        default:
-                            throw new IllegalArgumentException("How did this happen?");
-                    }
-                    if(!contains(block.x+dx, block.y+dy, block.z+dz))continue;
-                    Block newBlock = getBlock(block.x+dx, block.y+dy, block.z+dz);
+                for(Direction d : Direction.values()){
+                    if(!contains(block.pos.offset(d)))continue;
+                    Block newBlock = getBlock(block.pos.offset(d));
                     if(newBlock==null)continue;
                     if(!(newBlock.canCluster()||(useConductors&&newBlock.isConductor()))){//that's not part of this bunch
                         continue;
@@ -1450,8 +1428,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulSFR doCopy(){
         OverhaulSFR copy = blankCopy();
-        forEachPosition((x, y, z) -> {
-            copy.setBlock(x, y, z, getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            copy.setBlock(pos, getBlock(pos));
         });
         synchronized(clusters){
             for(Cluster cluster : clusters){
@@ -1540,8 +1518,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(!b.isModerator())it.remove();
                 }
                 int[] cellCount = new int[1];
-                multiblock.forEachInternalPosition((x, y, z) -> {
-                    Block b = multiblock.getBlock(x, y, z);
+                multiblock.forEachInternalPosition((pos) -> {
+                    Block b = multiblock.getBlock(pos);
                     if(b!=null&&b.isFuelCell()){
                         cellCount[0]++;
                     }
@@ -1549,25 +1527,23 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 suggestor.setCount((multiblock.getInternalVolume()-cellCount[0])*cells.size()*moderators.size());
                 for(Block cell : cells){
                     for(Block moderator : moderators){
-                        multiblock.forEachInternalPosition((x, y, z) -> {
-                            Block was = multiblock.getBlock(x, y, z);
+                        multiblock.forEachInternalPosition((pos) -> {
+                            Block was = multiblock.getBlock(pos);
                             if(was!=null&&was.isFuelCell())return;
                             ArrayList<Action> actions = new ArrayList<>();
-                            Block ce = (Block)cell.newInstance(x, y, z);
+                            Block ce = (Block)cell.newInstance(pos);
                             ce.fuel = cell.fuel;
-                            actions.add(new SetblockAction(x, y, z, ce));
+                            actions.add(new SetblockAction(pos, ce));
                             SetblocksAction multi = new SetblocksAction(moderator);
                             DIRECTION:
                             for(Direction d : Direction.values()){
-                                ArrayList<int[]> toSet = new ArrayList<>();
+                                ArrayList<BlockPos> toSet = new ArrayList<>();
                                 boolean yep = false;
                                 for(int i = 1; i<=getSpecificConfiguration().settings.neutronReach+1; i++){
-                                    int X = x+d.x*i;
-                                    int Y = y+d.y*i;
-                                    int Z = z+d.z*i;
-                                    if(X==0||Y==0||Z==0||X==OverhaulSFR.this.x+1||Y==OverhaulSFR.this.y+1||Z==OverhaulSFR.this.z+1)break;//that's the casing
-                                    if(!multiblock.contains(X, Y, Z))break;//end of the line
-                                    Block b = multiblock.getBlock(X, Y, Z);
+                                    BlockPos oPos = pos.offset(d,i);
+                                    if(oPos.x==0||oPos.y==0||oPos.z==0||oPos.x==OverhaulSFR.this.x+1||oPos.y==OverhaulSFR.this.y+1||oPos.z==OverhaulSFR.this.z+1)break;//that's the casing
+                                    if(!multiblock.contains(oPos))break;//end of the line
+                                    Block b = multiblock.getBlock(oPos);
                                     if(b!=null){
                                         if(b.isModerator())continue;//already a moderator
                                         if(b.isFuelCell()){
@@ -1576,11 +1552,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                                         }
                                     }
                                     if(i<=getSpecificConfiguration().settings.neutronReach){
-                                        toSet.add(new int[]{X, Y, Z});
+                                        toSet.add(oPos);
                                     }
                                 }
                                 if(yep){
-                                    for(int[] b : toSet)multi.add(b[0], b[1], b[2]);
+                                    for(BlockPos p : toSet)multi.add(p);
                                 }
                             }
                             if(!multi.isEmpty())actions.add(multi);
@@ -1634,14 +1610,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     DIRECTION:
                     for(Direction d : Direction.values()){
                         ArrayList<Block> line = new ArrayList<>();
-                        int x = block.x;
-                        int y = block.y;
-                        int z = block.z;
                         for(int i = 0; i<getSpecificConfiguration().settings.neutronReach+1; i++){
-                            x += d.x;
-                            y += d.y;
-                            z += d.z;
-                            Block b = multiblock.getBlock(x, y, z);
+                            Block b = multiblock.getBlock(block.pos.offset(d, i+1));
                             if(b==null){
                                 suggestor.task.max--;
                                 continue DIRECTION;
@@ -1660,7 +1630,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                         for(Block mod : moderators){
                             ArrayList<Action> actions = new ArrayList<>();
                             for(Block b : line){
-                                actions.add(new SetblockAction(b.x, b.y, b.z, mod.newInstance(b.x, b.y, b.z)));
+                                actions.add(new SetblockAction(b.pos, mod.newInstance(b.pos)));
                             }
                             suggestor.suggest(new Suggestion("Replace Moderator Line with "+StringUtil.superRemove(mod.getName(), " Moderator"), actions, priorities, mod.getTexture()));
                         }
@@ -1710,7 +1680,7 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 for(Block block : multiblock.getBlocks()){
                     if(!block.isModerator())continue;
                     for(Block b : moderators){
-                        suggestor.suggest(new Suggestion("Upgrade Moderator from "+StringUtil.superRemove(block.getName(), " Moderator")+" to "+StringUtil.superRemove(b.getName(), " Moderator"), new SetblockAction(block.x, block.y, block.z, b.newInstance(block.x, block.y, block.z)), priorities, b.getTexture()));
+                        suggestor.suggest(new Suggestion("Upgrade Moderator from "+StringUtil.superRemove(block.getName(), " Moderator")+" to "+StringUtil.superRemove(b.getName(), " Moderator"), new SetblockAction(block.pos, b.newInstance(block.pos)), priorities, b.getTexture()));
                     }
                 }
             }
@@ -1738,21 +1708,21 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                     if(!block.isHeatsink())it.remove();
                 }
                 int[] count = new int[1];
-                multiblock.forEachInternalPosition((x, y, z) -> {
-                    Block block = multiblock.getBlock(x, y, z);
+                multiblock.forEachInternalPosition((pos) -> {
+                    Block block = multiblock.getBlock(pos);
                     if(block==null||block.canBeQuickReplaced()){
                         count[0]++;
                     }
                 });
                 suggestor.setCount(count[0]*heatsinks.size());
-                multiblock.forEachInternalPosition((x, y, z) -> {
+                multiblock.forEachInternalPosition((pos) -> {
                     for(Block newBlock : heatsinks){
-                        Block block = multiblock.getBlock(x, y, z);
+                        Block block = multiblock.getBlock(pos);
                         if(block==null||block.canBeQuickReplaced()){
                             int oldCooling = 0;
                             if(block!=null&&block.isHeatsinkActive())oldCooling = block.template.heatsink.cooling;
                             int newCooling = newBlock.template.heatsink.cooling;
-                            if(newCooling>oldCooling&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock.newInstance(x, y, z)), priorities, newBlock.getTexture()));
+                            if(newCooling>oldCooling&&multiblock.isValid(newBlock, pos))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(pos, newBlock.newInstance(pos)), priorities, newBlock.getTexture()));
                             else
                                 suggestor.task.max--;
                         }
@@ -1783,11 +1753,11 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         HashMap<NCPFElement, BlockElement> inPorts = new HashMap<>();
         HashMap<NCPFElement, BlockElement> outPorts = new HashMap<>();
         for(BlockElement template : getSpecificConfiguration().blocks){
-            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.coolantVent==null&&template.port==null&&template.neutronSource==null&&template.parent==null&&template.unToggled==null)window = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.coolantVent!=null&&!template.coolantVent.output)inVent = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.coolantVent!=null&&template.coolantVent.output)outVent = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), null, template);
+            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.coolantVent==null&&template.port==null&&template.neutronSource==null&&template.parent==null&&template.unToggled==null)window = new Block(getConfiguration(), null, template);
+            if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
+            if(template.coolantVent!=null&&!template.coolantVent.output)inVent = new Block(getConfiguration(), null, template);
+            if(template.coolantVent!=null&&template.coolantVent.output)outVent = new Block(getConfiguration(), null, template);
         }
         for(Block block : getBlocks(true)){
             if(block.template.recipePorts!=null){
@@ -1820,26 +1790,26 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 }
             }
         }
-        forEachCasingFacePosition((x, y, z) -> {
-            Block b = getBlock(x, y, z);
-            if(b!=null&&b.template.parent!=null&&!inPorts.containsKey(b.getRecipe())&&!outPorts.containsKey(b.getRecipe()))setBlock(x, y, z, null);
+        forEachCasingFacePosition((pos) -> {
+            Block b = getBlock(pos);
+            if(b!=null&&b.template.parent!=null&&!inPorts.containsKey(b.getRecipe())&&!outPorts.containsKey(b.getRecipe()))setBlock(pos, null);
         });
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null){
-                if(getBlock(x, y, z).template!=theCasing.template&&getBlock(x, y, z).template!=theWindow.template)return;
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null){
+                if(getBlock(pos).template!=theCasing.template&&getBlock(pos).template!=theWindow.template)return;
             }
             if(!hasPlacedTheController[0]){
-                setBlock(x, y, z, theController);
+                setBlock(pos, theController);
                 hasPlacedTheController[0] = true;
                 return;
             }
             if(!hasPlacedTheVent[0]){
-                setBlock(x, y, z, theInVent);
+                setBlock(pos, theInVent);
                 hasPlacedTheVent[0] = true;
                 return;
             }
             if(!hasPlacedTheVent[1]){
-                setBlock(x, y, z, theOutVent);
+                setBlock(pos, theOutVent);
                 hasPlacedTheVent[1] = true;
                 return;
             }
@@ -1847,8 +1817,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 NCPFElement recipe = it.next();
                 if(hasPlacedTheInputPort.contains(recipe))continue;
                 BlockElement template = inPorts.get(recipe);
-                setBlock(x, y, z, new Block(getConfiguration(), 0, 0, 0, template));
-                getBlock(x, y, z).setRecipe(recipe);
+                setBlock(pos, new Block(getConfiguration(), null, template));
+                getBlock(pos).setRecipe(recipe);
                 it.remove();
                 return;
             }
@@ -1856,20 +1826,20 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
                 NCPFElement recipe = it.next();
                 if(hasPlacedTheOutputPort.contains(recipe))continue;
                 BlockElement template = outPorts.get(recipe);
-                setBlock(x, y, z, new Block(getConfiguration(), 0, 0, 0, template));
-                getBlock(x, y, z).setRecipe(recipe);
-                getBlock(x, y, z).setToggled(true);
+                setBlock(pos, new Block(getConfiguration(), null, template));
+                getBlock(pos).setRecipe(recipe);
+                getBlock(pos).setToggled(true);
                 it.remove();
                 return;
             }
         });
-        forEachCasingEdgePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theCasing);
+        forEachCasingEdgePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theCasing);
         });
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theWindow);
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theWindow);
         });
     }
     @Override
@@ -1885,8 +1855,8 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulSFRDesign convertToDesign(){
         OverhaulSFRDesign design = new OverhaulSFRDesign(Core.project, x, y, z);
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
             design.design[x][y][z] = block==null?null:block.template;
             if(block!=null){
                 design.fuels[x][y][z] = block.fuel;

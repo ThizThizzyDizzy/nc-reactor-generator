@@ -7,6 +7,7 @@ import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
@@ -38,14 +39,14 @@ public class Block extends AbstractBlock{
     public OverhaulMSR.VesselGroup vesselGroup;//only used when recalculating; doesn't even need to be reset
     public Block source;
     public boolean casingValid;
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
-        super(configuration, x, y, z);
+    public Block(NCPFConfigurationContainer configuration, BlockPos pos, BlockElement template){
+        super(configuration, pos);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public AbstractBlock newInstance(int x, int y, int z){
-        return new Block(getConfiguration(), x, y, z, template);
+    public AbstractBlock newInstance(BlockPos pos){
+        return new Block(getConfiguration(), pos, template);
     }
     @Override
     public void copyProperties(AbstractBlock other){
@@ -250,9 +251,9 @@ public class Block extends AbstractBlock{
             if(primaryColor!=null){
                 renderer.setColor(primaryColor);
                 renderer.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
-                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
-                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
-                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
+                    boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
+                    boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));
                     if(d1&&d2&&!d3)return true;//both sides, but not the corner
                     if(!d1&&!d2)return true;//neither side
                     return false;
@@ -268,9 +269,9 @@ public class Block extends AbstractBlock{
             if(secondaryColor!=null){
                 renderer.setColor(secondaryColor);
                 renderer.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
-                    boolean d1 = cluster.contains(this.x+t[0].x, this.y+t[0].y, this.z+t[0].z);
-                    boolean d2 = cluster.contains(this.x+t[1].x, this.y+t[1].y, this.z+t[1].z);
-                    boolean d3 = cluster.contains(this.x+t[0].x+t[1].x, this.y+t[0].y+t[1].y, this.z+t[0].z+t[1].z);
+                    boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
+                    boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
+                    boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));
                     if(d1&&d2&&!d3)return true;//both sides, but not the corner
                     if(!d1&&!d2)return true;//neither side
                     return false;
@@ -298,7 +299,7 @@ public class Block extends AbstractBlock{
             if(elem.definition.toString().equals(StringUtil.superReplace(template.definition.toString(), "salt", "solid", "vessel", "cell", "heater", "sink", "standard", "water")))newTemplate = elem;
         }
         if(newTemplate==null)return null;
-        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(getConfiguration(), x, y, z, newTemplate);
+        net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = new net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block(getConfiguration(), pos, newTemplate);
         if(irradiatorRecipe!=null){
            for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recipe : b.template.irradiatorRecipes){
                if(recipe.definition.matches(irradiatorRecipe.definition))b.irradiatorRecipe = recipe;
@@ -319,7 +320,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public Block copy(){
-        Block copy = new Block(getConfiguration(), x, y, z, template);
+        Block copy = new Block(getConfiguration(), pos, template);
         copy.fuel = fuel;
         copy.irradiatorRecipe = irradiatorRecipe;
         copy.heaterRecipe = heaterRecipe;
@@ -349,34 +350,34 @@ public class Block extends AbstractBlock{
      * @return If no block was replaced, the new source. Otherwise, the replaced block.
      */
     public Block addNeutronSource(OverhaulMSR msr, BlockElement source){
-        HashMap<int[], Integer> possible = new HashMap<>();
+        HashMap<BlockPos, Integer> possible = new HashMap<>();
         for(Direction d : Direction.values()){
             int i = 0;
             while(true){
                 i++;
-                if(!msr.contains(x+d.x*i, y+d.y*i, z+d.z*i)){
-                    possible.put(new int[]{x+d.x*(i-1),y+d.y*(i-1),z+d.z*(i-1)}, i);
+                if(!msr.contains(pos.offset(d,i))){
+                    possible.put(pos.offset(d,i-1), i);
                     break;
                 }
-                Block b = msr.getBlock(x+d.x*i, y+d.y*i, z+d.z*i);
+                Block b = msr.getBlock(pos.offset(d,i));
                 if(b==null)continue;//air
                 if(b.isFuelVessel()||b.isIrradiator()||b.isReflector())break;
             }
         }
-        ArrayList<int[]> keys = new ArrayList<>(possible.keySet());
+        ArrayList<BlockPos> keys = new ArrayList<>(possible.keySet());
         Collections.sort(keys, (o1, o2) -> {
             return possible.get(o1)-possible.get(o2);
         });
-        for(int[] key : keys){
-            Block was = msr.getBlock(key[0], key[1], key[2]);
-            if(tryAddNeutronSource(msr, source, key[0], key[1], key[2]))return was==null?msr.getBlock(key[0], key[1], key[2]):was;
+        for(BlockPos key : keys){
+            Block was = msr.getBlock(key);
+            if(tryAddNeutronSource(msr, source, key))return was==null?msr.getBlock(key):was;
         }
         return null;
     }
-    private boolean tryAddNeutronSource(OverhaulMSR msr, BlockElement source, int X, int Y, int Z){
-        Block b = msr.getBlock(X, Y, Z);
+    private boolean tryAddNeutronSource(OverhaulMSR msr, BlockElement source, BlockPos pos){
+        Block b = msr.getBlock(pos);
         if(b!=null&&(b.isController()||b.template.port!=null||b.template.neutronSource!=null))return false;
-        msr.setBlock(X, Y, Z, new Block(msr.getConfiguration(), X, Y, Z, source));
+        msr.setBlock(pos, new Block(msr.getConfiguration(), pos, source));
         return true;
     }
     @Override

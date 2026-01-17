@@ -1,32 +1,29 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 public class SetblockAction extends Action{
-    public final int x;
-    public final int y;
-    public final int z;
+    public final BlockPos pos;
     public final AbstractBlock block;
     private AbstractBlock was = null;
-    public SetblockAction(int x, int y, int z, AbstractBlock block){
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public SetblockAction(BlockPos pos, AbstractBlock block){
+        this.pos = pos;
         this.block = block;
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
-        if(allowUndo)was = multiblock.getBlock(x, y, z);
-        multiblock.setBlock(x, y, z, block);
+        if(allowUndo)was = multiblock.getBlock(pos);
+        multiblock.setBlock(pos, block);
     }
     @Override
     public void doUndo(Multiblock multiblock){
-        multiblock.setBlockExact(x, y, z, was);
+        multiblock.setBlockExact(pos, was);
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList blocks){
-        AbstractBlock b = multiblock.getBlock(x, y, z);
+        AbstractBlock b = multiblock.getBlock(pos);
         if(b!=null)blocks.add(b);
     }
     @Override
@@ -34,7 +31,7 @@ public class SetblockAction extends Action{
         if(obj instanceof SetblockAction){
             SetblockAction other = (SetblockAction)obj;
             if(block==null&&other.block!=null)return false;
-            return x==other.x&&y==other.y&&z==other.z&&(block==null||block.isEqual(other.block));
+            return pos.equals(other.pos)&&(block==null||block.isEqual(other.block));
         }
         return false;
     }

@@ -13,16 +13,17 @@ public class GenerateAction extends Action<Multiblock>{
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
-        multiblock.forEachPosition((x, y, z) -> {
-            if(allowUndo)was.put(new BlockPos(x,y,z),multiblock.getBlock(x, y, z));
-            AbstractBlock block = this.multiblock.getBlock(x, y, z);
-            multiblock.setBlock(x, y, z, block);
+        multiblock.forEachPosition((ps) -> {
+            BlockPos pos = (BlockPos)ps;
+            if(allowUndo)was.put(pos,multiblock.getBlock(pos));
+            AbstractBlock block = this.multiblock.getBlock(pos);
+            multiblock.setBlock(pos, block);
         });
     }
     @Override
     public void doUndo(Multiblock multiblock){
         for(BlockPos pos : was.keySet()){
-            multiblock.setBlockExact(pos.x, pos.y, pos.z, was.get(pos));
+            multiblock.setBlockExact(pos, was.get(pos));
         }
     }
     @Override

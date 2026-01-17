@@ -4,20 +4,21 @@ import java.util.HashSet;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
-import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.editor.action.SetblocksAction;
+import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class RectangleTool extends EditorTool{
     public RectangleTool(Editor editor, int id){
         super(editor, id);
     }
-    private int[] leftDragStart;
-    private int[] rightDragStart;
-    private int[] leftDragEnd;
-    private int[] rightDragEnd;
+    private BlockPos leftDragStart;
+    private BlockPos rightDragStart;
+    private BlockPos leftDragEnd;
+    private BlockPos rightDragEnd;
     @Override
     public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
         renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
@@ -39,25 +40,25 @@ public class RectangleTool extends EditorTool{
     public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
         renderer.setWhite(.5f);
-        if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (bx,by,bz) -> {
-            if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), bx, by, bz))return;
+        if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart, leftDragEnd, (pos) -> {
+            if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), pos))return;
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
-            int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-            int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-            int sz = bx*axis.x+by*axis.y+bz*axis.z;
+            int sx = pos.x*xAxis.x+pos.y*xAxis.y+pos.z*xAxis.z-x1;
+            int sy = pos.x*yAxis.x+pos.y*yAxis.y+pos.z*yAxis.z-y1;
+            int sz = pos.x*axis.x+pos.y*axis.y+pos.z*axis.z;
             if(sz!=layer)return;
             if(sx<0||sx>x2-x1)return;
             if(sy<0||sy>y2-y1)return;
             renderer.drawImage(texture, x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-        if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (bx,by,bz) -> {
+        if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart, rightDragEnd, (pos) -> {
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
-            int sx = bx*xAxis.x+by*xAxis.y+bz*xAxis.z-x1;
-            int sy = bx*yAxis.x+by*yAxis.y+bz*yAxis.z-y1;
-            int sz = bx*axis.x+by*axis.y+bz*axis.z;
+            int sx = pos.x*xAxis.x+pos.y*xAxis.y+pos.z*xAxis.z-x1;
+            int sy = pos.x*yAxis.x+pos.y*yAxis.y+pos.z*yAxis.z-y1;
+            int sz = pos.x*axis.x+pos.y*axis.y+pos.z*axis.z;
             if(sz!=layer)return;
             if(sx<0||sx>x2-x1)return;
             if(sy<0||sy>y2-y1)return;
@@ -70,14 +71,14 @@ public class RectangleTool extends EditorTool{
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
         renderer.setWhite(.5f);
         float border = blockSize/64;
-        if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], leftDragEnd[0], leftDragEnd[1], leftDragEnd[2], (X,Y,Z) -> {
-            if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), X, Y, Z))return;
-            renderer.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, texture);
+        if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart, leftDragEnd, (pos) -> {
+            if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), pos))return;
+            renderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, texture);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
         renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-        if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], rightDragEnd[0], rightDragEnd[1], rightDragEnd[2], (X,Y,Z) -> {
-            if(editor.getMultiblock().getBlock(X, Y, Z)==null)return;
-            renderer.drawCube(x+X*blockSize-border, y+Y*blockSize-border, z+Z*blockSize-border, x+(X+1)*blockSize+border, y+(Y+1)*blockSize+border, z+(Z+1)*blockSize+border, null);
+        if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart, rightDragEnd, pos -> {
+            if(editor.getMultiblock().getBlock(pos)==null)return;
+            renderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, null);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
         renderer.setWhite();
     }
@@ -87,24 +88,24 @@ public class RectangleTool extends EditorTool{
         if(button==1)rightDragStart = rightDragEnd = null;
     }
     @Override
-    public void mousePressed(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)leftDragStart = new int[]{x,y,z};
-        if(button==1)rightDragStart = new int[]{x,y,z};
+    public void mousePressed(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
+        if(button==0)leftDragStart = pos;
+        if(button==1)rightDragStart = pos;
     }
     @Override
-    public void mouseReleased(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
+    public void mouseReleased(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
         if(button==0&&leftDragStart!=null){
             SetblocksAction set = new SetblocksAction(editor.getSelectedBlock(id));
-            foreach(leftDragStart[0], leftDragStart[1], leftDragStart[2], x, y, z, (X,Y,Z) -> {
-                if(editorSpace.isSpaceValid(set.block, X, Y, Z))set.add(X, Y, Z);
+            foreach(leftDragStart, pos, p -> {
+                if(editorSpace.isSpaceValid(set.block, p))set.add(p);
             });
             set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
             if(!set.isEmpty())editor.setblocks(id, set);
         }
         if(button==1&&rightDragStart!=null){
             SetblocksAction set = new SetblocksAction(null);
-            foreach(rightDragStart[0], rightDragStart[1], rightDragStart[2], x, y, z, (X,Y,Z) -> {
-                set.add(X, Y, Z);
+            foreach(rightDragStart, pos, p -> {
+                set.add(p);
             });
             set.symmetrize(editor.getMultiblock(), editor.getSymmetry());
             if(!set.isEmpty())editor.setblocks(id, set);
@@ -112,9 +113,9 @@ public class RectangleTool extends EditorTool{
         mouseReset(editorSpace, button);
     }
     @Override
-    public void mouseDragged(Object obj, EditorSpace editorSpace, int x, int y, int z, int button){
-        if(button==0)leftDragEnd = new int[]{x,y,z};
-        if(button==1)rightDragEnd = new int[]{x,y,z};
+    public void mouseDragged(Object obj, EditorSpace editorSpace, BlockPos pos, int button){
+        if(button==0)leftDragEnd = pos;
+        if(button==1)rightDragEnd = pos;
     }
     @Override
     public boolean isEditTool(){
@@ -125,16 +126,14 @@ public class RectangleTool extends EditorTool{
         return "Box tool (B)\nUse this tool to draw Rectangles or Cuboids of the same block\nHold CTRL to only place blocks where they are valid";
     }
     @Override
-    public void mouseMoved(Object obj, EditorSpace editorSpace, int x, int y, int z){}
+    public void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos){}
     @Override
     public void mouseMovedElsewhere(Object obj, EditorSpace editorSpace){}
-    private Iterable<int[]> symmetrize(ArrayList<int[]> leftSelectedBlocks, Symmetry symmetry){
-        HashSet<int[]> set = new HashSet<>();
+    private Iterable<BlockPos> symmetrize(ArrayList<BlockPos> leftSelectedBlocks, Symmetry symmetry){
+        HashSet<BlockPos> set = new HashSet<>();
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
         leftSelectedBlocks.forEach((t) -> {
-            symmetry.apply(t[0], t[1], t[2], bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), (x, y, z) -> {
-                set.add(new int[]{x,y,z});
-            });
+            symmetry.apply(t, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), set::add);
         });
         return set;
     }

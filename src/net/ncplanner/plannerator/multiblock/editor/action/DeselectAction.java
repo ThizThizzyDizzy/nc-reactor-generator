@@ -3,18 +3,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.Editor;
 public class DeselectAction extends Action<Multiblock>{
     private final int id;
-    public final ArrayList<int[]> sel = new ArrayList<>();
+    public final ArrayList<BlockPos> sel = new ArrayList<>();
     private final Editor editor;
-    public DeselectAction(Editor editor, int id, Collection<int[]> sel){
+    public DeselectAction(Editor editor, int id, Collection<BlockPos> sel){
         this.editor = editor;
-        for (Iterator<int[]> it = sel.iterator(); it.hasNext();) {
-            int[] i = it.next();
-            if(!editor.isSelected(id, i[0], i[1], i[2]))it.remove();
+        for (Iterator<BlockPos> it = sel.iterator(); it.hasNext();) {
+            BlockPos pos = it.next();
+            if(!editor.isSelected(id, pos))it.remove();
         }
         this.sel.addAll(sel);
         this.id = id;
@@ -22,12 +23,7 @@ public class DeselectAction extends Action<Multiblock>{
     @Override
     protected void doApply(Multiblock multiblock, boolean allowUndo){
         synchronized(editor.getSelection(id)){
-            for(int[] i : sel){
-                for (Iterator<int[]> it = editor.getSelection(id).iterator(); it.hasNext();) {
-                    int[] s = it.next();
-                    if(s[0]==i[0]&&s[1]==i[1]&&s[2]==i[2])it.remove();
-                }
-            }
+            editor.getSelection(id).removeAll(sel);
         }
     }
     @Override

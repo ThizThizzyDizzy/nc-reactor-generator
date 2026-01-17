@@ -25,17 +25,13 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 public abstract class AbstractBlock implements Pinnable{
     protected NCPFConfigurationContainer configuration;
-    public int x;
-    public int y;
-    public int z;
+    public final BlockPos pos;
     private Image grayscaleTexture = null;
-    public AbstractBlock(NCPFConfigurationContainer configuration, int x, int y, int z){
+    public AbstractBlock(NCPFConfigurationContainer configuration, BlockPos pos){
         this.configuration = configuration;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.pos = pos;
     }
-    public abstract AbstractBlock newInstance(int x, int y, int z);
+    public abstract AbstractBlock newInstance(BlockPos pos);
     public abstract void copyProperties(AbstractBlock other);
     public Image getBaseTexture(){
         return getTemplate().getTexture();
@@ -71,8 +67,8 @@ public abstract class AbstractBlock implements Pinnable{
     public <T extends AbstractBlock> Queue<T> getAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : Direction.values()){
-            if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
-            T b = multiblock.getBlock(x+direction.x, y+direction.y, z+direction.z);
+            if(!multiblock.contains(pos.offset(direction)))continue;
+            T b = multiblock.getBlock(pos.offset(direction));
             if(b!=null)adjacent.enqueue(b);
         }
         return adjacent;
@@ -80,8 +76,8 @@ public abstract class AbstractBlock implements Pinnable{
     public <T extends AbstractBlock> Queue<T> getActiveAdjacent(Multiblock<T> multiblock){
         Queue<T> adjacent = new Queue<>();
         for(Direction direction : Direction.values()){
-            if(!multiblock.contains(x+direction.x, y+direction.y, z+direction.z))continue;
-            T b = multiblock.getBlock(x+direction.x, y+direction.y, z+direction.z);
+            if(!multiblock.contains(pos.offset(direction)))continue;
+            T b = multiblock.getBlock(pos.offset(direction));
             if(b!=null&&b.isActive())adjacent.enqueue(b);
         }
         return adjacent;
@@ -330,8 +326,8 @@ public abstract class AbstractBlock implements Pinnable{
         renderer.drawCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2, null, func);//left
         renderer.drawCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2, null, func);//right
     }
-    public AbstractBlock copy(int x, int y, int z){
-        AbstractBlock b = newInstance(x, y, z);
+    public AbstractBlock copy(BlockPos pos){
+        AbstractBlock b = newInstance(pos);
         NCPFElement recipe = getRecipe();
         if(recipe!=null)b.setRecipe(recipe);
         copyProperties(b);
@@ -360,7 +356,7 @@ public abstract class AbstractBlock implements Pinnable{
     }
     public abstract boolean canRequire(AbstractBlock other);
     public boolean requires(AbstractBlock other, Multiblock mb){
-        int totalDist = Math.abs(other.x-x)+Math.abs(other.y-y)+Math.abs(other.z-z);
+        int totalDist = BlockPos.taxicabDistance(pos, other.pos);
         if(totalDist>1)return false;//too far away
         for(NCPFPlacementRule rule : getRules()){
             if(rule.containsTarget(other.getTemplate().definition))return true;

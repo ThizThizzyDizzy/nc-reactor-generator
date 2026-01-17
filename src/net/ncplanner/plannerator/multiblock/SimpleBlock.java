@@ -6,8 +6,8 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 public abstract class SimpleBlock extends AbstractBlock{
-    public SimpleBlock(NCPFConfigurationContainer configuration, int x, int y, int z){
-        super(configuration, x, y, z);
+    public SimpleBlock(NCPFConfigurationContainer configuration, BlockPos pos){
+        super(configuration, pos);
     }
     @Override
     public void copyProperties(AbstractBlock other){}
@@ -45,7 +45,7 @@ public abstract class SimpleBlock extends AbstractBlock{
     }
     @Override
     public AbstractBlock copy(){
-        return newInstance(x, y, z);
+        return newInstance(pos);
     }
     @Override
     public boolean isEqual(AbstractBlock other){

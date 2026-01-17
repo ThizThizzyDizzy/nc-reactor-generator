@@ -229,8 +229,8 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
         dims[0] = sfr.getInternalWidth();
         dims[1] = sfr.getInternalHeight();
         dims[2] = sfr.getInternalDepth();
-        sfr.forEachInternalPosition((x, y, z) -> {
-            Block block = sfr.getBlock(x, y, z);
+        sfr.forEachInternalPosition((pos) -> {
+            Block block = sfr.getBlock(pos);
             NCPFElementDefinition definition = block==null?null:block.template.definition;
             NCPFElementDefinition recipe = block==null||block.recipe==null?null:block.recipe.definition;
             int b = -1;
@@ -239,7 +239,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                     if(recipe==null||configuration.blockActive[i].matches(recipe))b = i;
                 }
             }
-            blocks[x-1][y-1][z-1] = b;
+            blocks[pos.x-1][pos.y-1][pos.z-1] = b;
         });
         int f = 0;
         for(int i = 0; i<configuration.fuelDefinition.length; i++){
@@ -365,14 +365,14 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
         }
         calculate();
         UnderhaulSFR sfr = new UnderhaulSFR(configg, dims[0], dims[1], dims[2], fuel);
-        sfr.forEachInternalPosition((x, y, z) -> {
-            int block = blocks[x-1][y-1][z-1];
-            if(blockValid[x-1][y-1][z-1]+blockEfficiency[x-1][y-1][z-1]<=0)block = -1;
+        sfr.forEachInternalPosition((pos) -> {
+            int block = blocks[pos.x-1][pos.y-1][pos.z-1];
+            if(blockValid[pos.x-1][pos.y-1][pos.z-1]+blockEfficiency[pos.x-1][pos.y-1][pos.z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : config.blocks){
                     if(b.definition.matches(configuration.blockDefinition[block])){
-                        bl = new Block(configg, x, y, z, b);
+                        bl = new Block(configg, pos, b);
                         NCPFElementDefinition active = configuration.blockActive[block];
                         if(active!=null){
                             for(ActiveCoolerRecipe recipe : b.activeCoolerRecipes){
@@ -383,7 +383,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
                     }
                 }
             }
-            sfr.setBlock(x, y, z, bl);
+            sfr.setBlock(pos, bl);
         });
         if(Core.autoBuildCasing)sfr.buildDefaultCasing();
         return sfr;

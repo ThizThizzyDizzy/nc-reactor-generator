@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock.editor.symmetry;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.planner.StringUtil;
 public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
@@ -9,9 +10,9 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
         public void apply(CuboidalMultiblock multiblock){
             ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
             for(AbstractBlock b : bls){
-                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
-                int X = multiblock.getExternalWidth()-b.x-1;
-                multiblock.setBlock(X, b.y, b.z, multiblock.getBlock(b.x, b.y, b.z));
+                if(b.pos.x==0||b.pos.y==0||b.pos.z==0||b.pos.x==multiblock.getExternalWidth()-1||b.pos.y==multiblock.getExternalHeight()-1||b.pos.z==multiblock.getExternalDepth()-1)continue;
+                int X = multiblock.getExternalWidth()-b.pos.x-1;
+                multiblock.setBlock(new BlockPos(X, b.pos.y, b.pos.z), multiblock.getBlock(b.pos));
             }
         }
     };
@@ -20,9 +21,9 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
         public void apply(CuboidalMultiblock multiblock){
             ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
             for(AbstractBlock b : bls){
-                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
-                int Y = multiblock.getExternalHeight()-b.y-1;
-                multiblock.setBlock(b.x, Y, b.z, multiblock.getBlock(b.x, b.y, b.z));
+                if(b.pos.x==0||b.pos.y==0||b.pos.z==0||b.pos.x==multiblock.getExternalWidth()-1||b.pos.y==multiblock.getExternalHeight()-1||b.pos.z==multiblock.getExternalDepth()-1)continue;
+                int Y = multiblock.getExternalHeight()-b.pos.y-1;
+                multiblock.setBlock(new BlockPos(b.pos.x, Y, b.pos.z), multiblock.getBlock(b.pos));
             }
         }
     };
@@ -31,9 +32,9 @@ public abstract class AxialSymmetry extends Symmetry<CuboidalMultiblock>{
         public void apply(CuboidalMultiblock multiblock){
             ArrayList<AbstractBlock> bls = multiblock.getBlocks(true);
             for(AbstractBlock b : bls){
-                if(b.x==0||b.y==0||b.z==0||b.x==multiblock.getExternalWidth()-1||b.y==multiblock.getExternalHeight()-1||b.z==multiblock.getExternalDepth()-1)continue;
-                int Z = multiblock.getExternalDepth()-b.z-1;
-                multiblock.setBlock(b.x, b.y, Z, multiblock.getBlock(b.x, b.y, b.z));
+                if(b.pos.x==0||b.pos.y==0||b.pos.z==0||b.pos.x==multiblock.getExternalWidth()-1||b.pos.y==multiblock.getExternalHeight()-1||b.pos.z==multiblock.getExternalDepth()-1)continue;
+                int Z = multiblock.getExternalDepth()-b.pos.z-1;
+                multiblock.setBlock(new BlockPos(b.pos.x, b.pos.y, Z), multiblock.getBlock(b.pos));
             }
         }
     };

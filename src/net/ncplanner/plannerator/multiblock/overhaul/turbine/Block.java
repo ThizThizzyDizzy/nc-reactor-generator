@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
@@ -13,14 +14,14 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Bloc
 public class Block extends AbstractBlock{
     public BlockElement template;
     public boolean valid;
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
-        super(configuration, x, y, z);
+    public Block(NCPFConfigurationContainer configuration, BlockPos pos, BlockElement template){
+        super(configuration, pos);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public AbstractBlock newInstance(int x, int y, int z){
-        return new Block(getConfiguration(), x, y, z, template);
+    public AbstractBlock newInstance(BlockPos pos){
+        return new Block(getConfiguration(), pos, template);
     }
     @Override
     public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){}
@@ -73,7 +74,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
-        Block copy = new Block(getConfiguration(),x,y,z,template);
+        Block copy = new Block(getConfiguration(),pos,template);
         copy.valid = valid;
         return copy;
     }

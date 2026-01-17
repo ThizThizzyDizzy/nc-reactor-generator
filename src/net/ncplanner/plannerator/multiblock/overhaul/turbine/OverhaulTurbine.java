@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -32,11 +33,11 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorGrid;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public TurbineRecipe recipe;
@@ -92,6 +93,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public Multiblock<Block> newInstance(NCPFConfigurationContainer configuration){
         return new OverhaulTurbine(configuration);
     }
+    @Deprecated // Use multiblock symmetries instead
     public void setBearing(int bearingSize){
         int bearingMax = getExternalWidth()/2+bearingSize/2;
         int bearingMin = getExternalWidth()/2-bearingSize/2;
@@ -104,22 +106,25 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         for(int z = 0; z<getExternalDepth(); z++){
             for(int x = bearingMin; x<=bearingMax; x++){
                 for(int y = bearingMin; y<=bearingMax; y++){
+                    BlockPos pos = new BlockPos(x, y, z);
                     BlockElement block = shaft;
                     if(z==0||z==getExternalDepth()-1)block = bearing;
-                    if(block!=null)setBlock(x, y, z, new Block(getConfiguration(), x, y, z, block));
+                    if(block!=null)setBlock(pos, new Block(getConfiguration(), pos, block));
                 }
             }
         }
     }
+    @Deprecated // Use multiblock symmetries instead
     public void setBlade(int bearingSize, int z, BlockElement block){
         int bearingMax = getExternalWidth()/2+bearingSize/2;
         int bearingMin = getExternalWidth()/2-bearingSize/2;
         for(int x = 1; x<=getInternalWidth(); x++){
             for(int y = 1; y<=getInternalHeight(); y++){
+                BlockPos pos = new BlockPos(x, y, z);
                 boolean isXBlade = x>=bearingMin&&x<=bearingMax;
                 boolean isYBlade = y>=bearingMin&&y<=bearingMax;
                 if(isXBlade&&isYBlade)continue;//that's the bearing
-                if(isXBlade||isYBlade)setBlock(x, y, z, new Block(getConfiguration(), x, y, z, block));
+                if(isXBlade||isYBlade)setBlock(pos, new Block(getConfiguration(), pos, block));
             }
         }
     }
@@ -131,7 +136,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public void getAvailableBlocks(List<Block> blocks){
         if(getSpecificConfiguration()==null)return;
         for(BlockElement block : getSpecificConfiguration().blocks){
-            blocks.add(new Block(getConfiguration(), -1, -1, -1, block));
+            blocks.add(new Block(getConfiguration(), null, block));
         }
     }
     @Override
@@ -181,36 +186,28 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         future.clear();
     }
     @Override
-    public void expandRight(int i){
-        expandDiameter(i);
+    public void expand(int i, Direction direction){
+        if(direction.x!=0||direction.y!=0){
+            expandDiameter(i);
+            return;
+        }
+        super.expand(i, direction);
     }
     @Override
-    public void expandLeft(int i){
-        expandDiameter(i);
+    public void delete(int deletePos, Axis axis){
+        if(axis.x!=0||axis.y!=0){
+            contractDiameter(1);
+            return;
+        }
+        super.delete(deletePos, axis);
     }
     @Override
-    public void expandUp(int i){
-        expandDiameter(i);
-    }
-    @Override
-    public void exandDown(int i){
-        expandDiameter(i);
-    }
-    @Override
-    public void deleteX(int X){
-        contractDiameter(1);
-    }
-    @Override
-    public void deleteY(int Y){
-        contractDiameter(1);
-    }
-    @Override
-    public void insertX(int X){
-        expandDiameter(1);
-    }
-    @Override
-    public void insertY(int Y){
-        expandDiameter(1);
+    public void insert(int insertPos, Axis axis){
+        if(axis.x!=0||axis.y!=0){
+            expandDiameter(1);
+            return;
+        }
+        super.delete(insertPos, axis);
     }
     @Override
     public void genCalcSubtasks(){
@@ -228,11 +225,11 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             case 0://calculate casing
                 numControllers = missingCasings = 0;
                 hasInlet = hasOutlet = false;
-                forEachCasingPosition((x, y, z) -> {
-                    Block block = getBlock(x, y, z);
+                forEachCasingPosition((pos) -> {
+                    Block block = getBlock(pos);
                     if(block==null){
                         missingCasings++;
-                        if(addDecals)decals.enqueue(new MissingCasingDecal(x, y, z));
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
                     }
                     if(block!=null){
                         if(block.template.inlet!=null)hasInlet = true;
@@ -240,7 +237,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                         if(block.template.controller!=null)numControllers++;
                         if(block.template.casing!=null||block.template.inlet!=null||block.template.outlet!=null||block.template.controller!=null){
                             block.valid = true;
-                            if(addDecals)decals.enqueue(new BlockValidDecal(x, y, z));
+                            if(addDecals)decals.enqueue(new BlockValidDecal(pos));
                         }
                     }
                 });
@@ -259,7 +256,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     for(int x = bearingMin; x<=bearingMax; x++){
                         for(int y = bearingMin; y<=bearingMax; y++){
                             for(int z = 0; z<getExternalDepth(); z++){
-                                Block block = getBlock(x, y, z);
+                                Block block = getBlock(new BlockPos(x, y, z));
                                 boolean valid = block!=null&&((z==0||z==getExternalDepth()-1)?block.template.bearing!=null:block.template.shaft!=null);
                                 if(!valid)break BEARING;
                                 toValidate.enqueue(block);
@@ -272,7 +269,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 }
                 for(Block b : realToValidate){
                     b.valid = true;
-                    if(addDecals)decals.enqueue(new BlockValidDecal(b.x, b.y, b.z));
+                    if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
                 }
                 calcBearing.finish();
                 calcStep++;
@@ -288,16 +285,17 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     Queue<Block> toValidate = new Queue<>();
                     for(int x = 1; x<=getInternalWidth(); x++){
                         for(int y = 1; y<=getInternalHeight(); y++){
-                            Block block = getBlock(x, y, z);
+                            BlockPos pos = new BlockPos(x, y, z);
+                            Block block = getBlock(pos);
                             boolean xBlade = x>=bearingMin&&x<=bearingMax;
                             boolean yBlade = y>=bearingMin&&y<=bearingMax;
                             if(xBlade&&yBlade)continue;//that's a bearing, already done
                             if(!xBlade&&!yBlade){
-                                if(block!=null&&addDecals)decals.enqueue(new BlockInvalidDecal(x, y, z));
+                                if(block!=null&&addDecals)decals.enqueue(new BlockInvalidDecal(pos));
                                 continue;
                             }
                             if(block==null){
-                                decals.enqueue(new MissingBladeDecal(x, y, z));
+                                decals.enqueue(new MissingBladeDecal(pos));
                                 bladeIncomplete = true;
                             }else{
                                 toValidate.enqueue(block);
@@ -310,7 +308,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     else{
                         for(Block b : toValidate){
                             b.valid = true;
-                            if(addDecals)decals.enqueue(new BlockValidDecal(b.x, b.y, b.z));
+                            if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
                         }
                     }
                     bladesComplete[z-1] = !bladeIncomplete;
@@ -396,12 +394,12 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 int outputCoils = 0;
                 for(int x = 1; x<=getInternalWidth(); x++){
                     for(int y = 1; y<=getInternalHeight(); y++){
-                        Block in = getBlock(x, y, 0);
+                        Block in = getBlock(new BlockPos(x, y, 0));
                         if(in!=null&&in.isCoil()&&in.isActive()){
                             inputEff += in.template.coil.efficiency;
                             inputCoils++;
                         }
-                        Block out = getBlock(x, y, getExternalDepth()-1);
+                        Block out = getBlock(new BlockPos(x, y, getExternalDepth()-1));
                         if(out!=null&&out.isCoil()&&out.isActive()){
                             outputEff += out.template.coil.efficiency;
                             outputCoils++;
@@ -437,8 +435,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         boolean wasValid = block.valid;
         boolean hasAny = false;
         for(Direction d : Direction.values()){
-            if(contains(block.x+d.x, block.y+d.y, block.z+d.z)){
-                Block b = getBlock(block.x+d.x, block.y+d.y, block.z+d.z);
+            if(contains(block.pos.offset(d))){
+                Block b = getBlock(block.pos.offset(d));
                 if(b!=null&&(b.isCoil()||b.isConnector()||b.isBearing())&&b.isValid()){
                     hasAny = true;
                     break;
@@ -446,18 +444,18 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             }
         }
         if(!hasAny){
-            if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
+            if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.pos));
             block.valid = false;
             return wasValid!=block.valid;
         }
         for(NCPFPlacementRule rule : block.getRules()){
             if(!rule.isValid(block, this)){
-                if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.x, block.y, block.z));
+                if(block.valid&&addDecals)decals.enqueue(new BlockInvalidDecal(block.pos));
                 block.valid = false;
                 return wasValid!=block.valid;
             }
         }
-        if(!block.valid&&addDecals)decals.enqueue(new BlockValidDecal(block.x, block.y, block.z));
+        if(!block.valid&&addDecals)decals.enqueue(new BlockValidDecal(block.pos));
         block.valid = true;
         return wasValid!=block.valid;
     }
@@ -514,8 +512,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulTurbine doCopy(){
         OverhaulTurbine copy = blankCopy();
-        forEachPosition((x, y, z) -> {
-            copy.setBlock(x, y, z, getBlock(x, y, z));
+        forEachPosition((pos) -> {
+            copy.setBlock(pos, getBlock(pos));
         });
         copy.rotorValid = rotorValid;
         copy.bladeCount = bladeCount;
@@ -576,8 +574,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     protected float[] getCubeBounds(Block block){
         int bearingMax = getExternalWidth()/2+bearingDiameter/2;
         int bearingMin = getExternalWidth()/2-bearingDiameter/2;
-        boolean isXBlade = block.x>=bearingMin&&block.x<=bearingMax;
-        boolean isYBlade = block.y>=bearingMin&&block.y<=bearingMax;
+        boolean isXBlade = block.pos.x>=bearingMin&&block.pos.x<=bearingMax;
+        boolean isYBlade = block.pos.y>=bearingMin&&block.pos.y<=bearingMax;
         if(block.isBlade()){
             float x1 = 0;
             float y1 = 0;
@@ -649,19 +647,20 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                     for(int y = 1; y<=multiblock.getInternalHeight(); y++){
                         for(int z = 0; z<2; z++){
                             if(z==1)z = multiblock.getExternalDepth()-1;
-                            Block block = multiblock.getBlock(x, y, z);
+                            BlockPos pos = new BlockPos(x,y,z);
+                            Block block = multiblock.getBlock(pos);
                             if(block!=null&&block.isBearing()){
                                 suggestor.task.max--;
                                 continue;
                             }
                             for(Block newBlock : blocks){
-                                if(newBlock.template.coil.efficiency>(block==null||!block.isCoil()?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, x, y, z))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(x, y, z, newBlock), priorities));
+                                if(newBlock.template.coil.efficiency>(block==null||!block.isCoil()?0:block.template.coil.efficiency)&&multiblock.isValid(newBlock, pos))suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), new SetblockAction(pos, newBlock), priorities));
                                 else
                                     suggestor.task.max--;
                             }
                             if(block!=null){
                                 suggestor.task.max++;
-                                suggestor.suggest(new Suggestion("Remove "+block.getName(), new SetblockAction(x, y, z, null), priorities));
+                                suggestor.suggest(new Suggestion("Remove "+block.getName(), new SetblockAction(pos, null), priorities));
                             }
                         }
                     }
@@ -692,7 +691,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                 }
                 int bladeSize = (getInternalWidth()-bearingDiameter)/2;
                 for(int z = 1; z<getExternalDepth()-1; z++){
-                    Block block = multiblock.getBlock(x, y, z);
+                    BlockPos pos = new BlockPos(x,y,z);
+                    Block block = multiblock.getBlock(pos);
                     for(Block newBlock : blades){
                         SetblocksAction action = new SetblocksAction(newBlock);
                         for(int x = 1; x<multiblock.getExternalWidth()-1; x++){
@@ -702,7 +702,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
                                 if(x>bladeSize+bearingDiameter)numEdges++;
                                 if(y<=bladeSize)numEdges++;
                                 if(y>bladeSize+bearingDiameter)numEdges++;
-                                if(numEdges==1)action.add(x, y, z);
+                                if(numEdges==1)action.add(pos);
                             }
                         }
                         suggestor.suggest(new Suggestion(block==null?"Add "+newBlock.getName():"Replace "+block.getName()+" with "+newBlock.getName(), action, priorities));
@@ -715,23 +715,23 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     public void getEditorSpaces(ArrayList<EditorSpace<Block>> editorSpaces){
         editorSpaces.add(new EditorSpace<Block>(0, 0, 0, x+1, y+1, z+1){
             @Override
-            public boolean isSpaceValid(Block block, int x, int y, int z){
+            public boolean isSpaceValid(Block block, BlockPos pos){
                 if(block==null)return true;
-                boolean x0 = x==0;
-                boolean y0 = y==0;
-                boolean z0 = z==0;
-                boolean x1 = x==OverhaulTurbine.this.x+1;
-                boolean y1 = y==OverhaulTurbine.this.y+1;
-                boolean z1 = z==OverhaulTurbine.this.z+1;
+                boolean x0 = pos.x==0;
+                boolean y0 = pos.y==0;
+                boolean z0 = pos.z==0;
+                boolean x1 = pos.x==OverhaulTurbine.this.x+1;
+                boolean y1 = pos.y==OverhaulTurbine.this.y+1;
+                boolean z1 = pos.z==OverhaulTurbine.this.z+1;
                 int bearingMaxMin = 2;
                 int bearingMaxMax = getInternalWidth()-1;
                 boolean even = getInternalWidth()%2==0;
                 int bearingMinMin = getExternalWidth()/2-(even?1:0);
                 int bearingMinMax = getExternalWidth()/2;
-                boolean canBeXBlade = x>=bearingMaxMin&&x<=bearingMaxMax;
-                boolean canBeYBlade = y>=bearingMaxMin&&y<=bearingMaxMax;
-                boolean mustBeXBlade = x>=bearingMinMin&&x<=bearingMinMax;
-                boolean mustBeYBlade = y>=bearingMinMin&&y<=bearingMinMax;
+                boolean canBeXBlade = pos.x>=bearingMaxMin&&pos.x<=bearingMaxMax;
+                boolean canBeYBlade = pos.y>=bearingMaxMin&&pos.y<=bearingMaxMax;
+                boolean mustBeXBlade = pos.x>=bearingMinMin&&pos.x<=bearingMinMax;
+                boolean mustBeYBlade = pos.y>=bearingMinMin&&pos.y<=bearingMinMax;
                 if(x0||y0||z0||x1||y1||z1){
                     if(x0&&y0||x0&&z0||x0&&x1||x0&&y1||x0&&z1||y0&&z0||y0&&x1||y0&&y1||y0&&z1||z0&&x1||z0&&y1||z0&&z1||x1&&y1||x1&&z1||y1&&z1){
                         return block.template.casing!=null&&block.template.casing.edge;
@@ -777,11 +777,11 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         Block inlet = null;
         Block outlet = null;
         for(BlockElement template : getSpecificConfiguration().blocks){
-            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.casing!=null&&!template.casing.edge&&template.controller==null)window = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.controller!=null)controller = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.inlet!=null)inlet = new Block(getConfiguration(), 0, 0, 0, template);
-            if(template.outlet!=null)outlet = new Block(getConfiguration(), 0, 0, 0, template);
+            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), null, template);
+            if(template.casing!=null&&!template.casing.edge&&template.controller==null)window = new Block(getConfiguration(), null, template);
+            if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
+            if(template.inlet!=null)inlet = new Block(getConfiguration(), null, template);
+            if(template.outlet!=null)outlet = new Block(getConfiguration(), null, template);
         }
         final Block theCasing = casing;
         final Block theWindow = window==null?casing:window;
@@ -796,33 +796,33 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
             if(block.template.inlet!=null)hasPlacedTheInlet[0] = true;
             if(block.template.outlet!=null)hasPlacedTheOutlet[0] = true;
         }
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null){
-                if(getBlock(x, y, z).template!=theCasing.template&&getBlock(x, y, z).template!=theWindow.template)return;
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null){
+                if(getBlock(pos).template!=theCasing.template&&getBlock(pos).template!=theWindow.template)return;
             }
             if(!hasPlacedTheController[0]){
-                setBlock(x, y, z, theController);
+                setBlock(pos, theController);
                 hasPlacedTheController[0] = true;
                 return;
             }
             if(z==0&&!hasPlacedTheInlet[0]){
-                setBlock(x, y, z, theInlet);
+                setBlock(pos, theInlet);
                 hasPlacedTheInlet[0] = true;
                 return;
             }
             if(z==getExternalDepth()-1&&!hasPlacedTheOutlet[0]){
-                setBlock(x, y, z, theOutlet);
+                setBlock(pos, theOutlet);
                 hasPlacedTheOutlet[0] = true;
                 return;
             }
         });
-        forEachCasingEdgePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theCasing);
+        forEachCasingEdgePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theCasing);
         });
-        forEachCasingFacePosition((x, y, z) -> {
-            if(getBlock(x, y, z)!=null)return;
-            setBlock(x, y, z, theWindow);
+        forEachCasingFacePosition((pos) -> {
+            if(getBlock(pos)!=null)return;
+            setBlock(pos, theWindow);
         });
     }
     public int getMinBearingDiameter(){
@@ -845,8 +845,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
         return null;
     }
     @Override
-    public boolean shouldHideWithCasing(int x, int y, int z){
-        return x==0||y==0||x==getExternalWidth()-1||y==getExternalHeight()-1;
+    public boolean shouldHideWithCasing(BlockPos pos){
+        return pos.x==0||pos.y==0||pos.x==getExternalWidth()-1||pos.y==getExternalHeight()-1;
     }
     @Override
     public BoundingBox getBoundingBox(boolean includeCasing){
@@ -859,8 +859,8 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     @Override
     public OverhaulTurbineDesign convertToDesign(){
         OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
-        forEachPosition((x, y, z) -> {
-            Block block = getBlock(x, y, z);
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
             design.design[x][y][z] = block==null?null:block.template;
         });
         design.recipe = recipe;

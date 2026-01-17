@@ -1,52 +1,47 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 public class PasteAction extends Action<Multiblock>{
     private final ArrayList<AbstractBlock> was = new ArrayList<>();
-    private final ArrayList<int[]> wasAir = new ArrayList<>();
-    private final int x;
-    private final int y;
-    private final int z;
+    private final ArrayList<BlockPos> wasAir = new ArrayList<>();
+    private final BlockPos pos;
     private final ArrayList<ClipboardEntry> blocks;
-    public PasteAction(ArrayList<ClipboardEntry> blocks, int x, int y, int z){
+    public PasteAction(ArrayList<ClipboardEntry> blocks, BlockPos pos){
         this.blocks = blocks;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.pos = pos;
     }
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         was.clear();
         for(ClipboardEntry entry : blocks){
-            int bx = entry.x+x;
-            int by = entry.y+y;
-            int bz = entry.z+z;
-            if(!multiblock.contains(bx, by, bz))continue;
+            BlockPos p = entry.pos.offset(pos);
+            if(!multiblock.contains(p))continue;
             if(allowUndo){
-                AbstractBlock bl = multiblock.getBlock(bx, by, bz);
+                AbstractBlock bl = multiblock.getBlock(p);
                 if(bl!=null)was.add(bl);
-                else wasAir.add(new int[]{bx,by,bz});
+                else wasAir.add(p);
             }
-            multiblock.setBlock(bx, by, bz, entry.block);
+            multiblock.setBlock(p, entry.block);
         }
     }
     @Override
     public void doUndo(Multiblock multiblock){
         for(AbstractBlock b : was){
-            multiblock.setBlockExact(b.x, b.y, b.z, b);
+            multiblock.setBlockExact(b.pos, b);
         }
-        for(int[] loc : wasAir){
-            multiblock.setBlockExact(loc[0], loc[1], loc[2], null);
+        for(BlockPos loc : wasAir){
+            multiblock.setBlockExact(loc, null);
         }
     }
     @Override
     public void getAffectedBlocks(Multiblock multiblock, ArrayList<AbstractBlock> blocks){
         for(ClipboardEntry entry : this.blocks){
-            if(multiblock.contains(entry.x+x, entry.y+y, entry.z+z)){
-                AbstractBlock block = multiblock.getBlock(entry.x+x, entry.y+y, entry.z+z);
+            if(multiblock.contains(entry.pos.offset(pos))){
+                AbstractBlock block = multiblock.getBlock(entry.pos.offset(pos));
                 if(block==null)continue;
                 if(!blocks.contains(block)){
                     blocks.add(block);

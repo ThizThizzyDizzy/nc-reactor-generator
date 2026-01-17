@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
 import java.util.Set;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.overhaul.distiller.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.distiller.OverhaulDistiller;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
@@ -53,8 +54,8 @@ public class OverhaulDistillerDesign extends MultiblockDesign<NCPFOverhaulDistil
             for(int y = 0; y<design[x].length; y++){
                 for(int z = 0; z<design[x][y].length; z++){
                     if(design[x][y][z]==null)continue;
-                    Block block = new Block(file.conglomeration, x, y, z, design[x][y][z]);
-                    distiller.setBlock(x, y, z, block);
+                    Block block = new Block(file.conglomeration, new BlockPos(x, y, z), design[x][y][z]);
+                    distiller.setBlock(new BlockPos(x, y, z), block);
                 }
             }
         }

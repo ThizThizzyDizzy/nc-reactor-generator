@@ -12,9 +12,9 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Sett
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class RandomCellMutator extends Mutator<LiteOverhaulSFR>{
     public SettingIndicies indicies = new SettingIndicies("Blocks");
@@ -79,11 +79,11 @@ public class RandomCellMutator extends Mutator<LiteOverhaulSFR>{
         if(yOffset>0)y2 += yOffset+1;
         if(zOffset<0)z1 += zOffset-1;
         if(zOffset>0)z2 += zOffset+1;
-        BlockPos.forEachInCell(x1, y1, z1, x2, y2, z2, (x, y, z) -> {
-            positions.add(new BlockPos(x, y, z));
+        BlockPos.forEachInCell(x1, y1, z1, x2, y2, z2, (pos) -> {
+            positions.add(pos);
             blocks.add(cellBlocks.get(rand.nextInt(cellBlocks.size())));
-        }, (x, y, z) -> {
-            positions.add(new BlockPos(x, y, z));
+        }, (pos) -> {
+            positions.add(pos);
             blocks.add(moderatorBlocks.get(rand.nextInt(moderatorBlocks.size())));
         }, null, null);
         for(int X = 0; X<=(xOffset==0?0:1); X++){//each corner
@@ -104,8 +104,8 @@ public class RandomCellMutator extends Mutator<LiteOverhaulSFR>{
         for(int i = 0; i<positions.size(); i++){
             BlockPos pos = positions.get(i);
             int block = blocks.get(i);
-            symmetry.get().apply(pos.x, pos.y, pos.z, multiblock.dims[0], multiblock.dims[1], multiblock.dims[2], (x, y, z) -> {
-                multiblock.blocks[x][y][z] = block;
+            symmetry.get().apply(pos.x, pos.y, pos.z, multiblock.dims[0], multiblock.dims[1], multiblock.dims[2], (ps) -> {
+                multiblock.blocks[ps.x][ps.y][ps.z] = block;
             });
         }
     }

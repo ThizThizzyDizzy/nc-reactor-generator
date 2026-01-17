@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.editor.suggestion;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
@@ -41,9 +42,9 @@ public class Suggestion<T extends Multiblock> implements Comparable<Suggestion<T
     public int compareTo(Suggestion<T> other){
         return other.result.compareTo(result, priorities);
     }
-    public boolean affects(int x, int y, int z){
+    public boolean affects(BlockPos pos){
         for(AbstractBlock b : affectedBlocks){
-            if(b.x==x&&b.y==y&&b.z==z)return true;
+            if(b.pos.equals(pos))return true;
         }
         return false;
     }

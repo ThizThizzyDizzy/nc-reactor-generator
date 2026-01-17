@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
@@ -25,14 +26,14 @@ public class Block extends AbstractBlock{
     //cooler
     public boolean coolerValid;
     boolean casingValid;//also for controllers
-    public Block(NCPFConfigurationContainer configuration, int x, int y, int z, BlockElement template){
-        super(configuration,x,y,z);
+    public Block(NCPFConfigurationContainer configuration, BlockPos pos, BlockElement template){
+        super(configuration,pos);
         if(template==null)throw new IllegalArgumentException("Cannot create null block!");
         this.template = template;
     }
     @Override
-    public AbstractBlock newInstance(int x, int y, int z){
-        return new Block(getConfiguration(), x, y, z, template);
+    public AbstractBlock newInstance(BlockPos pos){
+        return new Block(getConfiguration(), pos, template);
     }
     @Override
     public void copyProperties(AbstractBlock other){}
@@ -130,7 +131,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public Block copy(){
-        Block copy = new Block(getConfiguration(), x, y, z, template);
+        Block copy = new Block(getConfiguration(), pos, template);
         copy.adjacentCells = adjacentCells;
         copy.adjacentModerators = adjacentModerators;
         copy.energyMult = energyMult;

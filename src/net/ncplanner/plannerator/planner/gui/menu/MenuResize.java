@@ -2,7 +2,10 @@ package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.Axis;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
+import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -135,7 +138,7 @@ public class MenuResize extends Menu{
                             deleteX(column);
                         });
                     }
-                    multibwauk.add(new MenuComponentVisibleBlock((x+2)*CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, multiblock, x+1, y+1, z+1));
+                    multibwauk.add(new MenuComponentVisibleBlock((x+2)*CELL_SIZE, CELL_SIZE*3+(int)((1+z+(y*(multiblock.getInternalDepth()+5)))*CELL_SIZE), CELL_SIZE, CELL_SIZE, multiblock, new BlockPos(x+1, y+1, z+1)));
                 }
             }
         }
@@ -166,36 +169,40 @@ public class MenuResize extends Menu{
         renderer.drawCenteredText(done.x, done.height+80, done.x+done.width, done.height+120, "Internal: "+multiblock.getInternalVolume());
     }
     public void expand(int x, int y, int z){
-        if(x>0)multiblock.expandRight(x);
-        if(x<0)multiblock.expandLeft(-x);
-        if(y>0)multiblock.expandUp(y);
-        if(y<0)multiblock.exandDown(-y);
-        if(z>0)multiblock.expandToward(z);
-        if(z<0)multiblock.expandAway(-z);
+        for(Direction direction : Direction.values()){
+            if(Math.signum(direction.x)==Math.signum(x)
+                &&Math.signum(direction.y)==Math.signum(y)
+                &&Math.signum(direction.z)==Math.signum(z)){
+                int xMagnitude = x*direction.x;
+                int yMagnitude = y*direction.y;
+                int zMagnitude = z*direction.z;
+                multiblock.expand(xMagnitude+yMagnitude+zMagnitude, direction);
+            }
+        }
         onOpened();
     }
     private void deleteX(int x){
-        multiblock.deleteX(x);
+        multiblock.delete(x, Axis.X);
         onOpened();
     }
     private void deleteY(int y){
-        multiblock.deleteY(y);
+        multiblock.delete(y, Axis.Y);
         onOpened();
     }
     private void deleteZ(int z){
-        multiblock.deleteZ(z);
+        multiblock.delete(z, Axis.Z);
         onOpened();
     }
     private void insertX(int x){
-        multiblock.insertX(x);
+        multiblock.insert(x, Axis.X);
         onOpened();
     }
     private void insertY(int y){
-        multiblock.insertY(y);
+        multiblock.insert(y, Axis.Y);
         onOpened();
     }
     private void insertZ(int z){
-        multiblock.insertZ(z);
+        multiblock.insert(z, Axis.Z);
         onOpened();
     }
     public static ArrayList<float[]> rects = new ArrayList<>();

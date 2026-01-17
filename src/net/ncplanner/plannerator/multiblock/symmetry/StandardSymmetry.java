@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.multiblock.symmetry;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.function.Consumer;
 import net.ncplanner.plannerator.multiblock.BlockPos;
-import net.ncplanner.plannerator.multiblock.BlockPosConsumer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 public class StandardSymmetry extends Symmetry{
     public boolean mx;
@@ -23,13 +23,13 @@ public class StandardSymmetry extends Symmetry{
         this.rz180 = rz180;
     }
     @Override
-    public void apply(int x, int y, int z, BoundingBox bbox, BlockPosConsumer consumer){
-        apply(x, y, z, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), consumer);
+    public void apply(BlockPos pos, BoundingBox bbox, Consumer<BlockPos> consumer){
+        apply(pos, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), consumer);
     }
     @Override
-    public void apply(int x, int y, int z, int w, int h, int d, BlockPosConsumer consumer){
+    public void apply(BlockPos pos, int w, int h, int d, Consumer<BlockPos> consumer){
         HashSet<BlockPos> positions = new HashSet<>();
-        positions.add(new BlockPos(x, y, z));
+        positions.add(pos);
         if(mx){
             ArrayList<BlockPos> newPositions = new ArrayList<>();
             positions.forEach((p) -> {
@@ -74,7 +74,7 @@ public class StandardSymmetry extends Symmetry{
         }
         positions.forEach((p) -> {
             if(p.x<0||p.y<0||p.z<0||p.x>=w||p.y>=h||p.z>=d)return;
-            consumer.accept(p.x, p.y, p.z);
+            consumer.accept(p);
         });
     }
 }

@@ -51,12 +51,12 @@ public class HellrageWriter extends FormatWriter{
                 for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : ncpf.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
                     JSON.JSONArray array = new JSON.JSONArray();
                     for(net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block : reactor.getBlocks()){
-                        if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                        if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                         if(block.template==b){
                             JSON.JSONObject bl = new JSON.JSONObject();
-                            bl.set("X", block.x);
-                            bl.set("Y", block.y);
-                            bl.set("Z", block.z);
+                            bl.set("X", block.pos.x);
+                            bl.set("Y", block.pos.y);
+                            bl.set("Z", block.pos.z);
                             array.add(bl);
                         }
                     }
@@ -100,12 +100,12 @@ public class HellrageWriter extends FormatWriter{
                     if(b.heatsink!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                         }
@@ -114,12 +114,12 @@ public class HellrageWriter extends FormatWriter{
                     if(b.moderator!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                         }
@@ -128,12 +128,12 @@ public class HellrageWriter extends FormatWriter{
                     if(b.reflector!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                         }
@@ -142,12 +142,12 @@ public class HellrageWriter extends FormatWriter{
                     if(b.neutronShield!=null){
                         JSON.JSONArray array = new JSON.JSONArray();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                         }
@@ -156,7 +156,7 @@ public class HellrageWriter extends FormatWriter{
                     if(b.fuelCell!=null){
                         HashMap<String, ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>> cells = new HashMap<>();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 String name = block.getRecipe().getDisplayName();
                                 if(name.endsWith(" Oxide"))name = "[OX]"+StringUtil.superReplace(name, " Oxide", "");
@@ -178,9 +178,9 @@ public class HellrageWriter extends FormatWriter{
                             JSON.JSONArray array = new JSON.JSONArray();
                             for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : cells.get(key)){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                             fuelCells.set(key, array);
@@ -189,7 +189,7 @@ public class HellrageWriter extends FormatWriter{
                     if(b.irradiator!=null){
                         HashMap<String, ArrayList<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>> radiators = new HashMap<>();
                         for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                            if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                            if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                             if(block.template==b){
                                 String name = "{\\\"HeatPerFlux\\\":"+(block.irradiatorRecipe==null?0:(int)block.irradiatorRecipe.stats.heat)+",\\\"EfficiencyMultiplier\\\":"+(block.irradiatorRecipe==null?0:block.irradiatorRecipe.stats.efficiency)+"}";
                                 if(radiators.containsKey(name)){
@@ -205,9 +205,9 @@ public class HellrageWriter extends FormatWriter{
                             JSON.JSONArray array = new JSON.JSONArray();
                             for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : radiators.get(key)){
                                 JSON.JSONObject bl = new JSON.JSONObject();
-                                bl.set("X", block.x);
-                                bl.set("Y", block.y);
-                                bl.set("Z", block.z);
+                                bl.set("X", block.pos.x);
+                                bl.set("Y", block.pos.y);
+                                bl.set("Z", block.pos.z);
                                 array.add(bl);
                             }
                             irradiators.set(key, array);
@@ -222,12 +222,12 @@ public class HellrageWriter extends FormatWriter{
                 data.set("NeutronShields", shields);
                 JSON.JSONArray conductors = new JSON.JSONArray();
                 for(net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block : reactor.getBlocks()){
-                    if(block.x==0||block.y==0||block.z==0||block.x==reactor.getInternalWidth()+1||block.y==reactor.getInternalHeight()+1||block.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
+                    if(block.pos.x==0||block.pos.y==0||block.pos.z==0||block.pos.x==reactor.getInternalWidth()+1||block.pos.y==reactor.getInternalHeight()+1||block.pos.z==reactor.getInternalDepth()+1)continue;//can't save the casing :(
                     if(block.isConductor()){
                         JSON.JSONObject bl = new JSON.JSONObject();
-                        bl.set("X", block.x);
-                        bl.set("Y", block.y);
-                        bl.set("Z", block.z);
+                        bl.set("X", block.pos.x);
+                        bl.set("Y", block.pos.y);
+                        bl.set("Z", block.pos.z);
                         conductors.add(bl);
                     }
                 }

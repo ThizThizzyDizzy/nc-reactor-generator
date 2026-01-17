@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock.editor;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
 public abstract class EditorSpace<T extends AbstractBlock>{
@@ -18,9 +19,9 @@ public abstract class EditorSpace<T extends AbstractBlock>{
         this.y2 = y2;
         this.z2 = z2;
     }
-    public boolean contains(int x, int y, int z){
-        return !(x<x1||y<y1||z<z1||x>x2||y>y2||z>z2);
+    public boolean contains(BlockPos pos){
+        return !(pos.x<x1||pos.y<y1||pos.z<z1||pos.x>x2||pos.y>y2||pos.z>z2);
     }
-    public abstract boolean isSpaceValid(T block, int x, int y, int z);
+    public abstract boolean isSpaceValid(T block, BlockPos pos);
     public abstract void createComponents(MenuEdit editor, ArrayList<Component> comps, int cellSize);
 }

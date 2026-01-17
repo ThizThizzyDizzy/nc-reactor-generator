@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -145,19 +146,20 @@ public class OverhaulModule extends Module<Object>{
         public void refresh(Multiblock multiblock){
             decals.clear();
             if(mode==0)return;
-            ((CuboidalMultiblock)multiblock).forEachInternalPosition((x, y, z) -> {
-                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(x, y, z);
+            ((CuboidalMultiblock)multiblock).forEachInternalPosition((ps) -> {
+                BlockPos pos = (BlockPos)ps;
+                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)multiblock.getBlock(pos);
                 if(b!=null){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block s = b.source;
                     if(s!=null){
-                        Direction d = Direction.get(s.x,s.y,s.z,b.x,b.y,b.z);
+                        Direction d = Direction.get(s.pos,b.pos);
                         if(d==null)return;//wat
-                        int dist = Math.abs(s.x-b.x)+Math.abs(s.y-b.y)+Math.abs(s.z-b.z);
-                        decals.enqueue(new NeutronSourceTargetDecal(s.x, s.y, s.z, d));
+                        int dist = s.pos.taxicab(b.pos);
+                        decals.enqueue(new NeutronSourceTargetDecal(s.pos, d));
                         for(int i = 1; i<dist; i++){
-                            decals.enqueue(new NeutronSourceLineDecal(b.x-d.x*i, b.y-d.y*i, b.z-d.z*i, d));
+                            decals.enqueue(new NeutronSourceLineDecal(b.pos.offset(d, -i), d));
                         }
-                        decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                        decals.enqueue(new NeutronSourceDecal(b.pos, d.getOpposite()));
                     }
                 }
             });
@@ -180,18 +182,19 @@ public class OverhaulModule extends Module<Object>{
         public void refresh(Multiblock multiblock){
             decals.clear();
             if(mode==0)return;
-            ((CuboidalMultiblock)multiblock).forEachInternalPosition((x, y, z) -> {
-                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(x, y, z);
+            ((CuboidalMultiblock)multiblock).forEachInternalPosition((ps) -> {
+                BlockPos pos = (BlockPos)ps;
+                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)multiblock.getBlock(pos);
                 if(b!=null){
                     net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block s = b.source;
                     if(s!=null){
-                        Direction d = Direction.get(s.x,s.y,s.z,b.x,b.y,b.z);
-                        int dist = Math.abs(s.x-b.x)+Math.abs(s.y-b.y)+Math.abs(s.z-b.z);
-                        decals.enqueue(new NeutronSourceTargetDecal(s.x, s.y, s.z, d));
+                        Direction d = Direction.get(s.pos,b.pos);
+                        int dist = s.pos.taxicab(b.pos);
+                        decals.enqueue(new NeutronSourceTargetDecal(s.pos, d));
                         for(int i = 1; i<dist; i++){
-                            decals.enqueue(new NeutronSourceLineDecal(b.x-d.x*i, b.y-d.y*i, b.z-d.z*i, d));
+                            decals.enqueue(new NeutronSourceLineDecal(b.pos.offset(d, -i), d));
                         }
-                        decals.enqueue(new NeutronSourceDecal(b.x, b.y, b.z, d.getOpposite()));
+                        decals.enqueue(new NeutronSourceDecal(b.pos, d.getOpposite()));
                     }
                 }
             });
@@ -215,29 +218,29 @@ public class OverhaulModule extends Module<Object>{
                     renderer.fillRect(x, y, x+width, y+height);
                     renderer.setColor(primaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
-                    if(!top||!left||!cluster.contains(b.x-1, b.y, b.z-1)){//top left
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
                         renderer.fillRect(x, y, x+border, y+border);
                     }
                     if(!top){//top
                         renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
                     }
-                    if(!top||!right||!cluster.contains(b.x+1, b.y, b.z-1)){//top right
+                    if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
                         renderer.fillRect(x+width-border, y, x+width, y+border);
                     }
                     if(!right){//right
                         renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
                     }
-                    if(!bottom||!right||!cluster.contains(b.x+1, b.y, b.z+1)){//bottom right
+                    if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
                         renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
                     }
                     if(!bottom){//bottom
                         renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
                     }
-                    if(!bottom||!left||!cluster.contains(b.x-1, b.y, b.z+1)){//bottom left
+                    if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
                         renderer.fillRect(x, y+height-border, x+border, y+height);
                     }
                     if(!left){//left
@@ -254,10 +257,10 @@ public class OverhaulModule extends Module<Object>{
                 if(secondaryColor!=null){
                     renderer.setColor(secondaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
                     if(!top){//top
                         renderer.fillRect(x+border, y, x+width/2-border, y+border);
                         renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
@@ -296,29 +299,29 @@ public class OverhaulModule extends Module<Object>{
                     renderer.fillRect(x, y, x+width, y+height);
                     renderer.setColor(primaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
-                    if(!top||!left||!cluster.contains(b.x-1, b.y, b.z-1)){//top left
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
                         renderer.fillRect(x, y, x+border, y+border);
                     }
                     if(!top){//top
                         renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
                     }
-                    if(!top||!right||!cluster.contains(b.x+1, b.y, b.z-1)){//top right
+                    if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
                         renderer.fillRect(x+width-border, y, x+width, y+border);
                     }
                     if(!right){//right
                         renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
                     }
-                    if(!bottom||!right||!cluster.contains(b.x+1, b.y, b.z+1)){//bottom right
+                    if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
                         renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
                     }
                     if(!bottom){//bottom
                         renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
                     }
-                    if(!bottom||!left||!cluster.contains(b.x-1, b.y, b.z+1)){//bottom left
+                    if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
                         renderer.fillRect(x, y+height-border, x+border, y+height);
                     }
                     if(!left){//left
@@ -335,10 +338,10 @@ public class OverhaulModule extends Module<Object>{
                 if(secondaryColor!=null){
                     renderer.setColor(secondaryColor, .75f);
                     float border = width/8;
-                    boolean top = cluster.contains(b.x, b.y, b.z-1);
-                    boolean right = cluster.contains(b.x+1, b.y, b.z);
-                    boolean bottom = cluster.contains(b.x, b.y, b.z+1);
-                    boolean left = cluster.contains(b.x-1, b.y, b.z);
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
                     if(!top){//top
                         renderer.fillRect(x+border, y, x+width/2-border, y+border);
                         renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
@@ -385,7 +388,7 @@ public class OverhaulModule extends Module<Object>{
                         continue;
                     }
                     for(Decal d2 : cellFluxes){
-                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                        if(d2.pos.equals(d.pos)){
                             badCellFluxes.add(d2);
                         }
                     }
@@ -395,7 +398,7 @@ public class OverhaulModule extends Module<Object>{
             for(Decal d : zeroCellFluxes){
                 if(d instanceof CellFluxDecal){
                     for(Decal d2 : cellFluxes){
-                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                        if(d2.pos.equals(d.pos)){
                             badCellFluxes.add(d);
                         }
                     }
@@ -433,7 +436,7 @@ public class OverhaulModule extends Module<Object>{
                         continue;
                     }
                     for(Decal d2 : cellFluxes){
-                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                        if(d2.pos.equals(d.pos)){
                             badCellFluxes.add(d2);
                         }
                     }
@@ -443,7 +446,7 @@ public class OverhaulModule extends Module<Object>{
             for(Decal d : zeroCellFluxes){
                 if(d instanceof CellFluxDecal){
                     for(Decal d2 : cellFluxes){
-                        if(d2.x==d.x&&d2.y==d.y&&d2.z==d.z){
+                        if(d2.pos.equals(d.pos)){
                             badCellFluxes.add(d);
                         }
                     }

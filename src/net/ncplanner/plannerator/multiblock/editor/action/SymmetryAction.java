@@ -15,8 +15,9 @@ public class SymmetryAction extends Action<Multiblock>{
     @Override
     public void doApply(Multiblock multiblock, boolean allowUndo){
         if(allowUndo){
-            multiblock.forEachPosition((x, y, z) -> {
-                was.put(new BlockPos(x,y,z), multiblock.getBlock(x, y, z));
+            multiblock.forEachPosition((ps) -> {
+                BlockPos pos = (BlockPos)ps;
+                was.put(pos, multiblock.getBlock(pos));
             });
         }
         symmetry.apply(multiblock);
@@ -24,7 +25,7 @@ public class SymmetryAction extends Action<Multiblock>{
     @Override
     public void doUndo(Multiblock multiblock){
         for(BlockPos pos : was.keySet()){
-            multiblock.setBlockExact(pos.x, pos.y, pos.z, was.get(pos));
+            multiblock.setBlockExact(pos, was.get(pos));
         }
     }
     @Override
