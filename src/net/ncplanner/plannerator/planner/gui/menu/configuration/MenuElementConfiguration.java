@@ -16,8 +16,10 @@ import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyRecipeElement;
+import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFSettingsElement.Type;
+import net.ncplanner.plannerator.ncpf.element.NCPFStackListElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -85,7 +87,15 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                         legacyNames.legacyNames.add(((LegacyRecipeElement)element).definition.toString());
                     });
                     NCPFLegacyRecipeElement recipe = new NCPFLegacyRecipeElement();
-                    recipe.inputs.add(new NCPFElementStack(((LegacyRecipeElement)element).definition, 1));
+                    NCPFElementDefinition baseDefinition = ((LegacyRecipeElement)element).definition;
+                    if(baseDefinition instanceof NCPFListElement){
+                        NCPFStackListElement stackList = new NCPFStackListElement();
+                        for(NCPFElementDefinition elem : ((NCPFListElement)baseDefinition).elements){
+                            stackList.elements.add(new NCPFElementStack(elem, 1));
+                        }
+                        baseDefinition = stackList;
+                    }
+                    recipe.inputs.add(new NCPFElementStack(baseDefinition));
                     element.definition = recipe;
                     gui.open(new MenuElementConfiguration(parent, cnfg, configuration, config, element));
                     return;

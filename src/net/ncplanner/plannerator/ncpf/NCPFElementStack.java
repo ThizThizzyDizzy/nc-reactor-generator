@@ -11,6 +11,7 @@ public class NCPFElementStack extends DefinedNCPFModularObject{
         this.definition = definition;
     }
     public NCPFElementStack(NCPFElementDefinition definition, int amount){
+        if(!definition.canHaveAmount())throw new IllegalArgumentException("Cannot create an element stack, with an amount, using a definition that cannot have an amount!");
         this.definition = definition;
         this.amount = amount;
     }
