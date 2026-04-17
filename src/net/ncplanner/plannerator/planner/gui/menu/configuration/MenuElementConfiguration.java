@@ -58,7 +58,11 @@ import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import org.lwjgl.glfw.GLFW;
 public class MenuElementConfiguration extends ConfigurationMenu{
     public MenuElementConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFElement element){
+        this(parent, cnfg, configuration, config, element, ()->element);
+    }
+    public MenuElementConfiguration(Menu parent, Configuration cnfg, NCPFConfigurationContainer configuration, NCPFConfiguration config, NCPFElement element, Supplier<NCPFElement> elementType){
         super(parent, configuration, element.getDisplayName(), new SplitLayout(SplitLayout.Y_AXIS, 0, 192, 0));
+        NCPFElement elementTargetType = elementType.get();
         NCPFElement parnt = null;
         FOR:
         for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
@@ -82,12 +86,12 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             SplitLayout definitionList = definition.add(new SplitLayout(SplitLayout.Y_AXIS, 0, 48, 0));
             SplitLayout definitionHeader = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, 0.3f));
             definitionHeader.add(new Button(element.definition.getTypeName(), true).addAction(() -> {
-                if(element instanceof LegacyRecipeElement){
+                if(elementTargetType instanceof LegacyRecipeElement){
                     element.withModule(LegacyNamesModule::new, (legacyNames)->{
-                        legacyNames.legacyNames.add(((LegacyRecipeElement)element).definition.toString());
+                        legacyNames.legacyNames.add(element.definition.toString());
                     });
                     NCPFLegacyRecipeElement recipe = new NCPFLegacyRecipeElement();
-                    NCPFElementDefinition baseDefinition = ((LegacyRecipeElement)element).definition;
+                    NCPFElementDefinition baseDefinition = element.definition;
                     if(baseDefinition instanceof NCPFListElement){
                         NCPFStackListElement stackList = new NCPFStackListElement();
                         for(NCPFElementDefinition elem : ((NCPFListElement)baseDefinition).elements){
@@ -437,6 +441,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 rulesList.components.clear();
                 lists.splitPos = 0.5f;
                 if(recipeModule!=null){
+                    Supplier<NCPFElement> recipeElementType = recipeModule.getRecipeElement();
                     lists.splitPos += 0.5f;
                     BlockRecipesElement recelement = (BlockRecipesElement)element;
                     recelement.clearBlockRecipes();//clear cached recipes, use module only
@@ -447,7 +452,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                                 refresh();
                             }).addIconButton("pencil", "Modify "+elem.getTitle(), () -> {
                                 config.setReferences(false); // This fixes recipe output references not appearing in the config menus
-                                gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem));
+                                gui.open(new MenuElementConfiguration(this, cnfg, configuration, config, elem, recipeElementType));
                             })).height = 96;
                         }
                     });
