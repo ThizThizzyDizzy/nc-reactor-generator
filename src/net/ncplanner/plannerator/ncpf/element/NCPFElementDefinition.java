@@ -20,7 +20,7 @@ public abstract class NCPFElementDefinition extends DefinedNCPFObject{
     public abstract String getName();
     @Override
     public String toString(){
-        return getName();
+        return Objects.toString(getName());
     }
     public abstract String getTypeName();
     public ArrayList<String> getLegacyNames(){
