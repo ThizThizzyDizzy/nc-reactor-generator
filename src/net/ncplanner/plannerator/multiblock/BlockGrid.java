@@ -22,12 +22,12 @@ public class BlockGrid<T extends AbstractBlock>{
         return blocks[0][0].length;
     }
     public boolean contains(BlockPos pos){
-        if(pos.x<this.x||pos.y<this.y||pos.z<this.z)return false;
-        return pos.x-this.x<getWidth()&&pos.y-this.y<getHeight()&&pos.z-this.z<getDepth();
+        if(pos.x<x||pos.y<y||pos.z<z)return false;
+        return pos.x-x<getWidth()&&pos.y-y<getHeight()&&pos.z-z<getDepth();
     }
     public T getBlock(BlockPos pos){
         if(!contains(pos))throw new IndexOutOfBoundsException("Position "+pos.toString()+" is not in this block grid! check contains(...) first!");
-        return (T)blocks[x-this.x][y-this.y][z-this.z];
+        return (T)blocks[pos.x-x][pos.y-y][pos.z-z];
     }
     public BoundingBox getBoundingBox(){
         return new BoundingBox(x, y, z, x+getWidth()-1, y+getHeight()-1, z+getDepth()-1);
@@ -42,7 +42,7 @@ public class BlockGrid<T extends AbstractBlock>{
     }
     public void setBlock(BlockPos pos, T block){
         if(!contains(pos))throw new IndexOutOfBoundsException("Position "+pos.toString()+" is not in this block grid! check contains(...) first!");
-        blocks[x-this.x][y-this.y][z-this.z] = block;
+        blocks[pos.x-x][pos.y-y][pos.z-z] = block;
     }
     public int getVolume(){
         return getWidth()*getHeight()*getDepth();
