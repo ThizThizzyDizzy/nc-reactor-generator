@@ -1858,10 +1858,10 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         OverhaulSFRDesign design = new OverhaulSFRDesign(Core.project, x, y, z);
         forEachPosition((pos) -> {
             Block block = getBlock(pos);
-            design.design[x][y][z] = block==null?null:block.template;
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
             if(block!=null){
-                design.fuels[x][y][z] = block.fuel;
-                design.irradiatorRecipes[x][y][z] = block.irradiatorRecipe;
+                design.fuels[pos.x][pos.y][pos.z] = block.fuel;
+                design.irradiatorRecipes[pos.x][pos.y][pos.z] = block.irradiatorRecipe;
             }
         });
         design.coolantRecipe = coolantRecipe;

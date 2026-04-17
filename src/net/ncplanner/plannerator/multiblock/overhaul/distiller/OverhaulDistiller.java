@@ -186,7 +186,7 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         OverhaulDistillerDesign design = new OverhaulDistillerDesign(Core.project, x, y, z);
         forEachPosition((pos) -> {
             Block block = getBlock(pos);
-            design.design[x][y][z] = block==null?null:block.template;
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
         });
         design.recipe = recipe;
         return design;

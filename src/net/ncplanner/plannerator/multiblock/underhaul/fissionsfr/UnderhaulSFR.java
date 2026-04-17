@@ -644,8 +644,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
         UnderhaulSFRDesign design = new UnderhaulSFRDesign(Core.project, x, y, z);
         forEachPosition((pos) -> {
             Block block = getBlock(pos);
-            design.design[x][y][z] = block==null?null:block.template;
-            design.recipes[x][y][z] = block==null?null:block.recipe;
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+            design.recipes[pos.x][pos.y][pos.z] = block==null?null:block.recipe;
         });
         design.fuel = fuel;
         return design;
