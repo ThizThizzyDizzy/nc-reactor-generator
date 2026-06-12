@@ -1,4 +1,7 @@
 package net.ncplanner.plannerator.planner.module;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ScanResult;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +37,6 @@ import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
-import org.reflections.Reflections;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
@@ -104,32 +106,44 @@ public abstract class Module<T>{
     public void getEditorOverlays(Multiblock multiblock, ArrayList<EditorOverlay> overlays){
     }
     public final void addMultiblockTypes(ArrayList<Multiblock> multiblockTypes){
-        for(Multiblock m : registeredMultiblocks)multiblockTypes.add(m.newInstance(null));
+        for(Multiblock m : registeredMultiblocks)
+            multiblockTypes.add(m.newInstance(null));
     }
     private final ArrayList<Multiblock> registeredMultiblocks = new ArrayList<>();
     public final void registerNCPF(){
-        autoRegister(NCPFConfiguration.class, (config) -> config.name, NCPFConfigurationContainer.recognizedConfigurations, NCPFConfigurationContainer.configOrder);
-        autoRegister(NCPFDesignDefinition.class, (design) -> design.type, NCPFDesign.recognizedDesigns);
-        autoRegister(NCPFModule.class, (module) -> module.name, NCPFModuleContainer.recognizedModules);
-        autoRegister(NCPFElementDefinition.class, (element) -> element.type, NCPFElement.recognizedElements);
-        autoRegister(GeneratorMutator.class, (mutator) -> mutator.type, GeneratorMutator.registeredMutators);
-        autoRegister(Mutator.class, (mutator) -> mutator.type, Mutator.registeredMutators);
-        autoRegister(Operator.class, (operator) -> operator.getType(), Operator.registeredOperators);
-        autoRegister(Constant.class, (constant) -> constant.getType(), Constant.registeredConstants);
-        autoRegister(Condition.class, (condition) -> condition.type, Condition.registeredConditions);
-        autoRegister(Parameter.class, (parameter) -> parameter.type, Parameter.registeredParameters);
-        autoRegister(Multiblock.class, registeredMultiblocks);
+        // 1. Initialize ClassGraph, scope it to your package, and perform a SINGLE fast scan.
+        try(ScanResult scanResult = new ClassGraph()
+            .acceptPackages("net.ncplanner.plannerator")
+            .enableClassInfo()
+            .enableAnnotationInfo()
+            .scan()){
 
-        Reflections reflections = new Reflections("net.ncplanner.plannerator");
+            // 2. Pass the single scanResult down to your registration workflows
+            autoRegister(scanResult, NCPFConfiguration.class, (config) -> config.name, NCPFConfigurationContainer.recognizedConfigurations, NCPFConfigurationContainer.configOrder);
+            autoRegister(scanResult, NCPFDesignDefinition.class, (design) -> design.type, NCPFDesign.recognizedDesigns);
+            autoRegister(scanResult, NCPFModule.class, (module) -> module.name, NCPFModuleContainer.recognizedModules);
+            autoRegister(scanResult, NCPFElementDefinition.class, (element) -> element.type, NCPFElement.recognizedElements);
+            autoRegister(scanResult, GeneratorMutator.class, (mutator) -> mutator.type, GeneratorMutator.registeredMutators);
+            autoRegister(scanResult, Mutator.class, (mutator) -> mutator.type, Mutator.registeredMutators);
+            autoRegister(scanResult, Operator.class, (operator) -> operator.getType(), Operator.registeredOperators);
+            autoRegister(scanResult, Constant.class, (constant) -> constant.getType(), Constant.registeredConstants);
+            autoRegister(scanResult, Condition.class, (condition) -> condition.type, Condition.registeredConditions);
+            autoRegister(scanResult, Parameter.class, (parameter) -> parameter.type, Parameter.registeredParameters);
+            autoRegister(scanResult, Multiblock.class, registeredMultiblocks);
 
-        try{
-            for(Class<?> type : reflections.getTypesAnnotatedWith(RegisterWith.class)){
-                if(type.getAnnotation(RegisterWith.class).module()!=getClass())continue;
+            // 3. Process the explicit Design.class logic using the same scanResult
+            for(ClassInfo classInfo : scanResult.getClassesWithAnnotation(RegisterWith.class.getName())){
+                Class<?> type = classInfo.loadClass(); // Safely load the class now that it's matched
+
+                if(type.getAnnotation(RegisterWith.class).module()!=getClass())
+                    continue;
+
                 if(Design.class.isAssignableFrom(type)){
                     Class<? extends Design> specificType = (Class<? extends Design>)type;
                     ParameterizedType superType = (ParameterizedType)specificType.getGenericSuperclass();
                     Class<? extends NCPFDesignDefinition> designDefinitionType = (Class<? extends NCPFDesignDefinition>)superType.getActualTypeArguments()[0];
                     Constructor<? extends Design> constructor = specificType.getConstructor(NCPFFile.class);
+
                     Function<NCPFFile, Design> function = (ncpf) -> {
                         try{
                             return constructor.newInstance(ncpf);
@@ -144,26 +158,33 @@ public abstract class Module<T>{
             throw new RuntimeException(ex);
         }
     }
-    private <T> void autoRegister(Class<T> classType, ArrayList<T> instanceList){
-        autoRegister(classType, null, null, null, instanceList);
+
+// --- Overloaded helpers updated to forward the ScanResult ---
+    private <T> void autoRegister(ScanResult scanResult, Class<T> classType, ArrayList<T> instanceList){
+        autoRegister(scanResult, classType, null, null, null, instanceList);
     }
-    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry){
-        autoRegister(classType, keyFunc, registry, null, null);
+
+    private <T> void autoRegister(ScanResult scanResult, Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry){
+        autoRegister(scanResult, classType, keyFunc, registry, null, null);
     }
-    @Deprecated // this was for the old generator, unused now.
-    public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){
+
+    private <T> void autoRegister(ScanResult scanResult, Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList){
+        autoRegister(scanResult, classType, keyFunc, registry, keyList, null);
     }
-    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList){
-        autoRegister(classType, keyFunc, registry, keyList, null);
-    }
-    private <T> void autoRegister(Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList, ArrayList<T> instanceList){
-        Reflections reflections = new Reflections("net.ncplanner.plannerator");
+
+    private <T> void autoRegister(ScanResult scanResult, Class<T> classType, Function<T, String> keyFunc, HashMap<String, Supplier<T>> registry, ArrayList<String> keyList, ArrayList<T> instanceList){
         try{
-            for(Class<?> type : reflections.getTypesAnnotatedWith(RegisterWith.class)){
-                if(type.getAnnotation(RegisterWith.class).module()!=getClass())continue;
+            // Query the pre-computed ScanResult instead of hitting the filesystem again
+            for(ClassInfo classInfo : scanResult.getClassesWithAnnotation(RegisterWith.class.getName())){
+                Class<?> type = classInfo.loadClass();
+
+                if(type.getAnnotation(RegisterWith.class).module()!=getClass())
+                    continue;
+
                 if(classType.isAssignableFrom(type)){
                     Class<? extends T> specificType = (Class<? extends T>)type;
                     Constructor<? extends T> constructor = specificType.getConstructor();
+
                     Supplier<T> supplier = () -> {
                         try{
                             return constructor.newInstance();
@@ -171,8 +192,10 @@ public abstract class Module<T>{
                             throw new RuntimeException(ex);
                         }
                     };
+
                     T instance = supplier.get();
                     String key = keyFunc==null?null:keyFunc.apply(instance);
+
                     if(registry!=null)registry.put(key, supplier);
                     if(keyList!=null)keyList.add(key);
                     if(instanceList!=null)instanceList.add(instance);
@@ -181,6 +204,10 @@ public abstract class Module<T>{
         }catch(NoSuchMethodException|SecurityException|IllegalArgumentException ex){
             throw new RuntimeException(ex);
         }
+    }
+
+    @Deprecated
+    public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){
     }
     public void setActive(boolean active){
         if(active)activate();
