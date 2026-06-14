@@ -70,4 +70,70 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-pre-jar">
+        <echo message="Injecting version ${version} into version properties..."/>
+        
+        <copy file="${src.dir}/net/ncplanner/plannerator/version.properties" 
+              tofile="${build.classes.dir}/net/ncplanner/plannerator/version.properties" 
+              overwrite="true">
+            <filterset>
+                <filter token="VERSION" value="${version}" />
+                <filter token="FILE_REGEX" value=".*\.jar" />
+                <filter token="BUNDLED" value="false" />
+            </filterset>
+        </copy>
+        
+        <echo message="Collecting active library manifest from NetBeans classpath..."/>
+    
+        <property file="nbproject/project.properties"/>
+
+        <path id="active.classpath">
+            <pathelement path="${javac.classpath}"/>
+        </path>
+    
+        <pathconvert property="basedir.regex">
+            <path path="${basedir}"/>
+        </pathconvert>
+
+        <pathconvert property="libmf.list" refid="active.classpath" pathsep="${line.separator}">
+            <map from="${basedir}/libraries/" to=""/>
+            <filtermapper>
+                <replaceregex pattern="^(?!${basedir.regex}).*" replace="" flags="g"/>
+            </filtermapper>
+        </pathconvert>
+
+        <echo file="build/classes/net/ncplanner/plannerator/library-manifest.txt" message="${libmf.list}"/>
+    </target>
+    <target name="-post-jar">
+        <tempfile deleteonexit="true" destdir="${build.dir}" property="tmp.bundled-manifest.file"/>
+        <copy encoding="${manifest.encoding}" file="${manifest.file}" outputencoding="UTF-8" tofile="${tmp.bundled-manifest.file}"/>
+        <manifest encoding="UTF-8" file="${tmp.bundled-manifest.file}" mode="update">
+            <attribute name="Main-Class" value="${main.class}"/>
+        </manifest>
+        <jar destfile="${dist.dir}/NC-Plannerator-${version}-bundled.jar" update="false" manifest="${tmp.bundled-manifest.file}">
+            <zipgroupfileset dir="">
+                <include name="${dist.jar}"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    <target name="-post-deploy">
+        <jar destfile="${dist.dir}/NC-Plannerator-${version}-bundled.jar" update="true">
+            <zipgroupfileset dir="dist/lib">
+                <include name="**.jar"/>
+            </zipgroupfileset>
+        </jar>
+        <tempfile deleteonexit="true" destdir="${build.dir}" property="tmp.prop.dir"/>
+        <mkdir dir="${tmp.prop.dir}/net/ncplanner/plannerator"/>
+        <copy file="${src.dir}/net/ncplanner/plannerator/version.properties" 
+              tofile="${tmp.prop.dir}/net/ncplanner/plannerator/version.properties" 
+              overwrite="true">
+            <filterset>
+                <filter token="VERSION" value="${version}" />
+                <filter token="FILE_REGEX" value=".*bundled\.jar" />
+                <filter token="BUNDLED" value="true" />
+            </filterset>
+        </copy>
+        <jar destfile="${dist.dir}/NC-Plannerator-${version}-bundled.jar" update="true" basedir="${tmp.prop.dir}"/>
+        <delete dir="${tmp.prop.dir}"/>
+    </target>
 </project>

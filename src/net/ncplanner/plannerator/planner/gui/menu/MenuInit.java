@@ -2,7 +2,12 @@ package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -15,8 +20,6 @@ import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.Updater;
-import net.ncplanner.plannerator.planner.VersionManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF10Reader;
@@ -341,7 +344,7 @@ public class MenuInit extends Menu{
                     gui.open(new MenuTutorial(gui, new MenuMain(gui)));
                     Core.tutorialShown = true;
                 }else gui.open(new MenuMain(gui));
-                if(Main.os==Main.OS_MACOS){
+                if(Main.isMacOS){
                     gui.open(new MenuCalibrateCursor(gui, gui.menu));
                 }
             }
@@ -352,7 +355,19 @@ public class MenuInit extends Menu{
             System.out.println("Downloading patrons list...");
             File file = new File("patrons-list.txt");
             file.delete();
-            Main.downloadFile(MenuCredits.patronsLink, file.getAbsoluteFile());
+            
+            HttpURLConnection conn;
+            try{
+                conn = (HttpURLConnection)new URI(MenuCredits.patronsLink).toURL().openConnection();
+                conn.setRequestMethod("GET");
+                if(conn.getResponseCode()==200){
+                    try(InputStream in = conn.getInputStream()){
+                        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            }catch(Exception ex){
+                System.err.println("Failed to download patrons list");
+            }
             ArrayList<String> patrons = new ArrayList<>();
             try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
                 String line;
@@ -367,9 +382,9 @@ public class MenuInit extends Menu{
             }
             file.delete();
             System.out.println("Checking for updates...");
-            Updater updater = Updater.read("https://raw.githubusercontent.com/ThizThizzyDizzy/nc-reactor-generator/overhaul/versions.txt", VersionManager.currentVersion, "NC-Reactor-Plannerator");
-            if(updater!=null&&updater.getVersionsBehindLatestDownloadable()>0){
-                new MenuUpdate(gui, gui.menu, updater).open();
+            Core.updater.checkGitHubLatest("ThizThizzyDizzy", "nc-reactor-generator", "v");
+            if(Core.updater.hasNewVersion){
+                new MenuUpdate(gui, gui.menu).open();
             }
             System.out.println("Update Check Complete.");
         }, "Initialization Thread").start();

@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner;
+import com.thizthizzydizzy.dizzyengine.updater.DizzyUpdater;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -70,6 +71,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.nfd.NFDFilterItem;
 import org.lwjgl.util.nfd.NativeFileDialog;
 public class Core{
+    public static DizzyUpdater updater = new DizzyUpdater(Core.class);
     public static Logger logger = Logger.getLogger(Core.class.getName());
     public static GUI gui;
     public static ArrayList<Long> FPStracker = new ArrayList<>();
@@ -160,7 +162,7 @@ public class Core{
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         if(Main.headless)glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         System.out.println("Creating window");
-        window = glfwCreateWindow(1200, 700, "Nuclearcraft Plannerator "+VersionManager.currentVersion, 0, 0);
+        window = glfwCreateWindow(1200, 700, "Nuclearcraft Plannerator "+updater.currentVersion, 0, 0);
         if(window==0){
             glfwTerminate();
             throw new RuntimeException("Failed to create GLFW window!");
@@ -613,14 +615,14 @@ public class Core{
     public static boolean openURL(String link){
         Runtime rt = Runtime.getRuntime();
         try{
-            switch(Main.os){
-                case Main.OS_WINDOWS:
+            switch(DizzyUpdater.identifyOperatingSystem()){
+                case WINDOWS:
                     rt.exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", link});
                     return true;
-                case Main.OS_MACOS:
+                case MACOS:
                     rt.exec(new String[]{"open", link});
                     return true;
-                case Main.OS_LINUX:
+                case LINUX:
                     rt.exec(new String[]{"xdg-open", link});
                     return true;
                 default:
@@ -633,14 +635,14 @@ public class Core{
     public static boolean openFolder(File dir){
         Runtime rt = Runtime.getRuntime();
         try{
-            switch(Main.os){
-                case Main.OS_WINDOWS:
+            switch(DizzyUpdater.identifyOperatingSystem()){
+                case WINDOWS:
                     rt.exec(new String[]{"explorer", dir.getAbsolutePath()});
                     return true;
-                case Main.OS_MACOS:
+                case MACOS:
                     rt.exec(new String[]{"open", dir.getAbsolutePath()});
                     return true;
-                case Main.OS_LINUX:
+                case LINUX:
                     rt.exec(new String[]{"xdg-open", dir.getAbsolutePath()});
                     return true;
                 default:
@@ -672,7 +674,7 @@ public class Core{
         glfwSetWindowTitle(window, title);
     }
     public static void resetWindowTitle(){
-        glfwSetWindowTitle(window, "Nuclearcraft Plannerator "+VersionManager.currentVersion);
+        glfwSetWindowTitle(window, "Nuclearcraft Plannerator "+updater.currentVersion);
     }
     public static void setVsync(boolean vs){
         if(vsync!=vs)glfwSwapInterval(vs?1:0);
