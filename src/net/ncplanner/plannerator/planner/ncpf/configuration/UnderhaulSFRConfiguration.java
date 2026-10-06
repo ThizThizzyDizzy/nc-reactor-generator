@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.UnderhaulSFRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = UnderhaulModule.class)
 public class UnderhaulSFRConfiguration extends NCPFUnderhaulSFRConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();

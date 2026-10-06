@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
+@Deprecated
 public class LayoutMenu extends Menu{
     public final Layout layout;
     public LayoutMenu(GUI gui, Layout layout){

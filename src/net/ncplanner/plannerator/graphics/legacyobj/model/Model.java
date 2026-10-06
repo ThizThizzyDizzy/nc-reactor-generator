@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.graphics.legacyobj.model;
 import java.util.ArrayList;
 import org.joml.Vector3f;
+@Deprecated
 public class Model{
     public ArrayList<Face> faces = new ArrayList<>();
     public ArrayList<Line> lines = new ArrayList<>();

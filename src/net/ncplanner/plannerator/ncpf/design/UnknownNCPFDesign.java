@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.ncpf.design;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class UnknownNCPFDesign extends NCPFDesignDefinition{
     public NCPFList<Integer> design = new NCPFList<>();
     public NCPFObject ncpf;

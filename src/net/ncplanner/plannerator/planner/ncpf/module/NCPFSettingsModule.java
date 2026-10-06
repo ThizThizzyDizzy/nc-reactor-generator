@@ -9,6 +9,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElementReference;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+@Deprecated
 public abstract class NCPFSettingsModule extends NCPFModule{
     public final ArrayList<String> settings = new ArrayList<>();
     public final HashMap<String, Type> types = new HashMap<>();

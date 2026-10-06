@@ -5,6 +5,7 @@ import java.util.HashSet;
 import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = CoreModule.class)
 public class NCPFLegacyRecipeElement extends NCPFSettingsElement{
     public HashSet<NCPFElementStack> inputs = new HashSet<>();

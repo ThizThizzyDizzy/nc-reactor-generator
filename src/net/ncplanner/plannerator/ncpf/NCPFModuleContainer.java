@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.ncpf.module.UnknownNCPFModule;
+@Deprecated
 public class NCPFModuleContainer extends DefinedNCPFObject{
     public static HashMap<String, Supplier<NCPFModule>> recognizedModules = new HashMap<>();
     public HashMap<String, NCPFModule> modules = new HashMap<>();

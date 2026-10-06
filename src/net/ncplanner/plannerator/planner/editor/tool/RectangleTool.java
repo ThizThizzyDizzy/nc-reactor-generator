@@ -1,8 +1,11 @@
 package net.ncplanner.plannerator.planner.editor.tool;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.HashSet;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -20,8 +23,8 @@ public class RectangleTool extends EditorTool{
     private BlockPos leftDragEnd;
     private BlockPos rightDragEnd;
     @Override
-    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
-        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+    public void render(float x, float y, float width, float height, int themeIndex){
+        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
         int n = 3;
         float border = width/24;
         x+=border;
@@ -32,14 +35,14 @@ public class RectangleTool extends EditorTool{
         float h = height/n;
         for(int X = 0; X<n; X++){
             for(int Y = 0; Y<n; Y++){
-                renderer.fillRect(x+X*w+border, y+Y*h+border, x+(X+1)*w-border, y+(Y+1)*h-border);
+                Renderer.fillRect(x+X*w+border, y+Y*h+border, x+(X+1)*w-border, y+(Y+1)*h-border);
             }
         }
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
+    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
-        renderer.setWhite(.5f);
+        Renderer.setColor(Color.WHITE, .5f);
         if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart, leftDragEnd, (pos) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), pos))return;
             Axis xAxis = axis.get2DXAxis();
@@ -50,9 +53,9 @@ public class RectangleTool extends EditorTool{
             if(sz!=layer)return;
             if(sx<0||sx>x2-x1)return;
             if(sy<0||sy>y2-y1)return;
-            renderer.drawImage(texture, x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
+            Renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, ResourceManager.getTexture(texture));
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
-        renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+        Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart, rightDragEnd, (pos) -> {
             Axis xAxis = axis.get2DXAxis();
             Axis yAxis = axis.get2DYAxis();
@@ -62,25 +65,25 @@ public class RectangleTool extends EditorTool{
             if(sz!=layer)return;
             if(sx<0||sx>x2-x1)return;
             if(sy<0||sy>y2-y1)return;
-            renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
+            Renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
-        renderer.setWhite();
+        Renderer.setColor(Color.WHITE);
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
+    public void drawVRGhosts(EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         BoundingBox bbox = editor.getMultiblock().getBoundingBox();
-        renderer.setWhite(.5f);
+        Renderer.setColor(Color.WHITE, .5f);
         float border = blockSize/64;
         if(leftDragEnd!=null&&leftDragStart!=null)foreach(leftDragStart, leftDragEnd, (pos) -> {
             if(!editorSpace.isSpaceValid(editor.getSelectedBlock(id), pos))return;
-            renderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, texture);
+            PlanneratorRenderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, texture);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
-        renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+        Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         if(rightDragEnd!=null&&rightDragStart!=null)foreach(rightDragStart, rightDragEnd, pos -> {
             if(editor.getMultiblock().getBlock(pos)==null)return;
-            renderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, null);
+            PlanneratorRenderer.drawCube(x+pos.x*blockSize-border, y+pos.y*blockSize-border, z+pos.z*blockSize-border, x+(pos.x+1)*blockSize+border, y+(pos.y+1)*blockSize+border, z+(pos.z+1)*blockSize+border, null);
         }, editor.getSymmetry(), bbox.getWidth(), bbox.getHeight(), bbox.getDepth());
-        renderer.setWhite();
+        Renderer.setColor(Color.WHITE);
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){

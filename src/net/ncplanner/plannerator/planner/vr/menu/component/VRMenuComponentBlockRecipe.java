@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;

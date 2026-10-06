@@ -1,20 +1,19 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import com.thizthizzydizzy.dizzyengine.ui.Menu;
+import com.thizthizzydizzy.dizzyengine.ui.component.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Queue;
-import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -51,8 +50,7 @@ public class MenuCredits extends Menu{
         patrons.add("Mstk");
         patrons.add("ZathrusWriter");
     }
-    public MenuCredits(GUI gui){
-        super(gui, null);
+    public MenuCredits(){
         text("NuclearCraft Plannerator", 1.5);
         text();
         text("Made by ThizThizzyDizzy");

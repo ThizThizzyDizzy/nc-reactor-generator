@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulSFRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulSFRConfiguration extends NCPFOverhaulSFRConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();

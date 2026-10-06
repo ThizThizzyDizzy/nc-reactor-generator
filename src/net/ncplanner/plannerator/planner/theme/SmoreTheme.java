@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.theme;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
@@ -549,7 +549,6 @@ public class SmoreTheme extends ColorTheme{
     }
     @Override
     public void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
-        Renderer renderer = new Renderer();
         for(int i = 0; i<4; i++){
             Color col;
             if(darker){
@@ -569,16 +568,15 @@ public class SmoreTheme extends ColorTheme{
                     col = getComponentDisabledColor(i);
                 }
             }
-            renderer.setColor(col);
-            renderer.fillRect(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
+            Renderer.setColor(col);
+            Renderer.fillRect(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
         }
     }
     @Override
     public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
-        Renderer renderer = new Renderer();
-        renderer.setFont(getDefaultFont());
-        renderer.setColor(getComponentTextColor(0));
-        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        Renderer.setFont(getDefaultFont());
+        Renderer.setColor(getComponentTextColor(0));
+        Renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
 //        for(int i = 0; i<4; i++){
 //            renderer.setColor(getComponentTextColor(i));
 //            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);

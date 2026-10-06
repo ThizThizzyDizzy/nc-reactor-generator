@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.editor.overlay;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
@@ -27,7 +26,7 @@ public class EditorOverlay<T extends AbstractBlock>{
         return this;
     }
     public void refresh(Multiblock<T> multiblock){}
-    public void render(Renderer renderer, float x, float y, float width, float height, T block, Multiblock<T> multiblock){}
+    public void render(float x, float y, float width, float height, T block, Multiblock<T> multiblock){}
     public boolean isActive(){
         return active;
     }

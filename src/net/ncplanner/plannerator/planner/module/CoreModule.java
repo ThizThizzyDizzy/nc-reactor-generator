@@ -1,6 +1,5 @@
 package net.ncplanner.plannerator.planner.module;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
@@ -17,6 +16,7 @@ public class CoreModule<T> extends Module<T>{
     }
     @Override
     public String getDescription(){
+        
         return "Contains general features appliccable to all multiblocks";
     }
     @Override
@@ -27,9 +27,9 @@ public class CoreModule<T> extends Module<T>{
     }
     private final EditorOverlay invalidBlocksOverlay = new EditorOverlay("Invalid Blocks", "Highlights invalid blocks with a red outline", true){
         @Override
-        public void render(Renderer renderer, float x, float y, float width, float height, AbstractBlock block, Multiblock multiblock){
+        public void render(float x, float y, float width, float height, AbstractBlock block, Multiblock multiblock){
             if(!block.isValid()){
-                block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
+                block.drawOutline(x, y, width, height, Core.theme.getBlockColorOutlineInvalid());
             }
         }
     };

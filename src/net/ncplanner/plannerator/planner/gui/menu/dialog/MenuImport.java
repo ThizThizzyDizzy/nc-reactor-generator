@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.gui.GUI;

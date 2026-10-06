@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.file.writer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -7,7 +8,6 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;

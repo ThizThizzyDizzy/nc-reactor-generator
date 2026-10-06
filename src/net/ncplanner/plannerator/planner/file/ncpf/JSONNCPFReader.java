@@ -3,6 +3,7 @@ import java.io.InputStream;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.file.JSON;
+@Deprecated
 public class JSONNCPFReader implements NCPFFormatReader{
     @Override
     public NCPFObject read(InputStream stream){

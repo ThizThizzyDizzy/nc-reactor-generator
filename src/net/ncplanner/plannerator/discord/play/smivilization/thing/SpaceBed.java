@@ -1,11 +1,12 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
 public class SpaceBed extends HutThingColorable{
     public SpaceBed(UUID uuid, Hut hut){
         super(uuid, hut, "Space Bed", "space bed", 48, Color.WHITE);
@@ -16,13 +17,13 @@ public class SpaceBed extends HutThingColorable{
         return new SpaceBed(uuid, hut);
     }
     @Override
-    public void draw(Renderer renderer, float left, float top, float right, float bottom){
-        renderer.setColor(Color.WHITE);
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space bed/frame.png", left, top, right, bottom);
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space bed/matress.png", left, top, right, bottom);
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space bed/pillow.png", left, top, right, bottom);
-        renderer.setColor(getColor());
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/space bed/sheets.png", left, top, right, bottom);
+    public void draw(float left, float top, float right, float bottom){
+        Renderer.setColor(Color.WHITE);
+        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space bed/frame.png"));
+        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space bed/matress.png"));
+        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space bed/pillow.png"));
+        Renderer.setColor(getColor());
+        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/space bed/sheets.png"));
     }
     @Override
     public int[] getDimensions(){

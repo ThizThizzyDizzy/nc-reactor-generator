@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.configuration.NCPFUnderhaulSFRConfiguratio
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = UnderhaulModule.class)
 public class NCPFUnderhaulSFRDesign extends NCPFCuboidalMultiblockDesign{
     public NCPFElement fuel;

@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Design;
+@Deprecated
 public class UnknownNCPFConfiguration extends NCPFConfiguration{
     public NCPFObject ncpf;
     public UnknownNCPFConfiguration(){

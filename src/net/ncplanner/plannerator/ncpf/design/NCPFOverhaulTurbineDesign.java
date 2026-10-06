@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulTurbineConfigura
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = OverhaulModule.class)
 public class NCPFOverhaulTurbineDesign extends NCPFCuboidalMultiblockDesign{
     public NCPFElement recipe;

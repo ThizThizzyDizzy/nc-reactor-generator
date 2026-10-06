@@ -1,4 +1,8 @@
 package net.ncplanner.plannerator.discord.play.smivilization;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.io.ImageIO;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,10 +41,8 @@ import net.ncplanner.plannerator.discord.play.smivilization.thing.special.EatenS
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.GlowshroomGlowshroomGlowshroomPoster;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.PatreonPoster;
 import net.ncplanner.plannerator.discord.play.smivilization.thing.special.SmoreTrophy;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.CircularStream;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ImageIO;
 public class Hut{
     /**
      * Only used to initalize new ones. do not use directly.
@@ -146,34 +148,34 @@ public class Hut{
         }
     }
     public void sendExteriorImage(MessageChannel channel){
-        sendImage(channel, "outside", (renderer, buffWidth, buffHeight) -> {
-            renderer.setWhite();
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png", 0, 0, buffWidth, buffHeight);
+        sendImage(channel, "outside", (buffWidth, buffHeight) -> {
+            Renderer.setColor(Color.WHITE);
+            Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside.png"));
             boolean hasLamp = false;
             for(HutThing thing : furniture){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
             }
             if(type==HutType.NIGHT&&hasLamp){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside glow.png", 0, 0, buffWidth, buffHeight);
+                Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/outside glow.png"));
             }
             if(hasGlowshroom()){
-                renderer.drawImage("/textures/smivilization/glowshroom.png", 0, 0, buffWidth, buffHeight);
+                Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/glowshroom.png"));
             }
         });
     }
     public void sendInteriorImage(MessageChannel channel){
-        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
-            renderer.setWhite();
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
+        sendImage(channel, "inside", (buffWidth, buffHeight) -> {
+            Renderer.setColor(Color.WHITE);
+            Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(renderer, .25f);
+                thing.render(.25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
+                Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
 //            try{
 //                drawa3DModelLikeTotalMagic(8, 0, 5, OBJLoader.loadModel("C:/Users/Thiz/Desktop/untitled.obj"));
@@ -184,18 +186,18 @@ public class Hut{
         });
     }
     public void sendHighlightImage(MessageChannel channel, List<HutThing> highlights){
-        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
-            renderer.setWhite();
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
+        sendImage(channel, "inside", (buffWidth, buffHeight) -> {
+            Renderer.setColor(Color.WHITE);
+            Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(renderer, .25f);
+                thing.render(.25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
+                Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
             for(HutThing thing : furn){
                 float x,y,z;
@@ -233,10 +235,10 @@ public class Hut{
                 }
                 float[] xy = convertXYZtoXY512(x, y, z);
                 if(highlights.contains(thing)){
-                    renderer.setColor(new Color(0,96,192));
-                    renderer.drawCircle(xy[0], xy[1], 0, 16);
-                    renderer.setColor(new Color(0,64,128));
-                    renderer.drawCircle(xy[0], xy[1], 14, 18);
+                    Renderer.setColor(new Color(0,96,192));
+                    Renderer.drawCircle(xy[0], xy[1], 0, 16);
+                    Renderer.setColor(new Color(0,64,128));
+                    Renderer.drawCircle(xy[0], xy[1], 14, 18);
                 }
             }
             for(HutThing thing : furn){
@@ -275,26 +277,26 @@ public class Hut{
                 }
                 float[] xy = convertXYZtoXY512(x, y, z);
                 if(highlights.contains(thing)){
-                    renderer.setColor(.05f, .05f, .05f, 1);
+                    Renderer.setColor(.05f, .05f, .05f, 1);
                     int textHeight = 20;
-                    renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(thing)+1)+"");
+                    Renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(thing)+1)+"");
                 }
             }
         });
     }
     public void sendPlacementHighlightImage(MessageChannel channel, HutThing highlightedThing, List<Placement> highlights){
-        sendImage(channel, "inside", (renderer, buffWidth, buffHeight) -> {
-            renderer.setWhite();
-            renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png", 0, 0, buffWidth, buffHeight);
+        sendImage(channel, "inside", (buffWidth, buffHeight) -> {
+            Renderer.setColor(Color.WHITE);
+            Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/inside.png"));
             ArrayList<HutThing> furn = new ArrayList<>(furniture);
             Collections.sort(furn);
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(renderer, .25f);
+                thing.render(.25f);
             }
             if(type==HutType.NIGHT){
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png", 0, 0, buffWidth, buffHeight);
+                Renderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
             }
             for(Placement placement : highlights){
                 float x,y,z;
@@ -331,10 +333,10 @@ public class Hut{
                         break;
                 }
                 float[] xy = convertXYZtoXY512(x, y, z);
-                renderer.setColor(new Color(0,96,192));
-                renderer.drawCircle(xy[0], xy[1], 0, 16);
-                renderer.setColor(new Color(0,64,128));
-                renderer.drawCircle(xy[0], xy[1], 14, 18);
+                Renderer.setColor(new Color(0,96,192));
+                Renderer.drawCircle(xy[0], xy[1], 0, 16);
+                Renderer.setColor(new Color(0,64,128));
+                Renderer.drawCircle(xy[0], xy[1], 14, 18);
             }
             for(Placement placement : highlights){
                 float x,y,z;
@@ -371,9 +373,9 @@ public class Hut{
                         break;
                 }
                 float[] xy = convertXYZtoXY512(x, y, z);
-                renderer.setColor(.05f, .05f, .05f, 1);
+                Renderer.setColor(.05f, .05f, .05f, 1);
                 int textHeight = 20;
-                renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(placement)+1)+"");
+                Renderer.drawCenteredText(xy[0]-textHeight, xy[1]-textHeight/2, xy[0]+textHeight, xy[1]+textHeight/2, (highlights.indexOf(placement)+1)+"");
             }
         });
     }

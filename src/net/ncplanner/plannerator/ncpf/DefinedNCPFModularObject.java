@@ -17,6 +17,7 @@ import net.ncplanner.plannerator.planner.ncpf.defined.field.ElementListPlannerat
  *
  * @author thiz
  */
+@Deprecated
 public abstract class DefinedNCPFModularObject extends DefinedNCPFObject{
     public NCPFModuleContainer modules = new NCPFModuleContainer();
     protected final ArrayList<DefinedNCPFField> definedNCPFFields = new ArrayList<>();

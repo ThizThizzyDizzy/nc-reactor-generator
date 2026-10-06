@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.tutorial;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.tutorial.TutorialCategory;

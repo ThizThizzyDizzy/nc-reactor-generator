@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 public class ChangingTheme extends Theme{
     protected Theme current;

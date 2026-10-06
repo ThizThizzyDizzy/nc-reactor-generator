@@ -3,7 +3,7 @@ import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 public class TomPainting extends HutThing{
     public TomPainting(UUID uuid, Hut hut){

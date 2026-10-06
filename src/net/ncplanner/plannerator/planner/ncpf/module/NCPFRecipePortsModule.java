@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.ncpf.module;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
+@Deprecated
 public abstract class NCPFRecipePortsModule<BlockElement extends NCPFElement> extends NCPFSettingsModule{
     public BlockReference<BlockElement> input;
     public BlockReference<BlockElement> output;

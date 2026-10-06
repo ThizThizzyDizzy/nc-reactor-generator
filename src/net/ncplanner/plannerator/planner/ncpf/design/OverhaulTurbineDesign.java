@@ -13,6 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfi
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe;
 @RegisterWith(module = OverhaulModule.class)
+@Deprecated
 public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineDesign, OverhaulTurbine>{
     public TurbineRecipe recipe;
     public BlockElement[][][] design;

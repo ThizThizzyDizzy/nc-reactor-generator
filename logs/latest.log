@@ -1,0 +1,69 @@
+2026-08-08T11:04:03.830091969 main INFO: [INIT] Starting terminal
+2026-08-08T11:04:03.831571409 main INFO: [INIT] Initializing GLFW
+2026-08-08T11:04:03.864684705 main INFO: [INIT] Initializing window
+2026-08-08T11:04:03.865384800 main INFO: [INIT] Creating window
+2026-08-08T11:04:03.903522608 main INFO: [INIT] Initializing OpenGL
+2026-08-08T11:04:03.997384046 main INFO: [INIT] Initializing Render Engine
+2026-08-08T11:04:04.003623338 main INFO: [INIT] Initializing Elements
+2026-08-08T11:04:04.018282960 main INFO: [INIT] Initializing Layers
+2026-08-08T11:04:04.018774461 main INFO: [INIT] Initializing Input
+2026-08-08T11:04:04.025536325 main INFO: Loading Icon
+2026-08-08T11:04:04.035423261 main ERROR: GLFW ERROR 65548: Wayland: The platform does not support setting the window icon
+2026-08-08T11:04:04.456015128 main WARN: [Renderer] defaultFont is null! Attempting to set default font to a fallback font.
+2026-08-08T11:04:04.456880492 main WARN: [Renderer] Attempting to load fallback font: /usr/share/fonts/liberation/LiberationSans-Regular.ttf
+2026-08-08T11:04:04.459226549 main WARN: [Renderer] Failed to load fallback font: /usr/share/fonts/liberation/LiberationSans-Regular.ttf
+java.io.FileNotFoundException: /usr/share/fonts/liberation/LiberationSans-Regular.ttf (No such file or directory)
+java.base/java.io.FileInputStream.open0(Native Method)
+java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+com.thizthizzydizzy.dizzyengine.graphics.Renderer.getFont(Renderer.java:59)
+com.thizthizzydizzy.dizzyengine.graphics.Renderer.getStringWidth(Renderer.java:1036)
+com.thizthizzydizzy.dizzyengine.graphics.Renderer.drawText(Renderer.java:1028)
+net.ncplanner.plannerator.planner.ui.component.ProgressBar.draw(ProgressBar.java:29)
+com.thizthizzydizzy.dizzyengine.ui.component.Component.render(Component.java:38)
+com.thizthizzydizzy.dizzyengine.ui.component.Component.render(Component.java:42)
+net.ncplanner.plannerator.planner.gui.menu.MenuInit.render(MenuInit.java:84)
+com.thizthizzydizzy.dizzyengine.ui.FlatUI.render(FlatUI.java:24)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.lambda$start$2(DizzyEngine.java:337)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.lambda$wrapEvent$0(DizzyEngine.java:267)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.wrapEvent(DizzyEngine.java:273)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.wrapEvent(DizzyEngine.java:267)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.start(DizzyEngine.java:333)
+net.ncplanner.plannerator.planner.Core.main(Core.java:224)
+net.ncplanner.plannerator.planner.Main.main(Main.java:182)
+2026-08-08T11:04:04.459876103 main WARN: [Renderer] Attempting to load fallback font: /usr/share/fonts/liberation-fonts/LiberationSans-Regular.ttf
+2026-08-08T11:04:04.649001420 main WARN: [Renderer] Set fallback font: /usr/share/fonts/liberation-fonts/LiberationSans-Regular.ttf
+2026-08-08T11:04:04.652760661 Initialization Thread ERROR: Initialization Failed!
+java.lang.ExceptionInInitializerError: null
+net.ncplanner.plannerator.planner.file.FileReader.<clinit>(FileReader.java:15)
+net.ncplanner.plannerator.planner.gui.menu.MenuInit.lambda$render$0(MenuInit.java:115)
+java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by:
+java.lang.RuntimeException: Uncompilable code - net.ncplanner.plannerator.planner.file.recovery.RecoveryModeHandler is not abstract and does not override abstract method recoverOverhaulMSRBlockRecipe(net.ncplanner.ncpf.structure.element.NcpfElement,java.lang.String) in net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler
+net.ncplanner.plannerator.planner.file.recovery.RecoveryModeHandler.<clinit>(RecoveryModeHandler.java:1)
+net.ncplanner.plannerator.planner.file.FileReader.<clinit>(FileReader.java:15)
+net.ncplanner.plannerator.planner.gui.menu.MenuInit.lambda$render$0(MenuInit.java:115)
+java.base/java.lang.Thread.run(Thread.java:1583)
+2026-08-08T11:04:04.654445491 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.654770751 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.654877715 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.657499252 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.658097045 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.658429555 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.662789947 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.662975290 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-08T11:04:04.663076375 Initialization Thread WARN: UI context was accessed outside the main thread!
+2026-08-02026-08-08T11:04:14.084741864 DizzyEngine Terminal ERROR: Uncaught Exception in Thread DizzyEngine Terminal!
+java.lang.NullPointerException: Cannot invoke "java.lang.CharSequence.length()" because "this.text" is null
+java.base/java.util.regex.Matcher.getTextLength(Matcher.java:1808)
+java.base/java.util.regex.Matcher.reset(Matcher.java:461)
+java.base/java.util.regex.Matcher.<init>(Matcher.java:256)
+java.base/java.util.regex.Pattern.matcher(Pattern.java:1180)
+com.thizthizzydizzy.dizzyengine.terminal.TerminalUtils.parseArgs(TerminalUtils.java:16)
+com.thizthizzydizzy.dizzyengine.terminal.Terminal.run(Terminal.java:10)
+com.thizthizzydizzy.dizzyengine.DizzyEngine.lambda$init$1(DizzyEngine.java:92)
+java.base/java.lang.Thread.run(Thread.java:1583)
+lanner.gui.menu.MenuInit.lambda$render$0(MenuInit.java:354)
+java.base/java.lang.Thread.run(Thread.java:1583)
+2026-08-08T11:04:08.659784317 main INFO: [DizzyEngine] Window closed!
+2026-08-08T11:04:08.660141688 main INFO: [DizzyEngine] Shutting down...

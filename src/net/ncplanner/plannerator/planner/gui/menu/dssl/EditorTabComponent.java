@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import org.lwjgl.glfw.GLFW;
 public class EditorTabComponent extends Label{

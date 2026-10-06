@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.layout;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class SplitLayout extends Layout{
     public static final int X_AXIS = 0;

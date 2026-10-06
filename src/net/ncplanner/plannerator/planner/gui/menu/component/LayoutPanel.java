@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.Layout;
 public class LayoutPanel extends Panel{

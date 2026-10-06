@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.ncpf;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
-import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import java.util.HashMap;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
@@ -13,6 +13,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.ElementStatsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
+@Deprecated
 public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, Supplier<NCPFElement>{
     public static HashMap<String, Supplier<NCPFElementDefinition>> recognizedElements = new HashMap<>();
     public NCPFElementDefinition definition = new UnknownNCPFElement();

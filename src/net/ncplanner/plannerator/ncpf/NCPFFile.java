@@ -1,8 +1,9 @@
 package net.ncplanner.plannerator.ncpf;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Core;
+@Deprecated
 public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
     public int version = 1;
     public List<NCPFAddon> addons = new ArrayList<>();

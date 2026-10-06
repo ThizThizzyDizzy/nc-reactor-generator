@@ -1,18 +1,19 @@
 package net.ncplanner.plannerator.discord.keyword;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.discord.Keyword;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.configuration.CannedConfiguration;
+import net.ncplanner.plannerator.planner.configuration.ConfigurationManager;
 public class KeywordConfiguration extends Keyword{
-    public Configuration config;
+    public CannedConfiguration config;
     public KeywordConfiguration(){
         super("Configuration");
     }
     @Override
     public boolean doRead(String input){
-        for(Configuration c : Configuration.configurations){
-            for(String s : c.alternatives){
+        for(CannedConfiguration c : ConfigurationManager.configurations){
+            for(String s : c.aliases){
                 if(input.equalsIgnoreCase(s)){
                     config = c;
                     return true;
@@ -28,7 +29,7 @@ public class KeywordConfiguration extends Keyword{
     @Override
     public String getRegex(){
         ArrayList<String> options = new ArrayList<>();
-        for(Configuration c : Configuration.configurations)options.addAll(c.alternatives);
+        for(CannedConfiguration c : ConfigurationManager.configurations)options.addAll(c.aliases);
         if(options.isEmpty())return null;
         return String.join("|", options);
     }

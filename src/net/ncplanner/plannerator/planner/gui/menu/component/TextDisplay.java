@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.ui.component.Component;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.Component;
+import org.joml.Vector2f;
 public class TextDisplay extends Component{
     public float padding = 1;
     private String[] strs;
@@ -24,37 +25,36 @@ public class TextDisplay extends Component{
         this(text, 20, centered);
     }
     public TextDisplay(String text, float textHeight, boolean centered){
-        super(0, 0, 0, 0);
         this.textHeight = textHeight;
         setText(text);
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        renderer.setColor(Core.theme.getTextViewBackgroundColor());
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        Renderer.setColor(Core.theme.getTextViewBackgroundColor());
+        Renderer.fillRect(x, y, x+getWidth(), y+getHeight());
+        Renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
         float textHeight = this.textHeight;
-        if(fitText)textHeight = Math.min(textHeight, (height)/(strs.length+padding));
+        if(fitText)textHeight = Math.min(textHeight, (getHeight())/(strs.length+padding));
         for(int i = 0; i<strs.length; i++){
             String str = strs[i];
             if(centered){
-                renderer.drawCenteredText(x, y+(padding/2+i)*textHeight, x+width, y+(padding/2+i+1)*textHeight, str);
+                Renderer.drawCenteredText(x, y+(padding/2+i)*textHeight, x+getWidth(), y+(padding/2+i+1)*textHeight, str);
             }else{
-                renderer.drawText(x+padding/2*textHeight, y+(padding/2+i)*textHeight, x+width, y+(padding/2+i+1)*textHeight, str);
+                Renderer.drawText(x+padding/2*textHeight, y+(padding/2+i)*textHeight, x+getWidth(), y+(padding/2+i+1)*textHeight, str);
             }
         }
     }
     public void setText(String text){
         Renderer renderer = new Renderer();
         strs = text.split("\n", -1);
+        Vector2f size = getSize();
         if(!fitText){
             for(String line : strs){
-                width = Math.max(width, renderer.getStringWidth(line, textHeight));
-                height+=textHeight;
+                size.x = Math.max(size.x, Renderer.getStringWidth(line, textHeight));
+                size.y+=textHeight;
             }
-            width+=textHeight*padding;
-            height+=textHeight*padding;
+            size.x+=textHeight*padding;
+            size.y+=textHeight*padding;
         }
     }
     public void addText(String text){

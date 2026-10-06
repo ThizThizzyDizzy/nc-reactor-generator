@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.List;
 import java.util.function.Function;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;

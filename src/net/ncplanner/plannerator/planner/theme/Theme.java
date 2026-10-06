@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.theme;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 import java.util.ArrayList;
 import java.util.Random;
-import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword.KeywordFlavor;
 import net.ncplanner.plannerator.planner.theme.legacy.LegacyTheme;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;

@@ -1,16 +1,16 @@
 package net.ncplanner.plannerator.planner.file.ncpf;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.io.ImageIO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFBlockElement;
@@ -24,17 +24,17 @@ import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.file.JSON;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
-import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
+import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
+@Deprecated
 public class NCPFFileReader{
     public static final ArrayList<NCPFFormatReader> formats = new ArrayList<>();
     private static JSONNCPFReader json;
@@ -85,7 +85,8 @@ public class NCPFFileReader{
                                     boolean valid = false;
                                     String baseName = element.getName();
                                     if(element.definition.typeMatches(NCPFLegacyItemElement::new)||element.definition.typeMatches(NCPFItemElement::new)){
-                                        if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        if(!element.definition.getName().startsWith(namespace+":"))
+                                            continue;
                                         if(element.definition instanceof NCPFLegacyItemElement){
                                             baseName = ((NCPFLegacyItemElement)element.definition).name;
                                         }
@@ -101,7 +102,8 @@ public class NCPFFileReader{
                                                     String texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                     String[] textureParts = texturePath.split(":");
                                                     File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
-                                                    if(textureFile.exists())texture = ImageIO.read(textureFile);
+                                                    if(textureFile.exists())
+                                                        texture = ImageIO.read(textureFile);
                                                 }
                                             }catch(Exception ex){
                                             }
@@ -109,7 +111,8 @@ public class NCPFFileReader{
                                         namePrefix = "item.";
                                     }
                                     if(element.definition.typeMatches(NCPFLegacyBlockElement::new)||element.definition.typeMatches(NCPFBlockElement::new)){
-                                        if(!element.definition.getName().startsWith(namespace+":"))continue;
+                                        if(!element.definition.getName().startsWith(namespace+":"))
+                                            continue;
                                         HashMap<String, Object> blockstates = null;
                                         if(element.definition instanceof NCPFLegacyBlockElement){
                                             baseName = ((NCPFLegacyBlockElement)element.definition).name;
@@ -129,7 +132,8 @@ public class NCPFFileReader{
                                                 if(jsonBlockstate.containsKey("forge_marker")){
                                                     JSON.JSONObject jsonTextures = jsonBlockstate.getJSONObject("defaults").getJSONObject("textures");
                                                     jsonTextures.remove("particle");
-                                                    if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    if(jsonTextures.size()==1)
+                                                        texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                     else if(jsonTextures.size()==2&&(jsonTextures.containsKey("overlay"))){
                                                         ArrayList<String> jsonTextureKeys = new ArrayList<>(jsonTextures.keySet());
                                                         jsonTextureKeys.remove("overlay");
@@ -138,12 +142,14 @@ public class NCPFFileReader{
                                                         if(jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:fission_port_overlayed")&&"true".equals(blockstates.get("active").toString())){
                                                             try{
                                                                 overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("true").getJSONObject("textures").getString("overlay");
-                                                            }catch(Exception ex){}
+                                                            }catch(Exception ex){
+                                                            }
                                                         }
                                                         if(jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:fission_port_overlayed")&&"false".equals(blockstates.get("active").toString())){
                                                             try{
                                                                 overlayPath = jsonBlockstate.getJSONObject("variants").getJSONObject("active").getJSONObject("false").getJSONObject("textures").getString("overlay");
-                                                            }catch(Exception ex){}
+                                                            }catch(Exception ex){
+                                                            }
                                                         }
                                                     }else if(jsonTextures.containsKey("in")&&jsonBlockstate.getJSONObject("defaults").getString("model").equals("nuclearcraft:wall_part")){
                                                         texturePath = jsonTextures.getString("in");
@@ -155,18 +161,22 @@ public class NCPFFileReader{
                                                     File model = new File(resourcesDir, modelParts[0]+File.separatorChar+"models"+File.separatorChar+modelParts[1]+".json");
                                                     JSON.JSONObject jsonTextures = JSON.parse(model).getJSONObject("textures");
                                                     jsonTextures.remove("particle");
-                                                    if(jsonTextures.size()==1)texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
+                                                    if(jsonTextures.size()==1)
+                                                        texturePath = jsonTextures.getString(new ArrayList<>(jsonTextures.keySet()).getFirst());
                                                 }
 
                                                 if(texturePath!=null){
                                                     String[] textureParts = texturePath.split(":");
                                                     File textureFile = new File(resourcesDir, textureParts[0]+File.separatorChar+"textures"+File.separatorChar+textureParts[1]+".png");
-                                                    if(textureFile.exists())texture = ImageIO.read(textureFile);
+                                                    if(textureFile.exists())
+                                                        texture = ImageIO.read(textureFile);
                                                 }
                                                 if(overlayPath!=null){
                                                     Image overlay = null;
-                                                    if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/off"))overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/off.png"));
-                                                    else if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/on"))overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/on.png"));
+                                                    if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/off"))
+                                                        overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/off.png"));
+                                                    else if(overlayPath.equals("nuclearcraft:blocks/fission/port/heater/on"))
+                                                        overlay = ImageIO.read(Core.getInputStream("/textures/overhaul/msr/port/on.png"));
                                                     else{
                                                         String[] overlayParts = overlayPath.split(":");
                                                         File overlayFile = new File(resourcesDir, overlayParts[0]+File.separatorChar+"overlays"+File.separatorChar+overlayParts[1]+".png");
@@ -248,7 +258,8 @@ public class NCPFFileReader{
                                     if(element.definition.matches(internalElement.definition)){
                                         if(match==null)match = internalElement;
                                         for(NCPFModule module : internalElement.modules.modules.values()){
-                                            if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                            if(element.modules.modules.containsKey(module.name))
+                                                continue; // only fill if they don't exist already
                                             if(module instanceof TextureModule){
                                                 element.modules.setModule(module.copyTo(TextureModule::new));
                                             }
@@ -267,9 +278,11 @@ public class NCPFFileReader{
                                     for(List<NCPFElement> internalElements : internal.getAllElements()){
                                         for(NCPFElement internalElement : internalElements){
                                             if(definition.matches(internalElement.definition)){
-                                                if(match==null)match = internalElement;
+                                                if(match==null)
+                                                    match = internalElement;
                                                 for(NCPFModule module : internalElement.modules.modules.values()){
-                                                    if(element.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                    if(element.modules.modules.containsKey(module.name))
+                                                        continue; // only fill if they don't exist already
                                                     if(module instanceof TextureModule){
                                                         element.modules.setModule(module.copyTo(TextureModule::new));
                                                     }
@@ -293,14 +306,16 @@ public class NCPFFileReader{
                                 BlockRecipesElement internalBrelement = (BlockRecipesElement)internalMatch;
                                 List<? extends NCPFElement> recipes = brelement.getBlockRecipes();
                                 List<? extends NCPFElement> internalRecipes = internalBrelement.getBlockRecipes();
-                                if(recipes==null||internalRecipes==null)continue;
+                                if(recipes==null||internalRecipes==null)
+                                    continue;
                                 for(NCPFElement recipe : recipes){
                                     boolean foundMatch = false;
                                     for(NCPFElement internalRecipe : internalRecipes){
                                         if(recipe.definition.matches(internalRecipe.definition)){
                                             foundMatch = true;
                                             for(NCPFModule module : internalRecipe.modules.modules.values()){
-                                                if(recipe.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                if(recipe.modules.modules.containsKey(module.name))
+                                                    continue; // only fill if they don't exist already
                                                 if(module instanceof TextureModule){
                                                     recipe.modules.setModule(module.copyTo(TextureModule::new));
                                                 }
@@ -319,7 +334,8 @@ public class NCPFFileReader{
                                                 if(definition.matches(internalRecipe.definition)){
                                                     foundMatch = true;
                                                     for(NCPFModule module : internalRecipe.modules.modules.values()){
-                                                        if(recipe.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                                        if(recipe.modules.modules.containsKey(module.name))
+                                                            continue; // only fill if they don't exist already
                                                         if(module instanceof TextureModule){
                                                             recipe.modules.setModule(module.copyTo(TextureModule::new));
                                                         }
@@ -342,9 +358,11 @@ public class NCPFFileReader{
                     // Set textures & display names of any oredict elements that can get their textures from references
                     for(List<NCPFElement> elements1 : config.getAllElementsISaidAllElements()){
                         for(NCPFElement element1 : elements1){
-                            if(!(element1.definition instanceof NCPFOredictElement))continue;
+                            if(!(element1.definition instanceof NCPFOredictElement))
+                                continue;
                             NCPFOredictElement oredict = (NCPFOredictElement)element1.definition;
-                            if(element1.hasModule(TextureModule::new)&&element1.hasModule(DisplayNameModule::new))continue;
+                            if(element1.hasModule(TextureModule::new)&&element1.hasModule(DisplayNameModule::new))
+                                continue;
                             ArrayList<NCPFElement> potentials = new ArrayList<>();
                             for(List<NCPFElement> elements2 : config.getAllElementsISaidAllElements()){
                                 for(NCPFElement element2 : elements2){
@@ -357,7 +375,8 @@ public class NCPFFileReader{
                             }
                             if(potentials.size()==1){
                                 for(NCPFModule module : potentials.get(0).modules.modules.values()){
-                                    if(element1.modules.modules.containsKey(module.name))continue; // only fill if they don't exist already
+                                    if(element1.modules.modules.containsKey(module.name))
+                                        continue; // only fill if they don't exist already
                                     if(module instanceof TextureModule){
                                         element1.modules.setModule(module.copyTo(TextureModule::new));
                                     }

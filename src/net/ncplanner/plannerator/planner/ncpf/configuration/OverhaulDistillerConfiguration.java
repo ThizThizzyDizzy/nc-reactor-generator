@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulDistillerConfiguration;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulDistiller.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulDistiller.DistillerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulDistillerSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulDistillerConfiguration extends NCPFOverhaulDistillerConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();

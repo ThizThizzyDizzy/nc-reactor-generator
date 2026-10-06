@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.openvr.HmdMatrix34;

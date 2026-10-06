@@ -14,6 +14,7 @@ import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.RegisteredNCPFObject;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
+@Deprecated
 public class NCPFObject extends HashMap<String, Object>{
     public <T extends DefinedNCPFObject> T getDefinedNCPFObject(String key, Supplier<T> supplier){
         T object = supplier.get();

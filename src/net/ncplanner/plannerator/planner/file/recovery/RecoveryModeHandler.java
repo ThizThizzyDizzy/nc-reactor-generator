@@ -20,7 +20,7 @@ public class RecoveryModeHandler implements RecoveryHandler{
     HashMap<String, Integer> fallbackChoices = new HashMap<>();
     @Override
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuelLegacyNCPF(Project ncpf, int id) {
-        return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
+        return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.configuration.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
     }
     @Override
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlockLegacyNCPF(Project ncpf, int id){

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class ElementListNCPFField<DefinedObject extends DefinedNCPFModularObject> extends DefinedNCPFField<DefinedObject>{
     public final Function<DefinedObject, List<NCPFElement>> get;
     public final Consumer<List<NCPFElement>> set;

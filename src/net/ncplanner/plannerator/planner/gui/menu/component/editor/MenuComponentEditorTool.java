@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
 import net.ncplanner.plannerator.planner.gui.Component;

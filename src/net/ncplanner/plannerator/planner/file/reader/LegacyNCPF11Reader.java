@@ -1,5 +1,7 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
+import com.thizthizzydizzy.dizzyengine.MathUtil;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +12,24 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.ncpf.runtime.RuntimeBlock;
+import net.ncplanner.ncpf.runtime.RuntimeNcpf;
+import net.ncplanner.ncpf.runtime.design.RuntimeDesign;
+import net.ncplanner.ncpf.runtime.design.nuclearcraft.RuntimeOverhaulMSRDesign;
+import net.ncplanner.ncpf.runtime.design.nuclearcraft.RuntimeOverhaulSFRDesign;
+import net.ncplanner.ncpf.runtime.design.nuclearcraft.RuntimeOverhaulTurbineDesign;
+import net.ncplanner.ncpf.runtime.design.nuclearcraft.RuntimeUnderhaulSFRDesign;
+import net.ncplanner.ncpf.structure.configuration.NcpfConfiguration;
+import net.ncplanner.ncpf.structure.configuration.nuclearcraft.OverhaulMSRConfiguration;
+import net.ncplanner.ncpf.structure.configuration.nuclearcraft.OverhaulSFRConfiguration;
+import net.ncplanner.ncpf.structure.design.NcpfDesign;
+import net.ncplanner.ncpf.structure.element.NcpfElement;
+import net.ncplanner.ncpf.structure.module.BlockRecipesModule;
+import net.ncplanner.ncpf.structure.module.plannerator.ConfigurationMetadataModule;
+import net.ncplanner.ncpf.structure.module.plannerator.MetadataModule;
+import net.ncplanner.plannerator.config2.Config; 
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
-import net.ncplanner.plannerator.graphics.image.Image;
-import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
-import net.ncplanner.plannerator.ncpf.NCPFElement;
-import net.ncplanner.plannerator.ncpf.NCPFElementStack;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
@@ -24,23 +37,11 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyBlockElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
-import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.file.FormatReader;
 import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
-import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockReference;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulFusionConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
-import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.design.OverhaulFusionDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulMSRDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulSFRDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
-import net.ncplanner.plannerator.planner.ncpf.design.UnderhaulSFRDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 import net.ncplanner.plannerator.planner.ncpf.module.DisplayNameModule;
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
@@ -81,25 +82,27 @@ public class LegacyNCPF11Reader implements FormatReader {
         return (byte) 11;
     }
     @Override
-    public synchronized Project read(Supplier<InputStream> provider, RecoveryHandler recovery, File fileContext){
+    public synchronized RuntimeNcpf read(Supplier<InputStream> provider, RecoveryHandler recovery, File fileContext){
         InputStream in = provider.get();
         overhaulTurbinePostLoadInputsMap.clear();
         try{
-            Project project = new Project();
+            RuntimeNcpf ncpf = new RuntimeNcpf();
             Config header = Config.newConfig();
             header.load(in);
             int multiblocks = header.getInt("count");
             if(header.hasProperty("metadata")){
+                MetadataModule metadataModule = new MetadataModule();
+                ncpf.modules.getOrCreateModule(MetadataModule::new);
                 Config metadata = header.getConfig("metadata");
                 for(String key : metadata.properties()){
-                    project.metadata.put(key, metadata.get(key));
+                    metadataModule.metadata.put(key, metadata.get(key));
                 }
             }
             Config config = Config.newConfig();
             config.load(in);
-            loadConfiguration(project, config);
+            loadConfiguration(ncpf, config);
             for(int i = 0; i<multiblocks; i++){
-                project.designs.add(readMultiblock(project, in, recovery));
+                ncpf.designs.add(readMultiblock(ncpf, in, recovery));
             }
             if(!overhaulTurbinePostLoadInputsMap.isEmpty())throw new UnsupportedOperationException("Not yet implemented.");
             /*
@@ -110,16 +113,16 @@ public class LegacyNCPF11Reader implements FormatReader {
             }
             */
             in.close();
-            return project;
+            return ncpf;
         }catch(IOException ex){
             throw new RuntimeException(ex);
         }
     }
 
-    protected synchronized Design readMultiblock(Project ncpf, InputStream in, RecoveryHandler recovery) {
+    protected synchronized RuntimeDesign readMultiblock(RuntimeNcpf ncpf, InputStream in, RecoveryHandler recovery) {
         Config data = Config.newConfig();
         data.load(in);
-        Design design;
+        RuntimeDesign design;
         int id = data.getInt("id");
         switch(id){
             case 0:
@@ -141,17 +144,18 @@ public class LegacyNCPF11Reader implements FormatReader {
                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
         }
         if(data.hasProperty("metadata")){
+            MetadataModule metadataModule = design.modules.getOrCreateModule(MetadataModule::new);
             Config metadata = data.getConfig("metadata");
             for(String key : metadata.properties()){
-                design.metadata.put(key, metadata.get(key));
+                metadataModule.metadata.put(key, metadata.get(key));
             }
         }
         return design;
     }
 
-    protected synchronized Design readMultiblockUnderhaulSFR(Project ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized RuntimeDesign readMultiblockUnderhaulSFR(RuntimeNcpf ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.getConfigNumberList("dimensions");
-        UnderhaulSFRDesign underhaulSFR = new UnderhaulSFRDesign(ncpf, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
+        RuntimeUnderhaulSFRDesign underhaulSFR = new RuntimeUnderhaulSFRDesign((int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
         underhaulSFR.fuel = recovery.recoverUnderhaulSFRFuelLegacyNCPF(ncpf, data.getInt("fuel", -1));
         boolean compact = data.getBoolean("compact");
         ConfigNumberList blocks = data.getConfigNumberList("blocks");
@@ -162,8 +166,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     for(int z = 0; z<underhaulSFR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
-                            net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
-                            if(b!=null)underhaulSFR.design[x][y][z] = b;
+                            NcpfElement b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)underhaulSFR.design[x][y][z] = new RuntimeBlock(b);
                         }
                         index[0]++;
                     }
@@ -175,15 +179,15 @@ public class LegacyNCPF11Reader implements FormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
-                if(b!=null)underhaulSFR.design[x][y][z] = b;
+                NcpfElement b = recovery.recoverUnderhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)underhaulSFR.design[x][y][z] = new RuntimeBlock(b);
             }
         }
         return underhaulSFR;
     }
-    protected synchronized Design readMultiblockOverhaulSFR(Project ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized RuntimeDesign readMultiblockOverhaulSFR(RuntimeNcpf ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.getConfigNumberList("dimensions");
-        OverhaulSFRDesign overhaulSFR = new OverhaulSFRDesign(ncpf, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
+        RuntimeOverhaulSFRDesign overhaulSFR = new RuntimeOverhaulSFRDesign((int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
         overhaulSFR.coolantRecipe = recovery.recoverOverhaulSFRCoolantRecipeLegacyNCPF(ncpf, data.getInt("coolantRecipe", -1));
         boolean compact = data.getBoolean("compact");
         ConfigNumberList blocks = data.getConfigNumberList("blocks");
@@ -194,8 +198,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     for(int z = 0; z<overhaulSFR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
-                            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
-                            if(b!=null)overhaulSFR.design[x][y][z] = b;
+                            NcpfElement b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)overhaulSFR.design[x][y][z] = new RuntimeBlock(b);
                         }
                         index[0]++;
                     }
@@ -207,8 +211,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
-                if(b!=null)overhaulSFR.design[x][y][z] = b;
+                NcpfElement b = recovery.recoverOverhaulSFRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)overhaulSFR.design[x][y][z] = new RuntimeBlock(b);
             }
         }
         ConfigNumberList blockRecipes = data.getConfigNumberList("blockRecipes");
@@ -218,31 +222,39 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(int x = 0; x<overhaulSFR.design.length; x++){
             for(int y = 0; y<overhaulSFR.design[x].length; y++){
                 for(int z = 0; z<overhaulSFR.design[x][y].length; z++){
-                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block = overhaulSFR.design[x][y][z];
+                    RuntimeBlock block = overhaulSFR.design[x][y][z];
                     if(block==null)continue;
-                    if(!block.fuels.isEmpty()||block.parent!=null&&!block.parent.fuels.isEmpty()){
+                    BlockRecipesModule recipesModule = block.block.modules.getModule(BlockRecipesModule.class);
+                    if(recipesModule!=null){
                         int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulSFR.fuels[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block.parent==null?block:block.parent, rid-1);
+                        if(rid!=0)block.blockRecipe = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block.block, rid-1);
                         recipeIndex++;
                     }
-                    if(!block.irradiatorRecipes.isEmpty()||block.parent!=null&&!block.parent.irradiatorRecipes.isEmpty()){
-                        int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulSFR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulSFRBlockRecipeLegacyNCPF(ncpf, block.parent==null?block:block.parent, rid-1);
-                        recipeIndex++;
-                    }
-                    if(block.port!=null||block.coolantVent!=null){
+                    //TODO-REFACTOR toggled blocks (need to do a reverse lookup via RecipePortsModule, then a forward lookup via matching elements... This will also need proper .equals comparison for toRuntime/compile in NCPF, rather than reference equality
+                    if(block.block.modules.getModule(net.ncplanner.ncpf.structure.module.nuclearcraft.overhaul_sfr.CoolantVentModule.class)!=null){
                         boolean isToggled = ports.get(portIndex)>0;
                         if(isToggled)overhaulSFR.design[x][y][z] = block.toggled;
                         portIndex++;
                     }
+                    if(block.block.modules.getModule(net.ncplanner.ncpf.structure.module.nuclearcraft.overhaul_sfr.PortModule.class)!=null){
+                        boolean isToggled = ports.get(portIndex)>0;
+                        if(isToggled)overhaulSFR.design[x][y][z] = block.toggled;
+                        portIndex++;
+                        
+                    }
+//                    if(block.port!=null||block.coolantVent!=null){
+//                        boolean isToggled = ports.get(portIndex)>0;
+//                        if(isToggled)overhaulSFR.design[x][y][z] = block.toggled;
+//                        portIndex++;
+//                    }
                 }
             }
         }
         return overhaulSFR;
     }
-    protected synchronized Design readMultiblockOverhaulMSR(Project ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized RuntimeDesign readMultiblockOverhaulMSR(RuntimeNcpf ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.getConfigNumberList("dimensions");
-        OverhaulMSRDesign overhaulMSR = new OverhaulMSRDesign(ncpf, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
+        RuntimeOverhaulMSRDesign overhaulMSR = new RuntimeOverhaulMSRDesign((int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2));
         boolean compact = data.getBoolean("compact");
         ConfigNumberList blocks = data.getConfigNumberList("blocks");
         if(compact){
@@ -252,8 +264,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                     for(int z = 0; z<overhaulMSR.design[x][y].length; z++){
                         int bid = (int) blocks.get(index[0]);
                         if(bid>0){
-                            net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
-                            if(b!=null)overhaulMSR.design[x][y][z] = b;
+                            NcpfElement b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
+                            if(b!=null)overhaulMSR.design[x][y][z] = new RuntimeBlock(b);
                         }
                         index[0]++;
                     }
@@ -265,8 +277,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 int y = (int) blocks.get(j+1)+1;
                 int z = (int) blocks.get(j+2)+1;
                 int bid = (int) blocks.get(j+3);
-                net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
-                if(b!=null)overhaulMSR.design[x][y][z] = b;
+                NcpfElement b = recovery.recoverOverhaulMSRBlockLegacyNCPF(ncpf, bid-1);
+                if(b!=null)overhaulMSR.design[x][y][z] = new RuntimeBlock(b);
             }
         }
         ConfigNumberList blockRecipes = data.getConfigNumberList("blockRecipes");
@@ -276,36 +288,34 @@ public class LegacyNCPF11Reader implements FormatReader {
         for(int x = 0; x<overhaulMSR.design.length; x++){
             for(int y = 0; y<overhaulMSR.design[x].length; y++){
                 for(int z = 0; z<overhaulMSR.design[x][y].length; z++){
-                    net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block = overhaulMSR.design[x][y][z];
+                    RuntimeBlock block = overhaulMSR.design[x][y][z];
                     if(block==null)continue;
-                    if(!block.fuels.isEmpty()){
+                    BlockRecipesModule recipesModule = block.block.modules.getModule(BlockRecipesModule.class);
+                    if(recipesModule!=null){
                         int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulMSR.fuels[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
+                        if(rid!=0)block.blockRecipe = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
                         recipeIndex++;
                     }
-                    if(!block.irradiatorRecipes.isEmpty()){
-                        int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulMSR.irradiatorRecipes[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
-                        recipeIndex++;
-                    }
-                    if(!block.heaterRecipes.isEmpty()){
-                        int rid = (int)blockRecipes.get(recipeIndex);
-                        if(rid!=0)overhaulMSR.heaterRecipes[x][y][z] = recovery.recoverOverhaulMSRBlockRecipeLegacyNCPF(ncpf, block, rid-1);
-                        recipeIndex++;
-                    }
-                    if(block.port!=null){
+                    //TODO-REFACTOR toggled blocks (need to do a reverse lookup via RecipePortsModule, then a forward lookup via matching elements... This will also need proper .equals comparison for toRuntime/compile in NCPF, rather than reference equality
+                    if(block.block.modules.getModule(net.ncplanner.ncpf.structure.module.nuclearcraft.overhaul_msr.PortModule.class)!=null){
                         boolean isToggled = ports.get(portIndex)>0;
                         if(isToggled)overhaulMSR.design[x][y][z] = block.toggled;
                         portIndex++;
+                        
                     }
+//                    if(block.port!=null){
+//                        boolean isToggled = ports.get(portIndex)>0;
+//                        if(isToggled)overhaulMSR.design[x][y][z] = block.toggled;
+//                        portIndex++;
+//                    }
                 }
             }
         }
         return overhaulMSR;
     }
-    protected synchronized Design readMultiblockOverhaulTurbine(Project ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized RuntimeDesign readMultiblockOverhaulTurbine(RuntimeNcpf ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.getConfigNumberList("dimensions");
-        OverhaulTurbineDesign overhaulTurbine = new OverhaulTurbineDesign(ncpf, (int)dimensions.get(0), (int)dimensions.get(1), (int)dimensions.get(2));
+        RuntimeOverhaulTurbineDesign overhaulTurbine = new RuntimeOverhaulTurbineDesign((int)dimensions.get(0), (int)dimensions.get(1), (int)dimensions.get(2));
         overhaulTurbine.recipe = recovery.recoverOverhaulTurbineRecipeLegacyNCPF(ncpf, data.getInt("recipe", -1));
         if(data.hasProperty("inputs")){
             overhaulTurbinePostLoadInputsMap.put(overhaulTurbine, new ArrayList<>());
@@ -321,8 +331,8 @@ public class LegacyNCPF11Reader implements FormatReader {
                 for(int z = 0; z<overhaulTurbine.design[x][y].length; z++){
                     int bid = (int) blocks.get(index[0]);
                     if(bid>0){
-                        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement b = recovery.recoverOverhaulTurbineBlockLegacyNCPF(ncpf, bid-1);
-                        if(b!=null)overhaulTurbine.design[x][y][z] = b;
+                        NcpfElement b = recovery.recoverOverhaulTurbineBlockLegacyNCPF(ncpf, bid-1);
+                        if(b!=null)overhaulTurbine.design[x][y][z] = new RuntimeBlock(b);
                     }
                     index[0]++;
                 }
@@ -330,7 +340,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
         return overhaulTurbine;
     }
-    protected synchronized Design readMultiblockOverhaulFusionReactor(Project ncpf, Config data, RecoveryHandler recovery) {
+    protected synchronized NcpfDesign readMultiblockOverhaulFusionReactor(RuntimeNcpf ncpf, Config data, RecoveryHandler recovery) {
         ConfigNumberList dimensions = data.getConfigNumberList("dimensions");
         OverhaulFusionDesign overhaulFusion = new OverhaulFusionDesign(ncpf, (int)dimensions.get(0),(int)dimensions.get(1),(int)dimensions.get(2),(int)dimensions.get(3));
         overhaulFusion.recipe = recovery.recoverOverhaulFusionRecipeLegacyNCPF(ncpf, data.getInt("recipe", -1));
@@ -428,7 +438,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         return readGenericRule(overhaulFusionPostLoadMap, NCPFPlacementRule::new, overhaulFusionBlockTypes, ruleCfg, blockName);
     }
 
-    protected void loadConfiguration(Project project, Config config){
+    protected void loadConfiguration(RuntimeNcpf project, Config config){
         underhaulPostLoadMap.clear();
         overhaulSFRPostLoadMap.clear();
         overhaulMSRPostLoadMap.clear();
@@ -441,8 +451,8 @@ public class LegacyNCPF11Reader implements FormatReader {
         String underhaulVersion = config.getString("underhaulVersion");
         boolean addon = config.getBoolean("addon");
         loadUnderhaulBlocks(project.configuration, config, !partial&&!addon);
-        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement> overhaulSFRAdditionalBlocks = new ArrayList<>();
-        List<net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement> overhaulMSRAdditionalBlocks = new ArrayList<>();
+        List<NcpfElement> overhaulSFRAdditionalBlocks = new ArrayList<>();
+        List<NcpfElement> overhaulMSRAdditionalBlocks = new ArrayList<>();
         if(config.hasProperty("overhaul")){
             Config overhaul = config.getConfig("overhaul");
             loadOverhaulSFRBlocks(null, project.configuration, overhaul, !partial&&!addon, false, addon, overhaulSFRAdditionalBlocks);
@@ -450,34 +460,19 @@ public class LegacyNCPF11Reader implements FormatReader {
             loadOverhaulTurbineBlocks(project.configuration, overhaul, !partial&&!addon);
             loadOverhaulFusionGeneratorBlocks(project.configuration, overhaul, !partial&&!addon);
         }
-        project.configuration.withConfiguration(UnderhaulSFRConfiguration::new, (cfg)->{
-            cfg.metadata.name = name;
-            cfg.metadata.version = underhaulVersion;
-        });
-        project.configuration.withConfiguration(OverhaulSFRConfiguration::new, (cfg)->{
-            cfg.metadata.name = name;
-            cfg.metadata.version = version;
-        });
-        project.configuration.withConfiguration(OverhaulMSRConfiguration::new, (cfg)->{
-            cfg.metadata.name = name;
-            cfg.metadata.version = version;
-        });
-        project.configuration.withConfiguration(OverhaulTurbineConfiguration::new, (cfg)->{
-            cfg.metadata.name = name;
-            cfg.metadata.version = version;
-        });
-        project.configuration.withConfiguration(OverhaulFusionConfiguration::new, (cfg)->{
-            cfg.metadata.name = name;
-            cfg.metadata.version = version;
-        });
+        for(NcpfConfiguration cfg : project.configuration.getConfigurations()){
+            ConfigurationMetadataModule meta = cfg.modules.getOrCreateModule(ConfigurationMetadataModule::new);
+            meta.name = name;
+            meta.version = cfg.getClass().getName().contains("Underhaul")?underhaulVersion:version;
+        }
         if(config.hasProperty("addons")){
             ConfigList addons = config.getConfigList("addons");
             for(int i = 0; i<addons.size(); i++){
                 project.addons.add(loadAddon(project, addons.get(i)));
             }
         }
-        if(!overhaulSFRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulSFRConfiguration::new).blocks.addAll(overhaulSFRAdditionalBlocks);
-        if(!overhaulMSRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulMSRConfiguration::new).blocks.addAll(overhaulMSRAdditionalBlocks);
+        if(!overhaulSFRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulSFRConfiguration.class).blocks.addAll(overhaulSFRAdditionalBlocks);
+        if(!overhaulMSRAdditionalBlocks.isEmpty())project.configuration.getConfiguration(OverhaulMSRConfiguration.class).blocks.addAll(overhaulMSRAdditionalBlocks);
         for(NCPFPlacementRule rule : underhaulPostLoadMap.keySet()){
             int index = underhaulPostLoadMap.get(rule);
             if(index==0){
@@ -557,7 +552,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         project.configuration.withConfiguration(UnderhaulSFRConfiguration::new, activeCoolerCombiner);
         project.conglomerate();
     }
-    private <Config extends NCPFConfiguration, Block extends NCPFElement> Block postLoadBlockFromIndex(Project project, Supplier<Config> config, Function<Config, List<Block>> blocksFunc, int index){
+    private <Config extends NCPFConfiguration, Block extends NCPFElement> Block postLoadBlockFromIndex(RuntimeNcpf project, Supplier<Config> config, Function<Config, List<Block>> blocksFunc, int index){
         List<Block> blocks = new ArrayList<>();
         blocks.addAll(blocksFunc.apply(project.configuration.getConfiguration(config)));
         for(Addon a : project.addons){
@@ -573,7 +568,7 @@ public class LegacyNCPF11Reader implements FormatReader {
         }
         return blocks.get(index);
     }
-    protected Addon loadAddon(Project project, Config config){
+    protected Addon loadAddon(RuntimeNcpf project, Config config){
         Addon addon = new Addon();
         String name = config.getString("name");
         String version = config.getString("version");

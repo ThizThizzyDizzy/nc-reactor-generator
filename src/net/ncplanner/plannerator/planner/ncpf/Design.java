@@ -10,6 +10,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
+@Deprecated
 public class Design<T extends NCPFDesignDefinition> extends NCPFDesign<T>{
     public static HashMap<String, Function<NCPFFile, Design>> registeredDesigns = new HashMap<>();
     public MetadataModule metadata = new MetadataModule();

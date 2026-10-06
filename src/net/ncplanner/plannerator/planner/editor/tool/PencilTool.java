@@ -1,8 +1,11 @@
 package net.ncplanner.plannerator.planner.editor.tool;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.HashSet;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
@@ -23,9 +26,9 @@ public class PencilTool extends EditorTool{
     private ArrayList<BlockPos> leftSelectedBlocks = new ArrayList<>();
     private ArrayList<BlockPos> rightSelectedBlocks = new ArrayList<>();
     @Override
-    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
-        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.drawElement("pencil", x, y, width, height);
+    public void render(float x, float y, float width, float height, int themeIndex){
+        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+        Renderer.drawElement("pencil", x, y, width, height);
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){
@@ -135,8 +138,8 @@ public class PencilTool extends EditorTool{
         return true;
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
-        renderer.setWhite(.5f);
+    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
+        Renderer.setColor(Color.WHITE, .5f);
         synchronized(leftSelectedBlocks){
             for(BlockPos p : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
                 Axis xAxis = axis.get2DXAxis();
@@ -147,10 +150,10 @@ public class PencilTool extends EditorTool{
                 if(sz!=layer)continue;
                 if(sx<0||sx>x2)continue;
                 if(sy<0||sy>y2)continue;
-                renderer.drawImage(texture, x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
+                Renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, ResourceManager.getTexture(texture));
             }
         }
-        renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+        Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
             for(BlockPos p : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
                 Axis xAxis = axis.get2DXAxis();
@@ -161,28 +164,28 @@ public class PencilTool extends EditorTool{
                 if(sz!=layer)continue;
                 if(sx<0||sx>x2)continue;
                 if(sy<0||sy>y2)continue;
-                renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
+                Renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
             }
         }
-        renderer.setWhite();
+        Renderer.setColor(Color.WHITE);
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
-        renderer.setWhite(.5f);
+    public void drawVRGhosts(EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
+        Renderer.setColor(Color.WHITE, .5f);
         float border = blockSize/64;
         synchronized(leftSelectedBlocks){
             for(BlockPos p : symmetrize(leftSelectedBlocks, editor.getSymmetry())){
-                renderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, texture);
+                PlanneratorRenderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, texture);
             }
         }
-        renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+        Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
         synchronized(rightSelectedBlocks){
             for(BlockPos p : symmetrize(rightSelectedBlocks, editor.getSymmetry())){
                 if(editor.getMultiblock().getBlock(p)==null)continue;
-                renderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, null);
+                PlanneratorRenderer.drawCube(x+p.x*blockSize-border, y+p.y*blockSize-border, z+p.z*blockSize-border, x+(p.x+1)*blockSize+border, y+(p.y+1)*blockSize+border, z+(p.z+1)*blockSize+border, null);
             }
         }
-        renderer.setWhite();
+        Renderer.setColor(Color.WHITE);
     }
     @Override
     public String getTooltip(){

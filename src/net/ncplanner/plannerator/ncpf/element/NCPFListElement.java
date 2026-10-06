@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = CoreModule.class)
 public class NCPFListElement extends NCPFSettingsElement{
     public ArrayList<NCPFElementDefinition> elements = new ArrayList<>();

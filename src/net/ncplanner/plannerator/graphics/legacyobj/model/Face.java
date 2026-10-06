@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.graphics.legacyobj.model;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.image.Color;
+@Deprecated
 public class Face {
     public final ArrayList<Integer> verticies;
     public final ArrayList<Integer> textureCoords;

@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.file.JSON;
+@Deprecated
 public class JSONNCPFWriter implements NCPFFormatWriter{
     @Override
     public void write(NCPFObject ncpf, OutputStream stream) throws IOException{

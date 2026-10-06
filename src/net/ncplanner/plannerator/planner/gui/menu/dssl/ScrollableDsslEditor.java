@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import net.ncplanner.plannerator.planner.gui.menu.component.*;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 public class ScrollableDsslEditor extends Scrollable{

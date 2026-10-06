@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.graphics.model;
+import com.thizthizzydizzy.dizzyengine.graphics.Shader;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Shader;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.*;
 @Deprecated //not stable yet!

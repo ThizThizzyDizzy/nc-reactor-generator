@@ -1,9 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.ui.FlatUI;
+import com.thizthizzydizzy.dizzyengine.ui.Menu;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
 public class MenuCalibrateCursor extends Menu{
     public static double xMult = 1;
@@ -13,13 +14,16 @@ public class MenuCalibrateCursor extends Menu{
     public static int xOff = 0;
     public static int yOff = 0;
     public static boolean calibrationChanged = false;
-    public MenuCalibrateCursor(GUI gui, Menu parent){
-        super(gui, parent);
+    private Menu parentMenu;
+    @Override
+    public void open(){
+        parentMenu = getUIContext().menu;
+        super.open();
     }
     @Override
-    public void onKeyEvent(int key, int scancode, int action, int mods){
+    public void onKey(int id, int key, int scancode, int action, int mods){
         if(action==GLFW.GLFW_PRESS&&key==GLFW.GLFW_KEY_ESCAPE){
-            gui.open(parent);
+            parentMenu.open();
             onClose();
         }
         if(action==GLFW.GLFW_PRESS||action==GLFW.GLFW_REPEAT){
@@ -78,19 +82,19 @@ public class MenuCalibrateCursor extends Menu{
                 }
             }
         }
-        super.onKeyEvent(key, scancode, action, mods);
+        super.onKey(id, key, scancode, action, mods);
     }
     int selected = 0;
     int auto = 0;
     double[][] calibMouse = new double[2][2];
     int[][] calibScreen = new int[2][2];
     @Override
-    public void onMouseButton(double x, double y, int button, int action, int mods){
-        super.onMouseButton(x, y, button, action, mods);
-        x = (x-xOff)/xMult;
-        y = (y-yOff)/yMult;
+    public void onMouseButton(int id, Vector2d pos, int button, int action, int mods){
+        super.onMouseButton(id, pos, button, action, mods);
+        double x = (pos.x-xOff)/xMult;
+        double y = (pos.y-yOff)/yMult;
         if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT&&action==GLFW.GLFW_PRESS){
-            gui.open(parent);
+            parentMenu.open();
             onClose();
         }
         if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT&&action==GLFW.GLFW_PRESS){
@@ -98,12 +102,12 @@ public class MenuCalibrateCursor extends Menu{
             calibMouse[auto][1] = y;
             switch(auto){
                 case 0:
-                    calibScreen[0][0] = gui.getWidth()/4;
-                    calibScreen[0][1] = gui.getHeight()/4;
+                    calibScreen[0][0] = (int)(getWidth()/4);
+                    calibScreen[0][1] = (int)(getHeight()/4);
                     break;
                 case 1:
-                    calibScreen[1][0] = gui.getWidth()*3/4;
-                    calibScreen[1][1] = gui.getHeight()*3/4;
+                    calibScreen[1][0] = (int)(getWidth()*3/4);
+                    calibScreen[1][1] = (int)(getHeight()*3/4);
                     break;
             }
             auto++;
@@ -135,42 +139,40 @@ public class MenuCalibrateCursor extends Menu{
         return (-m1*s2+m1*m2)/(s1-m1)+m2;
     }
     @Override
-    public void render2d(double deltaTime){
-        super.render2d(deltaTime);
-        double x = gui.mouseX;
-        double y= gui.mouseY;
-        x = (x-xOff)/xMult;
-        y = (y-yOff)/yMult;
-        Renderer renderer = new Renderer();
-        renderer.setColor(Core.theme.getRecoveryModeTextColor());
-        renderer.drawCenteredText(0, 0, gui.getWidth(), gui.getHeight()/16, "CURSOR CALIBRATION");
-        renderer.drawCenteredText(0, gui.getHeight()/16, gui.getWidth(), gui.getHeight()*4/32, "Press escape or right click to exit.");
-        renderer.drawCenteredText(0, gui.getHeight()*4/32, gui.getWidth(), gui.getHeight()*5/32, "This is for correcting a cursor offset issue on macOS");
-        renderer.drawCenteredText(0, gui.getHeight()*5/32, gui.getWidth(), gui.getHeight()*6/32, "To auto-calibrate, click the squares that appear onscreen.");
-        renderer.drawCenteredText(0, gui.getHeight()*6/32, gui.getWidth(), gui.getHeight()*7/32, "Use arrow keys or WASD to manually adjust calibration (Press control for granular adjustment)");
-        renderer.drawCenteredText(0, gui.getHeight()*7/32, gui.getWidth(), gui.getHeight()*8/32, "Press Delete to reset calibration");
-        renderer.drawCenteredText(0, gui.getHeight()*15/32, gui.getWidth(), gui.getHeight()*17/32, get(selected));
-        renderer.drawCenteredText(0, gui.getHeight()*14/32, gui.getWidth(), gui.getHeight()*15/32, "If you have any idea what actually causes the cursor offset, please let me know");
-        renderer.setColor(Core.theme.getConvertButtonTextColor());
-        renderer.fillRect((float)gui.mouseX-20, (float)gui.mouseY-20, (float)gui.mouseX-5, (float)gui.mouseY-16);
-        renderer.fillRect((float)gui.mouseX-20, (float)gui.mouseY-20, (float)gui.mouseX-16, (float)gui.mouseY-5);
-        renderer.fillRect((float)gui.mouseX+5, (float)gui.mouseY-20, (float)gui.mouseX+20, (float)gui.mouseY-16);
-        renderer.fillRect((float)gui.mouseX+16, (float)gui.mouseY-20, (float)gui.mouseX+20, (float)gui.mouseY-5);
-        renderer.fillRect((float)gui.mouseX-20, (float)gui.mouseY+5, (float)gui.mouseX-16, (float)gui.mouseY+20);
-        renderer.fillRect((float)gui.mouseX-20, (float)gui.mouseY+16, (float)gui.mouseX-5, (float)gui.mouseY+20);
-        renderer.fillRect((float)gui.mouseX+5, (float)gui.mouseY+16, (float)gui.mouseX+20, (float)gui.mouseY+20);
-        renderer.fillRect((float)gui.mouseX+16, (float)gui.mouseY+5, (float)gui.mouseX+20, (float)gui.mouseY+20);
-        renderer.drawCenteredText(0, gui.getHeight()*15/16, gui.getWidth(), gui.getHeight(), "("+(int)x+", "+(int)y+")");
+    public void draw(double deltaTime){
+        super.draw(deltaTime);
+        Vector2d mousePos = ((FlatUI)getUIContext()).cursorPosition[0];
+        double x = (mousePos.x-xOff)/xMult;
+        double y = (mousePos.y-yOff)/yMult;
+        Renderer.setColor(Core.theme.getRecoveryModeTextColor());
+        Renderer.drawCenteredText(0, 0, getWidth(), getHeight()/16, "CURSOR CALIBRATION");
+        Renderer.drawCenteredText(0, getHeight()/16, getWidth(), getHeight()*4/32, "Press escape or right click to exit.");
+        Renderer.drawCenteredText(0, getHeight()*4/32, getWidth(), getHeight()*5/32, "This is for correcting a cursor offset issue on macOS");
+        Renderer.drawCenteredText(0, getHeight()*5/32, getWidth(), getHeight()*6/32, "To auto-calibrate, click the squares that appear onscreen.");
+        Renderer.drawCenteredText(0, getHeight()*6/32, getWidth(), getHeight()*7/32, "Use arrow keys or WASD to manually adjust calibration (Press control for granular adjustment)");
+        Renderer.drawCenteredText(0, getHeight()*7/32, getWidth(), getHeight()*8/32, "Press Delete to reset calibration");
+        Renderer.drawCenteredText(0, getHeight()*15/32, getWidth(), getHeight()*17/32, get(selected));
+        Renderer.drawCenteredText(0, getHeight()*14/32, getWidth(), getHeight()*15/32, "If you have any idea what actually causes the cursor offset, please let me know");
+        Renderer.setColor(Core.theme.getConvertButtonTextColor());
+        Renderer.fillRect((float)mousePos.x-20, (float)mousePos.y-20, (float)mousePos.x-5, (float)mousePos.y-16);
+        Renderer.fillRect((float)mousePos.x-20, (float)mousePos.y-20, (float)mousePos.x-16, (float)mousePos.y-5);
+        Renderer.fillRect((float)mousePos.x+5, (float)mousePos.y-20, (float)mousePos.x+20, (float)mousePos.y-16);
+        Renderer.fillRect((float)mousePos.x+16, (float)mousePos.y-20, (float)mousePos.x+20, (float)mousePos.y-5);
+        Renderer.fillRect((float)mousePos.x-20, (float)mousePos.y+5, (float)mousePos.x-16, (float)mousePos.y+20);
+        Renderer.fillRect((float)mousePos.x-20, (float)mousePos.y+16, (float)mousePos.x-5, (float)mousePos.y+20);
+        Renderer.fillRect((float)mousePos.x+5, (float)mousePos.y+16, (float)mousePos.x+20, (float)mousePos.y+20);
+        Renderer.fillRect((float)mousePos.x+16, (float)mousePos.y+5, (float)mousePos.x+20, (float)mousePos.y+20);
+        Renderer.drawCenteredText(0, getHeight()*15/16, getWidth(), getHeight(), "("+(int)x+", "+(int)y+")");
         switch(auto){
             case 0:
-                renderer.fillRect(gui.getWidth()/4-16, gui.getHeight()/4-16, gui.getWidth()/4+16, gui.getHeight()/4+16);
-                renderer.setColor(Core.theme.getComponentTextColor(0));
-                renderer.drawElement("delete", gui.getWidth()/4-16, gui.getHeight()/4-16, 32, 32);
+                Renderer.fillRect(getWidth()/4-16, getHeight()/4-16, getWidth()/4+16, getHeight()/4+16);
+                Renderer.setColor(Core.theme.getComponentTextColor(0));
+                Renderer.drawElement("delete", getWidth()/4-16, getHeight()/4-16, 32, 32);
                 break;
             case 1:
-                renderer.fillRect(gui.getWidth()*3/4-16, gui.getHeight()*3/4-16, gui.getWidth()*3/4+16, gui.getHeight()*3/4+16);
-                renderer.setColor(Core.theme.getComponentTextColor(0));
-                renderer.drawElement("delete", gui.getWidth()*3/4-16, gui.getHeight()*3/4-16, 32, 32);
+                Renderer.fillRect(getWidth()*3/4-16, getHeight()*3/4-16, getWidth()*3/4+16, getHeight()*3/4+16);
+                Renderer.setColor(Core.theme.getComponentTextColor(0));
+                Renderer.drawElement("delete", getWidth()*3/4-16, getHeight()*3/4-16, 32, 32);
                 break;
         }
     }
@@ -190,7 +192,7 @@ public class MenuCalibrateCursor extends Menu{
     }
     private void onClose() {
         if(calibrationChanged&&xMult!=xGUIScale&&yMult!=yGUIScale){
-            new MenuMessageDialog(gui, gui.menu, "Calibration changed! Would you like to adjust GUI scale to match?").addButton("Yes", () -> {
+            new MenuMessageDialog("Calibration changed! Would you like to adjust GUI scale to match?").addButton("Yes", () -> {
                 xGUIScale = xMult;
                 yGUIScale = yMult;
             }, true).addButton("No", true).open();

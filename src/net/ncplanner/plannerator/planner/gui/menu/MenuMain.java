@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import com.thizthizzydizzy.dizzyengine.ui.Menu;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
@@ -22,9 +22,6 @@ import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.ImageFormatWriter;
 import net.ncplanner.plannerator.planner.file.writer.NCPFWriter;
-import net.ncplanner.plannerator.planner.gui.Component;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 import net.ncplanner.plannerator.planner.gui.menu.component.DropdownList;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
@@ -36,16 +33,14 @@ import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponent
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImport;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuImportConfirm;
-import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuReadFiles;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuInputDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuLoad;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuOKMessageDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickNCPF;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuReadFiles;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dssl.MenuDsslEditor;
-import net.ncplanner.plannerator.planner.ncpf.Design;
-import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.vr.VRCore;
@@ -298,8 +293,7 @@ public class MenuMain extends Menu{
     private float maxYRot = 80f;
     private float xRot = 30;
     private float yRot = 30;
-    public MenuMain(GUI gui){
-        super(gui, null);
+    public MenuMain(){
         if(Core.vr)add(vr);
         addMultiblock.textInset = 0;
         saveFile.addAction(() -> {

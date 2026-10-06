@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.gui;
 import net.ncplanner.plannerator.planner.gui.menu.MenuCalibrateCursor;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWDropCallback;
+@Deprecated
 public abstract class GUI{
     private final long window;
     public GUI(long window){

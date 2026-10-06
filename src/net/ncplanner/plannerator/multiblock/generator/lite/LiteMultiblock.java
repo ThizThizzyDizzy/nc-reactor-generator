@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock.generator.lite;
-import net.ncplanner.plannerator.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;

@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.multiblock.configuration;
+import com.thizthizzydizzy.dizzyengine.MathUtil;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.io.ImageIO;
 import java.io.IOException;
 import java.util.HashMap;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ImageIO;
-import net.ncplanner.plannerator.planner.MathUtil;
 public class TextureManager{
     private static final HashMap<String, Image> imageMap = new HashMap<>();
     public static Image getImageRaw(String texture){

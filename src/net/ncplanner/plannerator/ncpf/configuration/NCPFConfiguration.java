@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.planner.ncpf.defined.field.DefinedPlanneratorFi
 import net.ncplanner.plannerator.planner.ncpf.module.GlobalElementsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
+@Deprecated
 public abstract class NCPFConfiguration extends DefinedNCPFModularObject{
     public final String name;
     public NCPFConfiguration(String name){

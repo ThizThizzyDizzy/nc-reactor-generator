@@ -2,13 +2,11 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.HashMap;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
-import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;
 public class MenuCriticalError extends MenuDialog implements DebugInfoProvider{
     private final Throwable error;
     private final String message;
-    public MenuCriticalError(GUI gui, String message, Throwable error){
-        super(gui, null);
+    public MenuCriticalError(String message, Throwable error){
         this.message = message;
         this.error = error;
         maxWidth = maxHeight = 1;
@@ -33,7 +31,7 @@ public class MenuCriticalError extends MenuDialog implements DebugInfoProvider{
         textBox.setText("Critical Error: "+message+"\n\n"+details);
         addButton("Main Menu", () -> {
             close();
-            gui.open(new MenuMain(gui));
+            new MenuMain().open();
         });
         addButton("Exit", () -> {
             Core.autoSaveAndExit();
@@ -44,5 +42,9 @@ public class MenuCriticalError extends MenuDialog implements DebugInfoProvider{
         debugInfo.put("message", message);
         debugInfo.put("error", error);
         return debugInfo;
+    }
+    @Override
+    public void onMenuOpened(){
+        parentMenu = null;
     }
 }

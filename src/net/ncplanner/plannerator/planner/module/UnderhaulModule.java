@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.module;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;

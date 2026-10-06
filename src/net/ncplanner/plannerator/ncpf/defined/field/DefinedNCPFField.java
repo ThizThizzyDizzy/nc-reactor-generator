@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFModularObject;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public abstract class DefinedNCPFField<DefinedObject extends DefinedNCPFModularObject>{
     public final String name;
     public DefinedNCPFField(String name){

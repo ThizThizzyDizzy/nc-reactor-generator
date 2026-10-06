@@ -1,10 +1,13 @@
 package net.ncplanner.plannerator.planner.file.writer;
+import com.thizthizzydizzy.dizzyengine.MathUtil;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import net.ncplanner.plannerator.discord.Bot;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -14,7 +17,6 @@ import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -89,27 +91,27 @@ public class PNGWriter extends ImageFormatWriter{
                 height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize);
             }
             int mpr = multisPerRow;
-            Core.BufferRenderer buffRenderer = (bufferRenderer, bufferWidth, bufferHeight) -> {
-                bufferRenderer.setColor(Core.theme.getImageExportBackgroundColor());
-                bufferRenderer.fillRect(0, 0, bufferWidth, bufferHeight);
-                bufferRenderer.setColor(Core.theme.getImageExportTextColor());
+            Core.BufferRenderer buffRenderer = (bufferWidth, bufferHeight) -> {
+                Renderer.setColor(Core.theme.getImageExportBackgroundColor());
+                Renderer.fillRect(0, 0, bufferWidth, bufferHeight);
+                Renderer.setColor(Core.theme.getImageExportTextColor());
                 for(int i = 0; i<strs.size(); i++){
                     FormattedText str = strs.get(i);
-                    bufferRenderer.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
+                    Renderer.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
                 }
-                bufferRenderer.setColor(Core.theme.getImageExportTextColor());
+                Renderer.setColor(Core.theme.getImageExportTextColor());
                 for(int i = 0; i<parts.size(); i++){
                     PartCount c = parts.get(i);
-                    if(Core.imageExport3DView)bufferRenderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
-                    else bufferRenderer.drawText(bufferWidth-pW+textHeight+borderSize/2, i*textHeight+borderSize/2, bufferWidth, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                    if(Core.imageExport3DView)Renderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                    else Renderer.drawText(bufferWidth-pW+textHeight+borderSize/2, i*textHeight+borderSize/2, bufferWidth, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
                 }
-                bufferRenderer.setWhite();
+                Renderer.setColor(Color.WHITE);
                 for(int i = 0; i<parts.size(); i++){
                     PartCount c = parts.get(i);
                     Image image = c.getImage();
                     if(image!=null){
-                        if(Core.imageExport3DView)bufferRenderer.drawImage(image, tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2);
-                        else bufferRenderer.drawImage(image, bufferWidth-pW, i*textHeight+borderSize/2, bufferWidth-pW+textHeight, (i+1)*textHeight+borderSize/2);
+                        if(Core.imageExport3DView)Renderer.fillRect(tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2, ResourceManager.getTexture(image));
+                        else Renderer.fillRect(bufferWidth-pW, i*textHeight+borderSize/2, bufferWidth-pW+textHeight, (i+1)*textHeight+borderSize/2, ResourceManager.getTexture(image));
                     }
                 }
                 if(Core.imageExport3DView){
@@ -139,15 +141,15 @@ public class PNGWriter extends ImageFormatWriter{
                             int Z = z+bbox.z1;
                             if(!Core.imageExportCasing&&mb.shouldHideWithCasing(new BlockPos(X,Y,Z)))continue;
                             AbstractBlock b = mb.getBlock(new BlockPos(X,Y,Z));
-                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
+                            if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
                             if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(new BlockPos(X,Y,Z))==OverhaulFusionReactor.LocationCategory.PLASMA){
-                                bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);
+                                Renderer.fillRect(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize, ResourceManager.getTexture("/textures/overhaul/fusion/plasma.png"));
                             }
                             for(EditorOverlay o : overlays){
                                 if(!o.isActive())continue;
                                 for(Decal d : (Queue<Decal>)o.decals){
                                     if(d.pos.equals(new BlockPos(X,Y,Z))){
-                                        d.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
+                                        d.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
                                     }
                                 }
                             }

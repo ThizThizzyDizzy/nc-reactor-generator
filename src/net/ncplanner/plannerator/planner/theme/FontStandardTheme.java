@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
-import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 public class FontStandardTheme extends StandardTheme{
     private Font font;
     private final String fontName;
@@ -14,7 +15,7 @@ public class FontStandardTheme extends StandardTheme{
         this.yOff = yOff;
     }
     private Font getFont(){
-        if(font==null)font = Font.loadFont(fontName, yOff);
+        if(font==null)font = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource(fontName)), yOff);
         return font;
     }
     @Override

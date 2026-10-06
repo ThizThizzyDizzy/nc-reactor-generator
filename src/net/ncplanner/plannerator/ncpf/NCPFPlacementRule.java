@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
+@Deprecated
 public class NCPFPlacementRule extends DefinedNCPFObject{
     public RuleType rule;
     public NCPFElementReference target;//block or module reference

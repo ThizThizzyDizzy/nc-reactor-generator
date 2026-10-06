@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf.design;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class NCPFCuboidalMultiblockDesign extends NCPFDesignDefinition{
     public NCPFElement[][][] design;
     public NCPFCuboidalMultiblockDesign(String type){

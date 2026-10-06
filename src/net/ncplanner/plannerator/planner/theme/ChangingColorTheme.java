@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.theme;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 public class ChangingColorTheme extends ColorTheme{
     protected ColorTheme current;

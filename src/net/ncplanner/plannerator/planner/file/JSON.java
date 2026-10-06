@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.ncplanner.plannerator.planner.Queue;
+@Deprecated
 public class JSON{
     public static boolean debug = false;
     public static JSONObject parse(String str) throws IOException{
@@ -51,6 +52,7 @@ public class JSON{
             throw new RuntimeException(ex);
         }
     }
+    @Deprecated
     public static class JSONObject extends HashMap<String, Object>{
         public JSONObject(){}
         private JSONObject(Queue<Character> json) throws IOException{
@@ -302,6 +304,7 @@ public class JSON{
             return write();
         }
     }
+    @Deprecated
     public static class JSONArray extends ArrayList<Object>{
         public JSONArray(){}
         private JSONArray(Queue<Character> json) throws IOException{

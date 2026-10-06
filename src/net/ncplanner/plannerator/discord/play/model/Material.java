@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.discord.play.model;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
 public class Material{

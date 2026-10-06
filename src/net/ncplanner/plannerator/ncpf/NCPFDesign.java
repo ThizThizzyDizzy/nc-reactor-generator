@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
 import net.ncplanner.plannerator.ncpf.design.UnknownNCPFDesign;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class NCPFDesign<T extends NCPFDesignDefinition> extends DefinedNCPFModularObject{
     public NCPFFile file;
     public NCPFDesign(NCPFFile file){

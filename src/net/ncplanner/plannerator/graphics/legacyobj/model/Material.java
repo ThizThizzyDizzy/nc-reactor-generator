@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.graphics.legacyobj.model;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
+@Deprecated
 public class Material{
     public final String name;
     public String image = "";

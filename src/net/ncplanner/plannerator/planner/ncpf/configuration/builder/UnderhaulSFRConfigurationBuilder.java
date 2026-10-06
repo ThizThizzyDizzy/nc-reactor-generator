@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.builder;
 import java.util.Arrays;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.ncpf.NCPFModuleReference;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;

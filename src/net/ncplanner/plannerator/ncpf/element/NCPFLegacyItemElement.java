@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf.element;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = CoreModule.class)
 public class NCPFLegacyItemElement extends NCPFSettingsElement{
     public String name = "";

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Multiblock;

@@ -1,16 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
+import com.thizthizzydizzy.dizzyengine.ui.component.Button;
 import java.util.function.Consumer;
-import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.menu.component.Button;
 public class MenuMessageDialog extends MenuDialog{
-    public MenuMessageDialog(String text){
-        this(Core.gui, Core.gui.menu, text);
-    }
     private int asyncResult = -1;
-    public MenuMessageDialog(GUI gui, Menu parent, String text){
-        super(gui, parent);
+    public MenuMessageDialog(String text){
         textBox.setText(text);
     }
     @Override
@@ -48,7 +41,7 @@ public class MenuMessageDialog extends MenuDialog{
             });
         }
         open();
-        while(gui.menu==this){
+        while(getUIContext().menu==this){
             try{Thread.sleep(10);}catch(InterruptedException ex){}
         }
         return asyncResult;

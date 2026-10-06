@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
-import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
+import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
 public class MenuTask extends MenuDialog{
     private final Task task;
     public MenuTask(GUI gui, Menu parent, Task task){

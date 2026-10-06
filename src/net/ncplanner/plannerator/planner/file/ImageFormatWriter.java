@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.file;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.io.ImageIO;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.ImageIO;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.gui.menu.MenuImageExportPreview;
 import net.ncplanner.plannerator.planner.module.Module;
@@ -41,6 +41,6 @@ public abstract class ImageFormatWriter extends FormatWriter{
             if(!o.isActive())continue;
             o.refresh(mb);
         }
-        Core.gui.open(new MenuImageExportPreview(Core.gui, Core.gui.menu, ()->{return write(ncpf);}, onExport, overlays, mb));
+        new MenuImageExportPreview(()->{return write(ncpf);}, onExport, overlays, mb).open();
     }
 }

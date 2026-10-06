@@ -3,10 +3,11 @@ import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFOverhaulMSRConfiguration;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulMSRSettingsModule;
-import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulMSRConfiguration extends NCPFOverhaulMSRConfiguration{
     public ConfigurationMetadataModule metadata = new ConfigurationMetadataModule();

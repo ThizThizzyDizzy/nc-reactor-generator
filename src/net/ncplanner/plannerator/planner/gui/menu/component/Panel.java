@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
-import net.ncplanner.plannerator.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class Panel extends Component{
     private Image image;

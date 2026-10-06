@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.module;
 import net.ncplanner.plannerator.ncpf.ConglomerationError;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+@Deprecated
 public abstract class BlockFunctionModule extends NCPFSettingsModule{
     public BlockFunctionModule(String name){
         super(name);

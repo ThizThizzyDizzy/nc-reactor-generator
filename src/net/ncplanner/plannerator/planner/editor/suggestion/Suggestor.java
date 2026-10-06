@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.editor.suggestion;
+import com.thizthizzydizzy.dizzyengine.MathUtil;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
-import net.ncplanner.plannerator.planner.MathUtil;
 public abstract class Suggestor<T extends Multiblock>{
     public final String name;
     public final int limit;

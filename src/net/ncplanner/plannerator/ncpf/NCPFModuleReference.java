@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.element.NCPFModuleElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
+@Deprecated
 public class NCPFModuleReference extends NCPFElementReference{
     public Supplier<NCPFModule> module;
     public NCPFModuleReference(){}

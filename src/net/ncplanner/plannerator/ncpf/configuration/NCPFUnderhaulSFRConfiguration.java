@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
+@Deprecated
 public class NCPFUnderhaulSFRConfiguration extends NCPFConfiguration{
     public List<NCPFElement> blocks = new ArrayList<>();
     public List<NCPFElement> fuels = new ArrayList<>();

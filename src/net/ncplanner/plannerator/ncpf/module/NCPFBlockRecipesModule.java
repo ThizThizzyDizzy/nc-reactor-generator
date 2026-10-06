@@ -5,6 +5,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = CoreModule.class)
 public class NCPFBlockRecipesModule extends NCPFModule{
     public ArrayList<NCPFElement> recipes = new ArrayList<>();

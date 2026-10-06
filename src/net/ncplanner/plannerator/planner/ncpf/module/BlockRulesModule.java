@@ -4,6 +4,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public abstract class BlockRulesModule extends BlockFunctionModule implements ElementStatsModule{
     public List<NCPFPlacementRule> rules = new ArrayList<>();
     public BlockRulesModule(String name){

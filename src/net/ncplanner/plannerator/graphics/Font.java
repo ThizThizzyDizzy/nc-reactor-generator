@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTBakedChar;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
+@Deprecated
 public class Font{
     public int texture;
     public int ascent, descent, lineGap;

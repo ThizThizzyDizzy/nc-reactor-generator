@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.menu.MenuMain;

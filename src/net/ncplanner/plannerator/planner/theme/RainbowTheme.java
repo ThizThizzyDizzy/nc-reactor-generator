@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;
 public class RainbowTheme extends ChangingColorTheme{
     private float hue;

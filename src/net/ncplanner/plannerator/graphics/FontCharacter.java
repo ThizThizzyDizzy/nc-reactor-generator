@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.graphics;
 import static org.lwjgl.opengl.GL30.*;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import static org.lwjgl.stb.STBTruetype.*;
+@Deprecated
 public class FontCharacter{
     private final Font font;
     private final char c;

@@ -15,7 +15,7 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.LayoutMenu;
 import net.ncplanner.plannerator.planner.gui.menu.component.BenchmarkComponent;
-import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
+import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;

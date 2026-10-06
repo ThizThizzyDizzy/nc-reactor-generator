@@ -1,17 +1,18 @@
 package net.ncplanner.plannerator.graphics.legacyobj.model.loader;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.graphics.legacyobj.model.Face;
 import net.ncplanner.plannerator.graphics.legacyobj.model.Material;
 import net.ncplanner.plannerator.graphics.legacyobj.model.Model;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.StringUtil;
 import org.joml.Vector3f;
+@Deprecated
 public class OBJLoader{
     public static Model loadModel(InputStream stream, AdjacentFileProvider adjacentProvider) throws IOException{
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

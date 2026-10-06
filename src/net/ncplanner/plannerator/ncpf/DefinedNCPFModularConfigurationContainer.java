@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf;
 import java.util.function.Supplier;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public abstract class DefinedNCPFModularConfigurationContainer extends DefinedNCPFModularObject{
     public NCPFConfigurationContainer configuration = new NCPFConfigurationContainer();
     @Override

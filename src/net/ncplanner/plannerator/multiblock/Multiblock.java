@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Consumer;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.editor.ActionResult;
 import net.ncplanner.plannerator.multiblock.editor.Decal;

@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
  * A utility class for the plannerator; in NCPF, this is still part of NCPFDesign
  * @author thiz
  */
+@Deprecated
 public abstract class NCPFDesignDefinition extends DefinedNCPFObject{
     public final String type;
     public NCPFFile file;

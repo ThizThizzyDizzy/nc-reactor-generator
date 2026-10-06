@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.io;
 import java.util.ArrayList;
+@Deprecated
 public class NCPFList<T> extends ArrayList<T>{
     public NCPFObject getNCPFObject(int i){
         Object o = get(i);

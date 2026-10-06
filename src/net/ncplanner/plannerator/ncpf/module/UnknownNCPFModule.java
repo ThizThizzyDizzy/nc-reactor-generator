@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.ncpf.module;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class UnknownNCPFModule extends NCPFModule{
     public NCPFObject ncpf;
     public UnknownNCPFModule(){

@@ -19,6 +19,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockEl
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.module.underhaulSFR.ActiveCoolerModule;
 @RegisterWith(module = UnderhaulModule.class)
+@Deprecated
 public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign, UnderhaulSFR>{
     public Fuel fuel;
     public BlockElement[][][] design;

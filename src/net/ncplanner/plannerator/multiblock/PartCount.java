@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock;
-import net.ncplanner.plannerator.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 public class PartCount implements Comparable<PartCount>{
     private final Image image;
     public final String name;

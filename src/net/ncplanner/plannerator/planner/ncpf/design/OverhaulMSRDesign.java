@@ -22,6 +22,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.FuelVesselModul
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.HeaterModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulMSR.IrradiatorModule;
 @RegisterWith(module = OverhaulModule.class)
+@Deprecated
 public class OverhaulMSRDesign extends MultiblockDesign<NCPFOverhaulMSRDesign, OverhaulMSR>{
     public BlockElement[][][] design;
     public Fuel[][][] fuels;

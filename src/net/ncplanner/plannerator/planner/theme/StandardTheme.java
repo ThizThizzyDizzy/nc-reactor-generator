@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.theme;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.theme.legacy.SolidColorTheme;
 public class StandardTheme extends SolidColorTheme{
     public StandardTheme(String name, Color background, Color color, float rgbTint, float rgbSat){

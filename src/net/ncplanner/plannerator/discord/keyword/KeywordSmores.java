@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.discord.keyword;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.discord.Keyword;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 public class KeywordSmores extends Keyword{
     public int numSmores;

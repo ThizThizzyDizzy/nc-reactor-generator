@@ -2,15 +2,12 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.util.HashMap;
 import java.util.Random;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
-import net.ncplanner.plannerator.planner.gui.GUI;
-import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuWarningMessage extends MenuDialog implements DebugInfoProvider{
     private static final String[] extraPossibilities = new String[]{"Got it", "Thanks", "Great", "Cool", "Alright", "Yep", "Awknowledged", "Aye", "Ignore", "Skip"};
     private static final Random rand = new Random();
     private final Throwable error;
     private final String message;
-    public MenuWarningMessage(GUI gui, Menu parent, String message, Throwable error){
-        super(gui, parent);
+    public MenuWarningMessage(String message, Throwable error){
         this.message = message;
         this.error = error;
         String details = "";

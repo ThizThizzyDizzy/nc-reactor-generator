@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.ncpf.element;
 import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+@Deprecated
 @RegisterWith(module = CoreModule.class)
 public class NCPFLegacyFluidElement extends NCPFSettingsElement{
     public String name = "";

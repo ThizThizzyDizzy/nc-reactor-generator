@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
-import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
+import net.ncplanner.plannerator.ncpf.configuration.UnknownNCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
@@ -14,6 +14,7 @@ import net.ncplanner.plannerator.ncpf.module.NCPFBlockRecipesModule;
 import net.ncplanner.plannerator.planner.ncpf.Addon;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
+@Deprecated
 public class NCPFConfigurationContainer extends DefinedNCPFObject{
     public static ArrayList<String> configOrder = new ArrayList<>();
     public static HashMap<String, Supplier<NCPFConfiguration>> recognizedConfigurations = new HashMap<>();

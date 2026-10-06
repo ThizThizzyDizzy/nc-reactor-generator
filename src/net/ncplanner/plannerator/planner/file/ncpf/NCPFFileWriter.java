@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+@Deprecated
 public class NCPFFileWriter{
     public static final ArrayList<NCPFFormatWriter> formats = new ArrayList<>();
     public static boolean botRunning;

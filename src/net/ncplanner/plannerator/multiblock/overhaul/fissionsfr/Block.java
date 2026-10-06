@@ -1,11 +1,13 @@
 package net.ncplanner.plannerator.multiblock.overhaul.fissionsfr;
+import com.thizthizzydizzy.dizzyengine.MathUtil;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -14,7 +16,6 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.exception.MissingConfigurationEntryException;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
@@ -206,17 +207,17 @@ public class Block extends AbstractBlock{
         return isConductor()||(isActive()&&(isFuelCell()||isIrradiator()||isHeatsink()||isShield()));
     }
     @Override
-    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void renderOverlay(float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         if(!isValid()){
-            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
         }
         if(isModeratorActive()){
-            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
+            drawOutline(x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
         }
         if(template.fuelCell!=null&&fuel!=null){
             boolean self = fuel.stats.selfPriming;
             if(source!=null||self){
-                drawCircle(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorSourceCircle(source==null?1:source.template.neutronSource.efficiency, self), faceRenderFunc);
+                drawCircle(x, y, z, width, height, depth, Core.theme.getBlockColorSourceCircle(source==null?1:source.template.neutronSource.efficiency, self), faceRenderFunc);
             }
         }
         OverhaulSFR.Cluster cluster = this.cluster;
@@ -230,8 +231,8 @@ public class Block extends AbstractBlock{
                 primaryColor = Core.theme.getClusterOvercoolingColor();
             }
             if(primaryColor!=null){
-                renderer.setColor(primaryColor);
-                renderer.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
+                Renderer.setColor(primaryColor);
+                PlanneratorRenderer.drawPrimaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
                     boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
                     boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
                     boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));
@@ -248,8 +249,8 @@ public class Block extends AbstractBlock{
                 secondaryColor = Core.theme.getClusterInvalidColor();
             }
             if(secondaryColor!=null){
-                renderer.setColor(secondaryColor);
-                renderer.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
+                Renderer.setColor(secondaryColor);
+                PlanneratorRenderer.drawSecondaryCubeOutline(x-border, y-border, z-border, x+width+border, y+height+border, z+depth+border, border, border*3, (t) -> {
                     boolean d1 = cluster.contains(new BlockPos(this.pos.x+t[0].x, this.pos.y+t[0].y, this.pos.z+t[0].z));
                     boolean d2 = cluster.contains(new BlockPos(this.pos.x+t[1].x, this.pos.y+t[1].y, this.pos.z+t[1].z));
                     boolean d3 = cluster.contains(new BlockPos(this.pos.x+t[0].x+t[1].x, this.pos.y+t[0].y+t[1].y, this.pos.z+t[0].z+t[1].z));

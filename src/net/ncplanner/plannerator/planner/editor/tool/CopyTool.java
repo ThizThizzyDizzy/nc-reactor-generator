@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
@@ -13,18 +14,18 @@ public class CopyTool extends EditorTool{
     private BlockPos dragStart;
     private BlockPos dragEnd;
     @Override
-    public void render(Renderer renderer, float x, float y, float width, float height, int themeIndex){
-        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
-        renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
-        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
-        renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
+    public void render(float x, float y, float width, float height, int themeIndex){
+        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+        Renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
+        Renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
+        Renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
+        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+        Renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
+        Renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
+        Renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
     }
     @Override
-    public void drawGhosts(Renderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
+    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(dragEnd!=null&&dragStart!=null){
             float border = 1/8f;
             int minBX = Math.min(dragStart.x, dragEnd.x);
@@ -42,19 +43,19 @@ public class CopyTool extends EditorTool{
             int minSZ = minBX*axis.x+minBY*axis.y+minBZ*axis.z;
             int maxSZ = maxBX*axis.x+maxBY*axis.y+maxBZ*axis.z;
             if(layer>=minSZ&&layer<=maxSZ){
-                renderer.setColor(Core.theme.getSelectionColor(), .5f);
-                renderer.fillRect(x+blockSize*minSX, y+blockSize*minSY, x+blockSize*(maxSX+1), y+blockSize*(maxSY+1));
-                renderer.setColor(Core.theme.getSelectionColor());
-                renderer.fillRect(x+blockSize*minSX, y+blockSize*minSY, x+blockSize*(maxSX+1), y+blockSize*(border+minSY));//top
-                renderer.fillRect(x+blockSize*minSX, y+blockSize*(maxSY+1-border), x+blockSize*(maxSX+1), y+blockSize*(maxSY+1));//bottom
-                renderer.fillRect(x+blockSize*minSX, y+blockSize*(minSY+border), x+blockSize*(border+minSX), y+blockSize*(maxSY+1-border));//left
-                renderer.fillRect(x+blockSize*(maxSX+1-border), y+blockSize*(minSY+border), x+blockSize*(maxSX+1), y+blockSize*(maxSY+1-border));//right
+                Renderer.setColor(Core.theme.getSelectionColor(), .5f);
+                Renderer.fillRect(x+blockSize*minSX, y+blockSize*minSY, x+blockSize*(maxSX+1), y+blockSize*(maxSY+1));
+                Renderer.setColor(Core.theme.getSelectionColor());
+                Renderer.fillRect(x+blockSize*minSX, y+blockSize*minSY, x+blockSize*(maxSX+1), y+blockSize*(border+minSY));//top
+                Renderer.fillRect(x+blockSize*minSX, y+blockSize*(maxSY+1-border), x+blockSize*(maxSX+1), y+blockSize*(maxSY+1));//bottom
+                Renderer.fillRect(x+blockSize*minSX, y+blockSize*(minSY+border), x+blockSize*(border+minSX), y+blockSize*(maxSY+1-border));//left
+                Renderer.fillRect(x+blockSize*(maxSX+1-border), y+blockSize*(minSY+border), x+blockSize*(maxSX+1), y+blockSize*(maxSY+1-border));//right
             }
         }
-        renderer.setWhite();
+        Renderer.setColor(Color.WHITE);
     }
     @Override
-    public void drawVRGhosts(Renderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
+    public void drawVRGhosts(EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         //TODO VR: Copy tool ghosts
     }
     @Override

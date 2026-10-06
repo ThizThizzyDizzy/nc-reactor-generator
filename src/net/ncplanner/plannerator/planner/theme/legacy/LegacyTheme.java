@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.theme.legacy;
-import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
 import net.ncplanner.plannerator.planner.theme.ColorTheme;

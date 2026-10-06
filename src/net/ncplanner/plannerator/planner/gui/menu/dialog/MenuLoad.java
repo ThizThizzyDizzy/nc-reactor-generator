@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;

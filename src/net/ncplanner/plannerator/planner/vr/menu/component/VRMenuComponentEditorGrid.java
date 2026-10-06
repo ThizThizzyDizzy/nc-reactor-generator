@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;

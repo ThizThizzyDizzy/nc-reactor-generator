@@ -21,6 +21,7 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Irradiat
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.FuelCellModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.IrradiatorModule;
 @RegisterWith(module = OverhaulModule.class)
+@Deprecated
 public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, OverhaulSFR>{
     public CoolantRecipe coolantRecipe;
     public BlockElement[][][] design;

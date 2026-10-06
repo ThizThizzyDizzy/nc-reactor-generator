@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 public class Main{
     public static boolean isBot = false;
     public static boolean headless = false;
@@ -146,52 +144,42 @@ public class Main{
         }catch(IOException ex){
             System.err.println("WARNING: UNABLE TO READ versions.properties! LIBRARY DOWNLOADING HAS BEEN SKIPPED! ("+ex.toString()+")");
         }
-        try{
-            FOR:
-            for(int i = 0; i<args.length; i++){
-                switch(args[i]){
-                    case "justUpdated":
-                        justUpdated = true;
-                        break;
-                    case "headless":
-                        headless = true;
-                        break;
-                    case "novr":
-                        novr = true;
-                        break;
-                    case "benchmark":
-                        benchmark = true;
-                        break FOR;
-                    case "maybediscord":
-                        System.out.println("Bot or Planner? (B|P)\n> ");
-                        BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+        FOR:
+        for(int i = 0; i<args.length; i++){
+            switch(args[i]){
+                case "justUpdated":
+                    justUpdated = true;
+                    break;
+                case "headless":
+                    headless = true;
+                    break;
+                case "novr":
+                    novr = true;
+                    break;
+                case "benchmark":
+                    benchmark = true;
+                    break FOR;
+                case "maybediscord":
+                    System.out.println("Bot or Planner? (B|P)\n> ");
+                    try(BufferedReader r = new BufferedReader(new InputStreamReader(System.in))){
                         String s = r.readLine();
                         if(s==null)s = "";
                         s = s.trim();
-                        r.close();
                         if(s.equalsIgnoreCase("B")||s.equalsIgnoreCase("Bot")||s.equalsIgnoreCase("Discord"))
                             args[i] = "discord";
-                    case "discord":
-                        if(args[i].equals("discord")){
-                            isBot = true;
-                            discordBotToken = args[i+1];
-                        }
-                        break;
-                }
+                    }catch(IOException ex){
+                        System.out.println("Could not read input! ("+ex.getClass().getName()+": "+ex.getMessage()+") - running as planner.");
+                    }
+                case "discord":
+                    if(args[i].equals("discord")){
+                        isBot = true;
+                        discordBotToken = args[i+1];
+                    }
+                    break;
             }
-            System.out.println("Initializing...");
-            Core.main(args);
-        }catch(Exception ex){
-            boolean saved = false;
-            try{
-                Core.autosave();
-                saved = true;
-            }catch(Exception e){
-            }
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+")", ex);
-            generateCrashReport("Exception on main thread! (Autosave "+(saved?"Successful":"Failed")+") ", ex);
-            System.exit(0);
         }
+        System.out.println("Initializing...");
+        Core.main(args);
     }
     public static void restartApplication() throws IOException{
         restartApplication(null);
@@ -205,7 +193,7 @@ public class Main{
         }
 
         String[] commandParts = commandProperty.split(" ");
-        if(jarPath==null) jarPath = commandParts[0];
+        if(jarPath==null)jarPath = commandParts[0];
 
         ArrayList<String> command = new ArrayList<>();
         command.add(javaBin);

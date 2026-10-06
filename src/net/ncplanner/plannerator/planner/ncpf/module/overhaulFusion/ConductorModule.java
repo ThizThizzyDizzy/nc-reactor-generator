@@ -1,8 +1,9 @@
 package net.ncplanner.plannerator.planner.ncpf.module.overhaulFusion;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
-import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
+import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
+@Deprecated
 @RegisterWith(module = FusionTestModule.class)
 public class ConductorModule extends BlockFunctionModule{
     public ConductorModule(){

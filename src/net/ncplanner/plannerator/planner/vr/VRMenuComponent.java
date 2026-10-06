@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.util.HashSet;
 import java.util.Set;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

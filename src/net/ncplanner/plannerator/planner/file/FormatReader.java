@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.file;
 import java.io.File;
-import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 import java.io.InputStream;
 import java.util.function.Supplier;
-import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.ncpf.runtime.RuntimeNcpf;
+import net.ncplanner.plannerator.planner.file.recovery.RecoveryHandler;
 public interface FormatReader{
     public boolean formatMatches(Supplier<InputStream> stream);
-    public Project read(Supplier<InputStream> stream, RecoveryHandler recovery, File fileContext);
+    public RuntimeNcpf read(Supplier<InputStream> stream, RecoveryHandler recovery, File fileContext);
 }

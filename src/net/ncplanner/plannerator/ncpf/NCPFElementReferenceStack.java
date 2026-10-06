@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.ncpf;
 import java.util.List;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class NCPFElementReferenceStack extends DefinedNCPFObject{
     public NCPFElementReference reference = new NCPFElementReference();
     public int amount = 0;

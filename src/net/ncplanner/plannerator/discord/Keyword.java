@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.discord;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public abstract class Keyword{
     public final String name;
     protected String input;

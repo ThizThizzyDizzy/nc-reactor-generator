@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.image.Color;
 public class FormattedText{
     public String text;
     public FormattedText next;

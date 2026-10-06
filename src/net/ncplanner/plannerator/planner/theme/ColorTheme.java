@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
-import net.ncplanner.plannerator.graphics.Font;
-import net.ncplanner.plannerator.graphics.Renderer;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 import net.ncplanner.plannerator.planner.Core;
 public abstract class ColorTheme extends Theme{
     public ColorTheme(String name){
@@ -9,14 +9,12 @@ public abstract class ColorTheme extends Theme{
     }
     @Override
     public void drawKeywordBackground(float x, float y, float width, float height, float pixelScale){
-        Renderer renderer = new Renderer();
-        renderer.setColor(getKeywordBackgroundColor());
-        renderer.fillRect(0, 0, width, height);
+        Renderer.setColor(getKeywordBackgroundColor());
+        Renderer.fillRect(0, 0, width, height);
     }
     public abstract Color getKeywordBackgroundColor();
     @Override
     public void drawThemeButtonBackground(float x, float y, float width, float height, boolean darker, boolean enabled, boolean pressed, boolean mouseOver){
-        Renderer renderer = new Renderer();
         Color col;
         if(darker){
              col = getSecondaryComponentColor(0);
@@ -35,15 +33,14 @@ public abstract class ColorTheme extends Theme{
                 col = getComponentDisabledColor(0);
             }
         }
-        renderer.setColor(col);
-        renderer.fillRect(x, y, x+width, y+height);
+        Renderer.setColor(col);
+        Renderer.fillRect(x, y, x+width, y+height);
     }
     @Override
     public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
-        Renderer renderer = new Renderer();
-        renderer.setFont(getDefaultFont());
-        renderer.setColor(getComponentTextColor(0));
-        renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        Renderer.setFont(getDefaultFont());
+        Renderer.setColor(getComponentTextColor(0));
+        Renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public Font getDefaultFont(){

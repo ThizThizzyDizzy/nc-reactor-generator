@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
-import net.ncplanner.plannerator.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
 public class IconButton extends Button{
     private final String icon;

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.theme;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.Objects;
 import java.util.Random;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
@@ -16,9 +16,8 @@ public class SiezureTheme extends ColorTheme{
     public void onSet(){
         if(Main.isBot)siezureAllowed = false;
         Thread t = new Thread(() -> {
-            if(Core.gui==null)siezureAllowed = true;
             if(siezureAllowed==null){
-                new MenuSiezureTheme(Core.gui, Core.gui.menu, () -> {
+                new MenuSiezureTheme(() -> {
                     siezureAllowed = true;
                 }, () -> {
                     siezureAllowed = false;

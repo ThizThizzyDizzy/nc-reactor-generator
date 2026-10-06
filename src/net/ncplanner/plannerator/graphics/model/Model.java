@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.graphics.model;
+import com.thizthizzydizzy.dizzyengine.graphics.Shader;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Shader;
-import net.ncplanner.plannerator.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

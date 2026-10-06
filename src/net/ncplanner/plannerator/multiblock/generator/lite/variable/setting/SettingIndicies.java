@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.multiblock.generator.lite.variable.setting;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.image.Image;
 import net.ncplanner.plannerator.planner.gui.menu.MenuGenerator;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;

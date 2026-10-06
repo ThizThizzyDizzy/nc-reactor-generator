@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.ncpf;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.element.UnknownNCPFElement;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+@Deprecated
 public class NCPFElementStack extends DefinedNCPFModularObject{
     public NCPFElementDefinition definition = new UnknownNCPFElement();
     public int amount = 1;

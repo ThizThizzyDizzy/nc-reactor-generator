@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.theme.legacy;
-import net.ncplanner.plannerator.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public class SolidColorTheme extends LegacyTheme{
     private final Color background;
     private final Color color;
