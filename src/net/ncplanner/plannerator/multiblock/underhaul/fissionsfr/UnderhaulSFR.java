@@ -25,7 +25,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
@@ -269,21 +269,24 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public FormattedText getTooltip(boolean full){
-        String mainTooltip = "Power Generation: "+power+"RF/t\n"
-            +"Total Heat: "+heat+"H/t\n"
-            +"Total Cooling: "+cooling+"H/t\n"
-            +"Net Heat: "+netHeat+"H/t\n"
-            +"Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
-            +"Heat multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
-            +(cells>0?"Fuel burn time: "+fuel.stats.time/cells+"\n":"")
-            +"Fuel cells: "+cells;
-        mainTooltip += getModuleTooltip();
-        FormattedText finalTooltip = new FormattedText();
-        if(numControllers<1)finalTooltip.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
-        if(numControllers>1)finalTooltip.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
-        if(missingCasings>0)finalTooltip.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
-        finalTooltip.addText(new FormattedText(mainTooltip, netHeat>0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor()));
-        return finalTooltip;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         String mainTooltip = "Power Generation: "+power+"RF/t\n"
+//             +"Total Heat: "+heat+"H/t\n"
+//             +"Total Cooling: "+cooling+"H/t\n"
+//             +"Net Heat: "+netHeat+"H/t\n"
+//             +"Efficiency: "+MathUtil.percent(efficiency, 0)+"\n"
+//             +"Heat multiplier: "+MathUtil.percent(heatMult, 0)+"\n"
+//             +(cells>0?"Fuel burn time: "+fuel.stats.time/cells+"\n":"")
+//             +"Fuel cells: "+cells;
+//         mainTooltip += getModuleTooltip();
+//         FormattedText finalTooltip = new FormattedText();
+//         if(numControllers<1)finalTooltip.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
+//         if(numControllers>1)finalTooltip.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
+//         if(missingCasings>0)finalTooltip.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
+//         finalTooltip.addText(new FormattedText(mainTooltip, netHeat>0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor()));
+//         return finalTooltip;
+//
     }
     @Override
     public boolean validate(){
@@ -604,30 +607,33 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public void buildDefaultCasing(){
-        Block casing = null;
-        Block controller = null;
-        for(BlockElement template : getSpecificConfiguration().blocks){
-            if(template.casing!=null)casing = new Block(getConfiguration(), null, template);
-            if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
-        }
-        for(BlockElement template : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
-            if(casing==null&&template.casing!=null)casing = new Block(getConfiguration(), null, template);
-            if(controller==null&&template.controller!=null)controller = new Block(getConfiguration(), null, template);
-        }
-        final Block theCasing = casing;
-        final Block theController = controller;
-        boolean[] hasPlacedTheController = new boolean[1];
-        for(Block block : getBlocks()){
-            if(block.template.controller!=null)hasPlacedTheController[0] = true;
-        }
-        forEachCasingFacePosition((pos) -> {
-            setBlock(pos, theCasing);
-        });
-        forEachCasingEdgePosition((pos) -> {
-            if(hasPlacedTheController[0])return;
-            setBlock(pos, theController);
-            hasPlacedTheController[0] = true;
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Block casing = null;
+//         Block controller = null;
+//         for(BlockElement template : getSpecificConfiguration().blocks){
+//             if(template.casing!=null)casing = new Block(getConfiguration(), null, template);
+//             if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
+//         }
+//         for(BlockElement template : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
+//             if(casing==null&&template.casing!=null)casing = new Block(getConfiguration(), null, template);
+//             if(controller==null&&template.controller!=null)controller = new Block(getConfiguration(), null, template);
+//         }
+//         final Block theCasing = casing;
+//         final Block theController = controller;
+//         boolean[] hasPlacedTheController = new boolean[1];
+//         for(Block block : getBlocks()){
+//             if(block.template.controller!=null)hasPlacedTheController[0] = true;
+//         }
+//         forEachCasingFacePosition((pos) -> {
+//             setBlock(pos, theCasing);
+//         });
+//         forEachCasingEdgePosition((pos) -> {
+//             if(hasPlacedTheController[0])return;
+//             setBlock(pos, theController);
+//             hasPlacedTheController[0] = true;
+//         });
+//
     }
     @Override
     public String getPreviewTexture(){
@@ -641,14 +647,17 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public UnderhaulSFRDesign convertToDesign(){
-        UnderhaulSFRDesign design = new UnderhaulSFRDesign(Core.project, x, y, z);
-        forEachPosition((pos) -> {
-            Block block = getBlock(pos);
-            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
-            design.recipes[pos.x][pos.y][pos.z] = block==null?null:block.recipe;
-        });
-        design.fuel = fuel;
-        return design;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         UnderhaulSFRDesign design = new UnderhaulSFRDesign(Core.project, x, y, z);
+//         forEachPosition((pos) -> {
+//             Block block = getBlock(pos);
+//             design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+//             design.recipes[pos.x][pos.y][pos.z] = block==null?null:block.recipe;
+//         });
+//         design.fuel = fuel;
+//         return design;
+//
     }
     @Override
     public NCPFElement[] getMultiblockRecipes(){

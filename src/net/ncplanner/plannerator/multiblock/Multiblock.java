@@ -23,7 +23,7 @@ import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
 import net.ncplanner.plannerator.planner.Task;
@@ -54,7 +54,8 @@ public abstract class Multiblock<T extends AbstractBlock>{
     public boolean calculationPaused = false;//if calculation is incomplete and paused
     {
         resetMetadata();
-        lastChangeTime = MathUtil.nanoTime();
+        // lastChangeTime = MathUtil.nanoTime();
+        if(true) throw new UnsupportedOperationException("Pending refactor");
     }
     public void resetMetadata(){
         metadata.clear();
@@ -92,7 +93,10 @@ public abstract class Multiblock<T extends AbstractBlock>{
     public abstract Multiblock<T> newInstance(NCPFConfigurationContainer configuration);
     public abstract Multiblock<T> newInstance(NCPFConfigurationContainer configuration, int... dimensions);
     public final Multiblock<T> newInstance(){
-        return newInstance(Core.project.conglomeration);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return newInstance(Core.project.conglomeration);
+//
     }
     public abstract void getAvailableBlocks(List<T> blocks);
     public final List<T> getAvailableBlocks(){
@@ -231,41 +235,47 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return new FormattedText();
     }
     public void draw3D(){
-        ArrayList<T> blocks = getBlocks(true);
-        Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
-        AbstractBlock last = null;
-        Renderer renderer = new Renderer();
-        for(T block : blocks){
-            if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
-                renderer.bindTexture(block.getBaseTexture());
-            }
-            drawCube(block, false, true);
-            last = block;
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         ArrayList<T> blocks = getBlocks(true);
+//         Collections.sort(blocks, (T o1, T o2) -> o1.getName().compareTo(o2.getName()));
+//         AbstractBlock last = null;
+//         Renderer renderer = new Renderer();
+//         for(T block : blocks){
+//             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
+//                 renderer.bindTexture(block.getBaseTexture());
+//             }
+//             drawCube(block, false, true);
+//             last = block;
+//         }
+//
     }
     public void draw3DInOrder(boolean includeCasing){
-        ArrayList<T> blocks = new ArrayList<>(getBlocks(true));
-        if(!includeCasing){
-            for(Iterator<T> it = blocks.iterator(); it.hasNext();){
-                T block = it.next();
-                if(shouldHideWithCasing(block.pos))it.remove();
-            }
-        }
-        Collections.sort(blocks, (T o1, T o2) -> {
-            if(o1.pos.y!=o2.pos.y)return o1.pos.y-o2.pos.y;
-            int d1 = o1.pos.z-o1.pos.x;
-            int d2 = o2.pos.z-o2.pos.x;
-            return d1-d2;
-        });
-        AbstractBlock last = null;
-        Renderer renderer = new Renderer();
-        for(T block : blocks){
-            if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
-                renderer.bindTexture(block.getBaseTexture());
-            }
-            drawCube(block, true, includeCasing);
-            last = block;
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         ArrayList<T> blocks = new ArrayList<>(getBlocks(true));
+//         if(!includeCasing){
+//             for(Iterator<T> it = blocks.iterator(); it.hasNext();){
+//                 T block = it.next();
+//                 if(shouldHideWithCasing(block.pos))it.remove();
+//             }
+//         }
+//         Collections.sort(blocks, (T o1, T o2) -> {
+//             if(o1.pos.y!=o2.pos.y)return o1.pos.y-o2.pos.y;
+//             int d1 = o1.pos.z-o1.pos.x;
+//             int d2 = o2.pos.z-o2.pos.x;
+//             return d1-d2;
+//         });
+//         AbstractBlock last = null;
+//         Renderer renderer = new Renderer();
+//         for(T block : blocks){
+//             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
+//                 renderer.bindTexture(block.getBaseTexture());
+//             }
+//             drawCube(block, true, includeCasing);
+//             last = block;
+//         }
+//
     }
     public boolean shouldHideWithCasing(BlockPos pos){
         return false;
@@ -389,29 +399,38 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return false;
     }
     public void undo(boolean calculate){
-        if(!history.isEmpty()){
-            lastChangeTime = MathUtil.nanoTime();
-            Action a = history.pop();
-            ActionResult result = a.undo(this);
-            if(calculate)recalculate(result);
-            future.push(a);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(!history.isEmpty()){
+//             lastChangeTime = MathUtil.nanoTime();
+//             Action a = history.pop();
+//             ActionResult result = a.undo(this);
+//             if(calculate)recalculate(result);
+//             future.push(a);
+//         }
+//
     }
     public void redo(boolean calculate){
-        if(!future.isEmpty()){
-            lastChangeTime = MathUtil.nanoTime();
-            Action a = future.pop();
-            ActionResult result = a.apply(this, true);
-            if(calculate)recalculate(result);
-            history.push(a);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(!future.isEmpty()){
+//             lastChangeTime = MathUtil.nanoTime();
+//             Action a = future.pop();
+//             ActionResult result = a.apply(this, true);
+//             if(calculate)recalculate(result);
+//             history.push(a);
+//         }
+//
     }
     public void action(Action action, boolean calculate, boolean allowUndo){
-        lastChangeTime = MathUtil.nanoTime();
-        ActionResult result = action.apply(this, allowUndo);
-        if(calculate)recalculate(result);
-        future.clear();
-        if(allowUndo)history.push(action);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         lastChangeTime = MathUtil.nanoTime();
+//         ActionResult result = action.apply(this, allowUndo);
+//         if(calculate)recalculate(result);
+//         future.clear();
+//         if(allowUndo)history.push(action);
+//
     }
     public void recalculate(){
         forceRescan = true;
@@ -539,7 +558,10 @@ public abstract class Multiblock<T extends AbstractBlock>{
     }
     public abstract Multiblock<T> doCopy();
     public long nanosSinceLastChange(){
-        return MathUtil.nanoTime()-lastChangeTime;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return MathUtil.nanoTime()-lastChangeTime;
+//
     }
     public long millisSinceLastChange(){
         return nanosSinceLastChange()/1_000_000;
@@ -606,8 +628,11 @@ public abstract class Multiblock<T extends AbstractBlock>{
         return isCompatible(other);
     }
     public NCPFConfigurationContainer getConfiguration(){
-        if(configuration==null)return Core.project.conglomeration;//TODO maybe force it to have a specific configuration?
-        return configuration;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(configuration==null)return Core.project.conglomeration;//TODO maybe force it to have a specific configuration?
+//         return configuration;
+//
     }
     public abstract NCPFConfiguration getSpecificConfiguration();
     public final ArrayList<PartCount> getPartsList(){

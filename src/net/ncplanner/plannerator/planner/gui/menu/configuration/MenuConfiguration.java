@@ -35,35 +35,45 @@ public class MenuConfiguration extends ConfigurationMenu{
     private final SingleColumnList configList;
     public MenuConfiguration(Menu parent, Configuration configuration){
         super(new FakeMenu(parent, () -> {
-            Core.setConfigurationAndConvertMultiblocks(configuration);
+            // Core.setConfigurationAndConvertMultiblocks(configuration);
+            throw new UnsupportedOperationException("Pending refactor");
         }), null, configuration.getName(), new SplitLayout(SplitLayout.Y_AXIS, 0.5f, 48, 144).fitSize().setBorder(8, Core.theme::getConfigurationDividerColor));
-        this.configuration = configuration;
-        configList = add(new SingleColumnList(16));
-        BorderLayout addonsPanel = add(new BorderLayout());
-        addonsPanel.add(new Label("Addons", true), BorderLayout.TOP, 48);
-        addonsList = addonsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
-        addonButtons = addonsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 48);
-        Button importAddon = addonButtons.add(new Button("Import Addon", true, true));
-        Button createAddon = addonButtons.add(new Button("Create Addon", true, true));
-        createAddon.addAction(() -> {
-            Addon addon = new Addon();
-            configuration.addAddon(addon);
-            gui.open(new MenuAddon(this, configuration, addon));
-        });
-        importAddon.addAction(() -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    Thread t = new Thread(() -> {
-                        loadAddon(file);
-                        onOpened();
-                    }, "Addon Import Thread");
-                    t.setDaemon(true);
-                    t.start();
-                }, FileFormat.ALL_PLANNER_FORMATS, "addon");
-            }catch(IOException ex){
-                Core.error("Failed to import addon!", ex);
-            }
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         throw new UnsupportedOperationException("Pending refactor");
+// //
+// //         super(new FakeMenu(parent, () -> {
+// //             Core.setConfigurationAndConvertMultiblocks(configuration);
+// //         }), null, configuration.getName(), new SplitLayout(SplitLayout.Y_AXIS, 0.5f, 48, 144).fitSize().setBorder(8, Core.theme::getConfigurationDividerColor));
+// //         this.configuration = configuration;
+// //         configList = add(new SingleColumnList(16));
+// //         BorderLayout addonsPanel = add(new BorderLayout());
+// //         addonsPanel.add(new Label("Addons", true), BorderLayout.TOP, 48);
+// //         addonsList = addonsPanel.add(new SingleColumnList(16), BorderLayout.CENTER);
+// //         addonButtons = addonsPanel.add(new GridLayout(0, 1), BorderLayout.BOTTOM, 48);
+// //         Button importAddon = addonButtons.add(new Button("Import Addon", true, true));
+// //         Button createAddon = addonButtons.add(new Button("Create Addon", true, true));
+// //         createAddon.addAction(() -> {
+// //             Addon addon = new Addon();
+// //             configuration.addAddon(addon);
+// //             gui.open(new MenuAddon(this, configuration, addon));
+// //         });
+// //         importAddon.addAction(() -> {
+// //             try{
+// //                 Core.createFileChooser((file) -> {
+// //                     Thread t = new Thread(() -> {
+// //                         loadAddon(file);
+// //                         onOpened();
+// //                     }, "Addon Import Thread");
+// //                     t.setDaemon(true);
+// //                     t.start();
+// //                 }, FileFormat.ALL_PLANNER_FORMATS, "addon");
+// //             }catch(IOException ex){
+// //                 Core.error("Failed to import addon!", ex);
+// //             }
+// //         });
+// //
+//
     }
     @Override
     public void onOpened(){
@@ -184,11 +194,14 @@ public class MenuConfiguration extends ConfigurationMenu{
         }
     }
     private void loadAddon(File file){
-        try{
-            Project ncpf = FileReader.read(file);
-            configuration.addAddon(ncpf.addons.get(0));
-        }catch(Exception ex){
-            Core.error("Failed to load addon", ex);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         try{
+//             Project ncpf = FileReader.read(file);
+//             configuration.addAddon(ncpf.addons.get(0));
+//         }catch(Exception ex){
+//             Core.error("Failed to load addon", ex);
+//         }
+//
     }
 }

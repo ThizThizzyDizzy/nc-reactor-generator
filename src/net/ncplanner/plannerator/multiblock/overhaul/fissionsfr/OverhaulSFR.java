@@ -1855,17 +1855,20 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
     }
     @Override
     public OverhaulSFRDesign convertToDesign(){
-        OverhaulSFRDesign design = new OverhaulSFRDesign(Core.project, x, y, z);
-        forEachPosition((pos) -> {
-            Block block = getBlock(pos);
-            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
-            if(block!=null){
-                design.fuels[pos.x][pos.y][pos.z] = block.fuel;
-                design.irradiatorRecipes[pos.x][pos.y][pos.z] = block.irradiatorRecipe;
-            }
-        });
-        design.coolantRecipe = coolantRecipe;
-        return design;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         OverhaulSFRDesign design = new OverhaulSFRDesign(Core.project, x, y, z);
+//         forEachPosition((pos) -> {
+//             Block block = getBlock(pos);
+//             design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+//             if(block!=null){
+//                 design.fuels[pos.x][pos.y][pos.z] = block.fuel;
+//                 design.irradiatorRecipes[pos.x][pos.y][pos.z] = block.irradiatorRecipe;
+//             }
+//         });
+//         design.coolantRecipe = coolantRecipe;
+//         return design;
+//
     }
     @Override
     public NCPFElement[] getMultiblockRecipes(){

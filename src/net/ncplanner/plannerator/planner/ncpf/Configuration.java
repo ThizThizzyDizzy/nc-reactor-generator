@@ -29,11 +29,14 @@ public class Configuration{
         internalAddonAuthors.put(addon, author);
     }
     public static void initNuclearcraftConfiguration(){
-        if(NUCLEARCRAFT!=null)return;//already done m8
-        NUCLEARCRAFT = new Configuration(FileReader.read(() -> {
-            return Core.getInputStream("configurations/nuclearcraft.ncpf.json");
-        }), "default").addAlternative("").addAlternative("SF4");
-        configurations.add(0, NUCLEARCRAFT);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(NUCLEARCRAFT!=null)return;//already done m8
+//         NUCLEARCRAFT = new Configuration(FileReader.read(() -> {
+//             return Core.getInputStream("configurations/nuclearcraft.ncpf.json");
+//         }), "default").addAlternative("").addAlternative("SF4");
+//         configurations.add(0, NUCLEARCRAFT);
+//
     }
     public static void clearConfigurations(){
         configurations.clear();

@@ -5,8 +5,11 @@ import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
 public class MenuComponentMultiblockProgressBar extends ProgressBar{
     private final MenuEdit editor;
     public MenuComponentMultiblockProgressBar(MenuEdit editor, float x, float y, float width, float height){
-        super(x, y, width, height);
-        this.editor = editor;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super(x, y, width, height);
+//         this.editor = editor;
+//
     }
     @Override
     public Task getTask(){

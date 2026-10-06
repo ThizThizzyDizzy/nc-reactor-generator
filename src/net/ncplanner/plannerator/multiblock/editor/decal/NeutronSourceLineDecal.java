@@ -10,27 +10,33 @@ public class NeutronSourceLineDecal extends Decal{
         super(pos);
         this.direction = direction;
     }
-    @Override
+    /* @Override */
     public void render(Renderer renderer, float x, float y, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorNeutronSourceLine());
-        switch(direction){
-            case PX:
-            case NX:
-                renderer.fillRect(x, y+blockSize*.375f, x+blockSize, y+blockSize*.625f);
-                break;
-            case PY:
-            case NY:
-                renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
-                break;
-            case PZ:
-            case NZ:
-                renderer.fillRect(x+blockSize*.375f, y, x+blockSize*.625f, y+blockSize);
-                break;
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorNeutronSourceLine());
+//         switch(direction){
+//             case PX:
+//             case NX:
+//                 renderer.fillRect(x, y+blockSize*.375f, x+blockSize, y+blockSize*.625f);
+//                 break;
+//             case PY:
+//             case NY:
+//                 renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
+//                 break;
+//             case PZ:
+//             case NZ:
+//                 renderer.fillRect(x+blockSize*.375f, y, x+blockSize*.625f, y+blockSize);
+//                 break;
+//         }
+//
     }
-    @Override
+    /* @Override */
     public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        //TODO VR DECAL: adjacent moderator
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         //TODO VR DECAL: adjacent moderator
+//
     }
     @Override
     public String getTooltip(){

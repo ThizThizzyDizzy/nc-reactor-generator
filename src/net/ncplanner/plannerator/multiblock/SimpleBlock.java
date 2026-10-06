@@ -17,8 +17,11 @@ public abstract class SimpleBlock extends AbstractBlock{
     public String getTooltip(Multiblock multiblock){
         return getName();
     }
-    @Override
-    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){}
+    /* @Override */
+    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+        throw new UnsupportedOperationException("Pending refactor");
+//
+    }
     @Override
     public boolean isValid(){
         return true;

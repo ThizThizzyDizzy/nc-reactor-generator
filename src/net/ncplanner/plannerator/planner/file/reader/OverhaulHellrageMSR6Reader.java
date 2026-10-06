@@ -30,135 +30,135 @@ public class OverhaulHellrageMSR6Reader implements FormatReader{
         }
         return major==2&&minor==1&&build>=1;//&&build<=7;
     }
-    @Override
-    public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
-        JSON.JSONObject hellrage = JSON.parse(in.get());
-        JSON.JSONObject data = hellrage.getJSONObject("Data");
-        JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
-        OverhaulMSRDesign msr = new OverhaulMSRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
-        JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
-        for(String name : heatSinks.keySet()){
-            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
-            JSON.JSONArray array = heatSinks.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = block;
-                msr.heaterRecipes[x][y][z] = block.heaterRecipes.get(0);
-            }
-        }
-        JSON.JSONObject moderators = data.getJSONObject("Moderators");
-        for(String name : moderators.keySet()){
-            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
-            JSON.JSONArray array = moderators.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = block;
-            }
-        }
-        JSON.JSONArray conductors = data.getJSONArray("Conductors");
-        if(conductors!=null){
-            BlockElement conductor = null;
-            for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
-                if(blok.conductor!=null)conductor = blok;
-            }
-            if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
-            for(Object blok : conductors){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = conductor;
-            }
-        }
-        JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
-        for(String name : reflectors.keySet()){
-            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
-            JSON.JSONArray array = reflectors.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = block;
-            }
-        }
-        JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
-        for(String name : neutronShields.keySet()){
-            BlockElement block = recovery.recoverOverhaulMSRBlock(name);
-            JSON.JSONArray array = neutronShields.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = block;
-            }
-        }
-        BlockElement irradiator = null;
-        for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
-            if(blok.irradiator!=null)irradiator = blok;
-        }
-        if(irradiator==null)throw new IllegalArgumentException("Configuration has no irradiators!");
-        JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
-        for(String name : irradiators.keySet()){
-            IrradiatorRecipe irrecipe = null;
-            try{
-                JSON.JSONObject recipe = JSON.parse(name);
-                for(IrradiatorRecipe irr : irradiator.irradiatorRecipes){
-                    if(irr.stats.heat==recipe.getFloat("HeatPerFlux")&&irr.stats.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
-                }
-            }catch(IOException ex){
-                throw new IllegalArgumentException("Invalid irradiator recipe: "+name);
-            }
-            JSON.JSONArray array = irradiators.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = irradiator;
-                msr.irradiatorRecipes[x][y][z] = irrecipe;
-            }
-        }
-        BlockElement vessel = null;
-        for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
-            if(blok.fuelVessel!=null)vessel = blok;
-        }
-        if(vessel==null)throw new IllegalArgumentException("Configuration has no fuel vessels!");
-        JSON.JSONObject fuelVessels = data.getJSONObject("FuelCells");
-        HashMap<int[], BlockElement> sources = new HashMap<>();
-        for(String name : fuelVessels.keySet()){
-            String[] fuelSettings = StringUtil.split(name, ";");
-            String fuelName = fuelSettings[0];
-            boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
-            Fuel fuel = recovery.recoverOverhaulMSRFuel(vessel, fuelName);
-            BlockElement src = null;
-            if(hasSource){
-                String sourceName = fuelSettings[2];
-                src = recovery.recoverOverhaulMSRBlock(sourceName);
-            }
-            JSON.JSONArray array = fuelVessels.getJSONArray(name);
-            for(Object blok : array){
-                JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
-                int x = blockLoc.getInt("X");
-                int y = blockLoc.getInt("Y");
-                int z = blockLoc.getInt("Z");
-                msr.design[x][y][z] = vessel;
-                msr.fuels[x][y][z] = fuel;
-                if(hasSource)sources.put(new int[]{x,y,z}, src);
-            }
-        }
-        for(int[] key : sources.keySet()){
-            LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
-        }
-        Project file = new Project();
-        file.designs.add(msr);
-        return file;
-    }
+    // @Override
+//     public synchronized Project read(Supplier<InputStream> in, RecoveryHandler recovery, File fileContext){
+//         JSON.JSONObject hellrage = JSON.parse(in.get());
+//         JSON.JSONObject data = hellrage.getJSONObject("Data");
+//         JSON.JSONObject dims = data.getJSONObject("InteriorDimensions");
+//         OverhaulMSRDesign msr = new OverhaulMSRDesign(Core.project, dims.getInt("X"), dims.getInt("Y"), dims.getInt("Z"));
+//         JSON.JSONObject heatSinks = data.getJSONObject("HeatSinks");
+//         for(String name : heatSinks.keySet()){
+//             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
+//             JSON.JSONArray array = heatSinks.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = block;
+//                 msr.heaterRecipes[x][y][z] = block.heaterRecipes.get(0);
+//             }
+//         }
+//         JSON.JSONObject moderators = data.getJSONObject("Moderators");
+//         for(String name : moderators.keySet()){
+//             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
+//             JSON.JSONArray array = moderators.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = block;
+//             }
+//         }
+//         JSON.JSONArray conductors = data.getJSONArray("Conductors");
+//         if(conductors!=null){
+//             BlockElement conductor = null;
+//             for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+//                 if(blok.conductor!=null)conductor = blok;
+//             }
+//             if(conductor==null)throw new IllegalArgumentException("Configuation has no conductors!");
+//             for(Object blok : conductors){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = conductor;
+//             }
+//         }
+//         JSON.JSONObject reflectors = data.getJSONObject("Reflectors");
+//         for(String name : reflectors.keySet()){
+//             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
+//             JSON.JSONArray array = reflectors.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = block;
+//             }
+//         }
+//         JSON.JSONObject neutronShields = data.getJSONObject("NeutronShields");
+//         for(String name : neutronShields.keySet()){
+//             BlockElement block = recovery.recoverOverhaulMSRBlock(name);
+//             JSON.JSONArray array = neutronShields.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = block;
+//             }
+//         }
+//         BlockElement irradiator = null;
+//         for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+//             if(blok.irradiator!=null)irradiator = blok;
+//         }
+//         if(irradiator==null)throw new IllegalArgumentException("Configuration has no irradiators!");
+//         JSON.JSONObject irradiators = data.getJSONObject("Irradiators");
+//         for(String name : irradiators.keySet()){
+//             IrradiatorRecipe irrecipe = null;
+//             try{
+//                 JSON.JSONObject recipe = JSON.parse(name);
+//                 for(IrradiatorRecipe irr : irradiator.irradiatorRecipes){
+//                     if(irr.stats.heat==recipe.getFloat("HeatPerFlux")&&irr.stats.efficiency==recipe.getFloat("EfficiencyMultiplier"))irrecipe = irr;
+//                 }
+//             }catch(IOException ex){
+//                 throw new IllegalArgumentException("Invalid irradiator recipe: "+name);
+//             }
+//             JSON.JSONArray array = irradiators.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = irradiator;
+//                 msr.irradiatorRecipes[x][y][z] = irrecipe;
+//             }
+//         }
+//         BlockElement vessel = null;
+//         for(BlockElement blok : Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks){
+//             if(blok.fuelVessel!=null)vessel = blok;
+//         }
+//         if(vessel==null)throw new IllegalArgumentException("Configuration has no fuel vessels!");
+//         JSON.JSONObject fuelVessels = data.getJSONObject("FuelCells");
+//         HashMap<int[], BlockElement> sources = new HashMap<>();
+//         for(String name : fuelVessels.keySet()){
+//             String[] fuelSettings = StringUtil.split(name, ";");
+//             String fuelName = fuelSettings[0];
+//             boolean hasSource = Boolean.parseBoolean(fuelSettings[1]);
+//             Fuel fuel = recovery.recoverOverhaulMSRFuel(vessel, fuelName);
+//             BlockElement src = null;
+//             if(hasSource){
+//                 String sourceName = fuelSettings[2];
+//                 src = recovery.recoverOverhaulMSRBlock(sourceName);
+//             }
+//             JSON.JSONArray array = fuelVessels.getJSONArray(name);
+//             for(Object blok : array){
+//                 JSON.JSONObject blockLoc = (JSON.JSONObject) blok;
+//                 int x = blockLoc.getInt("X");
+//                 int y = blockLoc.getInt("Y");
+//                 int z = blockLoc.getInt("Z");
+//                 msr.design[x][y][z] = vessel;
+//                 msr.fuels[x][y][z] = fuel;
+//                 if(hasSource)sources.put(new int[]{x,y,z}, src);
+//             }
+//         }
+//         for(int[] key : sources.keySet()){
+//             LegacyNeutronSourceHandler.addNeutronSource(msr, key[0], key[1], key[2], sources.get(key));
+//         }
+//         Project file = new Project();
+//         file.designs.add(msr);
+//         return file;
+//     }
 }

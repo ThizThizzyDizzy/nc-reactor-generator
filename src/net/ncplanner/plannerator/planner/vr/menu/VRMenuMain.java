@@ -20,20 +20,24 @@ public class VRMenuMain extends VRMenu{
     private static final int openTime = 10;
     public VRMenuMain(VRGUI gui){
         super(gui, null);
-        for(int i = 0; i<Core.multiblockTypes.size(); i++){
-            Multiblock m = Core.multiblockTypes.get(i);
-            VRMenuComponentButton button = new VRMenuComponentButton(-.375f/2, 1.25f-.1f*i, -.75f, .375f, .075f, .05f, 0, 0, 0, m.getDefinitionName(), true, false);
-            button.setTooltip(m.getDescriptionTooltip());
-            button.addActionListener(() -> {
-                Multiblock multi = m.newInstance();
-                Core.multiblocks.add(multi);
-                toAdd.add(multi);
-            });
-            multiblockButtons.add(button);
-        }
-        exit.addActionListener(() -> {
-            Core.gui.open(new MenuMain(Core.gui));
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//
+//         for(int i = 0; i<Core.multiblockTypes.size(); i++){
+//             Multiblock m = Core.multiblockTypes.get(i);
+//             VRMenuComponentButton button = new VRMenuComponentButton(-.375f/2, 1.25f-.1f*i, -.75f, .375f, .075f, .05f, 0, 0, 0, m.getDefinitionName(), true, false);
+//             button.setTooltip(m.getDescriptionTooltip());
+//             button.addActionListener(() -> {
+//                 Multiblock multi = m.newInstance();
+//                 Core.multiblocks.add(multi);
+//                 toAdd.add(multi);
+//             });
+//             multiblockButtons.add(button);
+//         }
+//         exit.addActionListener(() -> {
+//             Core.gui.open(new MenuMain(Core.gui));
+//         });
+//
     }
     @Override
     public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){

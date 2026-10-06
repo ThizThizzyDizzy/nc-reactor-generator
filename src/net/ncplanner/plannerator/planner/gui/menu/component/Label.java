@@ -12,9 +12,12 @@ public class Label extends Component implements Searchable{
     public String text;
     public boolean darker;
     public float textInset = 4;
-    public Supplier<Color> textColor = () -> {
-        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
-    };
+    public Supplier<Color> textColor = ((java.util.function.Supplier<Supplier<Color>>) () -> {
+        throw new UnsupportedOperationException("Pending refactor");
+// () -> {
+//         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
+//     }
+    }).get();
     private boolean noBackground;
     private boolean alignLeft;
     private ArrayList<Image> images = new ArrayList<>();
@@ -58,19 +61,22 @@ public class Label extends Component implements Searchable{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        if(!noBackground){
-            renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
-            renderer.fillRect(x, y, x+width, y+height);
-        }
-        if(!images.isEmpty()){
-            renderer.setWhite();
-            for(int i = 0; i<images.size(); i++){
-                renderer.drawImage(images.get(i), x+i*height, y, x+(i+1)*height, y+height);
-            }
-        }
-        renderer.setColor(textColor.get());
-        drawText(renderer);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         if(!noBackground){
+//             renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+//             renderer.fillRect(x, y, x+width, y+height);
+//         }
+//         if(!images.isEmpty()){
+//             renderer.setWhite();
+//             for(int i = 0; i<images.size(); i++){
+//                 renderer.drawImage(images.get(i), x+i*height, y, x+(i+1)*height, y+height);
+//             }
+//         }
+//         renderer.setColor(textColor.get());
+//         drawText(renderer);
+//
     }
     public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(text, height);

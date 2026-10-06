@@ -12,25 +12,35 @@ public class MenuPickParameter<T extends LiteMultiblock> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     private final Consumer<Parameter> onConfirm;
     public MenuPickParameter(GUI gui, Menu parent, T multiblock, Consumer<Parameter> onConfirm){
-        super(gui, parent);
-        this.onConfirm = onConfirm;
-        minWidth = minHeight = 0;
-        Parameter.registeredParameters.forEach((key, val) -> {
-            addVar(key, val);
-        });
-        setTitle("Choose a parameter");
-        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
-        addButton("Cancel", () -> {
-            close();
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super(gui, parent);
+//         throw new UnsupportedOperationException("Pending refactor");
+// //
+// //
+// //         this.onConfirm = onConfirm;
+// //         minWidth = minHeight = 0;
+// //         Parameter.registeredParameters.forEach((key, val) -> {
+// //             addVar(key, val);
+// //         });
+// //         setTitle("Choose a parameter");
+// //         setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
+// //         addButton("Cancel", () -> {
+// //             close();
+// //         });
+// //
+//
     }
     public void addVar(String text, Supplier<Parameter> func){
-        buttons.add(new Button(text, true).addAction(() -> {
-            new MenuInputDialog(gui, parent, "", "Choose Parameter Name").addButton("Cancel", true).addButton("Done", (name) -> {
-                Parameter setting = func.get();
-                setting.name = name;
-                onConfirm.accept(setting);
-            }, true).open();
-        }));
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         buttons.add(new Button(text, true).addAction(() -> {
+//             new MenuInputDialog(gui, parent, "", "Choose Parameter Name").addButton("Cancel", true).addButton("Done", (name) -> {
+//                 Parameter setting = func.get();
+//                 setting.name = name;
+//                 onConfirm.accept(setting);
+//             }, true).open();
+//         }));
+//
     }
 }

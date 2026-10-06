@@ -76,11 +76,14 @@ public class Block extends AbstractBlock{
     public boolean isLiquidDistributor(){
         return template.liquidDistributer!=null;
     }
-    @Override
+    /* @Override */
     public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
-        if(!isValid()){
-            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(!isValid()){
+//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
+//         }
+//
     }
     @Override
     public boolean isValid(){

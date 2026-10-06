@@ -16,13 +16,16 @@ public class VRMenuComponentEditorTool extends VRMenuComponent{
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-        renderer.drawCube(0, 0, 0, width, height, depth, null);
-        renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
-        if(editor.getSelectedTool(tool.id)==tool){
-            renderer.drawCubeOutline(.0025f, .0025f, .0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
-        }
-        tool.render(0, 0, 0, width, height, depth, Core.getThemeIndex(this));
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
+//         renderer.drawCube(0, 0, 0, width, height, depth, null);
+//         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
+//         if(editor.getSelectedTool(tool.id)==tool){
+//             renderer.drawCubeOutline(.0025f, .0025f, .0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
+//         }
+//         tool.render(0, 0, 0, width, height, depth, Core.getThemeIndex(this));
+//
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){

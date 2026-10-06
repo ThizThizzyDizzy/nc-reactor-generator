@@ -56,23 +56,26 @@ public class ToggleBox extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
-        renderer.fillRect(x, y, x+width, y+height);//why is this here?
-        renderer.setColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
-        renderer.fillRect(x, y, x+height, y+height);
-        renderer.setColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));
-        renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
-        if(isMouseFocused&&!enabled){
-            renderer.setColor(Core.theme.getToggleBoxSelectedColor(Core.getThemeIndex(this)), .25f);
-            renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
-        }
-        if(image!=null){
-            renderer.setWhite();
-            renderer.drawImage(image, x+height, y, x+height*2, y+height);
-        }
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(renderer);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+//         renderer.fillRect(x, y, x+width, y+height);//why is this here?
+//         renderer.setColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
+//         renderer.fillRect(x, y, x+height, y+height);
+//         renderer.setColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));
+//         renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
+//         if(isMouseFocused&&!enabled){
+//             renderer.setColor(Core.theme.getToggleBoxSelectedColor(Core.getThemeIndex(this)), .25f);
+//             renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
+//         }
+//         if(image!=null){
+//             renderer.setWhite();
+//             renderer.drawImage(image, x+height, y, x+height*2, y+height);
+//         }
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         drawText(renderer);
+//
     }
     public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(text, height);
@@ -97,11 +100,14 @@ public class ToggleBox extends Component{
     }
     @Override
     public void onCursorEntered(){
-        super.onCursorEntered();
-        if(sliding!=null&&allowSliding&&glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
-            isToggledOn = sliding;
-            changeListeners.forEach(Runnable::run);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.onCursorEntered();
+//         if(sliding!=null&&allowSliding&&glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+//             isToggledOn = sliding;
+//             changeListeners.forEach(Runnable::run);
+//         }
+//
     }
     public ToggleBox onChange(Runnable r){
         changeListeners.add(r);

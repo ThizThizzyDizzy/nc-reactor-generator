@@ -17,8 +17,11 @@ public class NCPFFile extends DefinedNCPFModularConfigurationContainer{
         postConvertFromObject(ncpf);
     }
     public void postConvertFromObject(NCPFObject ncpf){
-        conglomerate();
-        designs = ncpf.getDefinedNCPFListOrEmpty("designs", ()->{return new NCPFDesign(isConfigEmpty()?Core.project:this);});
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         conglomerate();
+//         designs = ncpf.getDefinedNCPFListOrEmpty("designs", ()->{return new NCPFDesign(isConfigEmpty()?Core.project:this);});
+//
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

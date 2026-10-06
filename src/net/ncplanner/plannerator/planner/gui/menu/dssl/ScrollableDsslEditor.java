@@ -33,17 +33,20 @@ public class ScrollableDsslEditor extends Scrollable{
     }
     @Override
     public void drawBackground(double deltaTime){
-        Renderer renderer = new Renderer();
-        if(editor!=null){
-            focusedComponent = editor;
-            editor.isFocused = isFocused;
-            editor.width = Math.max(editor.width, width);
-            editor.height = Math.max(editor.height, height);
-        }
-        renderer.setColor(Core.theme.getCodeBackgroundColor());
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setWhite();
-        super.drawBackground(deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         if(editor!=null){
+//             focusedComponent = editor;
+//             editor.isFocused = isFocused;
+//             editor.width = Math.max(editor.width, width);
+//             editor.height = Math.max(editor.height, height);
+//         }
+//         renderer.setColor(Core.theme.getCodeBackgroundColor());
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setWhite();
+//         super.drawBackground(deltaTime);
+//
     }
     @Override
     public void draw(double deltaTime){

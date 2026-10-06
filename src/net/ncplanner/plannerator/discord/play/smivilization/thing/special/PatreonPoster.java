@@ -14,13 +14,16 @@ public class PatreonPoster extends HutThingExclusive{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new PatreonPoster(uuid, hut);
     }
-    @Override
+    /* @Override */
     public void render(Renderer renderer, float imgScale){
-        renderer.setWhite();
-        float[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
-        float right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
-        float bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png", lefttop[0], lefttop[1], right, bottom);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setWhite();
+//         float[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
+//         float right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
+//         float bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
+//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png", lefttop[0], lefttop[1], right, bottom);
+//
     }
     @Override
     public int[] getDimensions(){

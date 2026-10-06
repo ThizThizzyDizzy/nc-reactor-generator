@@ -11,17 +11,20 @@ public class MenuComponentTutorialCategory extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        if(isFocused){
-            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
-            else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
-        }else{
-            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
-            else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-        }
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(renderer);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         if(isFocused){
+//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+//             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+//         }else{
+//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+//             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+//         }
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         drawText(renderer);
+//
     }
     public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(category.name, height);

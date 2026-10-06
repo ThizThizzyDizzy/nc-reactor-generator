@@ -34,29 +34,32 @@ public class VRMenuComponentButton extends VRMenuComponent{
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        Color col;
-        if(darker){
-             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
-            }
-        }else{
-            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-            }
-        }
-        renderer.setColor(col);
-        renderer.unbindTexture();
-        renderer.drawCube(0, 0, 0, width, height, depth, null);
-        renderer.setColor(textColor.get());
-        drawText(renderer);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Color col;
+//         if(darker){
+//              col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//         }else{
+//             col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//         }
+//         renderer.setColor(col);
+//         renderer.unbindTexture();
+//         renderer.drawCube(0, 0, 0, width, height, depth, null);
+//         renderer.setColor(textColor.get());
+//         drawText(renderer);
+//
     }
     public void drawText(Renderer renderer){
         float textLength = renderer.getStringWidth(text, height);

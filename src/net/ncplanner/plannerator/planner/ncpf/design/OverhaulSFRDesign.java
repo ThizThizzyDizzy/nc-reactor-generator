@@ -53,9 +53,12 @@ public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, O
         super.convertToObject(ncpf);
     }
     public BlockElement matchElement(BlockElement block){
-        OverhaulSFRConfiguration config = file.getConfiguration(OverhaulSFRConfiguration::new);
-        if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulSFRConfiguration::new));
-        return block;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         OverhaulSFRConfiguration config = file.getConfiguration(OverhaulSFRConfiguration::new);
+//         if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulSFRConfiguration::new));
+//         return block;
+//
     }
     public boolean matchModule(BlockElement block, Supplier<NCPFModule> module){
         block = matchElement(block);

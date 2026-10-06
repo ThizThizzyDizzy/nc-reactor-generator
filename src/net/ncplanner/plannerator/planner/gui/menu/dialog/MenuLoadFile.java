@@ -11,26 +11,32 @@ import net.ncplanner.plannerator.planner.ncpf.Project;
 public class MenuLoadFile extends MenuDialog{
     public Consumer<Project> onLoad;
     public MenuLoadFile(GUI gui, Menu parent, Consumer<Project> onLoad){
-        super(gui, parent);
-        addButton("Cancel", () -> {
-            close();
-        });
-        addButton("System File Chooser", () -> {
-            try{
-                Core.createFileChooser((file) -> {
-                    close();
-                    readFile(file);
-                }, FileFormat.ALL_PLANNER_FORMATS);
-            }catch(IOException ex){
-                Core.error("Failed to load file!", ex);
-            }
-        });
-        this.onLoad = onLoad;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super(gui, parent);
+//         addButton("Cancel", () -> {
+//             close();
+//         });
+//         addButton("System File Chooser", () -> {
+//             try{
+//                 Core.createFileChooser((file) -> {
+//                     close();
+//                     readFile(file);
+//                 }, FileFormat.ALL_PLANNER_FORMATS);
+//             }catch(IOException ex){
+//                 Core.error("Failed to load file!", ex);
+//             }
+//         });
+//         this.onLoad = onLoad;
+//
     }
     protected void readFile(File file){
-        new MenuReadFiles(gui, parent, Arrays.asList(file), (loadedFiles) -> {
-            if(loadedFiles.size()!=1)throw new RuntimeException("Tried to load one file, found "+loadedFiles.size()+"!");
-            onLoad.accept(loadedFiles.get(0));
-        }).open();
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         new MenuReadFiles(gui, parent, Arrays.asList(file), (loadedFiles) -> {
+//             if(loadedFiles.size()!=1)throw new RuntimeException("Tried to load one file, found "+loadedFiles.size()+"!");
+//             onLoad.accept(loadedFiles.get(0));
+//         }).open();
+//
     }
 }

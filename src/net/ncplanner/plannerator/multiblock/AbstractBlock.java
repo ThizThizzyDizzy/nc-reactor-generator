@@ -179,7 +179,9 @@ public abstract class AbstractBlock implements Pinnable{
         }
     }
     @Deprecated
-    public abstract void renderOverlay(float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc);
+    public /* abstract */ void renderOverlay(float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc) /* ; */ {
+        throw new UnsupportedOperationException("Pending refactor");
+    }
     public void drawCircle(float x, float y, float width, float height, Color color){
         Renderer.setColor(color);
         Renderer.fillRect(x, y, x+width, y+height, ResourceManager.getTexture(Core.sourceCircle));

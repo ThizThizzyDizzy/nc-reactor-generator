@@ -13,10 +13,13 @@ public class Lamp extends HutThing{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new Lamp(uuid, hut);
     }
-    @Override
+    /* @Override */
     public void draw(Renderer renderer, float left, float top, float right, float bottom){
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/lamp.png", left, top, right, bottom);
-        if(on)renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/lamp glow.png", left, top, right, bottom);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/lamp.png", left, top, right, bottom);
+//         if(on)renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/lamp glow.png", left, top, right, bottom);
+//
     }
     @Override
     public int[] getDimensions(){

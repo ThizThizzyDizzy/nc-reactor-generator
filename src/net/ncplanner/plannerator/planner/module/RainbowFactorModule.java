@@ -14,7 +14,7 @@ import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReacto
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
@@ -96,7 +96,10 @@ public class RainbowFactorModule extends Module<Float>{
     }
     @Override
     public String getTooltip(Multiblock m, Float o){
-        return "Rainbow Score: "+MathUtil.percent(o, 2);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return "Rainbow Score: "+MathUtil.percent(o, 2);
+//
     }
     @Override
     public void getGenerationPriorities(Multiblock multiblock, ArrayList<Priority> priorities){
@@ -320,42 +323,45 @@ public class RainbowFactorModule extends Module<Float>{
         }
     }
     private final EditorOverlay rainbowOverlay = new EditorOverlay("Rainbow factor", "Highlights blocks that are the only block of their type", true){
-        @Override
+        /* @Override */
         public void render(Renderer renderer, float x, float y, float width, float height, AbstractBlock block, Multiblock multiblock){
-            boolean isRainbowable = false;
-            if(block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
-                net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
-                isRainbowable = b.template.cooler!=null;
-            }
-            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
-                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-                isRainbowable = b.template.heatsink!=null;
-            }
-            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block){
-                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-                isRainbowable = b.template.heater!=null;
-            }
-            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.turbine.Block){
-                net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b = (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)block;
-                isRainbowable = b.template.coil!=null;
-            }
-            if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block){
-                net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
-                isRainbowable = b.template.heatsink!=null;
-            }
-            if(isRainbowable&&multiblock.count(block)==1){
-                int count = Core.theme.getRainbowColorCount();
-                for(int i = 0; i<count; i++){
-                    renderer.setColor(Core.theme.getRainbowColor(i));
-                    float b = width/24;
-                    float p1 = i/(float)count;
-                    float p2 = (i+1)/(float)count;
-                    renderer.fillRect(x+b+width*p1, y, x+b+width*p2, y+b);
-                    renderer.fillRect(x, y+b+height*p1, x+b, y+b+height*p2);
-                    renderer.fillRect(x+b+width*(1-p2), y+width-b, x+b+width*(1-p1), y+width);
-                    renderer.fillRect(x+width-b, y+b+height*(1-p2), x+width, y+b+height*(1-p1));
-                }
-            }
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             boolean isRainbowable = false;
+//             if(block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block){
+//                 net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
+//                 isRainbowable = b.template.cooler!=null;
+//             }
+//             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block){
+//                 net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+//                 isRainbowable = b.template.heatsink!=null;
+//             }
+//             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block){
+//                 net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+//                 isRainbowable = b.template.heater!=null;
+//             }
+//             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.turbine.Block){
+//                 net.ncplanner.plannerator.multiblock.overhaul.turbine.Block b = (net.ncplanner.plannerator.multiblock.overhaul.turbine.Block)block;
+//                 isRainbowable = b.template.coil!=null;
+//             }
+//             if(block instanceof net.ncplanner.plannerator.multiblock.overhaul.fusion.Block){
+//                 net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
+//                 isRainbowable = b.template.heatsink!=null;
+//             }
+//             if(isRainbowable&&multiblock.count(block)==1){
+//                 int count = Core.theme.getRainbowColorCount();
+//                 for(int i = 0; i<count; i++){
+//                     renderer.setColor(Core.theme.getRainbowColor(i));
+//                     float b = width/24;
+//                     float p1 = i/(float)count;
+//                     float p2 = (i+1)/(float)count;
+//                     renderer.fillRect(x+b+width*p1, y, x+b+width*p2, y+b);
+//                     renderer.fillRect(x, y+b+height*p1, x+b, y+b+height*p2);
+//                     renderer.fillRect(x+b+width*(1-p2), y+width-b, x+b+width*(1-p1), y+width);
+//                     renderer.fillRect(x+width-b, y+b+height*(1-p2), x+width, y+b+height*(1-p1));
+//                 }
+//             }
+//
         }
     };
     @Override

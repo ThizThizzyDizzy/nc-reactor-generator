@@ -222,15 +222,18 @@ public abstract class Module<T>{
     }
     private ArrayList<Runnable> tasks = new ArrayList<>();
     protected void addConfigurationTask(Task t, String name, String filepath, String link, String author, String... alternatives){
-        Task task = t.addSubtask(name);
-        tasks.add(() -> {
-            CannedConfiguration config = new CannedConfiguration(FileReader.read(() -> Core.getInputStream(filepath)));
-            for(String alt : alternatives){
-                config.addAlias(alt);
-            }
-            addConfiguration(config, link, author);
-            task.finish();
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Task task = t.addSubtask(name);
+//         tasks.add(() -> {
+//             CannedConfiguration config = new CannedConfiguration(FileReader.read(() -> Core.getInputStream(filepath)));
+//             for(String alt : alternatives){
+//                 config.addAlias(alt);
+//             }
+//             addConfiguration(config, link, author);
+//             task.finish();
+//         });
+//
     }
     protected void addAddonTask(Task t, String name, String filepath, String link, String author){
         Task task = t.addSubtask(name);

@@ -19,23 +19,26 @@ public class TextView extends Scrollable{
         view = add(new Component(0, 0, width, height){
             @Override
             public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-                renderer.setFont(font!=null?font:Core.theme.getTextViewFont());
-                float Y = y+textInset;
-                for(int i = 0; i<text.size(); i++){
-                    FormattedText t = text.get(i);
-                    do{
-                        if(wordWrap){
-                            t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
-                        }else{
-                            renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
-                            t = null;
-                        }
-                        Y+=textHeight;
-                    }while(t!=null&&!t.isEmpty());
-                }
-                renderer.resetFont();
+                throw new UnsupportedOperationException("Pending refactor");
+//
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//                 renderer.setFont(font!=null?font:Core.theme.getTextViewFont());
+//                 float Y = y+textInset;
+//                 for(int i = 0; i<text.size(); i++){
+//                     FormattedText t = text.get(i);
+//                     do{
+//                         if(wordWrap){
+//                             t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
+//                         }else{
+//                             renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
+//                             t = null;
+//                         }
+//                         Y+=textHeight;
+//                     }while(t!=null&&!t.isEmpty());
+//                 }
+//                 renderer.resetFont();
+//
             }
         });
     }

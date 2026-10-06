@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.util.ArrayList;
 import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.openvr.TrackedDevicePose;
@@ -50,20 +50,23 @@ public class VRMenu{
         }
     }
     public void onDeviceMoved(int device, Matrix4f matrix){
-        Vector3f pos = matrix.getTranslation(new Vector3f());
-        float x = pos.x;
-        float y = pos.y;
-        float z = pos.z;
-        for(VRMenuComponent component : components){
-            Vector3f p = MathUtil.convertPointInverted(x, y, z, component.x, component.y, component.z, component.xRot, component.yRot, component.zRot);
-            Matrix4f newMatrix = new Matrix4f(matrix);
-            newMatrix.setTranslation(p.x, p.y, p.z);
-            if(MathUtil.isPointWithinBox(x, y, z, component.x, component.y, component.z, component.width, component.height, component.depth, component.xRot, component.yRot, component.zRot)){
-                component.onDeviceMoved(device, newMatrix);
-            }else{
-                component.onDeviceMovedElsewhere(device, newMatrix);
-            }
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Vector3f pos = matrix.getTranslation(new Vector3f());
+//         float x = pos.x;
+//         float y = pos.y;
+//         float z = pos.z;
+//         for(VRMenuComponent component : components){
+//             Vector3f p = MathUtil.convertPointInverted(x, y, z, component.x, component.y, component.z, component.xRot, component.yRot, component.zRot);
+//             Matrix4f newMatrix = new Matrix4f(matrix);
+//             newMatrix.setTranslation(p.x, p.y, p.z);
+//             if(MathUtil.isPointWithinBox(x, y, z, component.x, component.y, component.z, component.width, component.height, component.depth, component.xRot, component.yRot, component.zRot)){
+//                 component.onDeviceMoved(device, newMatrix);
+//             }else{
+//                 component.onDeviceMovedElsewhere(device, newMatrix);
+//             }
+//         }
+//
     }
     /**
      * @return A list containing every component on this menu, including subcomponents

@@ -18,88 +18,127 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfigur
 import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 public class RecoveryModeHandler implements RecoveryHandler{
     HashMap<String, Integer> fallbackChoices = new HashMap<>();
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuelLegacyNCPF(Project ncpf, int id) {
-        return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.configuration.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("fuel", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).fuels, Core.project.configuration.getConfiguration(UnderhaulSFRConfiguration::new).fuels, false);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlockLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("block", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("block", id, ncpf.getConfiguration(UnderhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recoverOverhaulSFRCoolantRecipeLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, false);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, false);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlockLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulSFRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, true);
+//
     }
-    @Override
+    /* @Override */
     public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, int id){
-        List<T> list = null;
-        List<T> fallbackList = null;
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement fallback = Core.project.getConfiguration(OverhaulSFRConfiguration::new).getElement(block.definition);
-        if(block.parent!=null)block = block.parent;
-        if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
-        if(block.fuelCell!=null){
-            list = (List<T>)block.fuels;
-            if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
-        }
-        if(block.irradiator!=null){
-            list = (List<T>)block.irradiatorRecipes;
-            if(fallback!=null)fallbackList = (List<T>)fallback.irradiatorRecipes;
-        }
-        return recoverFallbackID(block.fuelCell!=null?"fuel":"recipe", id, list, fallbackList, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         List<T> list = null;
+//         List<T> fallbackList = null;
+//         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement fallback = Core.project.getConfiguration(OverhaulSFRConfiguration::new).getElement(block.definition);
+//         if(block.parent!=null)block = block.parent;
+//         if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
+//         if(block.fuelCell!=null){
+//             list = (List<T>)block.fuels;
+//             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
+//         }
+//         if(block.irradiator!=null){
+//             list = (List<T>)block.irradiatorRecipes;
+//             if(fallback!=null)fallbackList = (List<T>)fallback.irradiatorRecipes;
+//         }
+//         return recoverFallbackID(block.fuelCell!=null?"fuel":"recipe", id, list, fallbackList, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlockLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulMSRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulMSRConfiguration::new).blocks, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, true);
+//
     }
-    @Override
+    /* @Override */
     public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, int id) {
-        List<T> list = null;
-        List<T> fallbackList = null;
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement fallback = Core.project.getConfiguration(OverhaulMSRConfiguration::new).getElement(block.definition);
-        if(block.parent!=null)block = block.parent;
-        if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
-        if(block.fuelVessel!=null){
-            list = (List<T>)block.fuels;
-            if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
-        }
-        if(block.irradiator!=null){
-            list = (List<T>)block.irradiatorRecipes;
-            if(fallback!=null)fallbackList = (List<T>)fallback.irradiatorRecipes;
-        }
-        if(block.heater!=null){
-            list = (List<T>)block.heaterRecipes;
-            if(fallback!=null)fallbackList = (List<T>)fallback.heaterRecipes;
-        }
-        return recoverFallbackID(block.fuelVessel!=null?"fuel":"recipe", id, list, fallbackList, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         List<T> list = null;
+//         List<T> fallbackList = null;
+//         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement fallback = Core.project.getConfiguration(OverhaulMSRConfiguration::new).getElement(block.definition);
+//         if(block.parent!=null)block = block.parent;
+//         if(fallback!=null&&fallback.parent!=null)fallback = fallback.parent;
+//         if(block.fuelVessel!=null){
+//             list = (List<T>)block.fuels;
+//             if(fallback!=null)fallbackList = (List<T>)fallback.fuels;
+//         }
+//         if(block.irradiator!=null){
+//             list = (List<T>)block.irradiatorRecipes;
+//             if(fallback!=null)fallbackList = (List<T>)fallback.irradiatorRecipes;
+//         }
+//         if(block.heater!=null){
+//             list = (List<T>)block.heaterRecipes;
+//             if(fallback!=null)fallbackList = (List<T>)fallback.heaterRecipes;
+//         }
+//         return recoverFallbackID(block.fuelVessel!=null?"fuel":"recipe", id, list, fallbackList, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).recipes, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes, false);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).recipes, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).recipes, false);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement recoverOverhaulTurbineBlockLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).blocks, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).blocks, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulTurbineConfiguration::new).blocks, Core.project.getConfiguration(OverhaulTurbineConfiguration::new).blocks, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recoverOverhaulFusionCoolantRecipeLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, false);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("coolant recipe", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, Core.project.getConfiguration(OverhaulFusionConfiguration::new).coolantRecipes, false);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement recoverOverhaulFusionBlockLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).blocks, Core.project.getConfiguration(OverhaulFusionConfiguration::new).blocks, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("block", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).blocks, Core.project.getConfiguration(OverhaulFusionConfiguration::new).blocks, true);
+//
     }
-    @Override
+    /* @Override */
     public <T extends NCPFElement> T recoverOverhaulFusionBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block, int id) {
-        net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement fallback = Core.project.getConfiguration(OverhaulFusionConfiguration::new).getElement(block.definition);
-        return recoverFallbackID("recipe", id, block.breedingBlanketRecipes, fallback==null?null:fallback.breedingBlanketRecipes, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement fallback = Core.project.getConfiguration(OverhaulFusionConfiguration::new).getElement(block.definition);
+//         return recoverFallbackID("recipe", id, block.breedingBlanketRecipes, fallback==null?null:fallback.breedingBlanketRecipes, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recoverOverhaulFusionRecipeLegacyNCPF(Project ncpf, int id){
-        return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).recipes, Core.project.getConfiguration(OverhaulFusionConfiguration::new).recipes, false);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackID("recipe", id, ncpf.getConfiguration(OverhaulFusionConfiguration::new).recipes, Core.project.getConfiguration(OverhaulFusionConfiguration::new).recipes, false);
+//
     }
     protected <T extends NCPFElement> T recoverFallbackID(String type, int idx, List<? extends NCPFElement> list, List<? extends NCPFElement> fallbackList, boolean allowNull){
         if(idx>=0&&idx<list.size())return (T)list.get(idx);
@@ -174,61 +213,73 @@ public class RecoveryModeHandler implements RecoveryHandler{
     private String cap(String s){
         return s.substring(0, 1).toUpperCase(Locale.ROOT)+s.substring(1);
     }
-    @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuel(String name, Float heat, Float power){
-        return recoverFallbackName("fuel", name, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels, null, () -> {
-            for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel f : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels){
-                if(f.stats.heat==heat&&f.stats.power==power)return f;
-            }
-            return null;
-        }, false);
-    }
-    @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlock(String name){
-        return recoverFallbackName("block", name, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), "cooler", " ").equalsIgnoreCase(StringUtil.superRemove(name, " "));
-        }, null, true);
-    }
-    @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recoverOverhaulSFRCoolantRecipe(String name){
-        return recoverFallbackName("recipe", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, null, null, true);
-    }
-    @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlock(String name){
-        return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "));
-        }, null, true);
-    }
-    @Override
+    // @Override
+//     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuel(String name, Float heat, Float power){
+//         return recoverFallbackName("fuel", name, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels, null, () -> {
+//             for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel f : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).fuels){
+//                 if(f.stats.heat==heat&&f.stats.power==power)return f;
+//             }
+//             return null;
+//         }, false);
+//     }
+    // @Override
+//     public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlock(String name){
+//         return recoverFallbackName("block", name, Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks, (nam) -> {
+//             return StringUtil.superRemove(StringUtil.toLowerCase(nam), "cooler", " ").equalsIgnoreCase(StringUtil.superRemove(name, " "));
+//         }, null, true);
+//     }
+    // @Override
+//     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recoverOverhaulSFRCoolantRecipe(String name){
+//         return recoverFallbackName("recipe", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).coolantRecipes, null, null, true);
+//     }
+    // @Override
+//     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlock(String name){
+//         return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, (nam) -> {
+//             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "));
+//         }, null, true);
+//     }
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel recoverOverhaulSFRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name){
-        return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
-                    ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Oxide", " "))
-                    ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Nitride", " "))
-                    ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+"-Zirconium Alloy", " "));
-        }, null, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
+//             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
+//                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Oxide", " "))
+//                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Nitride", " "))
+//                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+"-Zirconium Alloy", " "));
+//         }, null, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe recoverOverhaulSFRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name){
-        return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);
+//
     }
     
     
-    @Override
-    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlock(String name){
-        return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "coolant", "heater", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superReplace(StringUtil.toLowerCase(name), "water", "standard", " ", ""));
-        }, null, true);
-    }
-    @Override
+    // @Override
+//     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlock(String name){
+//         return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulMSRConfiguration::new).blocks, (nam) -> {
+//             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "coolant", "heater", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superReplace(StringUtil.toLowerCase(name), "water", "standard", " ", ""));
+//         }, null, true);
+//     }
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.Fuel recoverOverhaulMSRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name){
-        return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
-                    ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Fluoride", " "));
-        }, null, true);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackName("fuel", name, block.fuels, (nam) -> {
+//             return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4), " "))
+//                     ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ").equalsIgnoreCase(StringUtil.superRemove(name.substring(4)+" Fluoride", " "));
+//         }, null, true);
+//
     }
-    @Override
+    /* @Override */
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.IrradiatorRecipe recoverOverhaulMSRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name){
-        return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);//don't care about heater recipes
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         return recoverFallbackName("recipe", name, block.irradiatorRecipes, null, null, true);//don't care about heater recipes
+//
     }
 }

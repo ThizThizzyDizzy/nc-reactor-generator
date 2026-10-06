@@ -13,8 +13,11 @@ public class IconButton extends Button{
     }
     @Override
     public void drawForeground(double deltaTime){
-        Renderer renderer = new Renderer();
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.drawElement(icon, x, y, width, height);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.drawElement(icon, x, y, width, height);
+//
     }
 }

@@ -33,10 +33,13 @@ public class C2ConfigComponentBase extends SplitLayout{
     }
     @Override
     public void render2d(double deltaTime){
-        float totalY = getYInScrollable();
-        if(totalY>Core.gui.getHeight())return;
-        if(totalY+height<0)return;
-        super.render2d(deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         float totalY = getYInScrollable();
+//         if(totalY>Core.gui.getHeight())return;
+//         if(totalY+height<0)return;
+//         super.render2d(deltaTime);
+//
     }
     @Override
     public void draw(double deltaTime){

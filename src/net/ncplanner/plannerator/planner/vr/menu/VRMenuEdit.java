@@ -26,7 +26,7 @@ import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
 import net.ncplanner.plannerator.planner.editor.Editor;
@@ -111,42 +111,45 @@ public class VRMenuEdit extends VRMenu implements Editor, DebugInfoProvider{
     }
     @Override
     public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        lastTick = System.nanoTime();
-        if(lastChange!=multiblock.lastChangeTime){
-            lastChange = multiblock.lastChangeTime;
-            recalculateSuggestions();
-        }
-        if(closing){
-            openProgress-=deltaTime*20;
-            if(openProgress<=0)gui.open(new VRMenuMain(gui));
-        }else if(openProgress<openTime){
-            openProgress++;
-        }
-        long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
-        float partialTick = millisSinceLastTick/50f;
-        float progress = closing?Math.max((openProgress-partialTick)/openTime,0):(Math.min((openProgress+partialTick)/openTime,1));
-        float dist = (float)(openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth));
-        grid.z = openTargetZ-dist;
-        super.render(renderer, tdpb, deltaTime);
-        //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
-        for(int i = 1; i<tdpb.limit(); i++){
-            TrackedDevicePose pose = tdpb.get(i);
-            if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
-                IntBuffer pError = IntBuffer.allocate(1);
-                int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
-                if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
-                    Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking()));
-                    renderer.pushModel(matrix.mul(Multitool.editOffsetmatrix));
-                    if(getSelectedBlock(i)!=null){
-                        renderer.setWhite();
-                        float radius = grid.blockSize/4;
-                        renderer.drawCube(-radius, -radius, -radius, radius, radius, radius, getSelectedBlock(i).getTexture());
-                    }
-                    renderer.popModel();
-                }
-            }
-        }
-//</editor-fold>
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         lastTick = System.nanoTime();
+//         if(lastChange!=multiblock.lastChangeTime){
+//             lastChange = multiblock.lastChangeTime;
+//             recalculateSuggestions();
+//         }
+//         if(closing){
+//             openProgress-=deltaTime*20;
+//             if(openProgress<=0)gui.open(new VRMenuMain(gui));
+//         }else if(openProgress<openTime){
+//             openProgress++;
+//         }
+//         long millisSinceLastTick = lastTick==-1?0:(System.nanoTime()-lastTick)/1_000_000;
+//         float partialTick = millisSinceLastTick/50f;
+//         float progress = closing?Math.max((openProgress-partialTick)/openTime,0):(Math.min((openProgress+partialTick)/openTime,1));
+//         float dist = (float)(openDist-openDist*Math.pow(Math.sin(Math.PI*progress/2), 1/openSmooth));
+//         grid.z = openTargetZ-dist;
+//         super.render(renderer, tdpb, deltaTime);
+//         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
+//         for(int i = 1; i<tdpb.limit(); i++){
+//             TrackedDevicePose pose = tdpb.get(i);
+//             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
+//                 IntBuffer pError = IntBuffer.allocate(1);
+//                 int role = VRSystem.VRSystem_GetInt32TrackedDeviceProperty(i, ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32, pError);
+//                 if(role==ETrackedControllerRole_TrackedControllerRole_LeftHand||role==ETrackedControllerRole_TrackedControllerRole_RightHand){
+//                     Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking()));
+//                     renderer.pushModel(matrix.mul(Multitool.editOffsetmatrix));
+//                     if(getSelectedBlock(i)!=null){
+//                         renderer.setWhite();
+//                         float radius = grid.blockSize/4;
+//                         renderer.drawCube(-radius, -radius, -radius, radius, radius, radius, getSelectedBlock(i).getTexture());
+//                     }
+//                     renderer.popModel();
+//                 }
+//             }
+//         }
+// //</editor-fold>
+//
     }
     @Override
     public Multiblock getMultiblock(){

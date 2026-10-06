@@ -8,9 +8,13 @@ public class MenuDiscord extends Menu{
     Button exit = add(new Button("Exit", true, true));
     public MenuDiscord(GUI gui){
         super(gui, null);
-        exit.addAction(() -> {
-            glfwSetWindowShouldClose(Core.window, true);
-        });
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//
+//         exit.addAction(() -> {
+//             glfwSetWindowShouldClose(Core.window, true);
+//         });
+//
     }
     @Override
     public void drawBackground(double deltaTime){

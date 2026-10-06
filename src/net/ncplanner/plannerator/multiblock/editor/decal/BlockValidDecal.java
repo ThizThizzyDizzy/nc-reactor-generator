@@ -7,15 +7,21 @@ public class BlockValidDecal extends Decal{
     public BlockValidDecal(BlockPos pos){
         super(pos);
     }
-    @Override
+    /* @Override */
     public void render(Renderer renderer, float x, float y, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
-        renderer.fillRect(x, y, x+blockSize, y+blockSize);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
+//         renderer.fillRect(x, y, x+blockSize, y+blockSize);
+//
     }
-    @Override
+    /* @Override */
     public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
-        renderer.drawCube(x, y, z, x+blockSize, y+blockSize, z+blockSize, null);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
+//         renderer.drawCube(x, y, z, x+blockSize, y+blockSize, z+blockSize, null);
+//
     }
     @Override
     public String getTooltip(){

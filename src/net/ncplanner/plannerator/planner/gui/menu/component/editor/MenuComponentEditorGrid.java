@@ -66,16 +66,19 @@ public class MenuComponentEditorGrid extends Component{
     }
     @Override
     public void render2d(double deltaTime){
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
-            editor.getSelectedTool(0).mouseReset(editorSpace, 0);
-        }
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
-            editor.getSelectedTool(0).mouseReset(editorSpace, 1);
-        }
-        resonatingTick+=deltaTime*20;
-        if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
-        resonatingAlpha = (float) (-Math.cos(2*Math.PI*resonatingTick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
-        super.render2d(deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
+//             editor.getSelectedTool(0).mouseReset(editorSpace, 0);
+//         }
+//         if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
+//             editor.getSelectedTool(0).mouseReset(editorSpace, 1);
+//         }
+//         resonatingTick+=deltaTime*20;
+//         if(resonatingTick>resonatingTime)resonatingTick-=resonatingTime;
+//         resonatingAlpha = (float) (-Math.cos(2*Math.PI*resonatingTick/resonatingTime)/(2/(resonatingMax-resonatingMin))+(resonatingMax+resonatingMin)/2);
+//         super.render2d(deltaTime);
+//
     }
     private void forEachMouseover(Consumer<BlockPos> func){
         BlockPos bmo = mouseover==null?null:gridToBlockCoords(mouseover[0], mouseover[1]);
@@ -100,203 +103,206 @@ public class MenuComponentEditorGrid extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        synchronized(synchronizer){
-            if(!isMouseFocused)mouseover = null;
-            if(mouseover!=null){
-                if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>blocksWide-1||mouseover[1]>blocksHigh-1)mouseover = null;
-            }
-            blockSize = (int) Math.min(width/blocksWide, height/blocksHigh);
-            renderer.setColor(Core.theme.getEditorBackgroundColor());
-            renderer.fillRect(x,y,x+width,y+height);
-            forEachMouseover((pos) -> {
-                int[] coords = toMouseCoords(pos);
-                if(coords==null)return;
-                renderer.setColor(Core.theme.getEditorBackgroundMouseoverColor());
-                renderer.fillRect(x+coords[0]*blockSize, y+coords[1]*blockSize, x+(coords[0]+1)*blockSize, y+(coords[1]+1)*blockSize);
-            });
-        }
-        renderer.setColor(Core.theme.getEditorGridColor());
-        for(int x = 0; x<=blocksWide; x++){
-            float border = blockSize/32f;
-            float X = this.x+x*blockSize;
-            renderer.fillRect(X-(x==0?0:border), y, X+(x==blocksWide?0:border), y+height);
-        }
-        for(int y = 0; y<=blocksHigh; y++){
-            float border = blockSize/32f;
-            float Y = this.y+y*blockSize;
-            renderer.fillRect(x, Y-(y==0?0:border), x+width, Y+(y==blocksHigh?0:border));
-        }
-        for(int x = 0; x<blocksWide; x++){
-            for(int y = 0; y<blocksHigh; y++){
-                BlockPos pos = new BlockPos(
-                    (x+x1)*xAxis.x+(y+y1)*yAxis.x+layer*axis.x,
-                    (x+x1)*xAxis.y+(y+y1)*yAxis.y+layer*axis.y,
-                    (x+x1)*xAxis.z+(y+y1)*yAxis.z+layer*axis.z
-                );
-                if(!multiblock.contains(pos))continue;
-                AbstractBlock block = multiblock.getBlock(pos);
-                float X = this.x+x*blockSize;
-                float Y = this.y+y*blockSize;
-                if(block!=null){
-                    block.render(renderer, X, Y, blockSize, blockSize, editor.overlays, multiblock);
-                    if(block.hasRecipes()&&block.getRecipe()==editor.getSelectedBlockRecipe(0)){
-                        renderer.setColor(Core.theme.getSelectionColor(), resonatingAlpha);
-                        renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
-                    }
-                }
-                if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
-                    renderer.setWhite();
-                    renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma"), X, Y, X+blockSize, Y+blockSize);
-                }
-                if(Core.isControlPressed()&&editor.getSelectedTool(0).isEditTool()){
-                    if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
-                        if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), pos)&&multiblock.isValid(editor.getSelectedBlock(0), pos)){
-                            editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha, multiblock);
-                        }
-                    }
-                }
-                synchronized(multiblock.decals){
-                    for(Object o : multiblock.decals){
-                        Decal decal = (Decal)o;
-                        if(decal.pos.equals(pos)){
-                            decal.render(renderer, X, Y, blockSize);
-                        }
-                    }
-                }
-                for(EditorOverlay overlay : editor.overlays){
-                    if(!overlay.isActive())continue;
-                    for(Object o : overlay.decals){
-                        Decal decal = (Decal)o;
-                        if(decal.pos.equals(pos)){
-                            decal.render(renderer, X, Y, blockSize);
-                        }
-                    }
-                }
-                if(isSelected(x, y)){
-                    renderer.setColor(Core.theme.getSelectionColor(), .5f);
-                    renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
-                    renderer.setColor(Core.theme.getSelectionColor());
-                    float border = blockSize/8f;
-                    boolean top = isSelected(x, y-1);
-                    boolean right = isSelected(x+1, y);
-                    boolean bottom = isSelected(x, y+1);
-                    boolean left = isSelected(x-1, y);
-                    if(!top||!left||!isSelected(x-1, y-1)){//top left
-                        renderer.fillRect(X, Y, X+border, Y+border);
-                    }
-                    if(!top){//top
-                        renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
-                    }
-                    if(!top||!right||!isSelected(x+1, y-1)){//top right
-                        renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
-                    }
-                    if(!right){//right
-                        renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
-                    }
-                    if(!bottom||!right||!isSelected(x+1, y+1)){//bottom right
-                        renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
-                    }
-                    if(!bottom){//bottom
-                        renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
-                    }
-                    if(!bottom||!left||!isSelected(x-1, y+1)){//bottom left
-                        renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
-                    }
-                    if(!left){//left
-                        renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
-                    }
-                }
-                {
-                    boolean stl = false, st = false, str = false, sr = false, sbr = false, sb = false, sbl = false, sl = false, sg = false;
-                    for(Suggestion s : editor.getSuggestions()){
-                        if(affects(s, x, y)){
-                            if(s.selected&&s.result!=null){
-                                AbstractBlock b = s.result.getBlock(pos);
-                                renderer.setWhite(resonatingAlpha+.5f);
-                                if(b==null){
-                                    renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
-                                }else{
-                                    b.render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha+.5f, s.result);
-                                }
-                            }
-                            renderer.setColor(Core.theme.getSuggestionOutlineColor());
-                            if(s.selected)sg = true;
-                            boolean top = affects(s, x, y-1);
-                            boolean right = affects(s, x+1, y);
-                            boolean bottom = affects(s, x, y+1);
-                            boolean left = affects(s, x-1, y);
-                            stl |= (!top||!left||!affects(s, x-1, y-1));
-                            st |= (!top);
-                            str |= (!top||!right||!affects(s, x+1, y-1));
-                            sr |= (!right);
-                            sbr |= (!bottom||!right||!affects(s, x+1, y+1));
-                            sb |= (!bottom);
-                            sbl |= (!bottom||!left||!affects(s, x-1, y+1));
-                            sl |= (!left);
-                        }
-                    }
-                    renderer.setColor(Core.theme.getSuggestionOutlineColor());
-                    float border = blockSize/40f;
-                    if(sg)border*=3;
-                    if(stl)renderer.fillRect(X, Y, X+border, Y+border);
-                    if(st)renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
-                    if(str)renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
-                    if(sr)renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
-                    if(sbr)renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
-                    if(sb)renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
-                    if(sbl)renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
-                    if(sl)renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
-                }
-            }
-        }
-        editor.getSelectedTool(0).drawGhosts(renderer, editorSpace, x1, y1, x2, y2, blocksWide, blocksHigh, axis, layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?null:editor.getSelectedBlock(0).getTexture()));
-        synchronized(synchronizer){
-            forEachMouseover((pos) -> {
-                int[] coords = toMouseCoords(pos);
-                if(coords==null)return;
-                float X = this.x+coords[0]*blockSize;
-                float Y = this.y+coords[1]*blockSize;
-                float border = blockSize/8;
-                renderer.setColor(Core.theme.getEditorMouseoverLightColor(), .6375f);
-                renderer.fillRect(X, Y, X+border, Y+border);
-                renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
-                renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
-                renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
-                renderer.setColor(Core.theme.getEditorMouseoverDarkColor(), .6375f);
-                renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
-                renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
-                renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
-                renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
-            });
-            if(mouseover!=null){
-                float X = this.x+mouseover[0]*blockSize;
-                float Y = this.y+mouseover[1]*blockSize;
-                float border = blockSize/8;
-                renderer.setColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
-                renderer.fillRect(this.x, Y+blockSize/2-border/2, X, Y+blockSize/2+border/2);
-                renderer.fillRect(X+blockSize, Y+blockSize/2-border/2, this.x+this.width, Y+blockSize/2+border/2);
-                renderer.fillRect(X+blockSize/2-border/2, this.y, X+blockSize/2+border/2, Y);
-                renderer.fillRect(X+blockSize/2-border/2, Y+blockSize, X+blockSize/2+border/2, this.y+this.height);
-            }
-            for(Component comp : editor.multibwauk.components){
-                if(comp instanceof MenuComponentEditorGrid){
-                    MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
-                    if(grid==this)continue;
-                    if(grid.axis!=axis)continue;
-                    if(grid.x1!=x1)continue;
-                    if(grid.x2!=x2)continue;
-                    if(grid.y1!=y1)continue;
-                    if(grid.y2!=y2)continue;
-                    if(grid.mouseover==null)continue;
-                    float X = this.x+grid.mouseover[0]*blockSize;
-                    float Y = this.y+grid.mouseover[1]*blockSize;
-                    float border = blockSize/6;
-                    renderer.setColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
-                    renderer.fillRect(X+blockSize/2-border/2, Y+blockSize/2-border/2, X+blockSize/2+border/2, Y+blockSize/2+border/2);
-                }
-            }
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         synchronized(synchronizer){
+//             if(!isMouseFocused)mouseover = null;
+//             if(mouseover!=null){
+//                 if(mouseover[0]<0||mouseover[1]<0||mouseover[0]>blocksWide-1||mouseover[1]>blocksHigh-1)mouseover = null;
+//             }
+//             blockSize = (int) Math.min(width/blocksWide, height/blocksHigh);
+//             renderer.setColor(Core.theme.getEditorBackgroundColor());
+//             renderer.fillRect(x,y,x+width,y+height);
+//             forEachMouseover((pos) -> {
+//                 int[] coords = toMouseCoords(pos);
+//                 if(coords==null)return;
+//                 renderer.setColor(Core.theme.getEditorBackgroundMouseoverColor());
+//                 renderer.fillRect(x+coords[0]*blockSize, y+coords[1]*blockSize, x+(coords[0]+1)*blockSize, y+(coords[1]+1)*blockSize);
+//             });
+//         }
+//         renderer.setColor(Core.theme.getEditorGridColor());
+//         for(int x = 0; x<=blocksWide; x++){
+//             float border = blockSize/32f;
+//             float X = this.x+x*blockSize;
+//             renderer.fillRect(X-(x==0?0:border), y, X+(x==blocksWide?0:border), y+height);
+//         }
+//         for(int y = 0; y<=blocksHigh; y++){
+//             float border = blockSize/32f;
+//             float Y = this.y+y*blockSize;
+//             renderer.fillRect(x, Y-(y==0?0:border), x+width, Y+(y==blocksHigh?0:border));
+//         }
+//         for(int x = 0; x<blocksWide; x++){
+//             for(int y = 0; y<blocksHigh; y++){
+//                 BlockPos pos = new BlockPos(
+//                     (x+x1)*xAxis.x+(y+y1)*yAxis.x+layer*axis.x,
+//                     (x+x1)*xAxis.y+(y+y1)*yAxis.y+layer*axis.y,
+//                     (x+x1)*xAxis.z+(y+y1)*yAxis.z+layer*axis.z
+//                 );
+//                 if(!multiblock.contains(pos))continue;
+//                 AbstractBlock block = multiblock.getBlock(pos);
+//                 float X = this.x+x*blockSize;
+//                 float Y = this.y+y*blockSize;
+//                 if(block!=null){
+//                     block.render(renderer, X, Y, blockSize, blockSize, editor.overlays, multiblock);
+//                     if(block.hasRecipes()&&block.getRecipe()==editor.getSelectedBlockRecipe(0)){
+//                         renderer.setColor(Core.theme.getSelectionColor(), resonatingAlpha);
+//                         renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
+//                     }
+//                 }
+//                 if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
+//                     renderer.setWhite();
+//                     renderer.drawImage(TextureManager.getImage("overhaul/fusion/plasma"), X, Y, X+blockSize, Y+blockSize);
+//                 }
+//                 if(Core.isControlPressed()&&editor.getSelectedTool(0).isEditTool()){
+//                     if(block==null||(Core.isShiftPressed()&&block.canBeQuickReplaced())){
+//                         if(editorSpace.isSpaceValid(editor.getSelectedBlock(0), pos)&&multiblock.isValid(editor.getSelectedBlock(0), pos)){
+//                             editor.getSelectedBlock(0).render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha, multiblock);
+//                         }
+//                     }
+//                 }
+//                 synchronized(multiblock.decals){
+//                     for(Object o : multiblock.decals){
+//                         Decal decal = (Decal)o;
+//                         if(decal.pos.equals(pos)){
+//                             decal.render(renderer, X, Y, blockSize);
+//                         }
+//                     }
+//                 }
+//                 for(EditorOverlay overlay : editor.overlays){
+//                     if(!overlay.isActive())continue;
+//                     for(Object o : overlay.decals){
+//                         Decal decal = (Decal)o;
+//                         if(decal.pos.equals(pos)){
+//                             decal.render(renderer, X, Y, blockSize);
+//                         }
+//                     }
+//                 }
+//                 if(isSelected(x, y)){
+//                     renderer.setColor(Core.theme.getSelectionColor(), .5f);
+//                     renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
+//                     renderer.setColor(Core.theme.getSelectionColor());
+//                     float border = blockSize/8f;
+//                     boolean top = isSelected(x, y-1);
+//                     boolean right = isSelected(x+1, y);
+//                     boolean bottom = isSelected(x, y+1);
+//                     boolean left = isSelected(x-1, y);
+//                     if(!top||!left||!isSelected(x-1, y-1)){//top left
+//                         renderer.fillRect(X, Y, X+border, Y+border);
+//                     }
+//                     if(!top){//top
+//                         renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
+//                     }
+//                     if(!top||!right||!isSelected(x+1, y-1)){//top right
+//                         renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
+//                     }
+//                     if(!right){//right
+//                         renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
+//                     }
+//                     if(!bottom||!right||!isSelected(x+1, y+1)){//bottom right
+//                         renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
+//                     }
+//                     if(!bottom){//bottom
+//                         renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
+//                     }
+//                     if(!bottom||!left||!isSelected(x-1, y+1)){//bottom left
+//                         renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
+//                     }
+//                     if(!left){//left
+//                         renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
+//                     }
+//                 }
+//                 {
+//                     boolean stl = false, st = false, str = false, sr = false, sbr = false, sb = false, sbl = false, sl = false, sg = false;
+//                     for(Suggestion s : editor.getSuggestions()){
+//                         if(affects(s, x, y)){
+//                             if(s.selected&&s.result!=null){
+//                                 AbstractBlock b = s.result.getBlock(pos);
+//                                 renderer.setWhite(resonatingAlpha+.5f);
+//                                 if(b==null){
+//                                     renderer.fillRect(X, Y, X+blockSize, Y+blockSize);
+//                                 }else{
+//                                     b.render(renderer, X, Y, blockSize, blockSize, null, resonatingAlpha+.5f, s.result);
+//                                 }
+//                             }
+//                             renderer.setColor(Core.theme.getSuggestionOutlineColor());
+//                             if(s.selected)sg = true;
+//                             boolean top = affects(s, x, y-1);
+//                             boolean right = affects(s, x+1, y);
+//                             boolean bottom = affects(s, x, y+1);
+//                             boolean left = affects(s, x-1, y);
+//                             stl |= (!top||!left||!affects(s, x-1, y-1));
+//                             st |= (!top);
+//                             str |= (!top||!right||!affects(s, x+1, y-1));
+//                             sr |= (!right);
+//                             sbr |= (!bottom||!right||!affects(s, x+1, y+1));
+//                             sb |= (!bottom);
+//                             sbl |= (!bottom||!left||!affects(s, x-1, y+1));
+//                             sl |= (!left);
+//                         }
+//                     }
+//                     renderer.setColor(Core.theme.getSuggestionOutlineColor());
+//                     float border = blockSize/40f;
+//                     if(sg)border*=3;
+//                     if(stl)renderer.fillRect(X, Y, X+border, Y+border);
+//                     if(st)renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
+//                     if(str)renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
+//                     if(sr)renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
+//                     if(sbr)renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
+//                     if(sb)renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
+//                     if(sbl)renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
+//                     if(sl)renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
+//                 }
+//             }
+//         }
+//         editor.getSelectedTool(0).drawGhosts(renderer, editorSpace, x1, y1, x2, y2, blocksWide, blocksHigh, axis, layer, x, y, width, height, blockSize, (editor.getSelectedBlock(0)==null?null:editor.getSelectedBlock(0).getTexture()));
+//         synchronized(synchronizer){
+//             forEachMouseover((pos) -> {
+//                 int[] coords = toMouseCoords(pos);
+//                 if(coords==null)return;
+//                 float X = this.x+coords[0]*blockSize;
+//                 float Y = this.y+coords[1]*blockSize;
+//                 float border = blockSize/8;
+//                 renderer.setColor(Core.theme.getEditorMouseoverLightColor(), .6375f);
+//                 renderer.fillRect(X, Y, X+border, Y+border);
+//                 renderer.fillRect(X+blockSize-border, Y, X+blockSize, Y+border);
+//                 renderer.fillRect(X, Y+blockSize-border, X+border, Y+blockSize);
+//                 renderer.fillRect(X+blockSize-border, Y+blockSize-border, X+blockSize, Y+blockSize);
+//                 renderer.setColor(Core.theme.getEditorMouseoverDarkColor(), .6375f);
+//                 renderer.fillRect(X+border, Y, X+blockSize-border, Y+border);
+//                 renderer.fillRect(X+border, Y+blockSize-border, X+blockSize-border, Y+blockSize);
+//                 renderer.fillRect(X, Y+border, X+border, Y+blockSize-border);
+//                 renderer.fillRect(X+blockSize-border, Y+border, X+blockSize, Y+blockSize-border);
+//             });
+//             if(mouseover!=null){
+//                 float X = this.x+mouseover[0]*blockSize;
+//                 float Y = this.y+mouseover[1]*blockSize;
+//                 float border = blockSize/8;
+//                 renderer.setColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
+//                 renderer.fillRect(this.x, Y+blockSize/2-border/2, X, Y+blockSize/2+border/2);
+//                 renderer.fillRect(X+blockSize, Y+blockSize/2-border/2, this.x+this.width, Y+blockSize/2+border/2);
+//                 renderer.fillRect(X+blockSize/2-border/2, this.y, X+blockSize/2+border/2, Y);
+//                 renderer.fillRect(X+blockSize/2-border/2, Y+blockSize, X+blockSize/2+border/2, this.y+this.height);
+//             }
+//             for(Component comp : editor.multibwauk.components){
+//                 if(comp instanceof MenuComponentEditorGrid){
+//                     MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
+//                     if(grid==this)continue;
+//                     if(grid.axis!=axis)continue;
+//                     if(grid.x1!=x1)continue;
+//                     if(grid.x2!=x2)continue;
+//                     if(grid.y1!=y1)continue;
+//                     if(grid.y2!=y2)continue;
+//                     if(grid.mouseover==null)continue;
+//                     float X = this.x+grid.mouseover[0]*blockSize;
+//                     float Y = this.y+grid.mouseover[1]*blockSize;
+//                     float border = blockSize/6;
+//                     renderer.setColor(Core.theme.getEditorMouseoverLineColor(), 0.6375f);
+//                     renderer.fillRect(X+blockSize/2-border/2, Y+blockSize/2-border/2, X+blockSize/2+border/2, Y+blockSize/2+border/2);
+//                 }
+//             }
+//         }
+//
     }
     public BlockPos gridToBlockCoords(int sx, int sy){
         return rawToBlockCoords(sx+x1, sy+y1); // convert (0,0) grid-space to (x1,y1)
@@ -326,17 +332,20 @@ public class MenuComponentEditorGrid extends Component{
     }
     @Override
     public void onCursorMoved(double x, double y){
-        super.onCursorMoved(x, y);
-        synchronized(synchronizer){
-            mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
-        }
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
-        if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
-        if(Double.isNaN(x)||Double.isNaN(y)){
-            return;
-        }
-        editor.getSelectedTool(0).mouseMoved(this, editorSpace, mouseToBlockCoords(x, y));
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.onCursorMoved(x, y);
+//         synchronized(synchronizer){
+//             mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
+//         }
+//         if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
+//         if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
+//         if(glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
+//         if(Double.isNaN(x)||Double.isNaN(y)){
+//             return;
+//         }
+//         editor.getSelectedTool(0).mouseMoved(this, editorSpace, mouseToBlockCoords(x, y));
+//
     }
     @Override
     public void onCursorExited(){

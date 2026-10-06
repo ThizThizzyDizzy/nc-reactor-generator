@@ -58,19 +58,22 @@ public class MenuImageExportPreview extends Menu{
     }
     @Override
     public void render2d(double deltaTime){
-        super.render2d(deltaTime);
-        float xScale = (gui.getWidth()-sidebarWidth)/(float)image.getWidth();
-        float yScale = gui.getHeight()/(float)image.getHeight();
-        float scale = Math.min(xScale,yScale);
-        Renderer renderer = new Renderer();
-        renderer.setWhite();
-        if(xScale>yScale){
-            float wid = image.getWidth()*scale;
-            renderer.drawImage(image, sidebarWidth+(gui.getWidth()-sidebarWidth)/2-wid/2, 0, sidebarWidth+(gui.getWidth()-sidebarWidth)/2+wid/2, gui.getHeight());
-        }else{
-            float hig = image.getHeight()*scale;
-            renderer.drawImage(image, sidebarWidth+0, gui.getHeight()/2-hig/2, sidebarWidth+(gui.getWidth()-sidebarWidth), gui.getHeight()/2+hig/2);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.render2d(deltaTime);
+//         float xScale = (gui.getWidth()-sidebarWidth)/(float)image.getWidth();
+//         float yScale = gui.getHeight()/(float)image.getHeight();
+//         float scale = Math.min(xScale,yScale);
+//         Renderer renderer = new Renderer();
+//         renderer.setWhite();
+//         if(xScale>yScale){
+//             float wid = image.getWidth()*scale;
+//             renderer.drawImage(image, sidebarWidth+(gui.getWidth()-sidebarWidth)/2-wid/2, 0, sidebarWidth+(gui.getWidth()-sidebarWidth)/2+wid/2, gui.getHeight());
+//         }else{
+//             float hig = image.getHeight()*scale;
+//             renderer.drawImage(image, sidebarWidth+0, gui.getHeight()/2-hig/2, sidebarWidth+(gui.getWidth()-sidebarWidth), gui.getHeight()/2+hig/2);
+//         }
+//
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){

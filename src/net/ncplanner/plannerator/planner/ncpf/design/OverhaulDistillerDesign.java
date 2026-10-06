@@ -40,9 +40,12 @@ public class OverhaulDistillerDesign extends MultiblockDesign<NCPFOverhaulDistil
         super.convertToObject(ncpf);
     }
     public BlockElement matchElement(BlockElement block){
-        OverhaulDistillerConfiguration config = file.getConfiguration(OverhaulDistillerConfiguration::new);
-        if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulDistillerConfiguration::new));
-        return block;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         OverhaulDistillerConfiguration config = file.getConfiguration(OverhaulDistillerConfiguration::new);
+//         if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulDistillerConfiguration::new));
+//         return block;
+//
     }
     public boolean matchModule(BlockElement block, Supplier<NCPFModule> module){
         return matchElement(block).hasModule(module);

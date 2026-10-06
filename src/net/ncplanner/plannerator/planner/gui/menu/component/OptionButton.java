@@ -64,30 +64,33 @@ public class OptionButton extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        super.draw(deltaTime);
-        Renderer renderer = new Renderer();
-        Color col;
-        if(darker){
-             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isLeftPressed||isRightPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
-                else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
-            }
-        }else{
-            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isLeftPressed||isRightPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-                else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-            }
-        }
-        renderer.setColor(col);
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(renderer);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.draw(deltaTime);
+//         Renderer renderer = new Renderer();
+//         Color col;
+//         if(darker){
+//              col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isLeftPressed||isRightPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//         }else{
+//             col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isLeftPressed||isRightPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//         }
+//         renderer.setColor(col);
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         drawText(renderer);
+//
     }
     public void cycle(int diff){
         currentIndex+=diff;

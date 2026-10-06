@@ -49,12 +49,15 @@ public class MenuDsslEditor extends Menu{
     public SingleColumnList variablesDisplay = add(new SingleColumnList(0, 48, 384, 0, 32));
     public HorizontalList tabsList = add(new HorizontalList(0, 48, 0, 32, 0));
     public ArrayList<EditorTab> tabs = new ArrayList<>();
-    public TextView output = add(new TextView(0, 0, 0, 192, 20, 20){
-        {
-            font = Core.FONT_MONO_20;
-            bottomWhitespaceLines++;
-        }
-    });
+    public TextView output = ((java.util.function.Supplier<TextView>) () -> {
+        throw new UnsupportedOperationException("Pending refactor");
+// add(new TextView(0, 0, 0, 192, 20, 20){
+//         {
+//             font = Core.FONT_MONO_20;
+//             bottomWhitespaceLines++;
+//         }
+//     })
+    }).get();
     public boolean showOutput = false;
     public TextBox input = add(new TextBox(0, 0, 0, 32, "", true));
     public ScrollableDsslEditor editor;
@@ -269,11 +272,14 @@ public class MenuDsslEditor extends Menu{
     }
     @Override
     public void onOpened() {
-        super.onOpened();
-        MenuMain.enables = true;
-        focusedComponent = editor;
-        editor.isFocused = true;
-        Core.setWindowTitle("DSSL Editor");
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.onOpened();
+//         MenuMain.enables = true;
+//         focusedComponent = editor;
+//         editor.isFocused = true;
+//         Core.setWindowTitle("DSSL Editor");
+//
     }
     @Override
     public void onClosed() {
@@ -342,25 +348,28 @@ public class MenuDsslEditor extends Menu{
         }
     }
     private void close(EditorTab tab) {
-        if(tab.unsavedChanges){
-            new MenuMessageDialog(gui, this, "Unsaved changes detected!\nSave changes?").addButton("save", () -> {
-                save(false, () -> {
-                    close(tab);
-                });
-            }, true).addButton("Discard", () -> {
-                tab.unsavedChanges = false;
-                close(tab);
-            }, true).addButton("Cancel", true).open();
-            return;
-        }
-        int idx = tabs.indexOf(tab);
-        tabs.remove(tab);
-        tabsList.components.remove(idx);
-        currentTab = tabs.isEmpty()?null:tabs.get(idx = Math.min(idx, tabs.size()-1));
-        if(editor.editor==tab.editor){
-            editor.setEditor(currentTab==null?null:currentTab.editor);
-            tabsList.setSelectedIndex(idx);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(tab.unsavedChanges){
+//             new MenuMessageDialog(gui, this, "Unsaved changes detected!\nSave changes?").addButton("save", () -> {
+//                 save(false, () -> {
+//                     close(tab);
+//                 });
+//             }, true).addButton("Discard", () -> {
+//                 tab.unsavedChanges = false;
+//                 close(tab);
+//             }, true).addButton("Cancel", true).open();
+//             return;
+//         }
+//         int idx = tabs.indexOf(tab);
+//         tabs.remove(tab);
+//         tabsList.components.remove(idx);
+//         currentTab = tabs.isEmpty()?null:tabs.get(idx = Math.min(idx, tabs.size()-1));
+//         if(editor.editor==tab.editor){
+//             editor.setEditor(currentTab==null?null:currentTab.editor);
+//             tabsList.setSelectedIndex(idx);
+//         }
+//
     }
     private void loadFile(File file){
         if(file.isDirectory())return;

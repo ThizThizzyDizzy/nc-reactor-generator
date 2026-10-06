@@ -183,13 +183,16 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     }
     @Override
     public OverhaulDistillerDesign convertToDesign(){
-        OverhaulDistillerDesign design = new OverhaulDistillerDesign(Core.project, x, y, z);
-        forEachPosition((pos) -> {
-            Block block = getBlock(pos);
-            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
-        });
-        design.recipe = recipe;
-        return design;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         OverhaulDistillerDesign design = new OverhaulDistillerDesign(Core.project, x, y, z);
+//         forEachPosition((pos) -> {
+//             Block block = getBlock(pos);
+//             design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+//         });
+//         design.recipe = recipe;
+//         return design;
+//
     }
     @Override
     public NCPFElement[] getMultiblockRecipes(){

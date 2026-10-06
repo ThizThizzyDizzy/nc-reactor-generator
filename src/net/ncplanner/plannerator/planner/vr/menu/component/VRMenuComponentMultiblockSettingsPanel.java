@@ -16,9 +16,12 @@ public class VRMenuComponentMultiblockSettingsPanel extends VRMenuComponent{
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        if(refreshNeeded)refresh();
-        renderer.setColor(Core.theme.getVRPanelOutlineColor());
-        renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(refreshNeeded)refresh();
+//         renderer.setColor(Core.theme.getVRPanelOutlineColor());
+//         renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
+//
     }
     public synchronized void refresh(){
         components.clear();

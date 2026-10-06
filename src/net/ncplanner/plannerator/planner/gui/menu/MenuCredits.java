@@ -51,335 +51,338 @@ public class MenuCredits extends Menu{
         patrons.add("ZathrusWriter");
     }
     public MenuCredits(){
-        text("NuclearCraft Plannerator", 1.5);
-        text();
-        text("Made by ThizThizzyDizzy");
-        divider();
-        text("Configurations (Modpacks)", 1.25);
-        text("Click on any configuration to navigate to its CurseForge page");
-        // Generate credits section based on selected configurations
-        for(Configuration configuration : Configuration.internalConfigurations){
-            text();
-            text(configuration.getName(), 1.25, Configuration.internalConfigurationLinks.get(configuration));
-            text("made by "+Configuration.internalConfigurationAuthors.get(configuration));
-        }
-        divider();
-        text("Addons, Mods, & Modpacks", 1.25);
-        text("Click on any addon to navigate to its CurseForge page");
-        // Generate credits section based on selected addons
-        for(Addon addon : Configuration.internalAddons){
-            text();
-            text(addon.getName(), 1.25, Configuration.internalAddonLinks.get(addon));
-            text("made by "+Configuration.internalAddonAuthors.get(addon));
-        }
-        divider();
-        text("Hut images", 1.25);
-        gap();
-        addSecondary(new Component(1/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/standard/outside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(2/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/night/outside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(3/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/winter/outside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(4/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/tropical/outside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(5/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/wasteland/outside.png", x, y, x+width, y+height);
-            }
-        });
-        add(new Component(6/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/space/outside.png", x, y, x+width, y+height);
-            }
-        });
-        gap();
-        addSecondary(new Component(1/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/standard/inside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(2/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/night/inside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(3/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/winter/inside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(4/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/tropical/inside.png", x, y, x+width, y+height);
-            }
-        });
-        addSecondary(new Component(5/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/wasteland/inside.png", x, y, x+width, y+height);
-            }
-        });
-        add(new Component(6/7f, 0, defaultSize*4, defaultSize*4){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/space/inside.png", x, y, x+width, y+height);
-            }
-        });
-        text();
-        text("by Gliese 832 c");
-        divider();
-        text("Fusion test blanket textures", 1.25);
-        gap();
-        addSecondary(new Component(4/9f, 0, defaultSize*2, defaultSize*2){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/overhaul/fusion/heating_blanket.png", x, y, x+width, y+height);
-            }
-        });
-        add(new Component(5/9f, 0, defaultSize*2, defaultSize*2){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsBrightImageColor());
-                renderer.drawImage("/textures/overhaul/fusion/breeding_blanket.png", x, y, x+width, y+height);
-            }
-        });
-        text();
-        text("by Cn-285");
-        divider();
-        text("Different theme font", 1.25);
-        gap(2);
-        text(Theme.DIFFERENT.getDefaultFont(), "Comic Mono", 1.125, "https://dtinth.github.io/comic-mono-font/");
-        text();
-        text(Theme.DIFFERENT.getDefaultFont(), "by dtinth", 1, "https://dtinth.github.io/comic-mono-font/");
-        divider();
-        text("Libraries", 1.25);
-        gap(2);
-        text("LWJGL", 1.125);
-        gap(2);
-        text("JDA (when running as discord bot)", 1.125);
-        gap(2);
-        text("reflections", 1.125);
-        gap(2);
-        text("DSSL", 1.125);
-        text("by tomdodd4598");
-        gap(2);
-        text("Legacy NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
-        text("(a fork of Simplelibrary by computerneek)");
-        divider();
-        text("Early Concept Art", 1.25);
-        text();
-        text("Main Menu");
-        add(new Component(0.5f, 0, 1078/2, 824/2){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsImageColor());
-                renderer.drawImage("/textures/credits/main_menu.png", x, y, x+width, y+height);
-            }
-        });
-        gap(3);
-        text("Modify Configuration");
-        add(new Component(0.5f, 0, 1078/2, 824/2){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsImageColor());
-                renderer.drawImage("/textures/credits/config.png", x, y, x+width, y+height);
-            }
-        });
-        gap(3);
-        text("Modify Block (Overhaul SFR)");
-        add(new Component(0.5f, 0, 1078/2, 824/2){
-            @Override
-            public void render2d(double deltaTime){
-                x-=width/2;
-                super.render2d(deltaTime);
-                x+=width/2;
-            }
-            @Override
-            public void draw(double deltaTime){
-                Renderer renderer = new Renderer();
-                renderer.setColor(Core.theme.getCreditsImageColor());
-                renderer.drawImage("/textures/credits/block_config.png", x, y, x+width, y+height);
-            }
-        });
-        gap(3);
-        divider();
-        text("Thank you to my patrons:", 1.25, "patreon.com/thizthizzydizzy");
-        if(patrons.get(0).isEmpty()){
-            text();
-            text("Unable to download patrons list! This list may be outdated.");
-        }
-        for(String s : patrons){
-            if(s.isEmpty())continue;
-            text();
-            text(s, 1.25);
-        }
-        divider();
-        text("Thank you to tomdodd4598 for creating such an amazing mod", 1.25, "https://www.curseforge.com/minecraft/mc-mods/nuclearcraft-overhauled");
-        divider();
-        text("Thank you to everyone in the eVault for helping make this planner into what it is", 1.25);
-        divider();
-        text();
-        possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/glowshroom"), false));
-        possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/smore"), false));
-        possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/moresmore"), false));
-        possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/foursmore"), false));
-        for(NCPFConfiguration c : Core.project.conglomeration.configurations.values()){
-            for(List<NCPFElement> elems : c.getElements()){
-                for(NCPFElement elem : elems){
-                    elem.withModule(TextureModule::new, (tex)->{
-                        possibleBackgroundElements.add(new BackgroundElement(tex.texture, elem.definition.type.contains("block")));
-                    });
-                }
-            }
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         text("NuclearCraft Plannerator", 1.5);
+//         text();
+//         text("Made by ThizThizzyDizzy");
+//         divider();
+//         text("Configurations (Modpacks)", 1.25);
+//         text("Click on any configuration to navigate to its CurseForge page");
+//         // Generate credits section based on selected configurations
+//         for(Configuration configuration : Configuration.internalConfigurations){
+//             text();
+//             text(configuration.getName(), 1.25, Configuration.internalConfigurationLinks.get(configuration));
+//             text("made by "+Configuration.internalConfigurationAuthors.get(configuration));
+//         }
+//         divider();
+//         text("Addons, Mods, & Modpacks", 1.25);
+//         text("Click on any addon to navigate to its CurseForge page");
+//         // Generate credits section based on selected addons
+//         for(Addon addon : Configuration.internalAddons){
+//             text();
+//             text(addon.getName(), 1.25, Configuration.internalAddonLinks.get(addon));
+//             text("made by "+Configuration.internalAddonAuthors.get(addon));
+//         }
+//         divider();
+//         text("Hut images", 1.25);
+//         gap();
+//         addSecondary(new Component(1/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/standard/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(2/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/night/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(3/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/winter/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(4/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/tropical/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(5/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/wasteland/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         add(new Component(6/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/space/outside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         gap();
+//         addSecondary(new Component(1/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/standard/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(2/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/night/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(3/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/winter/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(4/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/tropical/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         addSecondary(new Component(5/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/wasteland/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         add(new Component(6/7f, 0, defaultSize*4, defaultSize*4){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/smivilization/buildings/huts/gliese/credits/space/inside.png", x, y, x+width, y+height);
+//             }
+//         });
+//         text();
+//         text("by Gliese 832 c");
+//         divider();
+//         text("Fusion test blanket textures", 1.25);
+//         gap();
+//         addSecondary(new Component(4/9f, 0, defaultSize*2, defaultSize*2){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/overhaul/fusion/heating_blanket.png", x, y, x+width, y+height);
+//             }
+//         });
+//         add(new Component(5/9f, 0, defaultSize*2, defaultSize*2){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsBrightImageColor());
+//                 renderer.drawImage("/textures/overhaul/fusion/breeding_blanket.png", x, y, x+width, y+height);
+//             }
+//         });
+//         text();
+//         text("by Cn-285");
+//         divider();
+//         text("Different theme font", 1.25);
+//         gap(2);
+//         text(Theme.DIFFERENT.getDefaultFont(), "Comic Mono", 1.125, "https://dtinth.github.io/comic-mono-font/");
+//         text();
+//         text(Theme.DIFFERENT.getDefaultFont(), "by dtinth", 1, "https://dtinth.github.io/comic-mono-font/");
+//         divider();
+//         text("Libraries", 1.25);
+//         gap(2);
+//         text("LWJGL", 1.125);
+//         gap(2);
+//         text("JDA (when running as discord bot)", 1.125);
+//         gap(2);
+//         text("reflections", 1.125);
+//         gap(2);
+//         text("DSSL", 1.125);
+//         text("by tomdodd4598");
+//         gap(2);
+//         text("Legacy NCPF (Config2) format, GUI, and some more internal functionality based on SimpleLibraryPlus");
+//         text("(a fork of Simplelibrary by computerneek)");
+//         divider();
+//         text("Early Concept Art", 1.25);
+//         text();
+//         text("Main Menu");
+//         add(new Component(0.5f, 0, 1078/2, 824/2){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsImageColor());
+//                 renderer.drawImage("/textures/credits/main_menu.png", x, y, x+width, y+height);
+//             }
+//         });
+//         gap(3);
+//         text("Modify Configuration");
+//         add(new Component(0.5f, 0, 1078/2, 824/2){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsImageColor());
+//                 renderer.drawImage("/textures/credits/config.png", x, y, x+width, y+height);
+//             }
+//         });
+//         gap(3);
+//         text("Modify Block (Overhaul SFR)");
+//         add(new Component(0.5f, 0, 1078/2, 824/2){
+//             @Override
+//             public void render2d(double deltaTime){
+//                 x-=width/2;
+//                 super.render2d(deltaTime);
+//                 x+=width/2;
+//             }
+//             @Override
+//             public void draw(double deltaTime){
+//                 Renderer renderer = new Renderer();
+//                 renderer.setColor(Core.theme.getCreditsImageColor());
+//                 renderer.drawImage("/textures/credits/block_config.png", x, y, x+width, y+height);
+//             }
+//         });
+//         gap(3);
+//         divider();
+//         text("Thank you to my patrons:", 1.25, "patreon.com/thizthizzydizzy");
+//         if(patrons.get(0).isEmpty()){
+//             text();
+//             text("Unable to download patrons list! This list may be outdated.");
+//         }
+//         for(String s : patrons){
+//             if(s.isEmpty())continue;
+//             text();
+//             text(s, 1.25);
+//         }
+//         divider();
+//         text("Thank you to tomdodd4598 for creating such an amazing mod", 1.25, "https://www.curseforge.com/minecraft/mc-mods/nuclearcraft-overhauled");
+//         divider();
+//         text("Thank you to everyone in the eVault for helping make this planner into what it is", 1.25);
+//         divider();
+//         text();
+//         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/glowshroom"), false));
+//         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/smore"), false));
+//         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/moresmore"), false));
+//         possibleBackgroundElements.add(new BackgroundElement(TextureManager.getImage("overhaul/item/foursmore"), false));
+//         for(NCPFConfiguration c : Core.project.conglomeration.configurations.values()){
+//             for(List<NCPFElement> elems : c.getElements()){
+//                 for(NCPFElement elem : elems){
+//                     elem.withModule(TextureModule::new, (tex)->{
+//                         possibleBackgroundElements.add(new BackgroundElement(tex.texture, elem.definition.type.contains("block")));
+//                     });
+//                 }
+//             }
+//         }
+//
     }
     private void divider(){
         gap(5);
@@ -391,35 +394,44 @@ public class MenuCredits extends Menu{
         text(text, 1);
     }
     private void text(String text, double size){
-        add(new Label(0, 0, 0, (float)(size*defaultSize), text).noBackground());
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         add(new Label(0, 0, 0, (float)(size*defaultSize), text).noBackground());
+//
     }
     private void text(String text, double size, String link){
-        add(new Label(0, 0, 0, (float)(size*defaultSize), text){
-            @Override
-            public void onMouseButton(double x, double y, int button, int action, int mods){
-                Renderer renderer = new Renderer();
-                double textWidth = renderer.getStringWidth(text, height);
-                if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&action==GLFW_PRESS)Core.openURL(link);
-                super.onMouseButton(x, y, button, action, mods);
-            }
-        }.noBackground());
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         add(new Label(0, 0, 0, (float)(size*defaultSize), text){
+//             @Override
+//             public void onMouseButton(double x, double y, int button, int action, int mods){
+//                 Renderer renderer = new Renderer();
+//                 double textWidth = renderer.getStringWidth(text, height);
+//                 if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&action==GLFW_PRESS)Core.openURL(link);
+//                 super.onMouseButton(x, y, button, action, mods);
+//             }
+//         }.noBackground());
+//
     }
     private void text(Font font, String text, double size, String link){
-        add(new Label(0, 0, 0, (float)(size*defaultSize), text){
-            @Override
-            public void drawText(Renderer renderer){
-                renderer.setFont(font);
-                super.drawText(renderer);
-                renderer.setFont(Core.theme.getDefaultFont());
-            }
-            @Override
-            public void onMouseButton(double x, double y, int button, int action, int mods){
-                Renderer renderer = new Renderer();
-                double textWidth = renderer.getStringWidth(text, height);
-                if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&action==GLFW_PRESS)Core.openURL(link);
-                super.onMouseButton(x, y, button, action, mods);
-            }
-        }.noBackground());
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         add(new Label(0, 0, 0, (float)(size*defaultSize), text){
+//             @Override
+//             public void drawText(Renderer renderer){
+//                 renderer.setFont(font);
+//                 super.drawText(renderer);
+//                 renderer.setFont(Core.theme.getDefaultFont());
+//             }
+//             @Override
+//             public void onMouseButton(double x, double y, int button, int action, int mods){
+//                 Renderer renderer = new Renderer();
+//                 double textWidth = renderer.getStringWidth(text, height);
+//                 if(x>width/2-textWidth/2&&x<width/2+textWidth/2&&button==0&&action==GLFW_PRESS)Core.openURL(link);
+//                 super.onMouseButton(x, y, button, action, mods);
+//             }
+//         }.noBackground());
+//
     }
     private void gap(){
         gap(1);
@@ -429,91 +441,109 @@ public class MenuCredits extends Menu{
     }
     @Override
     public <T extends Component> T add(T component){
-        if(component.width==0)component.width = 1;
-        if(component.width<=1)widths.put(component, component.width);
-        if(component.x>=gui.getWidth()-1)snapRights.add(component);
-        else xSnaps.put(component, component.x);
-        component.y = creditY;
-        creditY+=component.height;
-        offsets.put(component, component.y);
-        return super.add(component);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(component.width==0)component.width = 1;
+//         if(component.width<=1)widths.put(component, component.width);
+//         if(component.x>=gui.getWidth()-1)snapRights.add(component);
+//         else xSnaps.put(component, component.x);
+//         component.y = creditY;
+//         creditY+=component.height;
+//         offsets.put(component, component.y);
+//         return super.add(component);
+//
     }
     public <T extends Component> T addSecondary(T component){
-        if(component.width==0)component.width = 1;
-        if(component.width<=1)widths.put(component, component.width);
-        if(component.x>=gui.getWidth()-1)snapRights.add(component);
-        else xSnaps.put(component, component.x);
-        component.y = creditY;
-        offsets.put(component, component.y);
-        return super.add(component);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(component.width==0)component.width = 1;
+//         if(component.width<=1)widths.put(component, component.width);
+//         if(component.x>=gui.getWidth()-1)snapRights.add(component);
+//         else xSnaps.put(component, component.x);
+//         component.y = creditY;
+//         offsets.put(component, component.y);
+//         return super.add(component);
+//
     }
-    @Override
+    /* @Override */
     public void onKeyEvent(int key, int scancode, int action, int mods){
-        super.onKeyEvent(key, scancode, action, mods);
-        if(action==GLFW_PRESS&&key==GLFW_KEY_ESCAPE)gui.open(new MenuTransition(gui, this, new MenuMain(gui), MenuTransition.SplitTransitionY.slideIn(0.5f), 10));
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.onKeyEvent(key, scancode, action, mods);
+//         if(action==GLFW_PRESS&&key==GLFW_KEY_ESCAPE)gui.open(new MenuTransition(gui, this, new MenuMain(gui), MenuTransition.SplitTransitionY.slideIn(0.5f), 10));
+//
     }
-    @Override
+    /* @Override */
     public void render2d(double deltaTime){
-        if(lastMovement>50)pressEscToEndTimer = 40;
-        creditsSpeed = 2;
-        if(Core.isControlPressed())creditsSpeed*=5;
-        if(Core.isShiftPressed())creditsSpeed*=5;
-        lastMovement = 0;
-        pressEscToEndTimer = Math.max(0, pressEscToEndTimer-deltaTime*20);
-        yOff-=creditsSpeed*deltaTime*20;
-        if(yOff<-(creditY+gui.getHeight()))yOff = initialYOff;
-        BackgroundElement elem;
-        for(Iterator<BackgroundElement> it = backgroundElements.iterator(); it.hasNext();){
-            BackgroundElement e = it.next();
-            e.y+=creditsSpeed*deltaTime*20*backgroundElemSpeedMult/e.z;
-            if(e.y>gui.getHeight()*e.z)it.remove();
-            if(e.threeD)e.rot+=creditsSpeed*deltaTime*20*backgroundElemRotSpeedMult;
-        }
-        for(int i = 0; i<creditsSpeed; i++){
-            if(rand.nextDouble()<backgroundElemChance){
-                backgroundElements.enqueue(elem = possibleBackgroundElements.get(rand.nextInt(possibleBackgroundElements.size())).copy());
-                elem.z = (float)rand.nextDouble()*3+1;
-                elem.x = (float)(rand.nextDouble()*3-1)*elem.z*gui.getWidth();
-                elem.y = -gui.getHeight()*elem.z;
-            }
-        }
-        Renderer renderer = new Renderer();
-        for(Component c : offsets.keySet()){
-            c.y = gui.getHeight()+offsets.get(c)+yOff;
-        }
-        for(Component c : widths.keySet()){
-            c.width = gui.getWidth()*widths.get(c);
-        }
-        for(Component c : xSnaps.keySet()){
-            c.x = gui.getWidth()*xSnaps.get(c);
-        }
-        for(Component c : snapRights){
-            c.x = gui.getWidth()-c.width;
-        }
-        super.render2d(deltaTime);
-        renderer.setColor(Core.theme.getCreditsTextColor());
-        float prog = 1-Math.max(0,Math.min(1,(float)(pressEscToEndTimer)/20f));
-        renderer.drawCenteredText(0, -pressEscToExitHeight*prog, gui.getWidth(), pressEscToExitHeight-pressEscToExitHeight*prog, "Press escape to exit credits");
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(lastMovement>50)pressEscToEndTimer = 40;
+//         creditsSpeed = 2;
+//         if(Core.isControlPressed())creditsSpeed*=5;
+//         if(Core.isShiftPressed())creditsSpeed*=5;
+//         lastMovement = 0;
+//         pressEscToEndTimer = Math.max(0, pressEscToEndTimer-deltaTime*20);
+//         yOff-=creditsSpeed*deltaTime*20;
+//         if(yOff<-(creditY+gui.getHeight()))yOff = initialYOff;
+//         BackgroundElement elem;
+//         for(Iterator<BackgroundElement> it = backgroundElements.iterator(); it.hasNext();){
+//             BackgroundElement e = it.next();
+//             e.y+=creditsSpeed*deltaTime*20*backgroundElemSpeedMult/e.z;
+//             if(e.y>gui.getHeight()*e.z)it.remove();
+//             if(e.threeD)e.rot+=creditsSpeed*deltaTime*20*backgroundElemRotSpeedMult;
+//         }
+//         for(int i = 0; i<creditsSpeed; i++){
+//             if(rand.nextDouble()<backgroundElemChance){
+//                 backgroundElements.enqueue(elem = possibleBackgroundElements.get(rand.nextInt(possibleBackgroundElements.size())).copy());
+//                 elem.z = (float)rand.nextDouble()*3+1;
+//                 elem.x = (float)(rand.nextDouble()*3-1)*elem.z*gui.getWidth();
+//                 elem.y = -gui.getHeight()*elem.z;
+//             }
+//         }
+//         Renderer renderer = new Renderer();
+//         for(Component c : offsets.keySet()){
+//             c.y = gui.getHeight()+offsets.get(c)+yOff;
+//         }
+//         for(Component c : widths.keySet()){
+//             c.width = gui.getWidth()*widths.get(c);
+//         }
+//         for(Component c : xSnaps.keySet()){
+//             c.x = gui.getWidth()*xSnaps.get(c);
+//         }
+//         for(Component c : snapRights){
+//             c.x = gui.getWidth()-c.width;
+//         }
+//         super.render2d(deltaTime);
+//         renderer.setColor(Core.theme.getCreditsTextColor());
+//         float prog = 1-Math.max(0,Math.min(1,(float)(pressEscToEndTimer)/20f));
+//         renderer.drawCenteredText(0, -pressEscToExitHeight*prog, gui.getWidth(), pressEscToExitHeight-pressEscToExitHeight*prog, "Press escape to exit credits");
+//
     }
-    @Override
+    /* @Override */
     public void onCursorMoved(double x, double y){
-        if(lastX!=-1&&lastY!=-1){
-            lastMovement = Math.sqrt((x-lastX)*(x-lastX)+(y-lastY)*(y-lastY));
-        }
-        lastX = x;
-        lastY = y;
-        super.onCursorMoved(x, y);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(lastX!=-1&&lastY!=-1){
+//             lastMovement = Math.sqrt((x-lastX)*(x-lastX)+(y-lastY)*(y-lastY));
+//         }
+//         lastX = x;
+//         lastY = y;
+//         super.onCursorMoved(x, y);
+//
     }
-    @Override
+    /* @Override */
     public void render3d(double deltaTime){
-        Renderer renderer = new Renderer();
-        renderer.setColor(Core.theme.getCreditsImageColor());
-        for(BackgroundElement element : backgroundElements){
-            renderer.pushModel(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/4), -element.z)
-                    .rotate((float)((element.rot+(element.threeD?((creditsSpeed*backgroundElemRotSpeedMult)*(float)deltaTime*20):0))*Math.PI/180), 0, 1, 0));
-            element.render(deltaTime);
-            renderer.popModel();
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         renderer.setColor(Core.theme.getCreditsImageColor());
+//         for(BackgroundElement element : backgroundElements){
+//             renderer.pushModel(new Matrix4f().translate(element.x/(gui.getHeight()/2), (float)(element.y+((creditsSpeed*backgroundElemSpeedMult/element.z)*deltaTime*20))/(gui.getHeight()/4), -element.z)
+//                     .rotate((float)((element.rot+(element.threeD?((creditsSpeed*backgroundElemRotSpeedMult)*(float)deltaTime*20):0))*Math.PI/180), 0, 1, 0));
+//             element.render(deltaTime);
+//             renderer.popModel();
+//         }
+//
     }
     private static class BackgroundElement{
         private final Image texture;
@@ -527,16 +557,19 @@ public class MenuCredits extends Menu{
             return new BackgroundElement(texture, threeD);
         }
         private void render(double deltaTime){
-            Renderer renderer = new Renderer();
-            if(threeD)renderer.drawCube(-backgroundElementScale/2, -backgroundElementScale/2, -backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, texture);
-            else{
-                float x1 = -backgroundElementScale/2;
-                float y1 = -backgroundElementScale/2;
-                float x2 = backgroundElementScale/2;
-                float y2 = backgroundElementScale/2;
-                renderer.bindTexture(texture);
-                renderer.drawScreenQuad(x1, y1, x1, y2, x2, y1, x2, y2, 1, 0, 0, 0, 1, 1, 0, 1, 1);
-            }
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             Renderer renderer = new Renderer();
+//             if(threeD)renderer.drawCube(-backgroundElementScale/2, -backgroundElementScale/2, -backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, backgroundElementScale/2, texture);
+//             else{
+//                 float x1 = -backgroundElementScale/2;
+//                 float y1 = -backgroundElementScale/2;
+//                 float x2 = backgroundElementScale/2;
+//                 float y2 = backgroundElementScale/2;
+//                 renderer.bindTexture(texture);
+//                 renderer.drawScreenQuad(x1, y1, x1, y2, x2, y1, x2, y2, 1, 0, 0, 0, 1, 1, 0, 1, 1);
+//             }
+//
         }
     }
 }

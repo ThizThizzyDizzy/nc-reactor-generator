@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
 public class Scrollable extends Component{
@@ -59,73 +59,79 @@ public class Scrollable extends Component{
     }
     @Override
     public void render2d(double deltaTime){
-        if(vertZooming){
-            if(myY<vertCenter-vertHeight/2&&myY>vertScrollbarWidth) zoomUp(deltaTime);
-            if(myY>vertCenter+vertHeight/2&&myY<height-vertScrollbarWidth-(horizScrollbarPresent?horizScrollbarHeight:0)) zoomDown(deltaTime);
-        }
-        if(horizZooming){
-            if(myX<horizCenter-horizWidth/2&&myX>horizScrollbarHeight) zoomLeft(deltaTime);
-            if(myX>horizCenter+horizWidth/2&&myX<width-horizScrollbarHeight-(vertScrollbarPresent?vertScrollbarWidth:0)) zoomRight(deltaTime);
-        }
-        Renderer renderer = new Renderer();
-        renderer.bound(x, y, x+width, y+height);
-        drawBackground(deltaTime);
-        draw(deltaTime);
-        renderer.setWhite();
-        float vertWidth = vertScrollbarPresent?vertScrollbarWidth:0;
-        float horizHeight = horizScrollbarPresent?horizScrollbarHeight:0;
-        renderer.bound(x, y, x+width-vertWidth, y+height-horizHeight);
-        renderer.translate(x-scrollX, y-scrollY);
-        for(Component c : components){
-            if(optimizeForLargeComponentCount){
-                if(c.x+c.width<scrollX)continue;
-                if(c.y+c.height<scrollY)continue;
-                if(c.x>scrollX+width)continue;
-                if(c.y>scrollY+height)continue;
-            }
-            c.render2d(deltaTime);
-        }
-        renderer.unTranslate();
-        renderer.unBound();
-        drawForeground(deltaTime);
-        renderer.unBound();
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(vertZooming){
+//             if(myY<vertCenter-vertHeight/2&&myY>vertScrollbarWidth) zoomUp(deltaTime);
+//             if(myY>vertCenter+vertHeight/2&&myY<height-vertScrollbarWidth-(horizScrollbarPresent?horizScrollbarHeight:0)) zoomDown(deltaTime);
+//         }
+//         if(horizZooming){
+//             if(myX<horizCenter-horizWidth/2&&myX>horizScrollbarHeight) zoomLeft(deltaTime);
+//             if(myX>horizCenter+horizWidth/2&&myX<width-horizScrollbarHeight-(vertScrollbarPresent?vertScrollbarWidth:0)) zoomRight(deltaTime);
+//         }
+//         Renderer renderer = new Renderer();
+//         renderer.bound(x, y, x+width, y+height);
+//         drawBackground(deltaTime);
+//         draw(deltaTime);
+//         renderer.setWhite();
+//         float vertWidth = vertScrollbarPresent?vertScrollbarWidth:0;
+//         float horizHeight = horizScrollbarPresent?horizScrollbarHeight:0;
+//         renderer.bound(x, y, x+width-vertWidth, y+height-horizHeight);
+//         renderer.translate(x-scrollX, y-scrollY);
+//         for(Component c : components){
+//             if(optimizeForLargeComponentCount){
+//                 if(c.x+c.width<scrollX)continue;
+//                 if(c.y+c.height<scrollY)continue;
+//                 if(c.x>scrollX+width)continue;
+//                 if(c.y>scrollY+height)continue;
+//             }
+//             c.render2d(deltaTime);
+//         }
+//         renderer.unTranslate();
+//         renderer.unBound();
+//         drawForeground(deltaTime);
+//         renderer.unBound();
+//
     }
     @Override
     public void onMouseButton(double x, double y, int button, int action, int mods){
-        if(button==0&&action==GLFW_RELEASE){
-            vertPressed = vertZooming = horizPressed = horizZooming = false;
-        }else if(button==0&&action==GLFW_PRESS){
-            double vertWidth = vertScrollbarPresent?vertScrollbarWidth:0;
-            double horizHeight = horizScrollbarPresent?horizScrollbarHeight:0;
-            if(horizScrollbarPresent&&y>=height-horizScrollbarHeight){
-                if(MathUtil.isPointWithinRect(x, y, 0, height-horizHeight, horizHeight, height)) scrollLeft();
-                else if(MathUtil.isPointWithinRect(x, y, width-vertWidth-horizHeight, height-horizHeight, width-vertWidth, height)) scrollRight();
-                else if(x<horizCenter-horizWidth/2) horizZooming = true;
-                else if(x>horizCenter+horizWidth/2) horizZooming = true;
-                else{
-                    horizClickOff = horizCenter-(float)x-horizScrollbarHeight+vertScrollbarWidth;
-                    horizPressed = true;
-                }
-            }else if(vertScrollbarPresent&&x>=width-vertScrollbarWidth){
-                if(MathUtil.isPointWithinRect(x, y, width-vertWidth, 0, width, vertWidth)) scrollUp();
-                else if(MathUtil.isPointWithinRect(x, y, width-vertWidth, height-vertWidth-horizHeight, width, height-horizHeight)) scrollDown();
-                else if(y<vertCenter-vertHeight/2) vertZooming = true;
-                else if(y>vertCenter+vertHeight/2) vertZooming = true;
-                else{
-                    vertClickOff = vertCenter-(float)y-vertScrollbarWidth+horizScrollbarHeight;
-                    vertPressed = true;
-                }
-            }
-        }
-        myX = (float)x;
-        myY = (float)y;
-        if(x>width-(vertScrollbarPresent?vertScrollbarWidth:0)||y>height-(horizScrollbarPresent?horizScrollbarHeight:0)){//Click events on the scrollbar
-            x=y=Double.NaN;
-        }else{
-            x+=scrollX;
-            y+=scrollY;
-        }
-        super.onMouseButton(x, y, button, action, mods);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(button==0&&action==GLFW_RELEASE){
+//             vertPressed = vertZooming = horizPressed = horizZooming = false;
+//         }else if(button==0&&action==GLFW_PRESS){
+//             double vertWidth = vertScrollbarPresent?vertScrollbarWidth:0;
+//             double horizHeight = horizScrollbarPresent?horizScrollbarHeight:0;
+//             if(horizScrollbarPresent&&y>=height-horizScrollbarHeight){
+//                 if(MathUtil.isPointWithinRect(x, y, 0, height-horizHeight, horizHeight, height)) scrollLeft();
+//                 else if(MathUtil.isPointWithinRect(x, y, width-vertWidth-horizHeight, height-horizHeight, width-vertWidth, height)) scrollRight();
+//                 else if(x<horizCenter-horizWidth/2) horizZooming = true;
+//                 else if(x>horizCenter+horizWidth/2) horizZooming = true;
+//                 else{
+//                     horizClickOff = horizCenter-(float)x-horizScrollbarHeight+vertScrollbarWidth;
+//                     horizPressed = true;
+//                 }
+//             }else if(vertScrollbarPresent&&x>=width-vertScrollbarWidth){
+//                 if(MathUtil.isPointWithinRect(x, y, width-vertWidth, 0, width, vertWidth)) scrollUp();
+//                 else if(MathUtil.isPointWithinRect(x, y, width-vertWidth, height-vertWidth-horizHeight, width, height-horizHeight)) scrollDown();
+//                 else if(y<vertCenter-vertHeight/2) vertZooming = true;
+//                 else if(y>vertCenter+vertHeight/2) vertZooming = true;
+//                 else{
+//                     vertClickOff = vertCenter-(float)y-vertScrollbarWidth+horizScrollbarHeight;
+//                     vertPressed = true;
+//                 }
+//             }
+//         }
+//         myX = (float)x;
+//         myY = (float)y;
+//         if(x>width-(vertScrollbarPresent?vertScrollbarWidth:0)||y>height-(horizScrollbarPresent?horizScrollbarHeight:0)){//Click events on the scrollbar
+//             x=y=Double.NaN;
+//         }else{
+//             x+=scrollX;
+//             y+=scrollY;
+//         }
+//         super.onMouseButton(x, y, button, action, mods);
+//
     }
     @Override
     public void onCursorMoved(double xpos, double ypos){
@@ -214,24 +220,36 @@ public class Scrollable extends Component{
         }
     }
     public void drawUpwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
-        drawButton(renderer, x, y, width, height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.fillTri(x+width/2, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+3*height/4);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         drawButton(renderer, x, y, width, height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.fillTri(x+width/2, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+3*height/4);
+//
     }
     public void drawDownwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
-        drawButton(renderer, x, y, width, height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.fillTri(x+width/4, y+height/4, x+3*width/4, y+height/4, x+width/2, y+3*height/4);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         drawButton(renderer, x, y, width, height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.fillTri(x+width/4, y+height/4, x+3*width/4, y+height/4, x+width/2, y+3*height/4);
+//
     }
     public void drawRightwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
-        drawButton(renderer, x, y, width, height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.fillTri(x+width/4, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+height/2);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         drawButton(renderer, x, y, width, height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.fillTri(x+width/4, y+height/4, x+width/4, y+3*height/4, x+3*width/4, y+height/2);
+//
     }
     public void drawLeftwardScrollbarButton(Renderer renderer, float x, float y, float width, float height){
-        drawButton(renderer, x, y, width, height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.fillTri(x+width/4, y+height/2, x+3*width/4, y+height/4, x+3*width/4, y+3*height/4);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         drawButton(renderer, x, y, width, height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.fillTri(x+width/4, y+height/2, x+3*width/4, y+height/4, x+3*width/4, y+3*height/4);
+//
     }
     public void drawVerticalScrollbarBackground(Renderer renderer, float x, float y, float width, float height){
         renderer.setColor(Core.theme.getScrollbarBackgroundColor());
@@ -250,10 +268,13 @@ public class Scrollable extends Component{
         renderer.fillRect(x, y, x+width, y+height);
     }
     public void drawButton(Renderer renderer, float x, float y, float width, float height){
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getScrollbarButtonColor());
-        renderer.fillRect(x+1, y+1, x+width-1, y+height-1);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setColor(Core.theme.getScrollbarButtonColor());
+//         renderer.fillRect(x+1, y+1, x+width-1, y+height-1);
+//
     }
     public void scrollUp(){
         scrollY = Math.max(0, scrollY-scrollMagnitude);

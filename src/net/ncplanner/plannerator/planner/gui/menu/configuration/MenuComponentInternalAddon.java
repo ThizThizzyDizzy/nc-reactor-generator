@@ -24,15 +24,21 @@ public class MenuComponentInternalAddon extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
-        else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-        renderer.fillRect(x, y, x+width, y+height);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+//         else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+//         renderer.fillRect(x, y, x+width, y+height);
+//
     }
     @Override
     public void drawForeground(double deltaTime){
-        Renderer renderer = new Renderer();
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
+//
     }
 }

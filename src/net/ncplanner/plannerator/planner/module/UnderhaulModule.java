@@ -32,29 +32,38 @@ public class UnderhaulModule extends Module<Object>{
     }
     @Override
     public void addConfigurations(Task task){
-        task.addSubtask("PO3");
-        task.addSubtask("E2E");
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/project_ozone_3.ncpf.json"))).addAlternative("PO3"), "https://www.curseforge.com/minecraft/modpacks/project-ozone-3-a-new-way-forward", "TheCazadorSniper");
-        task.getCurrentSubtask().finish();
-        addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/enigmatica_2_expert.ncpf.json"))).addAlternative("E2E"), "https://www.curseforge.com/minecraft/modpacks/enigmatica2expert", "NillerMedDild");
-        task.getCurrentSubtask().finish();
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         task.addSubtask("PO3");
+//         task.addSubtask("E2E");
+//         addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/project_ozone_3.ncpf.json"))).addAlternative("PO3"), "https://www.curseforge.com/minecraft/modpacks/project-ozone-3-a-new-way-forward", "TheCazadorSniper");
+//         task.getCurrentSubtask().finish();
+//         addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/enigmatica_2_expert.ncpf.json"))).addAlternative("E2E"), "https://www.curseforge.com/minecraft/modpacks/enigmatica2expert", "NillerMedDild");
+//         task.getCurrentSubtask().finish();
+//
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
-        @Override
+        /* @Override */
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block, Multiblock<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> multiblock){
-            if(block.isActive()&&block.isModerator()){
-                block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
-            }
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             if(block.isActive()&&block.isModerator()){
+//                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
+//             }
+//
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeCoolerRecipeOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Cooler Recipes", "Shows the chosen recipe on active coolers", true){
-        @Override
+        /* @Override */
         public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block, Multiblock<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> multiblock){
-            net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
-            if(b.recipe!=null&&b.template.getBlockRecipes().size()>1){
-                renderer.setWhite(.75f);
-                renderer.drawImage(b.recipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
-            }
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
+//             if(b.recipe!=null&&b.template.getBlockRecipes().size()>1){
+//                 renderer.setWhite(.75f);
+//                 renderer.drawImage(b.recipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
+//             }
+//
         }
     };
     @Override

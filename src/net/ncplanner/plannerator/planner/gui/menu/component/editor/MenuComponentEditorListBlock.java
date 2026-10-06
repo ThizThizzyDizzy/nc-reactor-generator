@@ -18,36 +18,39 @@ public class MenuComponentEditorListBlock extends Component implements Pinnable{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        Color col = isMouseFocused?Core.theme.getEditorListBackgroundMouseoverColor(Core.getThemeIndex(this)):Core.theme.getEditorListBackgroundColor(Core.getThemeIndex(this));
-        renderer.setColor(col);
-        renderer.fillRect(x, y, x+width, y+height);
-        block.render(new Renderer(), x, y, width, height, null, null);
-        float border = height/8;
-        if(isFocused){
-            renderer.setColor(Core.theme.getEditorListLightSelectedColor(Core.getThemeIndex(this)), .85f);
-            renderer.fillRect(x, y, x+border, y+border);
-            renderer.fillRect(x+width-border, y, x+width, y+border);
-            renderer.fillRect(x, y+height-border, x+border, y+height);
-            renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
-            renderer.setColor(Core.theme.getEditorListDarkSelectedColor(Core.getThemeIndex(this)), .85f);
-            renderer.fillRect(x+border, y, x+width-border, y+border);
-            renderer.fillRect(x+border, y+height-border, x+width-border, y+height);
-            renderer.fillRect(x, y+border, x+border, y+height-border);
-            renderer.fillRect(x+width-border, y+border, x+width, y+height-border);
-        }
-        if(isMouseFocused){
-            renderer.setColor(Core.theme.getEditorListLightMouseoverColor(Core.getThemeIndex(this)), .6375f);
-            renderer.fillRect(x, y, x+border, y+border);
-            renderer.fillRect(x+width-border, y, x+width, y+border);
-            renderer.fillRect(x, y+height-border, x+border, y+height);
-            renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
-            renderer.setColor(Core.theme.getEditorListDarkMouseoverColor(Core.getThemeIndex(this)), .6375f);
-            renderer.fillRect(x+border, y, x+width-border, y+border);
-            renderer.fillRect(x+border, y+height-border, x+width-border, y+height);
-            renderer.fillRect(x, y+border, x+border, y+height-border);
-            renderer.fillRect(x+width-border, y+border, x+width, y+height-border);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         Color col = isMouseFocused?Core.theme.getEditorListBackgroundMouseoverColor(Core.getThemeIndex(this)):Core.theme.getEditorListBackgroundColor(Core.getThemeIndex(this));
+//         renderer.setColor(col);
+//         renderer.fillRect(x, y, x+width, y+height);
+//         block.render(new Renderer(), x, y, width, height, null, null);
+//         float border = height/8;
+//         if(isFocused){
+//             renderer.setColor(Core.theme.getEditorListLightSelectedColor(Core.getThemeIndex(this)), .85f);
+//             renderer.fillRect(x, y, x+border, y+border);
+//             renderer.fillRect(x+width-border, y, x+width, y+border);
+//             renderer.fillRect(x, y+height-border, x+border, y+height);
+//             renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
+//             renderer.setColor(Core.theme.getEditorListDarkSelectedColor(Core.getThemeIndex(this)), .85f);
+//             renderer.fillRect(x+border, y, x+width-border, y+border);
+//             renderer.fillRect(x+border, y+height-border, x+width-border, y+height);
+//             renderer.fillRect(x, y+border, x+border, y+height-border);
+//             renderer.fillRect(x+width-border, y+border, x+width, y+height-border);
+//         }
+//         if(isMouseFocused){
+//             renderer.setColor(Core.theme.getEditorListLightMouseoverColor(Core.getThemeIndex(this)), .6375f);
+//             renderer.fillRect(x, y, x+border, y+border);
+//             renderer.fillRect(x+width-border, y, x+width, y+border);
+//             renderer.fillRect(x, y+height-border, x+border, y+height);
+//             renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
+//             renderer.setColor(Core.theme.getEditorListDarkMouseoverColor(Core.getThemeIndex(this)), .6375f);
+//             renderer.fillRect(x+border, y, x+width-border, y+border);
+//             renderer.fillRect(x+border, y+height-border, x+width-border, y+height);
+//             renderer.fillRect(x, y+border, x+border, y+height-border);
+//             renderer.fillRect(x+width-border, y+border, x+width, y+height-border);
+//         }
+//
     }
     @Override
     public String getTooltip(){

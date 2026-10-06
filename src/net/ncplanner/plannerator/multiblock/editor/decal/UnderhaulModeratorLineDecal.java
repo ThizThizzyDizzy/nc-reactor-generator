@@ -10,24 +10,30 @@ public class UnderhaulModeratorLineDecal extends Decal{
         super(pos);
         this.axis = axis;
     }
-    @Override
+    /* @Override */
     public void render(Renderer renderer, float x, float y, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorUnderhaulModeratorLine());
-        switch(axis){
-            case X:
-                renderer.fillRect(x, y+blockSize*.375f, x+blockSize, y+blockSize*.625f);
-                break;
-            case Y:
-                renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
-                break;
-            case Z:
-                renderer.fillRect(x+blockSize*.375f, y, x+blockSize*.625f, y+blockSize);
-                break;
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorUnderhaulModeratorLine());
+//         switch(axis){
+//             case X:
+//                 renderer.fillRect(x, y+blockSize*.375f, x+blockSize, y+blockSize*.625f);
+//                 break;
+//             case Y:
+//                 renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
+//                 break;
+//             case Z:
+//                 renderer.fillRect(x+blockSize*.375f, y, x+blockSize*.625f, y+blockSize);
+//                 break;
+//         }
+//
     }
-    @Override
+    /* @Override */
     public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        //TODO VR DECAL: adjacent moderator
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         //TODO VR DECAL: adjacent moderator
+//
     }
     @Override
     public String getTooltip(){

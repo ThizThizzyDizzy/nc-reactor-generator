@@ -7,15 +7,21 @@ public class MissingCasingDecal extends Decal{
     public MissingCasingDecal(BlockPos pos){
         super(pos);
     }
-    @Override
+    /* @Override */
     public void render(Renderer renderer, float x, float y, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorMissingCasing());
-        renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorMissingCasing());
+//         renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
+//
     }
-    @Override
+    /* @Override */
     public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        renderer.setColor(Core.theme.getDecalColorMissingCasing());
-        renderer.drawCube(x+blockSize*.375f, y+blockSize*.375f, z+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f, z+blockSize*.625f, null);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(Core.theme.getDecalColorMissingCasing());
+//         renderer.drawCube(x+blockSize*.375f, y+blockSize*.375f, z+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f, z+blockSize*.625f, null);
+//
     }
     @Override
     public String getTooltip(){

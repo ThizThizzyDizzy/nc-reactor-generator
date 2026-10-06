@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
 public class TextBox extends Component{
@@ -65,27 +65,30 @@ public class TextBox extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        float textInset = this.textInset*height;
-        renderer.setColor(Core.theme.getTextBoxBorderColor());
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getTextBoxColor());
-        renderer.fillRect(x+textInset/2, y+textInset/2, x+width-textInset/2, y+height-textInset/2);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        if(editable){
-            if(title!=null){
-                renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, text+((oscillator&&isFocused)?"_":"")+suffix);
-                renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)), 0.75f);
-                renderer.drawText(x+textInset, Math.max(y, MathUtil.getValueBetweenTwoValues(1, y+textInset, 0, y+height-textInset-titleInset, titleness)), x+width-textInset, MathUtil.getValueBetweenTwoValues(1, y+height-textInset-titleInset, 0, y+height-textInset, titleness), title);
-//                if(text.isEmpty())drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, title);
-//                else              drawText(x+textInset, y+height-textInset-titleInset, x+width-textInset, y+height-textInset, title);
-                renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-            }else{
-                renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text+((oscillator&&isFocused)?"_":"")+suffix);
-            }
-        }else{
-            renderer.drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text+suffix);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         float textInset = this.textInset*height;
+//         renderer.setColor(Core.theme.getTextBoxBorderColor());
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setColor(Core.theme.getTextBoxColor());
+//         renderer.fillRect(x+textInset/2, y+textInset/2, x+width-textInset/2, y+height-textInset/2);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         if(editable){
+//             if(title!=null){
+//                 renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, text+((oscillator&&isFocused)?"_":"")+suffix);
+//                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)), 0.75f);
+//                 renderer.drawText(x+textInset, Math.max(y, MathUtil.getValueBetweenTwoValues(1, y+textInset, 0, y+height-textInset-titleInset, titleness)), x+width-textInset, MathUtil.getValueBetweenTwoValues(1, y+height-textInset-titleInset, 0, y+height-textInset, titleness), title);
+// //                if(text.isEmpty())drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset-titleInset, title);
+// //                else              drawText(x+textInset, y+height-textInset-titleInset, x+width-textInset, y+height-textInset, title);
+//                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//             }else{
+//                 renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text+((oscillator&&isFocused)?"_":"")+suffix);
+//             }
+//         }else{
+//             renderer.drawCenteredText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, text+suffix);
+//         }
+//
     }
     @Override
     public void onCharTyped(char c){

@@ -32,75 +32,78 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
     }
     @Override
     public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        if(refreshNeeded){
-            components.clear();
-            add(done);
-            add(textPanel);
-            float blockSize = 1f/Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
-            for(int y = 0; y<multiblock.getInternalHeight(); y++){
-                final int Y = y;
-                add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), Y+.5f, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), () -> {
-                    insertY(Y);
-                }, (rendrer) -> {
-                    rendrer.drawCube(-.01f, Y+.49f, -.01f, multiblock.getInternalWidth()+.01f, Y+1.51f, multiblock.getInternalDepth()+.01f, null);
-                }));
-                add(new VRMenuComponentMinusButton(-1, Y, -1, blockSize, multiblock.getInternalHeight()>multiblock.getMinY(), true, () -> {
-                    deleteY(Y);
-                }, (rendrer) -> {
-                    rendrer.drawCube(-.01f, Y-.01f, -.01f, multiblock.getInternalWidth()+.01f, Y+1.01f, multiblock.getInternalDepth()+.01f, null);
-                }));
-            }
-            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), -.5f, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), () -> {
-                expand(0, 1, 0);
-            }, (rendrer) -> {
-                rendrer.drawCube(-.01f, -.51f, -.01f, multiblock.getInternalWidth()+.01f, .51f, multiblock.getInternalDepth()+.01f, null);
-            }));
-            for(int x = 0; x<multiblock.getInternalWidth(); x++){
-                final int X = x;
-                add(new VRMenuComponentMinusButton(x, multiblock.getInternalHeight()/2f, -1, blockSize, true, true, () -> {
-                    deleteX(X);
-                }, (rendrer) -> {
-                    rendrer.drawCube(X-.01f, -.01f, -.01f, X+1.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
-                }));
-            }
-            for(int z = 0; z<multiblock.getInternalDepth(); z++){
-                final int Z = z;
-                add(new VRMenuComponentMinusButton(-1, multiblock.getInternalHeight()/2f, z, blockSize, true, false, () -> {
-                    deleteZ(Z);
-                }, (rendrer) -> {
-                    rendrer.drawCube(-.01f, -.01f, Z-.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, Z+1.01f, null);
-                }));
-            }
-            add(new VRMenuComponentPlusButton(-2, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()/2f-.5f, blockSize, true, () -> {
-                expand(-1, 0, 0);
-            }, (rendrer) -> {
-                rendrer.drawCube(-1.01f, -.01f, -.01f, .01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
-            }));
-            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2f-.5f, multiblock.getInternalHeight()/2f-.5f, -2, blockSize, true, () -> {
-                expand(0, 0, -1);
-            }, (rendrer) -> {
-                rendrer.drawCube(-.01f, -.01f, -1.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, .01f, null);
-            }));
-            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()+1, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()/2f-.5f, blockSize, true, () -> {
-                expand(1, 0, 0);
-            }, (rendrer) -> {
-                rendrer.drawCube(multiblock.getInternalWidth()-.01f, -.01f, -.01f, multiblock.getInternalWidth()+1.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
-            }));
-            add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2f-.5f, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()+1, blockSize, true, () -> {
-                expand(0, 0, 1);
-            }, (rendrer) -> {
-                rendrer.drawCube(-.01f, -.01f, multiblock.getInternalDepth()-.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+1.01f, null);
-            }));
-            refreshNeeded = false;
-        }
-        float size = Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
-        renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
-        multiblock.draw3D();
-        renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
-        renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getInternalWidth()+1/16f, multiblock.getInternalHeight()+1/16f, multiblock.getInternalDepth()+1/16f, 1/16f);
-        renderer.popModel();
-        textPanel.text = new FormattedText(multiblock.getDimensionsStr());
-        super.render(renderer, tdpb, deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(refreshNeeded){
+//             components.clear();
+//             add(done);
+//             add(textPanel);
+//             float blockSize = 1f/Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
+//             for(int y = 0; y<multiblock.getInternalHeight(); y++){
+//                 final int Y = y;
+//                 add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), Y+.5f, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), () -> {
+//                     insertY(Y);
+//                 }, (rendrer) -> {
+//                     rendrer.drawCube(-.01f, Y+.49f, -.01f, multiblock.getInternalWidth()+.01f, Y+1.51f, multiblock.getInternalDepth()+.01f, null);
+//                 }));
+//                 add(new VRMenuComponentMinusButton(-1, Y, -1, blockSize, multiblock.getInternalHeight()>multiblock.getMinY(), true, () -> {
+//                     deleteY(Y);
+//                 }, (rendrer) -> {
+//                     rendrer.drawCube(-.01f, Y-.01f, -.01f, multiblock.getInternalWidth()+.01f, Y+1.01f, multiblock.getInternalDepth()+.01f, null);
+//                 }));
+//             }
+//             add(new VRMenuComponentPlusButton(multiblock.getInternalWidth(), -.5f, multiblock.getInternalDepth(), blockSize, multiblock.getInternalHeight()<multiblock.getMaxY(), () -> {
+//                 expand(0, 1, 0);
+//             }, (rendrer) -> {
+//                 rendrer.drawCube(-.01f, -.51f, -.01f, multiblock.getInternalWidth()+.01f, .51f, multiblock.getInternalDepth()+.01f, null);
+//             }));
+//             for(int x = 0; x<multiblock.getInternalWidth(); x++){
+//                 final int X = x;
+//                 add(new VRMenuComponentMinusButton(x, multiblock.getInternalHeight()/2f, -1, blockSize, true, true, () -> {
+//                     deleteX(X);
+//                 }, (rendrer) -> {
+//                     rendrer.drawCube(X-.01f, -.01f, -.01f, X+1.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
+//                 }));
+//             }
+//             for(int z = 0; z<multiblock.getInternalDepth(); z++){
+//                 final int Z = z;
+//                 add(new VRMenuComponentMinusButton(-1, multiblock.getInternalHeight()/2f, z, blockSize, true, false, () -> {
+//                     deleteZ(Z);
+//                 }, (rendrer) -> {
+//                     rendrer.drawCube(-.01f, -.01f, Z-.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, Z+1.01f, null);
+//                 }));
+//             }
+//             add(new VRMenuComponentPlusButton(-2, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()/2f-.5f, blockSize, true, () -> {
+//                 expand(-1, 0, 0);
+//             }, (rendrer) -> {
+//                 rendrer.drawCube(-1.01f, -.01f, -.01f, .01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
+//             }));
+//             add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2f-.5f, multiblock.getInternalHeight()/2f-.5f, -2, blockSize, true, () -> {
+//                 expand(0, 0, -1);
+//             }, (rendrer) -> {
+//                 rendrer.drawCube(-.01f, -.01f, -1.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, .01f, null);
+//             }));
+//             add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()+1, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()/2f-.5f, blockSize, true, () -> {
+//                 expand(1, 0, 0);
+//             }, (rendrer) -> {
+//                 rendrer.drawCube(multiblock.getInternalWidth()-.01f, -.01f, -.01f, multiblock.getInternalWidth()+1.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+.01f, null);
+//             }));
+//             add(new VRMenuComponentPlusButton(multiblock.getInternalWidth()/2f-.5f, multiblock.getInternalHeight()/2f-.5f, multiblock.getInternalDepth()+1, blockSize, true, () -> {
+//                 expand(0, 0, 1);
+//             }, (rendrer) -> {
+//                 rendrer.drawCube(-.01f, -.01f, multiblock.getInternalDepth()-.01f, multiblock.getInternalWidth()+.01f, multiblock.getInternalHeight()+.01f, multiblock.getInternalDepth()+1.01f, null);
+//             }));
+//             refreshNeeded = false;
+//         }
+//         float size = Math.max(multiblock.getInternalWidth(), Math.max(multiblock.getInternalHeight(), multiblock.getInternalDepth()));
+//         renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
+//         multiblock.draw3D();
+//         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
+//         renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, multiblock.getInternalWidth()+1/16f, multiblock.getInternalHeight()+1/16f, multiblock.getInternalDepth()+1/16f, 1/16f);
+//         renderer.popModel();
+//         textPanel.text = new FormattedText(multiblock.getDimensionsStr());
+//         super.render(renderer, tdpb, deltaTime);
+//
     }
     public void expand(int x, int y, int z){
         for(Direction direction : Direction.values()){
@@ -154,21 +157,24 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         }
         @Override
         public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-            }
-            renderer.setColor(col);
-            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mcm
-            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
-            renderer.setColor(Core.theme.getAddButtonTextColor());
-            renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
-            renderer.drawCube(-.005f, -width/4, -.005f, .005f, width/4, .005f, null);
-            renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
-            renderer.popModel();
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//             renderer.setColor(col);
+//             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mcm
+//             renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
+//             renderer.setColor(Core.theme.getAddButtonTextColor());
+//             renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
+//             renderer.drawCube(-.005f, -width/4, -.005f, .005f, width/4, .005f, null);
+//             renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
+//             renderer.popModel();
+//
         }
         @Override
         public void renderForeground(Renderer renderer){
@@ -197,20 +203,23 @@ public class VRMenuResize extends VRMenu{//TODO center the multiblock
         }
         @Override
         public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-            if(enabled){
-                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-            }else{
-                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-            }
-            renderer.setColor(col);
-            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mm
-            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
-            renderer.setColor(Core.theme.getDeleteButtonTextColor());
-            if(isX)renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
-            else renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
-            renderer.popModel();
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+//             if(enabled){
+//                 if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+//             }else{
+//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+//             }
+//             renderer.setColor(col);
+//             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .005f);//5mm
+//             renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
+//             renderer.setColor(Core.theme.getDeleteButtonTextColor());
+//             if(isX)renderer.drawCube(-width/4, -.005f, -.005f, width/4, .005f, .005f, null);
+//             else renderer.drawCube(-.005f, -.005f, -width/4, .005f, .005f, width/4, null);
+//             renderer.popModel();
+//
         }
         @Override
         public void renderForeground(Renderer renderer){

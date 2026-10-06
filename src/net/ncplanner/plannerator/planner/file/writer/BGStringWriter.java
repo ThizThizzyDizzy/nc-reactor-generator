@@ -31,54 +31,57 @@ public class BGStringWriter extends StringFormatWriter{
     }
     @Override
     public void openExportSettings(Project ncpf, Runnable onExport){
-        ArrayList<Runnable> exportPrompts = new ArrayList<>();
-
-        for(Design design : ncpf.designs){
-            if(design instanceof MultiblockDesign){
-                NCPFConfiguration config = ((MultiblockDesign)design).toMultiblock().getSpecificConfiguration();
-                GlobalElementsModule gem = config.getModule(GlobalElementsModule::new);
-                for(NCPFElementDefinition element : (Set<NCPFElementDefinition>)design.getElements()){
-                    String tag = null;
-                    if(element instanceof NCPFBlockTagElement){
-                        tag = ((NCPFBlockTagElement)element).name;
-                    }
-                    if(element instanceof NCPFOredictElement){
-                        tag = ((NCPFOredictElement)element).oredict;
-                    }
-                    if(tag!=null){
-                        ArrayList<NCPFElement> elements = new ArrayList<>();
-                        if(gem!=null){
-                            for(NCPFElement elem : gem.elements){
-                                TagsModule tags = elem.getModule(TagsModule::new);
-                                if(tags!=null&&tags.tags.contains(tag))elements.add(elem);
-                            }
-                        }
-                        if(elements.isEmpty()){
-                            throw new IllegalArgumentException("Could not find any matches for oredict or tag: "+tag);
-                        }
-                        if(elements.size()==1){
-                            tagMap.put(element, elements.get(0));
-                            continue;
-                        }
-                        String theTag = tag;
-                        exportPrompts.add(() -> {
-                            MenuMessageDialog dialog = new MenuMessageDialog(Core.gui, Core.gui.menu, "Choose element for tag or oredict:\n"+theTag);
-                            for(NCPFElement elem : elements){
-                                dialog.addButton(elem.getDisplayName(), () -> {
-                                    tagMap.put(element, elem);
-                                    exportPrompts.remove(0).run();
-                                }, true);
-                            }
-                            dialog.addButton("Cancel", true);
-                            dialog.open();
-                        });
-                    }
-                }
-            }
-        }
-
-        exportPrompts.add(() -> super.openExportSettings(ncpf, onExport));
-        exportPrompts.remove(0).run();
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         ArrayList<Runnable> exportPrompts = new ArrayList<>();
+//
+//         for(Design design : ncpf.designs){
+//             if(design instanceof MultiblockDesign){
+//                 NCPFConfiguration config = ((MultiblockDesign)design).toMultiblock().getSpecificConfiguration();
+//                 GlobalElementsModule gem = config.getModule(GlobalElementsModule::new);
+//                 for(NCPFElementDefinition element : (Set<NCPFElementDefinition>)design.getElements()){
+//                     String tag = null;
+//                     if(element instanceof NCPFBlockTagElement){
+//                         tag = ((NCPFBlockTagElement)element).name;
+//                     }
+//                     if(element instanceof NCPFOredictElement){
+//                         tag = ((NCPFOredictElement)element).oredict;
+//                     }
+//                     if(tag!=null){
+//                         ArrayList<NCPFElement> elements = new ArrayList<>();
+//                         if(gem!=null){
+//                             for(NCPFElement elem : gem.elements){
+//                                 TagsModule tags = elem.getModule(TagsModule::new);
+//                                 if(tags!=null&&tags.tags.contains(tag))elements.add(elem);
+//                             }
+//                         }
+//                         if(elements.isEmpty()){
+//                             throw new IllegalArgumentException("Could not find any matches for oredict or tag: "+tag);
+//                         }
+//                         if(elements.size()==1){
+//                             tagMap.put(element, elements.get(0));
+//                             continue;
+//                         }
+//                         String theTag = tag;
+//                         exportPrompts.add(() -> {
+//                             MenuMessageDialog dialog = new MenuMessageDialog(Core.gui, Core.gui.menu, "Choose element for tag or oredict:\n"+theTag);
+//                             for(NCPFElement elem : elements){
+//                                 dialog.addButton(elem.getDisplayName(), () -> {
+//                                     tagMap.put(element, elem);
+//                                     exportPrompts.remove(0).run();
+//                                 }, true);
+//                             }
+//                             dialog.addButton("Cancel", true);
+//                             dialog.open();
+//                         });
+//                     }
+//                 }
+//             }
+//         }
+//
+//         exportPrompts.add(() -> super.openExportSettings(ncpf, onExport));
+//         exportPrompts.remove(0).run();
+//
     }
     @Override
     public String write(Project ncpf){

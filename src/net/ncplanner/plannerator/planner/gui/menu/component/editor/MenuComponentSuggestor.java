@@ -19,17 +19,20 @@ public class MenuComponentSuggestor extends Component implements Pinnable{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
-        if(isFocused){
-            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
-            else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
-        }else{
-            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
-            else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-        }
-        renderer.fillRect(x, y, x+width, y+height);
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(renderer, suggestor.name+" ("+(suggestor.isActive()?"On":"Off")+")");
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         if(isFocused){
+//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+//             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+//         }else{
+//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+//             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+//         }
+//         renderer.fillRect(x, y, x+width, y+height);
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         drawText(renderer, suggestor.name+" ("+(suggestor.isActive()?"On":"Off")+")");
+//
     }
     public void drawText(Renderer renderer, String text){
         float textLength = renderer.getStringWidth(text, height);

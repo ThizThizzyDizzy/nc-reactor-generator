@@ -24,13 +24,16 @@ public class VRMenuComponentMultiblockRecipe extends VRMenuComponent{
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-        renderer.drawCube(0, 0, 0, width, height, depth, null);
-        renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
-        NCPFElement r = editor.getMultiblock().getMultiblockRecipes()[recipeType];
-        if(r!=null&&r.equals(recipe))renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
-        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-        drawText(recipe.getDisplayName());
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
+//         renderer.drawCube(0, 0, 0, width, height, depth, null);
+//         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
+//         NCPFElement r = editor.getMultiblock().getMultiblockRecipes()[recipeType];
+//         if(r!=null&&r.equals(recipe))renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
+//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+//         drawText(recipe.getDisplayName());
+//
     }
     public void drawText(String text){
         Renderer renderer = new Renderer();

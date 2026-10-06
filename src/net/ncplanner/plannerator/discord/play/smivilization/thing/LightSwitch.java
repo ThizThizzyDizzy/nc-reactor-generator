@@ -14,10 +14,13 @@ public class LightSwitch extends HutThing{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new LightSwitch(uuid, hut);
     }
-    @Override
+    /* @Override */
     public void draw(Renderer renderer, float left, float top, float right, float bottom){
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png", left, top, right, bottom);
-        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png", left, top, right, bottom);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png", left, top, right, bottom);
+//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png", left, top, right, bottom);
+//
     }
     @Override
     public int[] getDimensions(){

@@ -35,7 +35,7 @@ import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.DebugInfoProvider;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.ClipboardEntry;
@@ -113,17 +113,23 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final Button undo = add(new Button("Undo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
-            float tallness = height*3/2;
-            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 151, 10);
-            renderer.drawRegularPolygon(x+width/4, y+height*.5625f, width/4, 3, -5);
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             float tallness = height*3/2;
+//             renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 151, 10);
+//             renderer.drawRegularPolygon(x+width/4, y+height*.5625f, width/4, 3, -5);
+//
         }
     }.setTooltip("Undo (Ctrl+"+(Core.invertUndoRedo?"Y":"Z")+")"));
     private final Button redo = add(new Button("Redo", false){
         @Override
         public void drawText(Renderer renderer, double deltaTime){
-            float tallness = height*3/2;
-            renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 150, 9);
-            renderer.drawRegularPolygon(x+width*3/4, y+height*.5625f, width/4, 3, 5);
+            throw new UnsupportedOperationException("Pending refactor");
+//
+//             float tallness = height*3/2;
+//             renderer.drawOval(x+width/2, y+height/2+tallness-height/16, width, tallness, height/8, 160, 150, 9);
+//             renderer.drawRegularPolygon(x+width*3/4, y+height*.5625f, width/4, 3, 5);
+//
         }
     }.setTooltip("Redo (Ctrl+"+(Core.invertUndoRedo?"Z":"Y")+")"));
     public final MulticolumnList parts = add(new MulticolumnList(0, 0, 0, 0, partSize, partSize, partSize/2));
@@ -166,7 +172,10 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     private final Button recalc = add(new Button("Recalculate", true).setTooltip("Recalculate the entire multiblock\nCtrl-click to queue multiple actions without recalculating"));
     private final Button calcStep = add(new Button("Step", true).setTooltip("Perform one step of calculation"));
     public final ToggleBox toggle3D = add(new ToggleBox(0, 0, 0, 0, "3D View", false).setTooltip("Toggle 3D multiblock view\n(Rotate with arrow keys)"));
-    private final MenuComponentMultiblockProgressBar progress = add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0));;
+    private final MenuComponentMultiblockProgressBar progress = ((java.util.function.Supplier<MenuComponentMultiblockProgressBar>) () -> {
+        throw new UnsupportedOperationException("Pending refactor");
+// add(new MenuComponentMultiblockProgressBar(this, 0, 0, 0, 0))
+    }).get();;
     private final SingleColumnList suggestionList = add(new SingleColumnList(0, 0, 0, 0, partSize/2));
     private final DropdownList suggestorSettings = add(new DropdownList(0, 0, 0, 0){
         @Override
@@ -201,116 +210,120 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     public EditorSymmetry symmetry = new EditorSymmetry(this);
     public MenuEdit(GUI gui, Menu parent, Multiblock multiblock){
         super(gui, parent);
-        suggestionList.optimizeForLargeComponentCount = true;
-        if(Core.recoveryMode){
-            autoRecalc = false;
-        }
-        this.multiblock = multiblock;
-        graph = add(new MenuComponentTurbineRotorGraph(0, 0, 0, 0, 32, (multiblock instanceof OverhaulTurbine)?(OverhaulTurbine)multiblock:null));
-        multibwauk.scrollMagnitude = CELL_SIZE*scrollMagnitude;
-        back.addAction(() -> {
-            suggestionTask = null;
-            gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut((parts.x+parts.width)/gui.getWidth()), 5));
-        });
-        undo.addAction(() -> {
-            multiblock.undo(autoRecalc);
-            if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
-                if(autoRecalc){
-                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                    multiblock.recalculate();
-                }
-            }
-        });
-        redo.addAction(() -> {
-            multiblock.redo(autoRecalc);
-            if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
-                if(autoRecalc){
-                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                    multiblock.recalculate();
-                }
-            }
-        });
-        resize.addAction(() -> {
-            Menu resizeMenu = multiblock.getResizeMenu(gui, this);
-            if(resizeMenu!=null)gui.open(new MenuTransition(gui, this, resizeMenu, MenuTransition.SlideTransition.slideFrom(1, 0), 5));
-        });
-        zoomOut.addAction(() -> {
-            zoomOut(1);
-        });
-        zoomIn.addAction(() -> {
-            zoomIn(1);
-        });
-        editMetadata.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
-        });
-        symmetrySettings.addAction(() -> {
-            new MenuSymmetrySettings(gui, this, symmetry.standard).open(); 
-        });
-        overlaySettings.addAction(() -> {
-            new MenuOverlaySettings(gui, this, overlays, multiblock).open(); 
-        });
-        partsList.addAction(() -> {
-            new MenuDialog(gui, this){
-                {
-                    LegacyGridLayout gl = new LegacyGridLayout(48, 1);
-                    gl.width = 512;
-                    ArrayList<PartCount> parts = multiblock.getPartsList();
-                    parts.forEach((t) -> {
-                        gl.add(new Label(t.getImage(), t.count+"x "+t.name).alignLeft());
-                    });
-                    setContent(gl);
-                    addButton("Close", true);
-                }
-            }.open();
-        });
-        generate.addAction(() -> {
-            gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
-        });
-        recalc.addAction(() -> {
-            if(autoRecalc){
-                if(isControlPressed(0)){
-                    autoRecalc = false;
-                }else{
-                    multiblock.recalculate();
-                }
-            }else{
-                if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
-                    ((CuboidalMultiblock)multiblock).buildDefaultCasing();
-                }
-                multiblock.recalculate();
-                autoRecalc = true;
-            }
-            refreshOverlays();
-        });
-        calcStep.addAction(() -> {
-            multiblock.recalcStep();
-            refreshOverlays();
-        });
-        refreshPartsList();
-        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
-        for(List<NCPFElement> recipes : recipeLists){
-            DropdownList list;
-            dropdownSelectors.add(list = new DropdownList(0, 0, 0, 32, true));
-            for(NCPFElement elem : recipes)list.add(new MenuComponentElement(elem));
-        }
-        blockRecipe = dropdownSelectors.add(new DropdownList(0, 0, 0, 32, true));
-        refreshBlockRecipes();
-        for(EditorTool tool : editorTools){
-            tools.add(new MenuComponentEditorTool(tool));
-        }
-        tools.setSelectedIndex(2);
-        multiblock.getSuggestors(suggestors);
-        for(Module m : Core.modules){
-            if(m.isActive()){
-                m.getSuggestors(multiblock, suggestors);
-                m.getEditorOverlays(multiblock, overlays);
-            }
-        }
-        for(Suggestor suggestor : suggestors){
-            suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
-        }
-        refreshOverlays();
-        toggle3D.isToggledOn = Core.editor3dView&&!Core.recoveryMode;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//
+//         suggestionList.optimizeForLargeComponentCount = true;
+//         if(Core.recoveryMode){
+//             autoRecalc = false;
+//         }
+//         this.multiblock = multiblock;
+//         graph = add(new MenuComponentTurbineRotorGraph(0, 0, 0, 0, 32, (multiblock instanceof OverhaulTurbine)?(OverhaulTurbine)multiblock:null));
+//         multibwauk.scrollMagnitude = CELL_SIZE*scrollMagnitude;
+//         back.addAction(() -> {
+//             suggestionTask = null;
+//             gui.open(new MenuTransition(gui, this, parent, MenuTransition.SplitTransitionX.slideOut((parts.x+parts.width)/gui.getWidth()), 5));
+//         });
+//         undo.addAction(() -> {
+//             multiblock.undo(autoRecalc);
+//             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+//                 if(autoRecalc){
+//                     ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+//                     multiblock.recalculate();
+//                 }
+//             }
+//         });
+//         redo.addAction(() -> {
+//             multiblock.redo(autoRecalc);
+//             if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+//                 if(autoRecalc){
+//                     ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+//                     multiblock.recalculate();
+//                 }
+//             }
+//         });
+//         resize.addAction(() -> {
+//             Menu resizeMenu = multiblock.getResizeMenu(gui, this);
+//             if(resizeMenu!=null)gui.open(new MenuTransition(gui, this, resizeMenu, MenuTransition.SlideTransition.slideFrom(1, 0), 5));
+//         });
+//         zoomOut.addAction(() -> {
+//             zoomOut(1);
+//         });
+//         zoomIn.addAction(() -> {
+//             zoomIn(1);
+//         });
+//         editMetadata.addAction(() -> {
+//             gui.open(new MenuTransition(gui, this, new MenuMultiblockMetadata(gui, this, multiblock), MenuTransition.SlideTransition.slideTo(0, 1), 4));
+//         });
+//         symmetrySettings.addAction(() -> {
+//             new MenuSymmetrySettings(gui, this, symmetry.standard).open();
+//         });
+//         overlaySettings.addAction(() -> {
+//             new MenuOverlaySettings(gui, this, overlays, multiblock).open();
+//         });
+//         partsList.addAction(() -> {
+//             new MenuDialog(gui, this){
+//                 {
+//                     LegacyGridLayout gl = new LegacyGridLayout(48, 1);
+//                     gl.width = 512;
+//                     ArrayList<PartCount> parts = multiblock.getPartsList();
+//                     parts.forEach((t) -> {
+//                         gl.add(new Label(t.getImage(), t.count+"x "+t.name).alignLeft());
+//                     });
+//                     setContent(gl);
+//                     addButton("Close", true);
+//                 }
+//             }.open();
+//         });
+//         generate.addAction(() -> {
+//             gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
+//         });
+//         recalc.addAction(() -> {
+//             if(autoRecalc){
+//                 if(isControlPressed(0)){
+//                     autoRecalc = false;
+//                 }else{
+//                     multiblock.recalculate();
+//                 }
+//             }else{
+//                 if(Core.autoBuildCasing&&multiblock instanceof CuboidalMultiblock){
+//                     ((CuboidalMultiblock)multiblock).buildDefaultCasing();
+//                 }
+//                 multiblock.recalculate();
+//                 autoRecalc = true;
+//             }
+//             refreshOverlays();
+//         });
+//         calcStep.addAction(() -> {
+//             multiblock.recalcStep();
+//             refreshOverlays();
+//         });
+//         refreshPartsList();
+//         List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+//         for(List<NCPFElement> recipes : recipeLists){
+//             DropdownList list;
+//             dropdownSelectors.add(list = new DropdownList(0, 0, 0, 32, true));
+//             for(NCPFElement elem : recipes)list.add(new MenuComponentElement(elem));
+//         }
+//         blockRecipe = dropdownSelectors.add(new DropdownList(0, 0, 0, 32, true));
+//         refreshBlockRecipes();
+//         for(EditorTool tool : editorTools){
+//             tools.add(new MenuComponentEditorTool(tool));
+//         }
+//         tools.setSelectedIndex(2);
+//         multiblock.getSuggestors(suggestors);
+//         for(Module m : Core.modules){
+//             if(m.isActive()){
+//                 m.getSuggestors(multiblock, suggestors);
+//                 m.getEditorOverlays(multiblock, overlays);
+//             }
+//         }
+//         for(Suggestor suggestor : suggestors){
+//             suggestorSettings.add(new MenuComponentSuggestor(this, suggestor));
+//         }
+//         refreshOverlays();
+//         toggle3D.isToggledOn = Core.editor3dView&&!Core.recoveryMode;
+//
     }
     private boolean recalculateOnOpen = true;
     @Override
@@ -365,131 +378,140 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
     }
     @Override
     public void render3d(double deltaTime){
-        super.render3d(deltaTime);
-        if(toggle3D.isToggledOn){
-            Multiblock mb = getMultiblock();
-            if(mb!=null){
-                if(glfwGetKey(Core.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
-                if(glfwGetKey(Core.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
-                if(glfwGetKey(Core.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
-                if(glfwGetKey(Core.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
-                Renderer renderer = new Renderer();
-                renderer.projection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
-                BoundingBox bbox = mb.getBoundingBox();
-                float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
-                size/=mb.get3DPreviewScale();
-                renderer.pushModel(new Matrix4f().setTranslation(toggle3D.x+toggle3D.width/2, gui.getHeight()-(toggle3D.y-toggle3D.width/2), -1000)
-                        .scale(.625f, .625f, .625f)
-                        .scale(toggle3D.width, toggle3D.width, toggle3D.width)
-                        .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
-                        .rotate((float)MathUtil.toRadians(xRot), 0, 1, 0)
-                        .scale(1/size, 1/size, 1/size)
-                        .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
-                draw3D();
-                renderer.popModel();
-                renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/(float)gui.getHeight(), 0.1f, 100));
-            }
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         super.render3d(deltaTime);
+//         if(toggle3D.isToggledOn){
+//             Multiblock mb = getMultiblock();
+//             if(mb!=null){
+//                 if(glfwGetKey(Core.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+//                 if(glfwGetKey(Core.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+//                 if(glfwGetKey(Core.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+//                 if(glfwGetKey(Core.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+//                 Renderer renderer = new Renderer();
+//                 renderer.projection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
+//                 BoundingBox bbox = mb.getBoundingBox();
+//                 float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
+//                 size/=mb.get3DPreviewScale();
+//                 renderer.pushModel(new Matrix4f().setTranslation(toggle3D.x+toggle3D.width/2, gui.getHeight()-(toggle3D.y-toggle3D.width/2), -1000)
+//                         .scale(.625f, .625f, .625f)
+//                         .scale(toggle3D.width, toggle3D.width, toggle3D.width)
+//                         .rotate((float)MathUtil.toRadians(yRot), 1, 0, 0)
+//                         .rotate((float)MathUtil.toRadians(xRot), 0, 1, 0)
+//                         .scale(1/size, 1/size, 1/size)
+//                         .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
+//                 draw3D();
+//                 renderer.popModel();
+//                 renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/(float)gui.getHeight(), 0.1f, 100));
+//             }
+//         }
+//
     }
     @Override
     public synchronized void render2d(double deltaTime){
-        if(lastChange!=multiblock.lastChangeTime){
-            lastChange = multiblock.lastChangeTime;
-            recalculateSuggestions();
-        }
-        recalc.text = isControlPressed(0)&&autoRecalc?"Queue Actions":"Recalculate";
-        textBox.setText(multiblock.getFullTooltip());
-        float lastX = 0;
-        float lastY = 0;
-        float nextY = 0;
-        for(int i = 0; i<multibwauk.components.size(); i++){
-            Component comp = multibwauk.components.get(i);
-            if(lastX!=0&&lastX+LAYER_GAP+comp.width>multibwauk.width-multibwauk.horizScrollbarHeight){
-                lastY = nextY;
-                lastX = 0;
-            }
-            comp.x = lastX+LAYER_GAP/2;
-            lastX += comp.width+LAYER_GAP;
-            comp.y = lastY+LAYER_GAP/2;
-            nextY = lastY+comp.height+LAYER_GAP;
-        }
-        tools.x = textBox.x = back.x = progress.x = 0;
-        partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
-        tools.width = partSize;
-        partsSearch.x = parts.x = tools.width+partSize/4;
-        partsList.x = symmetrySettings.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
-        recalc.width = calcStep.width = textBox.width/2;
-        toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = symmetrySettings.height = overlaySettings.height = editMetadata.height = back.height = 48;
-        partsSearch.height = partSize;
-        parts.y = tools.y+partSize;
-        calcStep.x = recalc.width;
-        back.width = parts.x+parts.width-back.height*2;
-        undo.width = undo.height = redo.width = redo.height = back.height;
-        undo.x = back.width;
-        redo.x = undo.x+undo.width;
-        undo.enabled = !multiblock.history.isEmpty();
-        redo.enabled = !multiblock.future.isEmpty();
-        toggle3D.y = recalc.y = calcStep.y = partsList.y = generate.y = gui.getHeight()-generate.height;
-        tools.height = Math.max(6, editorTools.size())*partSize;
-        parts.height = Math.max(tools.height-partSize, Math.min((gui.getHeight()-parts.y-progress.height-recalc.height)/2, ((parts.components.size()+partsWide-1)/partsWide)*partSize));
-        tools.height = parts.height+partSize;
-        resize.width = 320;
-        multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
-        symmetrySettings.width = overlaySettings.width = multibwauk.width/3;
-        editMetadata.width = multibwauk.width-symmetrySettings.width*2;
-        editMetadata.x = symmetrySettings.x+symmetrySettings.width;
-        overlaySettings.x = editMetadata.x+editMetadata.width;
-        generate.width = partsList.width = (multibwauk.width-generate.height)/2;
-        generate.x = partsList.x+partsList.width;
-        suggestorSettings.x = generate.x+generate.width;
-        zoomIn.height = zoomOut.height = resize.height = back.height;
-        zoomIn.width = zoomOut.width = resize.width/2;
-        zoomIn.y = zoomOut.y = resize.height;
-        resize.x = gui.getWidth()-resize.width;
-        zoomIn.x = resize.x;
-        zoomOut.x = zoomIn.x+zoomIn.width;
-        toggle3D.x = suggestionList.x = dropdownSelectors.x = resize.x;
-        dropdownSelectors.y = resize.height*2;
-        toggle3D.width = suggestionList.width = dropdownSelectors.width = resize.width;
-        if(suggestorSettings.isDown){
-            suggestorSettings.width = gui.getWidth()-suggestorSettings.x;
-            suggestorSettings.y = gui.getHeight()/2;
-        }else{
-            suggestorSettings.width = suggestorSettings.preferredHeight;
-            suggestorSettings.y = generate.y;
-        }
-        for(Component c : tools.components){
-            c.width = c.height = partSize;
-        }
-        suggestionList.y = dropdownSelectors.y+dropdownSelectors.height;
-        suggestionList.height = gui.getHeight()-suggestionList.y-(generate.height+(toggle3D.isToggledOn?toggle3D.width:0));
-        multibwauk.height = gui.getHeight()-multibwauk.y-generate.height;
-        progress.width = textBox.width;
-        progress.height = progress.getTaskHeight();//generate.height*2
-        progress.y = generate.y-progress.height;
-        textBox.y = parts.y+parts.height;
-        graph.height = (((multiblock instanceof OverhaulTurbine)&&((OverhaulTurbine)multiblock).rotorValid)?generate.height*3:0);
-        graph.y = progress.y-graph.height;
-        textBox.height = gui.getHeight()-textBox.y-progress.height-generate.height-graph.height;
-        super.render2d(deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(lastChange!=multiblock.lastChangeTime){
+//             lastChange = multiblock.lastChangeTime;
+//             recalculateSuggestions();
+//         }
+//         recalc.text = isControlPressed(0)&&autoRecalc?"Queue Actions":"Recalculate";
+//         textBox.setText(multiblock.getFullTooltip());
+//         float lastX = 0;
+//         float lastY = 0;
+//         float nextY = 0;
+//         for(int i = 0; i<multibwauk.components.size(); i++){
+//             Component comp = multibwauk.components.get(i);
+//             if(lastX!=0&&lastX+LAYER_GAP+comp.width>multibwauk.width-multibwauk.horizScrollbarHeight){
+//                 lastY = nextY;
+//                 lastX = 0;
+//             }
+//             comp.x = lastX+LAYER_GAP/2;
+//             lastX += comp.width+LAYER_GAP;
+//             comp.y = lastY+LAYER_GAP/2;
+//             nextY = lastY+comp.height+LAYER_GAP;
+//         }
+//         tools.x = textBox.x = back.x = progress.x = 0;
+//         partsSearch.width = parts.width = partsWide*partSize+parts.vertScrollbarWidth*(parts.hasVertScrollbar()?1:0);
+//         tools.width = partSize;
+//         partsSearch.x = parts.x = tools.width+partSize/4;
+//         partsList.x = symmetrySettings.x = textBox.width = graph.width = multibwauk.x = parts.x+parts.width;
+//         recalc.width = calcStep.width = textBox.width/2;
+//         toggle3D.height = partsSearch.y = recalc.height = calcStep.height = suggestorSettings.preferredHeight = partsList.height = generate.height = tools.y = multibwauk.y = symmetrySettings.height = overlaySettings.height = editMetadata.height = back.height = 48;
+//         partsSearch.height = partSize;
+//         parts.y = tools.y+partSize;
+//         calcStep.x = recalc.width;
+//         back.width = parts.x+parts.width-back.height*2;
+//         undo.width = undo.height = redo.width = redo.height = back.height;
+//         undo.x = back.width;
+//         redo.x = undo.x+undo.width;
+//         undo.enabled = !multiblock.history.isEmpty();
+//         redo.enabled = !multiblock.future.isEmpty();
+//         toggle3D.y = recalc.y = calcStep.y = partsList.y = generate.y = gui.getHeight()-generate.height;
+//         tools.height = Math.max(6, editorTools.size())*partSize;
+//         parts.height = Math.max(tools.height-partSize, Math.min((gui.getHeight()-parts.y-progress.height-recalc.height)/2, ((parts.components.size()+partsWide-1)/partsWide)*partSize));
+//         tools.height = parts.height+partSize;
+//         resize.width = 320;
+//         multibwauk.width = gui.getWidth()-parts.x-parts.width-resize.width;
+//         symmetrySettings.width = overlaySettings.width = multibwauk.width/3;
+//         editMetadata.width = multibwauk.width-symmetrySettings.width*2;
+//         editMetadata.x = symmetrySettings.x+symmetrySettings.width;
+//         overlaySettings.x = editMetadata.x+editMetadata.width;
+//         generate.width = partsList.width = (multibwauk.width-generate.height)/2;
+//         generate.x = partsList.x+partsList.width;
+//         suggestorSettings.x = generate.x+generate.width;
+//         zoomIn.height = zoomOut.height = resize.height = back.height;
+//         zoomIn.width = zoomOut.width = resize.width/2;
+//         zoomIn.y = zoomOut.y = resize.height;
+//         resize.x = gui.getWidth()-resize.width;
+//         zoomIn.x = resize.x;
+//         zoomOut.x = zoomIn.x+zoomIn.width;
+//         toggle3D.x = suggestionList.x = dropdownSelectors.x = resize.x;
+//         dropdownSelectors.y = resize.height*2;
+//         toggle3D.width = suggestionList.width = dropdownSelectors.width = resize.width;
+//         if(suggestorSettings.isDown){
+//             suggestorSettings.width = gui.getWidth()-suggestorSettings.x;
+//             suggestorSettings.y = gui.getHeight()/2;
+//         }else{
+//             suggestorSettings.width = suggestorSettings.preferredHeight;
+//             suggestorSettings.y = generate.y;
+//         }
+//         for(Component c : tools.components){
+//             c.width = c.height = partSize;
+//         }
+//         suggestionList.y = dropdownSelectors.y+dropdownSelectors.height;
+//         suggestionList.height = gui.getHeight()-suggestionList.y-(generate.height+(toggle3D.isToggledOn?toggle3D.width:0));
+//         multibwauk.height = gui.getHeight()-multibwauk.y-generate.height;
+//         progress.width = textBox.width;
+//         progress.height = progress.getTaskHeight();//generate.height*2
+//         progress.y = generate.y-progress.height;
+//         textBox.y = parts.y+parts.height;
+//         graph.height = (((multiblock instanceof OverhaulTurbine)&&((OverhaulTurbine)multiblock).rotorValid)?generate.height*3:0);
+//         graph.y = progress.y-graph.height;
+//         textBox.height = gui.getHeight()-textBox.y-progress.height-generate.height-graph.height;
+//         super.render2d(deltaTime);
+//
     }
     @Override    
     public void drawForeground(double deltaTime){
-        Renderer renderer = new Renderer();
-        List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
-        for(int i = 0; i<recipeLists.length; i++){
-            DropdownList list = dropdownSelectors.get(i);
-            renderer.setColor(Core.theme.getSecondaryComponentColor(i));
-            renderer.fillRect(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y);
-            renderer.setColor(Core.theme.getComponentTextColor(i));
-            renderer.drawCenteredText(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y, ((MultiblockRecipeElement)recipeLists[i].get(0)).getTitle());
-        }
-        renderer.setColor(Core.theme.getSecondaryComponentColor(0));
-        renderer.fillRect(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y);
-        renderer.setColor(Core.theme.getComponentTextColor(0));
-        renderer.drawCenteredText(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y, "Block Recipe");
-        renderer.setWhite();
-        super.drawForeground(deltaTime);
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         List<NCPFElement>[] recipeLists = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+//         for(int i = 0; i<recipeLists.length; i++){
+//             DropdownList list = dropdownSelectors.get(i);
+//             renderer.setColor(Core.theme.getSecondaryComponentColor(i));
+//             renderer.fillRect(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y);
+//             renderer.setColor(Core.theme.getComponentTextColor(i));
+//             renderer.drawCenteredText(dropdownSelectors.x+list.x, dropdownSelectors.y+list.y-list.preferredHeight, dropdownSelectors.x+list.x+list.width, dropdownSelectors.y+list.y, ((MultiblockRecipeElement)recipeLists[i].get(0)).getTitle());
+//         }
+//         renderer.setColor(Core.theme.getSecondaryComponentColor(0));
+//         renderer.fillRect(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y);
+//         renderer.setColor(Core.theme.getComponentTextColor(0));
+//         renderer.drawCenteredText(dropdownSelectors.x+blockRecipe.x, dropdownSelectors.y+blockRecipe.y-blockRecipe.preferredHeight, dropdownSelectors.x+blockRecipe.x+blockRecipe.width, dropdownSelectors.y+blockRecipe.y, "Block Recipe");
+//         renderer.setWhite();
+//         super.drawForeground(deltaTime);
+//
     }
     @Override
     public AbstractBlock getSelectedBlock(int id){
@@ -1134,156 +1156,159 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         parts.setSelectedIndex(idx);
     }
     public void draw3D(){
-        Renderer renderer = new Renderer();
-        BoundingBox bbox = multiblock.getBoundingBox();
-        float resonatingAlpha = 0.25f;
-        float blockSize = 1;
-        renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
-        renderer.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,bbox.getWidth()+blockSize/32,bbox.getHeight()+blockSize/32,bbox.getDepth()+blockSize/32,blockSize/24);
-        multiblock.forEachPosition((ps) -> {//solid stuff
-            BlockPos pos = (BlockPos)ps;
-            int x = pos.x;
-            int y = pos.y;
-            int z = pos.z;
-            AbstractBlock block = multiblock.getBlock(pos);
-            float X = x*blockSize;
-            float Y = y*blockSize;
-            float Z = z*blockSize;
-            float border = blockSize/16;
-            if(block!=null){
-                block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
-                    if(!multiblock.contains(pos.offset(t)))return true;
-                    AbstractBlock b = multiblock.getBlock(pos.offset(t));
-                    return block.shouldRenderFace(b);
-                });
-            }
-            if(isSelected(0, pos)){
-                renderer.setColor(Core.theme.getSelectionColor());
-                renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                    boolean d1 = isSelected(0, pos.offset(t[0]));
-                    boolean d2 = isSelected(0, pos.offset(t[1]));
-                    boolean d3 = isSelected(0, pos.offset(t[0]).offset(t[1]));
-                    if(d1&&d2&&!d3)return true;//both sides, but not the corner
-                    if(!d1&&!d2)return true;//neither side
-                    return false;
-                });
-            }
-            {
-                ArrayList<Function<Direction[], Boolean>> edgeFuncs = new ArrayList<>();
-                boolean selected = false;
-                for(Suggestion s : getSuggestions()){
-                    if(s.affects(pos)){
-                        if(s.selected&&s.result!=null){
-                            AbstractBlock b = s.result.getBlock(pos);
-                            renderer.setWhite(resonatingAlpha+.5f);
-                            float brdr = blockSize/64;
-                            if(b==null){
-                                renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
-                            }else{
-                                b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha+.5f, s.result, (t) -> {
-                                    return true;
-                                });
-                            }
-                        }
-                        if(s.selected)selected = true;
-                        edgeFuncs.add((t) -> {
-                            boolean d1 = s.affects(pos.offset(t[0]));
-                            boolean d2 = s.affects(pos.offset(t[1]));
-                            boolean d3 = s.affects(pos.offset(t[0]).offset(t[1]));
-                            if(d1&&d2&&!d3)return true;//both sides, but not the corner
-                            if(!d1&&!d2)return true;//neither side
-                            return false;
-                        });
-                    }
-                }
-                renderer.setColor(Core.theme.getSuggestionOutlineColor());
-                border = blockSize/40f;
-                if(selected)border*=3;
-                renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
-                    for(Function<Direction[], Boolean> func : edgeFuncs){
-                        if(func.apply(t))return true;
-                    }
-                    return false;
-                });
-            }
-        });
-        for(Component comp : multibwauk.components){
-            if(comp instanceof MenuComponentEditorGrid){
-                MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
-                if(grid.mouseover==null)continue;
-                BlockPos coords = grid.gridToBlockCoords(grid.mouseover[0], grid.mouseover[1]);
-                renderer.setColor(Core.theme.get3DDeviceoverOutlineColor());
-                getSymmetry().apply(coords, bbox, (bpos) -> {
-                    float X = bpos.x*blockSize;
-                    float Y = bpos.y*blockSize;
-                    float Z = bpos.z*blockSize;
-                    float border = blockSize/16;
-                    renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
-                });
-                float X = coords.x*blockSize;
-                float Y = coords.y*blockSize;
-                float Z = coords.z*blockSize;
-                float border = blockSize/16;
-                renderer.setColor(Core.theme.getEditorMouseoverLineColor());
-                X+=blockSize/2;
-                Y+=blockSize/2;
-                Z+=blockSize/2;
-                renderer.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, null);//NX
-                renderer.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, null);//NY
-                renderer.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, null);//NZ
-                renderer.drawCube(X+blockSize/2, Y-border/2, Z-border/2, bbox.getWidth()*blockSize, Y+border/2, Z+border/2, null);//PX
-                renderer.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, bbox.getHeight()*blockSize, Z+border/2, null);//PY
-                renderer.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, bbox.getDepth()*blockSize, null);//PZ
-            }
-        }
-        multiblock.forEachPosition((ps) -> {//transparent stuff
-            BlockPos pos = (BlockPos)ps;
-            AbstractBlock block = multiblock.getBlock(pos);
-            int x = pos.x;
-            int y = pos.y;
-            int z = pos.z;
-            float X = x*blockSize;
-            float Y = y*blockSize;
-            float Z = z*blockSize;
-            float border = blockSize/16;
-            if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
-                renderer.setWhite();
-                renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImage("overhaul/fusion/plasma"), (t) -> {
-                    if(!multiblock.contains(pos.offset(t)))return true;
-                    AbstractBlock b = multiblock.getBlock(pos.offset(t));
-                    if(((OverhaulFusionReactor)multiblock).getLocationCategory(pos.offset(t))!=OverhaulFusionReactor.LocationCategory.PLASMA)return true;
-                    return b==null||Core.hasAlpha(b.getBaseTexture());
-                });
-            }
-            if(isControlPressed(0)&&getSelectedTool(0).isEditTool()){
-                if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
-                    for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
-                        if(space.isSpaceValid(getSelectedBlock(0), pos)&&multiblock.isValid(getSelectedBlock(0), pos)){
-                            getSelectedBlock(0).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, multiblock, (t) -> {
-                                return true;
-                            });
-                        }
-                    }
-                }
-            }
-            for(Object o : multiblock.decals){
-                Decal decal = (Decal)o;
-                if(decal.pos.equals(pos)){
-                    decal.render3D(renderer, X, Y, Z, blockSize);
-                }
-            }
-            if(isSelected(0, pos)){
-                renderer.setColor(convertToolColor(Core.theme.getSelectionColor(), 0), .5f);
-                renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
-                    if(!multiblock.contains(pos.offset(t)))return true;
-                    AbstractBlock o = multiblock.getBlock(pos.offset(t));
-                    return !isSelected(0, pos.offset(t))&&o==null;
-                });
-            }
-        });
-        for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
-            getSelectedTool(0).drawVRGhosts(renderer, space, 0, 0, 0, 1, 1, 1, blockSize, getSelectedBlock(0)==null?null:getSelectedBlock(0).getTexture());
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         Renderer renderer = new Renderer();
+//         BoundingBox bbox = multiblock.getBoundingBox();
+//         float resonatingAlpha = 0.25f;
+//         float blockSize = 1;
+//         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
+//         renderer.drawCubeOutline(-blockSize/32,-blockSize/32,-blockSize/32,bbox.getWidth()+blockSize/32,bbox.getHeight()+blockSize/32,bbox.getDepth()+blockSize/32,blockSize/24);
+//         multiblock.forEachPosition((ps) -> {//solid stuff
+//             BlockPos pos = (BlockPos)ps;
+//             int x = pos.x;
+//             int y = pos.y;
+//             int z = pos.z;
+//             AbstractBlock block = multiblock.getBlock(pos);
+//             float X = x*blockSize;
+//             float Y = y*blockSize;
+//             float Z = z*blockSize;
+//             float border = blockSize/16;
+//             if(block!=null){
+//                 block.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, overlays, 1, multiblock, (t) -> {
+//                     if(!multiblock.contains(pos.offset(t)))return true;
+//                     AbstractBlock b = multiblock.getBlock(pos.offset(t));
+//                     return block.shouldRenderFace(b);
+//                 });
+//             }
+//             if(isSelected(0, pos)){
+//                 renderer.setColor(Core.theme.getSelectionColor());
+//                 renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+//                     boolean d1 = isSelected(0, pos.offset(t[0]));
+//                     boolean d2 = isSelected(0, pos.offset(t[1]));
+//                     boolean d3 = isSelected(0, pos.offset(t[0]).offset(t[1]));
+//                     if(d1&&d2&&!d3)return true;//both sides, but not the corner
+//                     if(!d1&&!d2)return true;//neither side
+//                     return false;
+//                 });
+//             }
+//             {
+//                 ArrayList<Function<Direction[], Boolean>> edgeFuncs = new ArrayList<>();
+//                 boolean selected = false;
+//                 for(Suggestion s : getSuggestions()){
+//                     if(s.affects(pos)){
+//                         if(s.selected&&s.result!=null){
+//                             AbstractBlock b = s.result.getBlock(pos);
+//                             renderer.setWhite(resonatingAlpha+.5f);
+//                             float brdr = blockSize/64;
+//                             if(b==null){
+//                                 renderer.drawCube(X-brdr, Y-brdr, Z-brdr, blockSize+brdr, blockSize+brdr, blockSize+brdr, null);
+//                             }else{
+//                                 b.render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha+.5f, s.result, (t) -> {
+//                                     return true;
+//                                 });
+//                             }
+//                         }
+//                         if(s.selected)selected = true;
+//                         edgeFuncs.add((t) -> {
+//                             boolean d1 = s.affects(pos.offset(t[0]));
+//                             boolean d2 = s.affects(pos.offset(t[1]));
+//                             boolean d3 = s.affects(pos.offset(t[0]).offset(t[1]));
+//                             if(d1&&d2&&!d3)return true;//both sides, but not the corner
+//                             if(!d1&&!d2)return true;//neither side
+//                             return false;
+//                         });
+//                     }
+//                 }
+//                 renderer.setColor(Core.theme.getSuggestionOutlineColor());
+//                 border = blockSize/40f;
+//                 if(selected)border*=3;
+//                 renderer.drawCubeOutline(X-border, Y-border, Z-border, X+blockSize+border, Y+blockSize+border, Z+blockSize+border, border, (t) -> {
+//                     for(Function<Direction[], Boolean> func : edgeFuncs){
+//                         if(func.apply(t))return true;
+//                     }
+//                     return false;
+//                 });
+//             }
+//         });
+//         for(Component comp : multibwauk.components){
+//             if(comp instanceof MenuComponentEditorGrid){
+//                 MenuComponentEditorGrid grid = (MenuComponentEditorGrid)comp;
+//                 if(grid.mouseover==null)continue;
+//                 BlockPos coords = grid.gridToBlockCoords(grid.mouseover[0], grid.mouseover[1]);
+//                 renderer.setColor(Core.theme.get3DDeviceoverOutlineColor());
+//                 getSymmetry().apply(coords, bbox, (bpos) -> {
+//                     float X = bpos.x*blockSize;
+//                     float Y = bpos.y*blockSize;
+//                     float Z = bpos.z*blockSize;
+//                     float border = blockSize/16;
+//                     renderer.drawCubeOutline(X-border/2, Y-border/2, Z-border/2, X+blockSize+border/2, Y+blockSize+border/2, Z+blockSize+border/2, border);
+//                 });
+//                 float X = coords.x*blockSize;
+//                 float Y = coords.y*blockSize;
+//                 float Z = coords.z*blockSize;
+//                 float border = blockSize/16;
+//                 renderer.setColor(Core.theme.getEditorMouseoverLineColor());
+//                 X+=blockSize/2;
+//                 Y+=blockSize/2;
+//                 Z+=blockSize/2;
+//                 renderer.drawCube(0, Y-border/2, Z-border/2, X-blockSize/2, Y+border/2, Z+border/2, null);//NX
+//                 renderer.drawCube(X-border/2, 0, Z-border/2, X+border/2, Y-blockSize/2, Z+border/2, null);//NY
+//                 renderer.drawCube(X-border/2, Y-border/2, 0, X+border/2, Y+border/2, Z-blockSize/2, null);//NZ
+//                 renderer.drawCube(X+blockSize/2, Y-border/2, Z-border/2, bbox.getWidth()*blockSize, Y+border/2, Z+border/2, null);//PX
+//                 renderer.drawCube(X-border/2, Y+blockSize/2, Z-border/2, X+border/2, bbox.getHeight()*blockSize, Z+border/2, null);//PY
+//                 renderer.drawCube(X-border/2, Y-border/2, Z+blockSize/2, X+border/2, Y+border/2, bbox.getDepth()*blockSize, null);//PZ
+//             }
+//         }
+//         multiblock.forEachPosition((ps) -> {//transparent stuff
+//             BlockPos pos = (BlockPos)ps;
+//             AbstractBlock block = multiblock.getBlock(pos);
+//             int x = pos.x;
+//             int y = pos.y;
+//             int z = pos.z;
+//             float X = x*blockSize;
+//             float Y = y*blockSize;
+//             float Z = z*blockSize;
+//             float border = blockSize/16;
+//             if(multiblock instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)multiblock).getLocationCategory(pos)==OverhaulFusionReactor.LocationCategory.PLASMA){
+//                 renderer.setWhite();
+//                 renderer.drawCube(X, Y, Z, X+blockSize, Y+blockSize, Z+blockSize, TextureManager.getImage("overhaul/fusion/plasma"), (t) -> {
+//                     if(!multiblock.contains(pos.offset(t)))return true;
+//                     AbstractBlock b = multiblock.getBlock(pos.offset(t));
+//                     if(((OverhaulFusionReactor)multiblock).getLocationCategory(pos.offset(t))!=OverhaulFusionReactor.LocationCategory.PLASMA)return true;
+//                     return b==null||Core.hasAlpha(b.getBaseTexture());
+//                 });
+//             }
+//             if(isControlPressed(0)&&getSelectedTool(0).isEditTool()){
+//                 if(block==null||(isShiftPressed(0)&&block.canBeQuickReplaced())){
+//                     for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
+//                         if(space.isSpaceValid(getSelectedBlock(0), pos)&&multiblock.isValid(getSelectedBlock(0), pos)){
+//                             getSelectedBlock(0).render(renderer, X, Y, Z, blockSize, blockSize, blockSize, null, resonatingAlpha, multiblock, (t) -> {
+//                                 return true;
+//                             });
+//                         }
+//                     }
+//                 }
+//             }
+//             for(Object o : multiblock.decals){
+//                 Decal decal = (Decal)o;
+//                 if(decal.pos.equals(pos)){
+//                     decal.render3D(renderer, X, Y, Z, blockSize);
+//                 }
+//             }
+//             if(isSelected(0, pos)){
+//                 renderer.setColor(convertToolColor(Core.theme.getSelectionColor(), 0), .5f);
+//                 renderer.drawCube(X-border/4, Y-border/4, Z-border/4, X+blockSize+border/4, Y+blockSize+border/4, Z+blockSize+border/4, null, (t) -> {
+//                     if(!multiblock.contains(pos.offset(t)))return true;
+//                     AbstractBlock o = multiblock.getBlock(pos.offset(t));
+//                     return !isSelected(0, pos.offset(t))&&o==null;
+//                 });
+//             }
+//         });
+//         for(EditorSpace space : ((Multiblock<AbstractBlock>)multiblock).getEditorSpaces()){
+//             getSelectedTool(0).drawVRGhosts(renderer, space, 0, 0, 0, 1, 1, 1, blockSize, getSelectedBlock(0)==null?null:getSelectedBlock(0).getTexture());
+//         }
+//
     }
     @Override
     public HashMap<String, Object> getDebugInfo(HashMap<String, Object> debugInfo){

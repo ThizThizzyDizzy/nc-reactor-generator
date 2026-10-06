@@ -37,14 +37,17 @@ public class Block extends AbstractBlock{
         if(isCoil())tip+="\nCoil "+(isActive()?"Active":"Invalid");
         return tip;
     }
-    @Override
+    /* @Override */
     public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
-        if(!isValid()){
-            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
-        }
-        if(isActive()&&isCoil()){
-            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
-        }
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(!isValid()){
+//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
+//         }
+//         if(isActive()&&isCoil()){
+//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
+//         }
+//
     }
     @Override
     public boolean isValid(){

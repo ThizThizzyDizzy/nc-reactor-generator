@@ -48,9 +48,12 @@ public class UnderhaulSFRDesign extends MultiblockDesign<NCPFUnderhaulSFRDesign,
         super.convertToObject(ncpf);
     }
     public BlockElement matchElement(BlockElement block){
-        UnderhaulSFRConfiguration config = file.getConfiguration(UnderhaulSFRConfiguration::new);
-        if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(UnderhaulSFRConfiguration::new));
-        return block;
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         UnderhaulSFRConfiguration config = file.getConfiguration(UnderhaulSFRConfiguration::new);
+//         if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(UnderhaulSFRConfiguration::new));
+//         return block;
+//
     }
     boolean matchModule(BlockElement block, Supplier<NCPFModule> module){
         block = matchElement(block);

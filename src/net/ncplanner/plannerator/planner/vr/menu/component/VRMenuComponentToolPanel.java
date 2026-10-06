@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
-import net.ncplanner.plannerator.planner.MathUtil;
+// import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.tool.EditorTool;
 import net.ncplanner.plannerator.planner.vr.Multitool;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -22,30 +22,33 @@ public class VRMenuComponentToolPanel extends VRMenuComponent{
     }
     @Override
     public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        if(refreshNeeded)refresh();
-        //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
-        int closest = -1;
-        float closestDistance = 0;
-        for(int i = 1; i<tdpb.limit(); i++){//don't include HMD
-            TrackedDevicePose pose = tdpb.get(i);
-            if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
-                Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking())).mul(Multitool.editOffsetmatrix);
-                Vector3f translation = matrix.getTranslation(new Vector3f());
-                float distance = (float)MathUtil.distance(translation, new Vector3d(x+width/2, y+height/2, z+depth/2));
-                if(closest==-1||distance<closestDistance){
-                    closest = i;
-                    closestDistance = distance;
-                }
-            }
-        }
-        if(closestDistance>Math.sqrt(Math.pow(width/2,2)+Math.pow(height/2,2)+Math.pow(depth/2,2)))closest = -1;//too far away
-        if(activeTool!=closest){
-            activeTool = closest;
-            refreshNeeded = true;
-        }
-//</editor-fold>
-        renderer.setColor(Core.theme.getVRPanelOutlineColor());
-        renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
+        throw new UnsupportedOperationException("Pending refactor");
+//
+//         if(refreshNeeded)refresh();
+//         //<editor-fold defaultstate="collapsed" desc="Tracked Devices">
+//         int closest = -1;
+//         float closestDistance = 0;
+//         for(int i = 1; i<tdpb.limit(); i++){//don't include HMD
+//             TrackedDevicePose pose = tdpb.get(i);
+//             if(pose.bDeviceIsConnected()&&pose.bPoseIsValid()){
+//                 Matrix4f matrix = new Matrix4f(MathUtil.convertHmdMatrix(pose.mDeviceToAbsoluteTracking())).mul(Multitool.editOffsetmatrix);
+//                 Vector3f translation = matrix.getTranslation(new Vector3f());
+//                 float distance = (float)MathUtil.distance(translation, new Vector3d(x+width/2, y+height/2, z+depth/2));
+//                 if(closest==-1||distance<closestDistance){
+//                     closest = i;
+//                     closestDistance = distance;
+//                 }
+//             }
+//         }
+//         if(closestDistance>Math.sqrt(Math.pow(width/2,2)+Math.pow(height/2,2)+Math.pow(depth/2,2)))closest = -1;//too far away
+//         if(activeTool!=closest){
+//             activeTool = closest;
+//             refreshNeeded = true;
+//         }
+// //</editor-fold>
+//         renderer.setColor(Core.theme.getVRPanelOutlineColor());
+//         renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
+//
     }
     public synchronized void refresh(){
         components.clear();
