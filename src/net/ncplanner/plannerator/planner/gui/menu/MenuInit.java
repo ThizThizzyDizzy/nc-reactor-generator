@@ -1,35 +1,72 @@
 package net.ncplanner.plannerator.planner.gui.menu;
-import com.thizthizzydizzy.dizzyengine.DizzyEngine;
-import com.thizthizzydizzy.dizzyengine.ui.FlatUI;
-import com.thizthizzydizzy.dizzyengine.ui.Menu;
-import com.thizthizzydizzy.dizzyengine.ui.layout.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.function.Supplier;
-import net.ncplanner.ncpf.io.NcpfJsonConverter;
-import net.ncplanner.ncpf.structure.NcpfRoot;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
+import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.Main;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.configuration.CannedConfiguration;
-import net.ncplanner.plannerator.planner.configuration.ConfigurationManager;
+
+
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FormatReader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF10Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF11Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF1Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF2Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF3Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF4Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF5Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF6Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF7Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF8Reader;
+import net.ncplanner.plannerator.planner.file.reader.LegacyNCPF9Reader;
 import net.ncplanner.plannerator.planner.file.reader.NCPFReader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR1Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR2Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR3Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR4Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR5Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageMSR6Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR1Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR2Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR3Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR4Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR5Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulHellrageSFR6Reader;
+import net.ncplanner.plannerator.planner.file.reader.OverhaulNCConfigReader;
+import net.ncplanner.plannerator.planner.file.reader.UnderhaulHellrage1Reader;
+import net.ncplanner.plannerator.planner.file.reader.UnderhaulHellrage2Reader;
+import net.ncplanner.plannerator.planner.file.reader.UnderhaulNCConfigReader;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
+import net.ncplanner.plannerator.planner.module.CoreModule;
+import net.ncplanner.plannerator.planner.module.FusionTestModule;
+import net.ncplanner.plannerator.planner.module.InternalModule;
 import net.ncplanner.plannerator.planner.module.Module;
+import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.module.PrimeFuelModule;
+import net.ncplanner.plannerator.planner.module.QuantumTraversedEfficiencyModule;
+import net.ncplanner.plannerator.planner.module.RainbowFactorModule;
+import net.ncplanner.plannerator.planner.module.TiConModule;
+import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
+import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulMSRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement;
 import net.ncplanner.plannerator.planner.theme.Theme;
-import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
 public class MenuInit extends Menu{
     private final Task init;
     HashMap<String, Supplier<FormatReader>> readers = new HashMap<>();
@@ -37,54 +74,49 @@ public class MenuInit extends Menu{
     HashMap<String, Task> readerTasks = new HashMap<>();
     private final ProgressBar progressBar;
     {
-        addReader("NCPFReader", NCPFReader::new);// modern NCPF
-//        addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// Legacy .ncpf version 11
-//        addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// Legacy.ncpf version 10
-//        addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// Legacy.ncpf version 9
-//        addReader("LegacyNCPF8Reader", LegacyNCPF8Reader::new);// Legacy.ncpf version 8
-//        addReader("LegacyNCPF7Reader", LegacyNCPF7Reader::new);// Legacy.ncpf version 7
-//        addReader("LegacyNCPF6Reader", LegacyNCPF6Reader::new);// Legacy.ncpf version 6
-//        addReader("LegacyNCPF5Reader", LegacyNCPF5Reader::new);// Legacy.ncpf version 5
-//        addReader("LegacyNCPF4Reader", LegacyNCPF4Reader::new);// Legacy.ncpf version 4
-//        addReader("LegacyNCPF3Reader", LegacyNCPF3Reader::new);// Legacy.ncpf version 3
-//        addReader("LegacyNCPF2Reader", LegacyNCPF2Reader::new);// Legacy.ncpf version 2
-//        addReader("LegacyNCPF1Reader", LegacyNCPF1Reader::new);// Legacy.ncpf version 1
-//        addReader("OverhaulHellrageSFR6Reader", OverhaulHellrageSFR6Reader::new);// hellrage SFR .json 2.1.1-2.1.7 (present)
-//        addReader("OverhaulHellrageSFR5Reader", OverhaulHellrageSFR5Reader::new);// hellrage SFR .json 2.0.32-2.0.37
-//        addReader("OverhaulHellrageSFR4Reader", OverhaulHellrageSFR4Reader::new);// hellrage SFR .json 2.0.31
-//        addReader("OverhaulHellrageSFR3Reader", OverhaulHellrageSFR3Reader::new);// hellrage SFR .json 2.0.30
-//        addReader("OverhaulHellrageSFR2Reader", OverhaulHellrageSFR2Reader::new);// hellrage SFR .json 2.0.7-2.0.29
-//        addReader("OverhaulHellrageSFR1Reader", OverhaulHellrageSFR1Reader::new);// hellrage SFR .json 2.0.1-2.0.6
-//        addReader("UnderhaulHellrage2Reader", UnderhaulHellrage2Reader::new);// hellrage .json 1.2.23-1.2.25 (present)
-//        addReader("UnderhaulHellrage1Reader", UnderhaulHellrage1Reader::new);// hellrage .json 1.2.5-1.2.22
-//        addReader("OverhaulHellrageMSR6Reader", OverhaulHellrageMSR6Reader::new);// hellrage MSR .json 2.1.1-2.1.7 (present)
-//        addReader("OverhaulHellrageMSR5Reader", OverhaulHellrageMSR5Reader::new);// hellrage MSR .json 2.0.32-2.0.37
-//        addReader("OverhaulHellrageMSR4Reader", OverhaulHellrageMSR4Reader::new);// hellrage MSR .json 2.0.31
-//        addReader("OverhaulHellrageMSR3Reader", OverhaulHellrageMSR3Reader::new);// hellrage MSR .json 2.0.30
-//        addReader("OverhaulHellrageMSR2Reader", OverhaulHellrageMSR2Reader::new);// hellrage MSR .json 2.0.7-2.0.29
-//        addReader("OverhaulHellrageMSR1Reader", OverhaulHellrageMSR1Reader::new);// hellrage MSR .json 2.0.1-2.0.6
-//        addReader("OverhaulNCConfigReader", OverhaulNCConfigReader::new);// OVERHAUL nuclearcraft.cfg
-//        addReader("UnderhaulNCConfigReader", UnderhaulNCConfigReader::new);// UNDERHAUL nuclearcraft.cfg
+        addReader("NCPFReader", NCPFReader::new);// modern NCPF detected by its version field
+        addReader("LegacyNCPF11Reader", LegacyNCPF11Reader::new);// Legacy .ncpf version 11
+        addReader("LegacyNCPF10Reader", LegacyNCPF10Reader::new);// Legacy.ncpf version 10
+        addReader("LegacyNCPF9Reader", LegacyNCPF9Reader::new);// Legacy.ncpf version 9
+        addReader("LegacyNCPF8Reader", LegacyNCPF8Reader::new);// Legacy.ncpf version 8
+        addReader("LegacyNCPF7Reader", LegacyNCPF7Reader::new);// Legacy.ncpf version 7
+        addReader("LegacyNCPF6Reader", LegacyNCPF6Reader::new);// Legacy.ncpf version 6
+        addReader("LegacyNCPF5Reader", LegacyNCPF5Reader::new);// Legacy.ncpf version 5
+        addReader("LegacyNCPF4Reader", LegacyNCPF4Reader::new);// Legacy.ncpf version 4
+        addReader("LegacyNCPF3Reader", LegacyNCPF3Reader::new);// Legacy.ncpf version 3
+        addReader("LegacyNCPF2Reader", LegacyNCPF2Reader::new);// Legacy.ncpf version 2
+        addReader("LegacyNCPF1Reader", LegacyNCPF1Reader::new);// Legacy.ncpf version 1
+        addReader("OverhaulHellrageSFR6Reader", OverhaulHellrageSFR6Reader::new);// hellrage SFR .json 2.1.1-2.1.7 (present)
+        addReader("OverhaulHellrageSFR5Reader", OverhaulHellrageSFR5Reader::new);// hellrage SFR .json 2.0.32-2.0.37
+        addReader("OverhaulHellrageSFR4Reader", OverhaulHellrageSFR4Reader::new);// hellrage SFR .json 2.0.31
+        addReader("OverhaulHellrageSFR3Reader", OverhaulHellrageSFR3Reader::new);// hellrage SFR .json 2.0.30
+        addReader("OverhaulHellrageSFR2Reader", OverhaulHellrageSFR2Reader::new);// hellrage SFR .json 2.0.7-2.0.29
+        addReader("OverhaulHellrageSFR1Reader", OverhaulHellrageSFR1Reader::new);// hellrage SFR .json 2.0.1-2.0.6
+        addReader("UnderhaulHellrage2Reader", UnderhaulHellrage2Reader::new);// hellrage .json 1.2.23-1.2.25 (present)
+        addReader("UnderhaulHellrage1Reader", UnderhaulHellrage1Reader::new);// hellrage .json 1.2.5-1.2.22
+        addReader("OverhaulHellrageMSR6Reader", OverhaulHellrageMSR6Reader::new);// hellrage MSR .json 2.1.1-2.1.7 (present)
+        addReader("OverhaulHellrageMSR5Reader", OverhaulHellrageMSR5Reader::new);// hellrage MSR .json 2.0.32-2.0.37
+        addReader("OverhaulHellrageMSR4Reader", OverhaulHellrageMSR4Reader::new);// hellrage MSR .json 2.0.31
+        addReader("OverhaulHellrageMSR3Reader", OverhaulHellrageMSR3Reader::new);// hellrage MSR .json 2.0.30
+        addReader("OverhaulHellrageMSR2Reader", OverhaulHellrageMSR2Reader::new);// hellrage MSR .json 2.0.7-2.0.29
+        addReader("OverhaulHellrageMSR1Reader", OverhaulHellrageMSR1Reader::new);// hellrage MSR .json 2.0.1-2.0.6
+        addReader("OverhaulNCConfigReader", OverhaulNCConfigReader::new);// OVERHAUL nuclearcraft.cfg
+        addReader("UnderhaulNCConfigReader", UnderhaulNCConfigReader::new);// UNDERHAUL nuclearcraft.cfg
+
     }
     private  void addReader(String s, Supplier<FormatReader> reader){
         readerNames.add(s);
         readers.put(s, reader);
     }
-    public MenuInit(){
-        setLayout(new BorderLayout()).add(progressBar = add(new ProgressBar(3){
+    public MenuInit(GUI gui){
+        super(gui, null);
+        progressBar = add(new ProgressBar(0, 0, gui.getWidth(), gui.getHeight(), 3){
             @Override
             public Task getTask(){
                 return init;
             }
-        }), BorderLayout.Direction.CENTER);
+        });
         init = new Task("Initializing...");
-    }
-    @Override
-    public void render(double deltaTime){
-        super.render(deltaTime);
-        if(!readerTasks.isEmpty()){
-            return;
-        }
         Task t2 = init.addSubtask("Resetting Metadata");
         Task tf = init.addSubtask("Adding File Readers...");
         for(String s : readerNames){
@@ -116,7 +148,7 @@ public class MenuInit extends Menu{
                     readerTasks.get(s).finish();
                 }
                 System.out.println("Loaded File Formats");
-                
+
                 File f = new File("settings.dat").getAbsoluteFile();
                 if(f.exists()){
                     Config settings = Config.newConfig(f);
@@ -128,22 +160,22 @@ public class MenuInit extends Menu{
                 }
                 System.out.println("Preloaded Settings");
                 tps.finish();
-//                Core.modules.add(new CoreModule());
+                Core.modules.add(new CoreModule());
                 tmc.finish();
-//                Core.modules.add(new UnderhaulModule());
+                Core.modules.add(new UnderhaulModule());
                 tm1.finish();
-//                Core.modules.add(new OverhaulModule());
+                Core.modules.add(new OverhaulModule());
                 tm2.finish();
-//                Core.modules.add(new FusionTestModule());
+                Core.modules.add(new FusionTestModule());
                 tm3.finish();
-//                Core.modules.add(new RainbowFactorModule());
+                Core.modules.add(new RainbowFactorModule());
                 tm4.finish();
-//                Core.modules.add(new PrimeFuelModule());
+                Core.modules.add(new PrimeFuelModule());
                 tm5.finish();
-//                Core.modules.add(new QuantumTraversedEfficiencyModule());
+                Core.modules.add(new QuantumTraversedEfficiencyModule());
                 tm6.finish();
-//                Core.modules.add(new TiConModule());
-//                Core.modules.add(new InternalModule());
+                Core.modules.add(new TiConModule());
+                Core.modules.add(new InternalModule());
                 tmX.finish();
                 System.out.println("Added Modules");
                 if(f.exists()){
@@ -199,40 +231,40 @@ public class MenuInit extends Menu{
                 Core.refreshModules(tmr);
                 System.out.println("Refreshed Modules");
                 tmr.finish();
-                attemptInit(ConfigurationManager::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
+                attemptInit(Configuration::initNuclearcraftConfiguration, "Loaded NC Config", "Failed to load NuclearCraft configuration!", false);
                 tc.finish();
-//                for(CannedConfiguration configuration : ConfigurationManager.configurations){
-//                    configuration.configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
-//                        for(BlockElement b : msr.blocks){
-//                            if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
-//                                try{
-//                                    Image other = TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", ""));
-//                                    if(other==null)continue;
-//                                    Image texture = b.texture.texture;
-//                                    int left = Math.max(0,texture.getWidth()*5/16-1);
-//                                    int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
-//                                    int up = Math.max(0,texture.getHeight()*5/16-1);
-//                                    int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
-//                                    Image displayImg = new Image(texture.getWidth(), texture.getHeight());
-//                                    for(int x = 0; x<texture.getWidth(); x++){
-//                                        for(int y = 0; y<texture.getHeight(); y++){
-//                                            if(x>left&&y>up&&x<right&&y<down){
-//                                                displayImg.setColor(x, y, TextureManager.convert(new Color(other.getRGB(x, y))));
-//                                            }else{
-//                                                displayImg.setColor(x, y, TextureManager.convert(new Color(texture.getRGB(x, y))));
-//                                            }
-//                                        }
-//                                    }
-//                                    b.texture.displayTexture = displayImg;
-//                                }catch(Exception ex){
-//                                    Core.warning("Failed to load internal texture for MSR Block: "+b.getDisplayName(), ex);
-//                                }
-//                            }
-//                        }
-//                    });
-//                }
-//                System.out.println("Set MSR Textures");
-                Core.setConfiguration(ConfigurationManager.NUCLEARCRAFT);
+                for(Configuration configuration : Configuration.configurations){
+                    configuration.configuration.withConfiguration(OverhaulMSRConfiguration::new, (msr)->{
+                        for(BlockElement b : msr.blocks){
+                            if(b.heater!=null&&!b.getDisplayName().contains("Standard")){
+                                try{
+                                    Image other = TextureManager.getImage("overhaul/"+b.getDisplayName().toLowerCase(Locale.ROOT).replace(" coolant heater", "").replace("liquid ", ""));
+                                    if(other==null)continue;
+                                    Image texture = b.texture.texture;
+                                    int left = Math.max(0,texture.getWidth()*5/16-1);
+                                    int right = Math.min(texture.getWidth()*11/16, texture.getWidth()-1);
+                                    int up = Math.max(0,texture.getHeight()*5/16-1);
+                                    int down = Math.min(texture.getHeight()*11/16, texture.getHeight()-1);
+                                    Image displayImg = new Image(texture.getWidth(), texture.getHeight());
+                                    for(int x = 0; x<texture.getWidth(); x++){
+                                        for(int y = 0; y<texture.getHeight(); y++){
+                                            if(x>left&&y>up&&x<right&&y<down){
+                                                displayImg.setColor(x, y, TextureManager.convert(new Color(other.getRGB(x, y))));
+                                            }else{
+                                                displayImg.setColor(x, y, TextureManager.convert(new Color(texture.getRGB(x, y))));
+                                            }
+                                        }
+                                    }
+                                    b.texture.displayTexture = displayImg;
+                                }catch(Exception ex){
+                                    Core.warning("Failed to load internal texture for MSR Block: "+b.getDisplayName(), ex);
+                                }
+                            }
+                        }
+                    });
+                }
+                System.out.println("Set MSR Textures");
+                Core.setConfiguration(Configuration.NUCLEARCRAFT);
                 System.out.println("Imposed Configuration");
                 //TODO remember config, but for real this time
                 if(Core.rememberConfig){
@@ -257,10 +289,10 @@ public class MenuInit extends Menu{
                                     message = "Unknown module "+split[1]+"!";
                                     break;
                                 }
-                                CannedConfiguration config = null;
+                                Configuration config = null;
                                 for(Object o : module.ownConfigs){
-                                    CannedConfiguration c = (CannedConfiguration)o;
-                                    if(split[2].equals(c.path))config = c;
+                                    Configuration c = (Configuration)o;
+                                    if(c.getName().equals(split[2]))config = c;
                                 }
                                 if(config==null){
                                     bad = true;
@@ -281,8 +313,8 @@ public class MenuInit extends Menu{
                                     message = "Could not find external configuration!";
                                     break;
                                 }
-                                NcpfRoot root = NcpfJsonConverter.parseJson(file);
-                                Core.setConfiguration(new CannedConfiguration(root, path));
+                                Project ncpf = FileReader.read(file);
+                                Core.setConfiguration(new Configuration(ncpf));
                                 break;
                             case "default": //just do nothing, already done
                                 break;
@@ -297,44 +329,33 @@ public class MenuInit extends Menu{
             }catch(Throwable t){
                 Core.criticalError("Initialization Failed!", t);
             }
-            Menu dialog = null;
-            MenuDialog baseDialog = null;
-            FlatUI ui = DizzyEngine.getLayer(FlatUI.class);
-            if(ui.menu instanceof MenuDialog){
-                dialog = baseDialog = (MenuDialog)ui.menu;
-                while(baseDialog.parentMenu instanceof MenuDialog)baseDialog = (MenuDialog)baseDialog.parentMenu;
-            }
-            //TODO-REFACTOR
-//            if(Main.benchmark)new MenuBenchmark().open();
-//            else if(Main.isBot)new MenuDiscord(gui).open();
-//            else{
-//                if(!Core.tutorialShown&&!Main.headless){
-//                    new MenuTutorial().open();
-//                    Core.tutorialShown = true;
-//                }else new MenuMain().open();
-//                if(Main.isMacOS){
-//                    new MenuCalibrateCursor().open();
-//                }
-//            }
-            if(baseDialog!=null){
-                baseDialog.parent = ui.menu;
-                ui.menu = dialog;
-            }
+            Core.runOnUIThread(() -> {
+                if(gui.menu instanceof net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError)return;
+                Menu next;
+                if(Main.benchmark)next=new MenuBenchmark(gui);
+                else if(Main.isBot)next=new MenuDiscord(gui);
+                else{
+                    MenuMain main=new MenuMain(gui);
+                    if(!Core.tutorialShown&&!Main.headless){
+                        next=new MenuTutorial(gui,main);
+                        Core.tutorialShown=true;
+                    }else next=main;
+                }
+                gui.open(next);
+                if(Main.isMacOS)gui.open(new MenuCalibrateCursor(gui,gui.menu));
+            });
             System.out.println("Downloading patrons list...");
             File file = new File("patrons-list.txt");
             file.delete();
-            
-            HttpURLConnection conn;
             try{
-                conn = (HttpURLConnection)new URI(MenuCredits.patronsLink).toURL().openConnection();
-                conn.setRequestMethod("GET");
-                if(conn.getResponseCode()==200){
-                    try(InputStream in = conn.getInputStream()){
-                        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    }
+                java.net.URLConnection connection = new java.net.URL(MenuCredits.patronsLink).openConnection();
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(10000);
+                try(java.io.InputStream in = connection.getInputStream()){
+                    java.nio.file.Files.copy(in, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 }
-            }catch(Exception ex){
-                System.err.println("Failed to download patrons list");
+            }catch(java.io.IOException ex){
+                System.err.println("Failed to download patrons list: "+ex.getMessage());
             }
             ArrayList<String> patrons = new ArrayList<>();
             try(BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))){
@@ -345,20 +366,22 @@ public class MenuInit extends Menu{
                 }
             }catch(Exception ex){}
             if(!patrons.isEmpty()){
-                //TODO-REFACTOR
-//                MenuCredits.patrons.clear();
-//                MenuCredits.patrons.addAll(patrons);
+                MenuCredits.patrons.clear();
+                MenuCredits.patrons.addAll(patrons);
             }
             file.delete();
             System.out.println("Checking for updates...");
             Core.updater.checkGitHubLatest("ThizThizzyDizzy", "nc-reactor-generator", "v");
-//            if(Core.updater.hasNewVersion){
-//                new MenuUpdate().open();
-//            }
+            if(Core.updater.hasNewVersion)new MenuUpdate(gui, gui.menu, Core.updater).open();
             System.out.println("Update Check Complete.");
         }, "Initialization Thread").start();
     }
-    
+    @Override
+    public void render2d(double deltaTime){
+        progressBar.width = gui.getWidth();
+        progressBar.height = gui.getHeight();
+        super.render2d(deltaTime);
+    }
     private void attemptInit(Runnable initFunc, String success, String errorMessage, boolean critical){
         try{
             initFunc.run();

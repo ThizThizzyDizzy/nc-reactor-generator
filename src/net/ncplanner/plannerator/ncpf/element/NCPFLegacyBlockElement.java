@@ -19,6 +19,21 @@ public class NCPFLegacyBlockElement extends NCPFSettingsElement{
     }
     public NCPFLegacyBlockElement(String name){
         this();
+        int stateStart = name.indexOf('[');
+        int stateEnd = name.indexOf(']', stateStart);
+        if(stateStart>=0&&stateEnd>stateStart){
+            String states = name.substring(stateStart+1, stateEnd);
+            for(String state : states.split(",")){
+                String[] entry = state.split("=", 2);
+                if(entry.length!=2)throw new IllegalArgumentException("Invalid legacy block state: "+state);
+                String value = entry[1].trim();
+                Object parsed = value;
+                if(value.equals("true")||value.equals("false"))parsed = Boolean.valueOf(value);
+                else if(value.matches("-?\\d+"))parsed = Integer.valueOf(value);
+                blockstate.put(entry[0].trim(), parsed);
+            }
+            name = name.substring(0, stateStart)+name.substring(stateEnd+1);
+        }
         if(name.matches(".*:\\d+")){
             String[] nameParts = name.split(":");
             metadata = Integer.valueOf(nameParts[nameParts.length-1]);

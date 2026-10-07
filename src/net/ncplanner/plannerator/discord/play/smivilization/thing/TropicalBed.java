@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public class TropicalBed extends HutThingColorable{
     public TropicalBed(UUID uuid, Hut hut){
         super(uuid, hut, "Tropical Bed", "tropical bed", 36, Color.WHITE);
@@ -17,13 +16,13 @@ public class TropicalBed extends HutThingColorable{
         return new TropicalBed(uuid, hut);
     }
     @Override
-    public void draw(float left, float top, float right, float bottom){
-        Renderer.setColor(Color.WHITE);
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/frame.png"));
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/matress.png"));
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/pillow.png"));
-        Renderer.setColor(getColor());
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/sheets.png"));
+    public void draw(PlanneratorRenderer renderer, float left, float top, float right, float bottom){
+        renderer.setColor(Color.WHITE);
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/frame.png", left, top, right, bottom);
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/matress.png", left, top, right, bottom);
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/pillow.png", left, top, right, bottom);
+        renderer.setColor(getColor());
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/tropical bed/sheets.png", left, top, right, bottom);
     }
     @Override
     public int[] getDimensions(){

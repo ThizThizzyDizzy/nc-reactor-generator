@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu;
+import com.thizthizzydizzy.dizzyengine.DizzyEngine;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -8,13 +9,9 @@ public class MenuDiscord extends Menu{
     Button exit = add(new Button("Exit", true, true));
     public MenuDiscord(GUI gui){
         super(gui, null);
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//
-//         exit.addAction(() -> {
-//             glfwSetWindowShouldClose(Core.window, true);
-//         });
-//
+        exit.addAction(() -> {
+            glfwSetWindowShouldClose(DizzyEngine.window, true);
+        });
     }
     @Override
     public void drawBackground(double deltaTime){

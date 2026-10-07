@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -12,25 +12,18 @@ public class NCPFPlacementRuleComponent extends LayoutPanel{
     private final ListButtonsLayout buttons;
     public NCPFPlacementRuleComponent(NCPFPlacementRule rule){
         super(new LayeredLayout());
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//
-//         add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
-//         TextDisplay display = add(new TextDisplay().fitText());
-//         display.addText(rule.toTooltipString());
-//         buttons = add(new ListButtonsLayout());
-//
+        add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
+        TextDisplay display = add(new TextDisplay().fitText());
+        display.addText(rule.toTooltipString());
+        buttons = add(new ListButtonsLayout());
     }
     public NCPFPlacementRuleComponent addButton(String icon, String tooltip, Runnable onClick){
         buttons.add(new Button("", true, true){
             @Override
             public void drawForeground(double deltaTime){
-                throw new UnsupportedOperationException("Pending refactor");
-//
-//                 Renderer renderer = new Renderer();
-//                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//                 renderer.drawElement(icon, x, y, width, height);
-//
+                PlanneratorRenderer renderer = new PlanneratorRenderer();
+                renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+                renderer.drawElement(icon, x, y, width, height);
             }
         }.setTooltip(tooltip).addAction(onClick));
         return this;

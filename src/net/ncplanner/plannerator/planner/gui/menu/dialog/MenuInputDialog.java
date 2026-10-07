@@ -7,19 +7,13 @@ import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
 public class MenuInputDialog extends MenuDialog{
     public final TextBox inputField;
     public MenuInputDialog(GUI gui, Menu parent, String text, String title){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         inputField = new TextBox(0, 0, 384, 64, text, true, title);
-//         setContent(inputField);
-//
+        super(gui, parent);
+        inputField = new TextBox(0, 0, 384, 64, text, true, title);
+        setContent(inputField);
     }
-    /* @Override */
+    @Override
     public void onOpened(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         inputField.focus();
-//
+        inputField.focus();
     }
     @Override
     public MenuInputDialog addButton(String text){

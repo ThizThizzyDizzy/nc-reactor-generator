@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 @Deprecated
@@ -19,6 +19,8 @@ public class Menu extends Component{
     public Menu(GUI gui){
         this(gui, null);
     }
+    public Menu(){this(Core.gui, null);}
+    public void open(){gui.open(this);}
     @Override
     public void render2d(double deltaTime){
         super.render2d(deltaTime);
@@ -69,7 +71,7 @@ public class Menu extends Component{
         }
     }
     public void renderTooltip(Component component){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         float textHeight = 20;
         float textSpacing = textHeight/10;
         float borderSpacing = textHeight/4;

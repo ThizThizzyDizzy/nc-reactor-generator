@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
@@ -7,21 +7,15 @@ public class BlockValidDecal extends Decal{
     public BlockValidDecal(BlockPos pos){
         super(pos);
     }
-    /* @Override */
-    public void render(Renderer renderer, float x, float y, float blockSize){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
-//         renderer.fillRect(x, y, x+blockSize, y+blockSize);
-//
+    @Override
+    public void render(PlanneratorRenderer renderer, float x, float y, float blockSize){
+        renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
+        renderer.fillRect(x, y, x+blockSize, y+blockSize);
     }
-    /* @Override */
-    public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
-//         renderer.drawCube(x, y, z, x+blockSize, y+blockSize, z+blockSize, null);
-//
+    @Override
+    public void render3D(PlanneratorRenderer renderer, float x, float y, float z, float blockSize){
+        renderer.setColor(Core.theme.getDecalColorBlockValid(), .125f);
+        renderer.drawCube(x, y, z, x+blockSize, y+blockSize, z+blockSize, null);
     }
     @Override
     public String getTooltip(){

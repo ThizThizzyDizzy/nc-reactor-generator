@@ -1,11 +1,10 @@
 package net.ncplanner.plannerator.discord.play.smivilization;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public abstract class HutThing implements Comparable<HutThing>{
     private final String texture;
     protected final Hut hut;
@@ -80,17 +79,17 @@ public abstract class HutThing implements Comparable<HutThing>{
         return thing;
     }
     protected void postLoad(Config config){}
-    public void render(float x, float y, float scale, float imgScale){
-        Renderer.setColor(Color.WHITE);
+    public void render(PlanneratorRenderer renderer, float x, float y, float scale, float imgScale){
+        renderer.setColor(Color.WHITE);
         boolean mirror = false;
         float center = this.x+getDimX()/2f;
         if(mirrorIf>0&&center>4.5f)mirror = true;
         if(mirrorIf<0&&center<4.5f)mirror = true;
-        if(mirror)draw(x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x-getRenderOriginX()*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
-        else draw(x-getRenderOriginX()*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
+        if(mirror)draw(renderer, x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x-getRenderOriginX()*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
+        else draw(renderer, x-getRenderOriginX()*scale*getRenderScale()*imgScale, y-getRenderOriginY()*scale*getRenderScale()*getRenderScaleY()*imgScale, x+(getRenderWidth()-getRenderOriginX())*scale*getRenderScale()*imgScale, y+(getRenderHeight()-getRenderOriginY())*scale*getRenderScale()*getRenderScaleY()*imgScale);
     }
-    public void draw(float left, float top, float right, float bottom){
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture(getTexture()));
+    public void draw(PlanneratorRenderer renderer, float left, float top, float right, float bottom){
+        renderer.drawImage(getTexture(), left, top, right, bottom);
     }
     public abstract float getRenderWidth();
     public abstract float getRenderHeight();
@@ -154,8 +153,8 @@ public abstract class HutThing implements Comparable<HutThing>{
     private float doSomeMagic(float f){
         return (float)Math.pow(f,1.25f);
     }
-    public void render(float imgScale){
-        Renderer.setColor(Color.WHITE);
+    public void render(PlanneratorRenderer renderer, float imgScale){
+        renderer.setWhite();
         switch(wall){
             case FLOOR:
                 float X = x+getDimX()/2;
@@ -163,7 +162,7 @@ public abstract class HutThing implements Comparable<HutThing>{
                 float Z = z;
                 float[] xy = Hut.convertXYZtoXY512(X, Y, Z);
                 float scale = hut.getScale(Y);
-                render(xy[0], xy[1], scale, .25f);
+                render(renderer, xy[0], xy[1], scale, .25f);
                 break;
             case CIELING:
                 X = x+getDimX()/2;
@@ -171,7 +170,7 @@ public abstract class HutThing implements Comparable<HutThing>{
                 Z = z+1;//cuz Z is only half-flipped
                 xy = Hut.convertXYZtoXY512(X, Y, Z);
                 scale = hut.getScale(Y);
-                render(xy[0], xy[1], scale, .25f);
+                render(renderer, xy[0], xy[1], scale, .25f);
                 break;
             case LEFT:
             case RIGHT:
@@ -180,7 +179,7 @@ public abstract class HutThing implements Comparable<HutThing>{
                 Z = z+getDimZ()/2;
                 xy = Hut.convertXYZtoXY512(X, Y, Z);
                 scale = hut.getScale(Y);
-                render(xy[0], xy[1], scale, .25f);
+                render(renderer, xy[0], xy[1], scale, .25f);
                 break;
             default:
                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");

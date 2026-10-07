@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.theme;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.dssl.token.keyword.Keyword;
@@ -568,15 +568,15 @@ public class SmoreTheme extends ColorTheme{
                     col = getComponentDisabledColor(i);
                 }
             }
-            Renderer.setColor(col);
-            Renderer.fillRect(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
+            PlanneratorRenderer.setColor(col);
+            PlanneratorRenderer.fillRect(x, y+height*i/4f, x+width, y+height*(i+1)/4f);
         }
     }
     @Override
     public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
-        Renderer.setFont(getDefaultFont());
-        Renderer.setColor(getComponentTextColor(0));
-        Renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        PlanneratorRenderer.setFont(getDefaultFont());
+        PlanneratorRenderer.setColor(getComponentTextColor(0));
+        PlanneratorRenderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
 //        for(int i = 0; i<4; i++){
 //            renderer.setColor(getComponentTextColor(i));
 //            renderer.bound(x, y+height*i/4f, x+width, y+height*(i+1)/4f);

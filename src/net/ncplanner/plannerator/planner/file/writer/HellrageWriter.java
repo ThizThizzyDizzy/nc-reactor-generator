@@ -60,7 +60,10 @@ public class HellrageWriter extends FormatWriter{
                             array.add(bl);
                         }
                     }
-                    compressedReactor.put(StringUtil.superRemove(StringUtil.superReplace(b.getDisplayName(), "Reactor Cell", "Fuel Cell", "Active", "Active "), " ", "Liquid", "Cooler", "Moderator"), array);
+                    if(array.isEmpty())continue;
+                    String blockName = StringUtil.superRemove(StringUtil.superReplace(b.getDisplayName(), "Reactor Cell", "Fuel Cell", "Active", "Active "), " ", "Liquid", "Cooler", "Moderator");
+                    if(blockName.isEmpty()&&b.moderator!=null)blockName = "Graphite";
+                    compressedReactor.put(blockName, array);
                 }
                 JSON.JSONObject dims = new JSON.JSONObject();
                 dims.set("X", reactor.getInternalWidth());

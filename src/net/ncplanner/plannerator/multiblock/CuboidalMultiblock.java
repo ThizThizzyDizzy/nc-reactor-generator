@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -89,16 +89,13 @@ public abstract class CuboidalMultiblock<T extends AbstractBlock> extends Multib
         return z+2;
     }
     public boolean isCompact(int totalBlocks){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         int blockCount = getBlocks(true).size();
-//         int volume = getExternalDepth()*getExternalHeight()*getExternalWidth();
-//         int bitsPerDim = MathUtil.logBase(2, Math.max(getExternalWidth(), Math.max(getExternalHeight(), getExternalDepth())));
-//         int bitsPerType = MathUtil.logBase(2, totalBlocks);
-//         int compactBits = bitsPerType*volume;
-//         int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
-//         return compactBits<spaciousBits;
-//
+        int blockCount = getBlocks(true).size();
+        int volume = getExternalDepth()*getExternalHeight()*getExternalWidth();
+        int bitsPerDim = MathUtil.logBase(2, Math.max(getExternalWidth(), Math.max(getExternalHeight(), getExternalDepth())));
+        int bitsPerType = MathUtil.logBase(2, totalBlocks);
+        int compactBits = bitsPerType*volume;
+        int spaciousBits = 4*Math.max(bitsPerDim, bitsPerType)*blockCount;
+        return compactBits<spaciousBits;
     }
     public void forEachInternalPosition(Consumer<BlockPos> func){
         BoundingBox.around(new BlockPos(1,1,1), new BlockPos(getInternalWidth(), getInternalHeight(), getInternalDepth())).forEachPosition(func);

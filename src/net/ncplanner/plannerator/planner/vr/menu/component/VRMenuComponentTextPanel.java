@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
@@ -16,22 +16,19 @@ public class VRMenuComponentTextPanel extends VRMenuComponent{
         this.text = new FormattedText(text);
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(Core.theme.getTextViewBackgroundColor());
-//         renderer.drawCube(0, 0, 0, width, height, depth, null);
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         ArrayList<FormattedText> txt = text.split("\n");
-//         float textHeight = Math.min(depth, (height-textInset*2)/txt.size());
-//         renderer.pushModel(new Matrix4f()
-//                 .translate(0, height, depth+textOffset)
-//                 .scale(1, -1, 1));
-//         for(int i = 0; i<txt.size(); i++){
-//             FormattedText s = txt.get(i);
-//             renderer.drawFormattedText(textInset, textInset+textHeight*i, width-textInset, textInset+textHeight*(i+1), s, snap);
-//         }
-//         renderer.popModel();
-//
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+        renderer.setColor(Core.theme.getTextViewBackgroundColor());
+        renderer.drawCube(0, 0, 0, width, height, depth, null);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        ArrayList<FormattedText> txt = text.split("\n");
+        float textHeight = Math.min(depth, (height-textInset*2)/txt.size());
+        renderer.pushModel(new Matrix4f()
+                .translate(0, height, depth+textOffset)
+                .scale(1, -1, 1));
+        for(int i = 0; i<txt.size(); i++){
+            FormattedText s = txt.get(i);
+            renderer.drawFormattedText(textInset, textInset+textHeight*i, width-textInset, textInset+textHeight*(i+1), s, snap);
+        }
+        renderer.popModel();
     }
 }

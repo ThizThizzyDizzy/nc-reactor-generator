@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
@@ -15,26 +15,23 @@ public class MenuComponentElement extends Component implements Pinnable{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(isFocused){
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
-//         }else{
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         }
-//         renderer.fillRect(x, y, x+width, y+height);
-//         if(element.getTexture()!=null){
-//             renderer.setWhite();
-//             renderer.drawImage(element.getTexture(), x, y, x+height, y+height);
-//         }
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         drawText(renderer);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(isFocused){
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
+        renderer.fillRect(x, y, x+width, y+height);
+        if(element.getTexture()!=null){
+            renderer.setWhite();
+            renderer.drawImage(element.getTexture(), x, y, x+height, y+height);
+        }
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        drawText(renderer);
     }
-    public void drawText(Renderer renderer){
+    public void drawText(PlanneratorRenderer renderer){
         String text = element.getDisplayName();
         if(text==null)text = "null";
         float textLength = renderer.getStringWidth(text, height);
@@ -42,7 +39,7 @@ public class MenuComponentElement extends Component implements Pinnable{
         float textHeight = (int)(height*scale)-1;
         renderer.drawText(element.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
-    @Override    
+    @Override
     public String getTooltip(){
         String ttp = "";
         for(NCPFModule module : element.modules.modules.values()){

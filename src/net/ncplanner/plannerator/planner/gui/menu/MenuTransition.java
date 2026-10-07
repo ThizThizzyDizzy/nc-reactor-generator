@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.HashMap;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
@@ -28,30 +28,27 @@ public class MenuTransition extends Menu{
     }
     @Override
     public void render2d(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         timer+=deltaTime*20;
-//         float ratio = Math.max(0, Math.min(1, timer/time));
-//         transition.render(from, to, ratio, deltaTime);
-//         if(timer>=time){
-//             transition.finalCheck(from, to);
-//             Menu dialog = null;
-//             Menu baseDialog = null;
-//             if(gui.menu instanceof MenuDialog){
-//                 dialog = baseDialog = gui.menu;
-//                 while(baseDialog.parent instanceof MenuDialog)baseDialog = baseDialog.parent;
-//             }
-//             try{
-//                 gui.open(to);
-//             }catch(Exception ex){
-//                 dialog = new MenuError(gui, dialog, "Error opening menu!", ex);
-//             }
-//             if(baseDialog!=null){
-//                 baseDialog.parent = gui.menu;
-//                 gui.menu = dialog;
-//             }
-//         }
-//
+        timer+=deltaTime*20;
+        float ratio = Math.max(0, Math.min(1, timer/time));
+        transition.render(from, to, ratio, deltaTime);
+        if(timer>=time){
+            transition.finalCheck(from, to);
+            Menu dialog = null;
+            Menu baseDialog = null;
+            if(gui.menu instanceof MenuDialog){
+                dialog = baseDialog = gui.menu;
+                while(baseDialog.parent instanceof MenuDialog)baseDialog = baseDialog.parent;
+            }
+            try{
+                gui.open(to);
+            }catch(Exception ex){
+                dialog = new MenuError(gui, dialog, "Error opening menu!", ex);
+            }
+            if(baseDialog!=null){
+                baseDialog.parent = gui.menu;
+                gui.menu = dialog;
+            }
+        }
     }
     public static interface Transition{
         public void render(Menu from, Menu to, float ratio, double deltaTime);
@@ -74,29 +71,26 @@ public class MenuTransition extends Menu{
         }
         @Override
         public void render(Menu from, Menu to, float ratio, double deltaTime){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             Renderer renderer = new Renderer();
-//             float xOff = from.gui.getWidth()*(slideTo?ratio:(1-ratio))*xDiff;
-//             float yOff = from.gui.getHeight()*(slideTo?ratio:(1-ratio))*yDiff;
-//             if(slideTo){
-//                 to.render2d(deltaTime);
-//                 renderer.translate(xOff, yOff);
-//                 renderer.setColor(Core.theme.getMenuBackgroundColor());
-//                 renderer.fillRect(0, 0, from.gui.getWidth(), from.gui.getHeight());
-//                 renderer.setWhite();
-//                 from.render2d(deltaTime);
-//                 renderer.unTranslate();
-//             }else{
-//                 from.render2d(deltaTime);
-//                 renderer.translate(xOff, yOff);
-//                 renderer.setColor(Core.theme.getMenuBackgroundColor());
-//                 renderer.fillRect(0, 0, from.gui.getWidth(), from.gui.getHeight());
-//                 renderer.setWhite();
-//                 to.render2d(deltaTime);
-//                 renderer.unTranslate();
-//             }
-//
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
+            float xOff = from.gui.getWidth()*(slideTo?ratio:(1-ratio))*xDiff;
+            float yOff = from.gui.getHeight()*(slideTo?ratio:(1-ratio))*yDiff;
+            if(slideTo){
+                to.render2d(deltaTime);
+                renderer.translate(xOff, yOff);
+                renderer.setColor(Core.theme.getMenuBackgroundColor());
+                renderer.fillRect(0, 0, from.gui.getWidth(), from.gui.getHeight());
+                renderer.setWhite();
+                from.render2d(deltaTime);
+                renderer.unTranslate();
+            }else{
+                from.render2d(deltaTime);
+                renderer.translate(xOff, yOff);
+                renderer.setColor(Core.theme.getMenuBackgroundColor());
+                renderer.fillRect(0, 0, from.gui.getWidth(), from.gui.getHeight());
+                renderer.setWhite();
+                to.render2d(deltaTime);
+                renderer.unTranslate();
+            }
         }
         @Override
         public void finalCheck(Menu from, Menu to){}
@@ -117,7 +111,7 @@ public class MenuTransition extends Menu{
         private final HashMap<Component, Float> initialX = new HashMap<>();
         @Override
         public void render(Menu from, Menu to, float ratio, double deltaTime){
-            Renderer renderer = new Renderer();
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
             if(slideOut){
                 if(initialX.isEmpty()){
                     from.render2d(deltaTime);
@@ -255,7 +249,7 @@ public class MenuTransition extends Menu{
         private final HashMap<Component, Float> initialY = new HashMap<>();
         @Override
         public void render(Menu from, Menu to, float ratio, double deltaTime){
-            Renderer renderer = new Renderer();
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
             if(slideOut){
                 if(initialY.isEmpty()){
                     from.render2d(deltaTime);

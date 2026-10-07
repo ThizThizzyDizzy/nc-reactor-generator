@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 public class PatreonPoster extends HutThingExclusive{
     int frameType = 1;
     public PatreonPoster(UUID uuid, Hut hut){
@@ -14,16 +14,13 @@ public class PatreonPoster extends HutThingExclusive{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new PatreonPoster(uuid, hut);
     }
-    /* @Override */
-    public void render(Renderer renderer, float imgScale){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setWhite();
-//         float[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
-//         float right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
-//         float bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
-//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png", lefttop[0], lefttop[1], right, bottom);
-//
+    @Override
+    public void render(PlanneratorRenderer renderer, float imgScale){
+        renderer.setWhite();
+        float[] lefttop = Hut.convertXYZtoXY512(x, y, z+getDimZ());
+        float right = Hut.convertXYZtoXY512(x+getDimX(), y, z+getDimZ())[0];
+        float bottom = (right-lefttop[0])/getRenderWidth()*getRenderHeight()+lefttop[1];
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/special/patreon.png", lefttop[0], lefttop[1], right, bottom);
     }
     @Override
     public int[] getDimensions(){
@@ -31,7 +28,7 @@ public class PatreonPoster extends HutThingExclusive{
         else return new int[]{1,3,4};
     }
     @Override
-    public int[] getDefaultLocation(){    
+    public int[] getDefaultLocation(){
         return new int[]{0,0,5};
     }
     @Override

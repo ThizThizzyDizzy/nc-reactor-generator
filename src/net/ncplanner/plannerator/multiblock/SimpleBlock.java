@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock;
 import java.util.ArrayList;
 import java.util.function.Function;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
@@ -17,11 +17,8 @@ public abstract class SimpleBlock extends AbstractBlock{
     public String getTooltip(Multiblock multiblock){
         return getName();
     }
-    /* @Override */
-    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-    }
+    @Override
+    public void renderOverlay(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){}
     @Override
     public boolean isValid(){
         return true;

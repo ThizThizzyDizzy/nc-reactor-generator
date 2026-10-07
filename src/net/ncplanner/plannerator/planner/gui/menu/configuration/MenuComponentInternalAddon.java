@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.configuration;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.menu.component.Button;
@@ -24,21 +24,15 @@ public class MenuComponentInternalAddon extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
-//         else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         renderer.fillRect(x, y, x+width, y+height);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+        else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        renderer.fillRect(x, y, x+width, y+height);
     }
     @Override
     public void drawForeground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        renderer.drawText(x+textInset, y+textInset, x+width-textInset, y+height-textInset, addon.getName());
     }
 }

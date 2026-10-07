@@ -17,7 +17,7 @@ public class SiezureTheme extends ColorTheme{
         if(Main.isBot)siezureAllowed = false;
         Thread t = new Thread(() -> {
             if(siezureAllowed==null){
-                new MenuSiezureTheme(() -> {
+                new MenuSiezureTheme(Core.gui, Core.gui.menu, () -> {
                     siezureAllowed = true;
                 }, () -> {
                     siezureAllowed = false;

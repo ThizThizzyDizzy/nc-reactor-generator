@@ -9,22 +9,19 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.Legacy
 public class MenuSelect<T> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuSelect(GUI gui, Menu parent, List<T> options, ArrayList<String> names, Consumer<T> onConfirm){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         minWidth = minHeight = 0;
-//         for(int i = 0; i<options.size(); i++){
-//             T t = options.get(i);
-//             buttons.add(new Button(names==null?t.toString():names.get(i), true).addAction(() -> {
-//                 close();
-//                 onConfirm.accept(t);
-//             }));
-//         }
-//         setContent(new LegacySingleColumnGridLayout(32).addAll(buttons));
-//         content.width = 640;
-//         addButton("Cancel", () -> {
-//             close();
-//         });
-//
+        super(gui, parent);
+        minWidth = minHeight = 0;
+        for(int i = 0; i<options.size(); i++){
+            T t = options.get(i);
+            buttons.add(new Button(names==null?t.toString():names.get(i), true).addAction(() -> {
+                close();
+                onConfirm.accept(t);
+            }));
+        }
+        setContent(new LegacySingleColumnGridLayout(32).addAll(buttons));
+        content.width = 640;
+        addButton("Cancel", () -> {
+            close();
+        });
     }
 }

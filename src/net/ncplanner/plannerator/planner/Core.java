@@ -1,7 +1,12 @@
 package net.ncplanner.plannerator.planner;
+import net.ncplanner.plannerator.ncpf.NCPFModuleContainer;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.ncpf.NCPFDesign;
+import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
 import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
@@ -67,7 +72,8 @@ public class Core{
 
     public static final ArrayList<Multiblock> multiblocks = new ArrayList<>();
     public static final ArrayList<Multiblock> multiblockTypes = new ArrayList<>();
-    public static NcpfRoot project = new NcpfRoot();
+    public static net.ncplanner.plannerator.planner.ncpf.Project project = new net.ncplanner.plannerator.planner.ncpf.Project();
+    public static final net.ncplanner.plannerator.planner.gui.GUI gui = new net.ncplanner.plannerator.planner.gui.GUI(0);
     public static final HashMap<String, String> metadata = new HashMap<>();
 
     public static Theme theme = Theme.themes.get(0).get(0);
@@ -111,7 +117,18 @@ public class Core{
         metadata.put("Name", "");
         metadata.put("Author", "");
     }
+    private static Thread uiThread;
+    private static final java.util.concurrent.ConcurrentLinkedQueue<Runnable> uiTasks = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    public static boolean isUIThread(){return Thread.currentThread()==uiThread;}
+    public static void runOnUIThread(Runnable action){
+        if(isUIThread())action.run();else uiTasks.add(action);
+    }
+    public static void processUITasks(){
+        Runnable action;
+        while((action=uiTasks.poll())!=null)action.run();
+    }
     public static void main(String[] args){
+        uiThread = Thread.currentThread();
         if(Main.novr){
             Logger.info("Skipping VR runtime");
         }else{
@@ -145,7 +162,10 @@ public class Core{
         icon.set(iconWidth.get(0), iconHeight.get(0), imageData);
         iconBuffer.put(icon);
         iconBuffer.rewind();
-        glfwSetWindowIcon(DizzyEngine.window, iconBuffer);
+        if(glfwGetPlatform()!=GLFW_PLATFORM_WAYLAND){
+            glfwSetWindowIcon(DizzyEngine.window, iconBuffer);
+        }
+        stbi_image_free(imageData);
 //        glfwSwapInterval(vsync?1:0);
         if(debugMode){
             System.out.println("Creating GL Debug Callback");
@@ -157,9 +177,11 @@ public class Core{
         FONT_40 = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource("/assets/fonts/high_resolution.ttf")));
         FONT_10 = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource("/assets/fonts/small.ttf")));
         FONT_MONO_20 = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource("/assets/fonts/monospaced.ttf")));
-        FlatUI ui = new FlatUI();
+        PlanneratorRenderer.setDefaultFont(FONT_20);
+        FlatUI ui = new net.ncplanner.plannerator.planner.ui.PlanneratorUI();
         ui.setDefaultComponentBackground(ComponentBackgroundLayer::new);
-        DizzyEngine.addLayer(ui).open(new MenuInit());
+        DizzyEngine.addLayer(ui);
+        gui.open(new MenuInit(gui));
 
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             error("Uncaught Exception in Thread "+t.getName()+"!", e);
@@ -167,10 +189,10 @@ public class Core{
 
         DizzyEngine.addCloseHook(() -> {
             if(saved)return;
-            if(DizzyEngine.getLayer(FlatUI.class).menu instanceof MenuUnsavedChanges)
+            if(gui.menu instanceof MenuUnsavedChanges)
                 return;//clicked close twice, might as well listen this time
             glfwSetWindowShouldClose(DizzyEngine.window, false);
-            new MenuUnsavedChanges().open();
+            new MenuUnsavedChanges(gui, gui.menu).open();
         });
         DizzyEngine.addShutdownHook(() -> {
             try{
@@ -228,7 +250,7 @@ public class Core{
             System.exit(0);//TODO Shouldn't have to do this! :(
         }
     }
-    public static void render2d(Renderer renderer, double deltaTime){
+    public static void render2d(PlanneratorRenderer renderer, double deltaTime){
         renderer.setColor(Color.WHITE);
         if(delCircle&&sourceCircle!=null){
             Core.deleteTexture(sourceCircle);
@@ -238,18 +260,18 @@ public class Core{
         }
         if(sourceCircle==null){
             sourceCircle = Core.makeImage(circleSize, circleSize, (bufferWidth, bufferHeight) -> {
-                Renderer.setColor(Color.WHITE);
-                Renderer.fillHollowRegularPolygon(bufferWidth/2, bufferHeight/2, 24, bufferWidth*(4/16f), bufferWidth*(6/16f));
+                PlanneratorRenderer.setColor(Color.WHITE);
+                PlanneratorRenderer.fillHollowRegularPolygon(bufferWidth/2, bufferHeight/2, 24, bufferWidth*(4/16f), bufferWidth*(6/16f));
             });
         }
         if(outlineSquare==null){
             outlineSquare = Core.makeImage(32, 32, (bufferWidth, bufferHeight) -> {
-                Renderer.setColor(Color.WHITE);
+                PlanneratorRenderer.setColor(Color.WHITE);
                 float inset = bufferWidth/32f;
-                Renderer.fillRect(inset, inset, bufferWidth-inset, inset+bufferWidth/16);
-                Renderer.fillRect(inset, bufferWidth-inset-bufferWidth/16, bufferWidth-inset, bufferWidth-inset);
-                Renderer.fillRect(inset, inset+bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset-bufferWidth/16);
-                Renderer.fillRect(bufferWidth-inset-bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset, bufferWidth-inset-bufferWidth/16);
+                PlanneratorRenderer.fillRect(inset, inset, bufferWidth-inset, inset+bufferWidth/16);
+                PlanneratorRenderer.fillRect(inset, bufferWidth-inset-bufferWidth/16, bufferWidth-inset, bufferWidth-inset);
+                PlanneratorRenderer.fillRect(inset, inset+bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset-bufferWidth/16);
+                PlanneratorRenderer.fillRect(bufferWidth-inset-bufferWidth/16, inset+bufferWidth/16, bufferWidth-inset, bufferWidth-inset-bufferWidth/16);
             });
         }
 //        gui.render2d(deltaTime);
@@ -289,6 +311,9 @@ public class Core{
         if(depth)glDisable(GL_DEPTH_TEST);
         ByteBuffer imageBuffer = BufferUtils.createByteBuffer(width*height*4);
 
+        int previousFramebuffer = glGetInteger(GL_FRAMEBUFFER_BINDING);
+        int[] previousViewport = new int[4];
+        glGetIntegerv(GL_VIEWPORT, previousViewport);
         int framebuffer = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
@@ -311,27 +336,31 @@ public class Core{
         if(status!=GL_FRAMEBUFFER_COMPLETE)
             throw new RuntimeException("Could not create FBO: "+status);
 
+        PlanneratorRenderer.beginOffscreen();
         glViewport(0, 0, width, height);
         glClearColor(0f, 0f, 0f, 0f);
         glStencilMask(0xff);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
         glStencilMask(0x00);
 
-        Renderer.setTemporaryProjection(new Matrix4f().setOrtho(0, width, height, 0, 0.1f, 10f));
+        PlanneratorRenderer.setTemporaryProjection(new Matrix4f().setOrtho(0, width, height, 0, 0.1f, 10f));
 
-        r.render(width, height);
+        try{
+            r.render(width, height);
+            glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer);
+        }finally{
+        glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
+        glViewport(previousViewport[0], previousViewport[1], previousViewport[2], previousViewport[3]);
 
-        glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        glViewport(0, 0, DizzyEngine.screenSize.x, DizzyEngine.screenSize.y);
-
-        Renderer.restoreProjection();
+        PlanneratorRenderer.restoreProjection();
 
         glDeleteFramebuffers(framebuffer);
-        glDeleteBuffers(rbo);
+        glDeleteRenderbuffers(rbo);
         glDeleteTextures(textureColorBuffer);
+        PlanneratorRenderer.endOffscreen();
+        if(cull)glEnable(GL_CULL_FACE);
+        if(depth)glEnable(GL_DEPTH_TEST);
+        }
 
         int[] imgRGBData = new int[width*height];
         byte[] imgData = new byte[width*height*4];
@@ -358,7 +387,13 @@ public class Core{
 
         multiblockTypes.clear();
         Tutorial.init();
-        ConfigurationManager.clearConfigurations();
+        Configuration.clearConfigurations();
+        net.ncplanner.plannerator.planner.configuration.ConfigurationManager.clearConfigurations();
+        NCPFConfigurationContainer.recognizedConfigurations.clear();
+        NCPFConfigurationContainer.configOrder.clear();
+        NCPFDesign.recognizedDesigns.clear();
+        NCPFElement.recognizedElements.clear();
+        NCPFModuleContainer.recognizedModules.clear();
         clean.finish();
 
         ArrayList<Module> activeModules = new ArrayList<>();
@@ -441,7 +476,7 @@ public class Core{
             file = new File("autosave"+num+".ncpf.json");
             num++;
         }
-        NcpfJsonConverter.writeJson(project, file);
+        net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter.write(project, file, new net.ncplanner.plannerator.planner.file.ncpf.JSONNCPFWriter());
         return num;
     }
     public static boolean openURL(String link){
@@ -512,19 +547,10 @@ public class Core{
     public static void setConfiguration(CannedConfiguration configuration){
         configuration = configuration.safeCopy();
         configuration.impose(project);
+        lastLoadedConfig = configuration.path;
     }
     public static void setConfigurationAndConvertMultiblocks(CannedConfiguration config){
-        //TODO when rewriting how multiblocks work, design them in such a way that strict references are not required- and so it doesn't crash if you delete blocks from the config- it just fails to save and shows as missing/errors.
-
-//        ArrayList<MultiblockDesign> designs = new ArrayList<>();
-//        for(Multiblock multi : multiblocks)designs.add(multi.toDesign());
-//        multiblocks.clear();
-        setConfiguration(config);
-//        for(MultiblockDesign design : designs){
-//            design.file = project;
-//            design.convertElements();
-//            multiblocks.add(design.toMultiblock());
-//        }
+        setConfigurationAndConvertMultiblocks((net.ncplanner.plannerator.planner.ncpf.Configuration)config);
     }
     public static interface BufferRenderer{
         void render(int width, int height);
@@ -632,9 +658,34 @@ public class Core{
         if(comp.parent instanceof Panel&&((Panel)comp.parent).layout instanceof ListLayout){
             return comp.parent.components.indexOf(comp);
         }
+
+        return 0;
+    }
+    public static int getThemeIndex(net.ncplanner.plannerator.planner.gui.Component comp){
+        if(comp.parent instanceof net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList
+                ||comp.parent instanceof net.ncplanner.plannerator.planner.gui.menu.component.MulticolumnList)
+            return comp.parent.components.indexOf(comp);
         if(comp.parent instanceof MenuDialog)
             return ((MenuDialog)comp.parent).buttons.indexOf(comp);
         return 0;
+    }
+    public static void setConfiguration(net.ncplanner.plannerator.planner.ncpf.Configuration configuration){
+        configuration = new net.ncplanner.plannerator.planner.ncpf.Configuration(configuration.toProject(), configuration.path);
+        project.configuration = configuration.configuration;
+        project.addons = configuration.addons;
+        project.conglomerate();
+        lastLoadedConfig = configuration.path;
+    }
+    public static void setConfigurationAndConvertMultiblocks(net.ncplanner.plannerator.planner.ncpf.Configuration configuration){
+        java.util.ArrayList<net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign> designs = new java.util.ArrayList<>();
+        for(Multiblock multi : multiblocks)designs.add(multi.toDesign());
+        setConfiguration(configuration);
+        multiblocks.clear();
+        for(net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign design : designs){
+            design.file = project;
+            design.convertElements();
+            multiblocks.add(design.toMultiblock());
+        }
     }
     public static int getThemeIndex(VRMenuComponent comp){
         if(comp.parent instanceof VRMenuComponentSpecialPanel)
@@ -705,18 +756,18 @@ public class Core{
         System.err.println("Warning:");
         Logger.warn(message, error);
         if(Main.isBot)return;
-        new MenuWarningMessage(message, error).open();
+        new MenuWarningMessage(gui, gui.menu, message, error).open();
     }
     public static void error(String message, Throwable error){
         System.err.println("Severe Error");
         Logger.error(message, error);
         if(Main.isBot)return;
-        new MenuError(message, error).open();
+        new MenuError(gui, gui.menu, message, error).open();
     }
     public static void criticalError(String message, Throwable error){
         System.err.println("Critical Error");
         Logger.error(message, error);
         if(Main.isBot)return;
-        new MenuCriticalError(message, error).open();
+        new MenuCriticalError(gui, message, error).open();
     }
 }

@@ -1,13 +1,10 @@
 package net.ncplanner.plannerator.planner.file.writer;
-import com.thizthizzydizzy.dizzyengine.MathUtil;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import net.ncplanner.plannerator.discord.Bot;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -17,6 +14,7 @@ import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.file.FileFormat;
@@ -36,135 +34,133 @@ public class PNGWriter extends ImageFormatWriter{
     }
     @Override
     public Image write(Project ncpf){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(!ncpf.designs.isEmpty()){
-//             if(ncpf.designs.size()>1)throw new IllegalArgumentException("Multiple multiblocks are not supported by PNG!");
-//             final Design design = ncpf.designs.get(0);
-//             Multiblock mb = ((MultiblockDesign)design).toMultiblock();
-//             mb.recalculate();
-//             int blSiz = 32;
-//             ArrayList<AbstractBlock> blox = mb.getBlocks();
-//             for(AbstractBlock b : blox){
-//                 if(b.getTexture()==null)continue;
-//                 blSiz = Math.max(b.getTexture().getWidth(), blSiz);
-//             }
-//             int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
-//             final int blockSize = blSiz;
-//             ArrayList<PartCount> parts = mb.getPartsList();
-//             if(!Core.imageExportCasingParts){
-//                 for (Iterator<PartCount> it = parts.iterator(); it.hasNext();) {
-//                     PartCount part = it.next();
-//                     if(part.name.toLowerCase(Locale.ROOT).contains("casing")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("port")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("controller")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("vent")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("glass")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("inlet")
-//                             ||part.name.toLowerCase(Locale.ROOT).contains("outlet"))it.remove();
-//                 }
-//             }
-//             String configString = mb.getSpecificConfiguration().getNameAndVersion();
-//             for(Addon addon : ncpf.addons)configString+="\n + "+addon.configuration.getNameAndVersion();
-//             FormattedText s = new FormattedText(configString).addText(mb.getSaveTooltip());
-//             ArrayList<FormattedText> strs = s.split("\n");
-//             int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
-//             float textWidth = 0;
-//             for(int i = 0; i<strs.size(); i++){
-//                 FormattedText str = strs.get(i);
-//                 textWidth = Math.max(textWidth, renderer.getStringWidth(str.text, textHeight));
-//             }
-//             float partsWidth = 0;
-//             for(PartCount c : parts){
-//                 partsWidth = Math.max(partsWidth, textHeight+renderer.getStringWidth(c.count+"x "+c.name, textHeight));
-//             }
-//             final float tW = textWidth+borderSize;
-//             final float pW = partsWidth+borderSize;
-//             BoundingBox bbox = mb.getBoundingBox(Core.imageExportCasing);
-//             int width = (int) Math.max(textWidth+partsWidth+(Core.imageExport3DView?totalTextHeight:0),bbox.getWidth()*blockSize+borderSize);
-//             int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
-//             int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
-//             int height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize)+borderSize/2;
-//             while(rowCount>1&&height>width){
-//                 width++;
-//                 multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
-//                 rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
-//                 height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize);
-//             }
-//             int mpr = multisPerRow;
-//             Core.BufferRenderer buffRenderer = (bufferWidth, bufferHeight) -> {
-//                 Renderer.setColor(Core.theme.getImageExportBackgroundColor());
-//                 Renderer.fillRect(0, 0, bufferWidth, bufferHeight);
-//                 Renderer.setColor(Core.theme.getImageExportTextColor());
-//                 for(int i = 0; i<strs.size(); i++){
-//                     FormattedText str = strs.get(i);
-//                     Renderer.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
-//                 }
-//                 Renderer.setColor(Core.theme.getImageExportTextColor());
-//                 for(int i = 0; i<parts.size(); i++){
-//                     PartCount c = parts.get(i);
-//                     if(Core.imageExport3DView)Renderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
-//                     else Renderer.drawText(bufferWidth-pW+textHeight+borderSize/2, i*textHeight+borderSize/2, bufferWidth, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
-//                 }
-//                 Renderer.setColor(Color.WHITE);
-//                 for(int i = 0; i<parts.size(); i++){
-//                     PartCount c = parts.get(i);
-//                     Image image = c.getImage();
-//                     if(image!=null){
-//                         if(Core.imageExport3DView)Renderer.fillRect(tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2, ResourceManager.getTexture(image));
-//                         else Renderer.fillRect(bufferWidth-pW, i*textHeight+borderSize/2, bufferWidth-pW+textHeight, (i+1)*textHeight+borderSize/2, ResourceManager.getTexture(image));
-//                     }
-//                 }
-//                 if(Core.imageExport3DView){
-//                     BoundingBox bbox3 = mb.getBoundingBox(Core.imageExportCasing3D);
-//                     float size = Math.max(bbox3.getWidth(), Math.max(bbox3.getHeight(), bbox3.getDepth()));
-//                     renderer.model(new Matrix4f()
-//                             .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
-//                             .scale(1, 1, 0.0001f)
-//                             .rotate((float)MathUtil.toRadians(45), 1, 0, 0)
-//                             .rotate((float)MathUtil.toRadians(45), 0, 1, 0)
-//                             .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
-//                             .scale(1/size, 1/size, 1/size)
-//                             .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
-//                             .translate(-bbox3.getWidth()/2f, -bbox3.getHeight()/2f, -bbox3.getDepth()/2f));
-//                     mb.draw3DInOrder(Core.imageExportCasing3D);
-//                     renderer.resetModelMatrix();
-//                 }
-//                 for(int y = 0; y<bbox.getHeight(); y++){
-//                     int column = y%mpr;
-//                     int row = y/mpr;
-//                     int layerWidth = bbox.getWidth()*blockSize+borderSize;
-//                     int layerHeight = bbox.getDepth()*blockSize+borderSize;
-//                     for(int x = 0; x<bbox.getWidth(); x++){
-//                         for(int z = 0; z<bbox.getDepth(); z++){
-//                             int X = x+bbox.x1;
-//                             int Y = y+bbox.y1;
-//                             int Z = z+bbox.z1;
-//                             if(!Core.imageExportCasing&&mb.shouldHideWithCasing(new BlockPos(X,Y,Z)))continue;
-//                             AbstractBlock b = mb.getBlock(new BlockPos(X,Y,Z));
-//                             if(b!=null)b.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
-//                             if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(new BlockPos(X,Y,Z))==OverhaulFusionReactor.LocationCategory.PLASMA){
-//                                 Renderer.fillRect(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize, ResourceManager.getTexture("/textures/overhaul/fusion/plasma.png"));
-//                             }
-//                             for(EditorOverlay o : overlays){
-//                                 if(!o.isActive())continue;
-//                                 for(Decal d : (Queue<Decal>)o.decals){
-//                                     if(d.pos.equals(new BlockPos(X,Y,Z))){
-//                                         d.render(column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             };
-//             if(botRunning)return Bot.makeImage(width, height, buffRenderer);
-//             return Core.makeImage(width, height, buffRenderer);
-//         }else{
-//             throw new IllegalArgumentException("Cannot export configuration to image!");
-//         }
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(!ncpf.designs.isEmpty()){
+            if(ncpf.designs.size()>1)throw new IllegalArgumentException("Multiple multiblocks are not supported by PNG!");
+            final Design design = ncpf.designs.get(0);
+            Multiblock mb = ((MultiblockDesign)design).toMultiblock();
+            mb.recalculate();
+            int blSiz = 32;
+            ArrayList<AbstractBlock> blox = mb.getBlocks();
+            for(AbstractBlock b : blox){
+                if(b.getTexture()==null)continue;
+                blSiz = Math.max(b.getTexture().getWidth(), blSiz);
+            }
+            int textHeight = this.textHeight*blSiz/16;//32x32 blocks result in high-res image
+            final int blockSize = blSiz;
+            ArrayList<PartCount> parts = mb.getPartsList();
+            if(!Core.imageExportCasingParts){
+                for (Iterator<PartCount> it = parts.iterator(); it.hasNext();) {
+                    PartCount part = it.next();
+                    if(part.name.toLowerCase(Locale.ROOT).contains("casing")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("port")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("controller")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("vent")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("glass")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("inlet")
+                            ||part.name.toLowerCase(Locale.ROOT).contains("outlet"))it.remove();
+                }
+            }
+            String configString = mb.getSpecificConfiguration().getNameAndVersion();
+            for(Addon addon : ncpf.addons)configString+="\n + "+addon.configuration.getNameAndVersion();
+            FormattedText s = new FormattedText(configString).addText(mb.getSaveTooltip());
+            ArrayList<FormattedText> strs = s.split("\n");
+            int totalTextHeight = Math.max(textHeight*strs.size(),textHeight*parts.size());
+            float textWidth = 0;
+            for(int i = 0; i<strs.size(); i++){
+                FormattedText str = strs.get(i);
+                textWidth = Math.max(textWidth, renderer.getStringWidth(str.text, textHeight));
+            }
+            float partsWidth = 0;
+            for(PartCount c : parts){
+                partsWidth = Math.max(partsWidth, textHeight+renderer.getStringWidth(c.count+"x "+c.name, textHeight));
+            }
+            final float tW = textWidth+borderSize;
+            final float pW = partsWidth+borderSize;
+            BoundingBox bbox = mb.getBoundingBox(Core.imageExportCasing);
+            int width = (int) Math.max(textWidth+partsWidth+(Core.imageExport3DView?totalTextHeight:0),bbox.getWidth()*blockSize+borderSize);
+            int multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
+            int rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
+            int height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize)+borderSize/2;
+            while(rowCount>1&&height>width){
+                width++;
+                multisPerRow = Math.max(1, (int)(width/(bbox.getWidth()*blockSize+borderSize)));
+                rowCount = (bbox.getHeight()+multisPerRow-1)/multisPerRow;
+                height = totalTextHeight+rowCount*(bbox.getDepth()*blockSize+borderSize);
+            }
+            int mpr = multisPerRow;
+            Core.BufferRenderer buffRenderer = (bufferWidth, bufferHeight) -> {
+                PlanneratorRenderer bufferRenderer = new PlanneratorRenderer();
+                bufferRenderer.setColor(Core.theme.getImageExportBackgroundColor());
+                bufferRenderer.fillRect(0, 0, bufferWidth, bufferHeight);
+                bufferRenderer.setColor(Core.theme.getImageExportTextColor());
+                for(int i = 0; i<strs.size(); i++){
+                    FormattedText str = strs.get(i);
+                    bufferRenderer.drawFormattedText(borderSize/2, i*textHeight+borderSize/2, tW, (i+1)*textHeight+borderSize/2, str, -1);
+                }
+                bufferRenderer.setColor(Core.theme.getImageExportTextColor());
+                for(int i = 0; i<parts.size(); i++){
+                    PartCount c = parts.get(i);
+                    if(Core.imageExport3DView)bufferRenderer.drawText(tW+textHeight+borderSize/2, i*textHeight+borderSize/2, tW+pW, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                    else bufferRenderer.drawText(bufferWidth-pW+textHeight+borderSize/2, i*textHeight+borderSize/2, bufferWidth, (i+1)*textHeight+borderSize/2, c.count+"x "+c.name);
+                }
+                bufferRenderer.setWhite();
+                for(int i = 0; i<parts.size(); i++){
+                    PartCount c = parts.get(i);
+                    Image image = c.getImage();
+                    if(image!=null){
+                        if(Core.imageExport3DView)bufferRenderer.drawImage(image, tW, i*textHeight+borderSize/2, tW+textHeight, (i+1)*textHeight+borderSize/2);
+                        else bufferRenderer.drawImage(image, bufferWidth-pW, i*textHeight+borderSize/2, bufferWidth-pW+textHeight, (i+1)*textHeight+borderSize/2);
+                    }
+                }
+                if(Core.imageExport3DView){
+                    BoundingBox bbox3 = mb.getBoundingBox(Core.imageExportCasing3D);
+                    float size = Math.max(bbox3.getWidth(), Math.max(bbox3.getHeight(), bbox3.getDepth()));
+                    renderer.model(new Matrix4f()
+                            .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
+                            .scale(1, 1, 0.0001f)
+                            .rotate((float)MathUtil.toRadians(45), 1, 0, 0)
+                            .rotate((float)MathUtil.toRadians(45), 0, 1, 0)
+                            .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
+                            .scale(1/size, 1/size, 1/size)
+                            .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
+                            .translate(-bbox3.getWidth()/2f, -bbox3.getHeight()/2f, -bbox3.getDepth()/2f));
+                    mb.draw3DInOrder(Core.imageExportCasing3D);
+                    renderer.resetModelMatrix();
+                }
+                for(int y = 0; y<bbox.getHeight(); y++){
+                    int column = y%mpr;
+                    int row = y/mpr;
+                    int layerWidth = bbox.getWidth()*blockSize+borderSize;
+                    int layerHeight = bbox.getDepth()*blockSize+borderSize;
+                    for(int x = 0; x<bbox.getWidth(); x++){
+                        for(int z = 0; z<bbox.getDepth(); z++){
+                            int X = x+bbox.x1;
+                            int Y = y+bbox.y1;
+                            int Z = z+bbox.z1;
+                            if(!Core.imageExportCasing&&mb.shouldHideWithCasing(new BlockPos(X,Y,Z)))continue;
+                            AbstractBlock b = mb.getBlock(new BlockPos(X,Y,Z));
+                            if(b!=null)b.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize, blockSize, overlays, mb);
+                            if(mb instanceof OverhaulFusionReactor&&((OverhaulFusionReactor)mb).getLocationCategory(new BlockPos(X,Y,Z))==OverhaulFusionReactor.LocationCategory.PLASMA){
+                                bufferRenderer.drawImage("/textures/overhaul/fusion/plasma.png", column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, column*layerWidth+borderSize/2+x*blockSize+blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight+blockSize);
+                            }
+                            for(EditorOverlay o : overlays){
+                                if(!o.isActive())continue;
+                                for(Decal d : (Queue<Decal>)o.decals){
+                                    if(d.pos.equals(new BlockPos(X,Y,Z))){
+                                        d.render(bufferRenderer, column*layerWidth+borderSize/2+x*blockSize, row*layerHeight+borderSize+z*blockSize+totalTextHeight, blockSize);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            if(botRunning)return Bot.makeImage(width, height, buffRenderer);
+            return Core.makeImage(width, height, buffRenderer);
+        }else{
+            throw new IllegalArgumentException("Cannot export configuration to image!");
+        }
     }
     @Override
     public boolean isMultiblockSupported(Multiblock multi){

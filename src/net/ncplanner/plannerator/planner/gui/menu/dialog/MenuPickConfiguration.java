@@ -15,47 +15,41 @@ public class MenuPickConfiguration extends MenuDialog{
     private final ListLayout list;
     private final GridLayout tabs;
     public MenuPickConfiguration(Menu parent, Consumer<Configuration> onSelect){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(parent);
-//         layout = setContent(new BorderLayout());
-//         layout.width = 580;
-//         layout.height = 318;
-//         tabs = layout.add(new GridLayout(1, 0), BorderLayout.TOP, 48);
-//         list = layout.add(new ListLayout(96), BorderLayout.CENTER);
-//         ArrayList<Supplier<NCPFModule>> modules = new ArrayList<>();
-//         modules.add(AirModule::new);
-//         tabs.add(new Button("Configurations", true).addAction(() -> {
-//             list.components.clear();
-//             for(Configuration configuration : Configuration.configurations){
-//                 list.add(new Button(configuration.getName(), true).addAction(() -> {
-//                     close();
-//                     onSelect.accept(configuration);
-//                 }));
-//                 list.componentHeight = 96;
-//             }
-//         }));
-//         ((Button)tabs.components.get(0)).runActions();
-// //        tabs.add(new Button("Addons", true).addAction(() -> {
-// //            list.components.clear();
-// //            for(Addon addon : Configuration.internalAddons){
-// //                list.add(new Button(addon.getName(), true).addAction(() -> {
-// //                    close();
-// //                    onSelect.accept(addon.configuration);
-// //                }));
-// //                list.componentHeight = 96;
-// //            }
-// //        }));
-//         addButton("Cancel");
-//
+        super(parent);
+        layout = setContent(new BorderLayout());
+        layout.width = 580;
+        layout.height = 318;
+        tabs = layout.add(new GridLayout(1, 0), BorderLayout.TOP, 48);
+        list = layout.add(new ListLayout(96), BorderLayout.CENTER);
+        ArrayList<Supplier<NCPFModule>> modules = new ArrayList<>();
+        modules.add(AirModule::new);
+        tabs.add(new Button("Configurations", true).addAction(() -> {
+            list.components.clear();
+            for(Configuration configuration : Configuration.configurations){
+                list.add(new Button(configuration.getName(), true).addAction(() -> {
+                    close();
+                    onSelect.accept(configuration);
+                }));
+                list.componentHeight = 96;
+            }
+        }));
+        ((Button)tabs.components.get(0)).runActions();
+//        tabs.add(new Button("Addons", true).addAction(() -> {
+//            list.components.clear();
+//            for(Addon addon : Configuration.internalAddons){
+//                list.add(new Button(addon.getName(), true).addAction(() -> {
+//                    close();
+//                    onSelect.accept(addon.configuration);
+//                }));
+//                list.componentHeight = 96;
+//            }
+//        }));
+        addButton("Cancel");
     }
-    /* @Override */
+    @Override
     public void render2d(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         layout.topHeight = 48*Math.max(1, (tabs.components.size()+tabs.columns-1)/tabs.columns);
-//         layout.height = layout.topHeight.floatValue()+list.getTotalHeight();
-//         super.render2d(deltaTime);
-//
+        layout.topHeight = 48*Math.max(1, (tabs.components.size()+tabs.columns-1)/tabs.columns);
+        layout.height = layout.topHeight.floatValue()+list.getTotalHeight();
+        super.render2d(deltaTime);
     }
 }

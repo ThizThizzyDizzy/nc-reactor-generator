@@ -11,22 +11,19 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.Legacy
 public class MenuPickNCPF extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickNCPF(GUI gui, Menu parent, Consumer<NCPFFormatWriter> onConfirm){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         minWidth = minHeight = 0;
-//         for(NCPFFormatWriter writer : NCPFFileWriter.formats){
-//             buttons.add(new Button(writer.getExtension().toUpperCase(Locale.ROOT), true).addAction(() -> {
-//                 close();
-//                 onConfirm.accept(writer);
-//                 gui.menu.onOpened();
-//             }));
-//         }
-//         setTitle("Choose one");
-//         setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
-//         addButton("Cancel", () -> {
-//             close();
-//         });
-//
+        super(gui, parent);
+        minWidth = minHeight = 0;
+        for(NCPFFormatWriter writer : NCPFFileWriter.formats){
+            buttons.add(new Button(writer.getExtension().toUpperCase(Locale.ROOT), true).addAction(() -> {
+                close();
+                onConfirm.accept(writer);
+                gui.menu.onOpened();
+            }));
+        }
+        setTitle("Choose one");
+        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
+        addButton("Cancel", () -> {
+            close();
+        });
     }
 }

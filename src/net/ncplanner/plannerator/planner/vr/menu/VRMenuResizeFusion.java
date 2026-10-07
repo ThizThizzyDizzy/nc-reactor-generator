@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
@@ -56,19 +56,16 @@ public class VRMenuResizeFusion extends VRMenu{
         }).setTooltip("Decrease Lining Thickness"));
     }
     @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         BoundingBox bbox = multiblock.getBoundingBox();
-//         float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-//         renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
-//         multiblock.draw3D();
-//         renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
-//         renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, bbox.getWidth()+1/16f, bbox.getHeight()+1/16f, bbox.getDepth()+1/16f, 1/16f);//TODO perhaps individual block grids?
-//         renderer.popModel();
-//         textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
-//         super.render(renderer, tdpb, deltaTime);
-//
+    public void render(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
+        BoundingBox bbox = multiblock.getBoundingBox();
+        float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+        renderer.pushModel(new Matrix4f().translate(-.5f, .5f, -.5f).scale(1/size, 1/size, 1/size));
+        multiblock.draw3D();
+        renderer.setColor(Core.theme.get3DMultiblockOutlineColor());
+        renderer.drawCubeOutline(-1/16f, -1/16f, -1/16f, bbox.getWidth()+1/16f, bbox.getHeight()+1/16f, bbox.getDepth()+1/16f, 1/16f);//TODO perhaps individual block grids?
+        renderer.popModel();
+        textPanel.text = new FormattedText("["+multiblock.innerRadius+","+multiblock.coreSize+","+multiblock.toroidWidth+","+multiblock.liningThickness+"]\n"+bbox.getWidth()+"x"+bbox.getHeight()+"x"+bbox.getDepth());
+        super.render(renderer, tdpb, deltaTime);
     }
     private static class VRMenuComponentPlusButton extends VRMenuComponentButton{
         public VRMenuComponentPlusButton(float x, float y, float z, float width, float height, float depth, boolean enabled, Runnable al){
@@ -76,25 +73,22 @@ public class VRMenuResizeFusion extends VRMenu{
             addActionListener(al);
         }
         @Override
-        public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//             renderer.setColor(col);
-//             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
-//             renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
-//             renderer.setColor(Core.theme.getAddButtonTextColor());
-//             renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
-//             renderer.drawCube(-.01f, -width/4, -.01f, .01f, width/4, .01f, null);
-//             renderer.drawCube(-.01f, -.01f, -width/4, .01f, .01f, width/4, null);
-//             renderer.popModel();
-//
+        public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+            }
+            renderer.setColor(col);
+            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
+            renderer.pushModel(new Matrix4f().translate(width/2, height/2, depth/2));
+            renderer.setColor(Core.theme.getAddButtonTextColor());
+            renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
+            renderer.drawCube(-.01f, -width/4, -.01f, .01f, width/4, .01f, null);
+            renderer.drawCube(-.01f, -.01f, -width/4, .01f, .01f, width/4, null);
+            renderer.popModel();
         }
     }
     private static class VRMenuComponentMinusButton extends VRMenuComponentButton{
@@ -103,23 +97,20 @@ public class VRMenuResizeFusion extends VRMenu{
             addActionListener(al);
         }
         @Override
-        public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//             renderer.setColor(col);
-//             renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
-//             renderer.pushModel(new Matrix4f().setTranslation(width/2, height/2, depth/2));
-//             renderer.setColor(Core.theme.getDeleteButtonTextColor());
-//             renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
-//             renderer.popModel();
-//
+        public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+            Color col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(isPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(!isDeviceOver.isEmpty())col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+            }
+            renderer.setColor(col);
+            renderer.drawCubeOutline(0, 0, 0, width, height, depth, .01f);//1cm
+            renderer.pushModel(new Matrix4f().setTranslation(width/2, height/2, depth/2));
+            renderer.setColor(Core.theme.getDeleteButtonTextColor());
+            renderer.drawCube(-width/4, -.01f, -.01f, width/4, .01f, .01f, null);
+            renderer.popModel();
         }
     }
 }

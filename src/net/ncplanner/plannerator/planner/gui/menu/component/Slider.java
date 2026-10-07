@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -16,7 +16,7 @@ public class Slider extends Component{
     public boolean pressed;
     public float sliderHeight;
     public float maxSliderX;
-    public float sliderX;    
+    public float sliderX;
     private final boolean darker;
     private String name;
     private ArrayList<Consumer<Double>> onChange = new ArrayList<>();
@@ -65,37 +65,34 @@ public class Slider extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         updateSlider();
-//         sliderHeight = height/2;
-//         if(textInset==0)textInset = height/10;
-//         Color col;
-//         if(darker){
-//             col = Core.theme.getSecondarySliderColor();
-//             if(enabled){
-//                 if(pressed)col = Core.theme.getSecondarySliderPressedColor();
-//                 else if(isMouseFocused)col = Core.theme.getSecondarySliderMouseoverColor();
-//             }else{
-//                 col = Core.theme.getSecondarySliderDisabledColor();
-//             }
-//         }else{
-//             col = Core.theme.getSliderColor();
-//             if(enabled){
-//                 if(pressed)col = Core.theme.getSliderPressedColor();
-//                 else if(isMouseFocused)col = Core.theme.getSliderMouseoverColor();
-//             }else{
-//                 col = Core.theme.getSliderDisabledColor();
-//             }
-//         }
-//         renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         renderer.fillRect(x, y, x+width, y+height);
-//         renderer.setColor(col);
-//         renderer.fillRect(x+sliderX, y, x+sliderX+sliderHeight, y+sliderHeight);
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         renderer.drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        updateSlider();
+        sliderHeight = height/2;
+        if(textInset==0)textInset = height/10;
+        Color col;
+        if(darker){
+            col = Core.theme.getSecondarySliderColor();
+            if(enabled){
+                if(pressed)col = Core.theme.getSecondarySliderPressedColor();
+                else if(isMouseFocused)col = Core.theme.getSecondarySliderMouseoverColor();
+            }else{
+                col = Core.theme.getSecondarySliderDisabledColor();
+            }
+        }else{
+            col = Core.theme.getSliderColor();
+            if(enabled){
+                if(pressed)col = Core.theme.getSliderPressedColor();
+                else if(isMouseFocused)col = Core.theme.getSliderMouseoverColor();
+            }else{
+                col = Core.theme.getSliderDisabledColor();
+            }
+        }
+        renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        renderer.fillRect(x, y, x+width, y+height);
+        renderer.setColor(col);
+        renderer.fillRect(x+sliderX, y, x+sliderX+sliderHeight, y+sliderHeight);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        renderer.drawCenteredText(x+textInset, y+sliderHeight+textInset, x+width-textInset, y+height-textInset, name+": "+getValueS());
     }
     @Override
     public void onCursorMoved(double xpos, double ypos){

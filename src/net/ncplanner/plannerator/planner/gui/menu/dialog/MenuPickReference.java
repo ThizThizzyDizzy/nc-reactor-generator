@@ -29,95 +29,85 @@ public class MenuPickReference extends MenuDialog{
         this(parent, cnfg, config, allowModules, onSelect, null);
     }
     public MenuPickReference(Menu parent, Configuration cnfg, NCPFConfiguration config, boolean allowModules, Consumer<NCPFElementReference> onSelect, Function<NCPFElement, Boolean> filter){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(parent);
-//         throw new UnsupportedOperationException("Pending refactor");
-// //
-// //
-// //         layout = setContent(new BorderLayout());
-// //         layout.width = 580;
-// //         layout.height = 318;
-// //         tabs = layout.add(new GridLayout(4, 0), BorderLayout.TOP, 48);
-// //         list = layout.add(new ListLayout(96), BorderLayout.CENTER);
-// //         ArrayList<Supplier<NCPFModule>> modules = new ArrayList<>();
-// //         modules.add(AirModule::new);
-// //         for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
-// //             List<List<NCPFElement>> elementsLists = new ArrayList<>(Arrays.asList(confg.getElements()));
-// //             confg.withModule(GlobalElementsModule::new, (module) -> elementsLists.add(module.elements));
-// //             for(List<NCPFElement> elements : elementsLists){
-// //                 HashSet<NCPFElement> skip = new HashSet<>();
-// //                 if(filter!=null){
-// //                     elements.forEach((t) -> {
-// //                         if(!filter.apply(t))skip.add(t);
-// //                     });
-// //                 }
-// //                 NCPFConfiguration parnt = cnfg.configuration.configurations.get(config.name);
-// //                 boolean hasRelevant = !elements.isEmpty();
-// //                 if(parnt!=null&&parnt!=confg){
-// //                     hasRelevant = false;
-// //                     for(NCPFElement elem : elements){
-// //                         boolean foundMatch = false;
-// //                         for(List<NCPFElement> elems : parnt.getElements()){
-// //                             for(NCPFElement e : elems){
-// //                                 if(e.definition.matches(elem.definition)){
-// //                                     skip.add(elem);
-// //                                     foundMatch = true;
-// //                                     break;
-// //                                 }
-// //                             }
-// //                         }
-// //                         if(!foundMatch)hasRelevant = true;
-// //                     }
-// //                 }
-// //                 if(!hasRelevant||skip.size()>=elements.size())continue;
-// //                 for(NCPFElement elem : elements){
-// //                     FOR:
-// //                     for(Supplier<NCPFModule> module : elem.getPreferredModules()){
-// //                         for(Supplier<NCPFModule> other : modules){
-// //                             if(module.get().name.equals(other.get().name))continue FOR;
-// //                         }
-// //                         modules.add(module);
-// //                     }
-// //                 }
-// //                 tabs.add(new Button(elements.get(0).getTitle()+"s", true).addAction(() -> {
-// //                     list.components.clear();
-// //                     for(NCPFElement elem : elements){
-// //                         if(skip.contains(elem))continue;
-// //                         list.add(new NCPFElementComponent(elem).addButton(">", null, () -> {
-// //                             close();
-// //                             onSelect.accept(new NCPFElementReference(elem));
-// //                         }));
-// //                         list.componentHeight = 96;
-// //                     }
-// //                 }));
-// //             }
-// //         }
-// //         if(allowModules){
-// //             tabs.add(new Button("Modules", true).addAction(() -> {
-// //                 list.components.clear();
-// //                 for(Supplier<NCPFModule> module : modules){
-// //                     NCPFElement element = new NCPFElement();
-// //                     element.definition = new NCPFModuleElement(module);
-// //                     list.add(new NCPFElementComponent(element).addButton(">", null, () -> {
-// //                         close();
-// //                         onSelect.accept(new NCPFModuleReference(module));
-// //                     }));
-// //                     list.componentHeight = 48;
-// //                 }
-// //             }));
-// //         }
-// //         addButton("Cancel");
-// //
-//
+        super(parent);
+        layout = setContent(new BorderLayout());
+        layout.width = 580;
+        layout.height = 318;
+        tabs = layout.add(new GridLayout(4, 0), BorderLayout.TOP, 48);
+        list = layout.add(new ListLayout(96), BorderLayout.CENTER);
+        ArrayList<Supplier<NCPFModule>> modules = new ArrayList<>();
+        modules.add(AirModule::new);
+        for(NCPFConfiguration confg : cnfg.getConfigurations(config.name)){
+            List<List<NCPFElement>> elementsLists = new ArrayList<>(Arrays.asList(confg.getElements()));
+            confg.withModule(GlobalElementsModule::new, (module) -> elementsLists.add(module.elements));
+            for(List<NCPFElement> elements : elementsLists){
+                HashSet<NCPFElement> skip = new HashSet<>();
+                if(filter!=null){
+                    elements.forEach((t) -> {
+                        if(!filter.apply(t))skip.add(t);
+                    });
+                }
+                NCPFConfiguration parnt = cnfg.configuration.configurations.get(config.name);
+                boolean hasRelevant = !elements.isEmpty();
+                if(parnt!=null&&parnt!=confg){
+                    hasRelevant = false;
+                    for(NCPFElement elem : elements){
+                        boolean foundMatch = false;
+                        for(List<NCPFElement> elems : parnt.getElements()){
+                            for(NCPFElement e : elems){
+                                if(e.definition.matches(elem.definition)){
+                                    skip.add(elem);
+                                    foundMatch = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(!foundMatch)hasRelevant = true;
+                    }
+                }
+                if(!hasRelevant||skip.size()>=elements.size())continue;
+                for(NCPFElement elem : elements){
+                    FOR:
+                    for(Supplier<NCPFModule> module : elem.getPreferredModules()){
+                        for(Supplier<NCPFModule> other : modules){
+                            if(module.get().name.equals(other.get().name))continue FOR;
+                        }
+                        modules.add(module);
+                    }
+                }
+                tabs.add(new Button(elements.get(0).getTitle()+"s", true).addAction(() -> {
+                    list.components.clear();
+                    for(NCPFElement elem : elements){
+                        if(skip.contains(elem))continue;
+                        list.add(new NCPFElementComponent(elem).addButton(">", null, () -> {
+                            close();
+                            onSelect.accept(new NCPFElementReference(elem));
+                        }));
+                        list.componentHeight = 96;
+                    }
+                }));
+            }
+        }
+        if(allowModules){
+            tabs.add(new Button("Modules", true).addAction(() -> {
+                list.components.clear();
+                for(Supplier<NCPFModule> module : modules){
+                    NCPFElement element = new NCPFElement();
+                    element.definition = new NCPFModuleElement(module);
+                    list.add(new NCPFElementComponent(element).addButton(">", null, () -> {
+                        close();
+                        onSelect.accept(new NCPFModuleReference(module));
+                    }));
+                    list.componentHeight = 48;
+                }
+            }));
+        }
+        addButton("Cancel");
     }
-    /* @Override */
+    @Override
     public void render2d(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         layout.topHeight = 48*Math.max(1, (tabs.components.size()+tabs.columns-1)/tabs.columns);
-//         layout.height = layout.topHeight.floatValue()+list.getTotalHeight();
-//         super.render2d(deltaTime);
-//
+        layout.topHeight = 48*Math.max(1, (tabs.components.size()+tabs.columns-1)/tabs.columns);
+        layout.height = layout.topHeight.floatValue()+list.getTotalHeight();
+        super.render2d(deltaTime);
     }
 }

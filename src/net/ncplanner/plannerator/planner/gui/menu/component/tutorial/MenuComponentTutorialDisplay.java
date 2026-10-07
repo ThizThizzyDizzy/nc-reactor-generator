@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.tutorial;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
@@ -20,7 +20,7 @@ public class MenuComponentTutorialDisplay extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.setColor(Core.theme.getTutorialBackgroundColor());
         renderer.fillRect(0, 0, width, height);
         tutorial.preRender();

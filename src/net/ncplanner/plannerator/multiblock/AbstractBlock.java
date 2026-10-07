@@ -1,19 +1,17 @@
 package net.ncplanner.plannerator.multiblock;
-import com.thizthizzydizzy.dizzyengine.MathUtil;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.StringUtil;
@@ -116,27 +114,27 @@ public abstract class AbstractBlock implements Pinnable{
         }
         return tip;
     }
-    public void render(float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
-        render(x, y, width, height, overlays, 1, multiblock);
+    public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
+        render(renderer, x, y, width, height, overlays, 1, multiblock);
     }
-    public void render(float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
+    public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
         if(getTexture()==null){
-            Renderer.setColor(new Color(255,0,255));
-            Renderer.fillRect(x, y, x+width, y+height);
-            Renderer.setColor(new Color(0,0,0));
-            Renderer.fillRect(x, y, x+width/2, y+height/2);
-            Renderer.fillRect(x+width/2, y+height/2, x+width, y+height);
+            renderer.setColor(new Color(255,0,255));
+            renderer.fillRect(x, y, x+width, y+height);
+            renderer.setColor(new Color(0,0,0));
+            renderer.fillRect(x, y, x+width/2, y+height/2);
+            renderer.fillRect(x+width/2, y+height/2, x+width, y+height);
         }else{
-            Renderer.setColor(Color.WHITE, alpha);
-            Renderer.fillRect(x, y, x+width, y+height, ResourceManager.getTexture(getTexture()));
+            renderer.setWhite(alpha);
+            renderer.drawImage(getTexture(), x, y, x+width, y+height);
         }
         if(overlays!=null){
             for(EditorOverlay overlay : overlays){
-                if(overlay.isActive())overlay.render(x, y, width, height, this, multiblock);
+                if(overlay.isActive())overlay.render(renderer, x, y, width, height, this, multiblock);
             }
         }
     }
-    public void render(float x, float y, float z, float width, float height, float depth, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+    public void render(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
         float[] bounds = multiblock.getCubeBounds(this);
         bounds[0] *= width;
         bounds[1] *= height;
@@ -145,49 +143,47 @@ public abstract class AbstractBlock implements Pinnable{
         bounds[4] *= height;
         bounds[5] *= depth;
         if(getTexture()==null){
-            Renderer.setColor(Core.theme.getBlockUnknownColor(), alpha);
-            PlanneratorRenderer.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], null, faceRenderFunc);
+            renderer.setColor(Core.theme.getBlockUnknownColor(), alpha);
+            renderer.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], null, faceRenderFunc);
         }else{
-            Renderer.setColor(Color.WHITE, alpha);
-            PlanneratorRenderer.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], getTexture(), faceRenderFunc);
+            renderer.setWhite(alpha);
+            renderer.drawCube(x+bounds[0], y+bounds[1], z+bounds[2], x+bounds[3], y+bounds[4], z+bounds[5], getTexture(), faceRenderFunc);
         }
 //        if(overlays!=null){
 //            for(EditorOverlay overlay : overlays){
-//                if(overlay.active)overlay.render(x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], this, multiblock, faceRenderFunc);
+//                if(overlay.active)overlay.render(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], this, multiblock, faceRenderFunc);
 //            }
 //        }
-        if(overlays!=null)renderOverlay(x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], multiblock,faceRenderFunc);
+        if(overlays!=null)renderOverlay(renderer, x+bounds[0], y+bounds[1], z+bounds[2], bounds[3], bounds[4], bounds[5], multiblock,faceRenderFunc);
     }
-    public void renderGrayscale(float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
-        renderGrayscale(x, y, width, height, overlays, 1, multiblock);
+    public void renderGrayscale(PlanneratorRenderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, Multiblock multiblock){
+        renderGrayscale(renderer, x, y, width, height, overlays, 1, multiblock);
     }
-    public void renderGrayscale(float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
+    public void renderGrayscale(PlanneratorRenderer renderer, float x, float y, float width, float height, ArrayList<EditorOverlay> overlays, float alpha, Multiblock multiblock){
         if(getGrayscaleTexture()==null){
-            Renderer.setColor(new Color(191,191,191));
-            Renderer.fillRect(x, y, x+width, y+height);
-            Renderer.setColor(new Color(0,0,0));
-            Renderer.fillRect(x, y, x+width/2, x+height/2);
-            Renderer.fillRect(x+width/2, y+height/2, x+width, x+height);
+            renderer.setColor(new Color(191,191,191));
+            renderer.fillRect(x, y, x+width, y+height);
+            renderer.setColor(new Color(0,0,0));
+            renderer.fillRect(x, y, x+width/2, x+height/2);
+            renderer.fillRect(x+width/2, y+height/2, x+width, x+height);
         }else{
-            Renderer.setColor(Color.WHITE, alpha);
-            Renderer.fillRect(x, y, x+width, y+height, ResourceManager.getTexture(getGrayscaleTexture()));
+            renderer.setWhite(alpha);
+            renderer.drawImage(getGrayscaleTexture(), x, y, x+width, y+height);
         }
         if(overlays!=null){
             for(EditorOverlay overlay : overlays){
-                if(overlay.isActive())overlay.render(x, y, width, height, this, multiblock);
+                if(overlay.isActive())overlay.render(renderer, x, y, width, height, this, multiblock);
             }
         }
     }
     @Deprecated
-    public /* abstract */ void renderOverlay(float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
+    public abstract void renderOverlay(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc);
+    public void drawCircle(PlanneratorRenderer renderer, float x, float y, float width, float height, Color color){
+        renderer.setColor(color);
+        renderer.drawImage(Core.sourceCircle, x, y, x+width, y+height);
+        renderer.setWhite();
     }
-    public void drawCircle(float x, float y, float width, float height, Color color){
-        Renderer.setColor(color);
-        Renderer.fillRect(x, y, x+width, y+height, ResourceManager.getTexture(Core.sourceCircle));
-        Renderer.setColor(Color.WHITE);
-    }
-    public void drawCircle(float x, float y, float z, float width, float height, float depth, Color color, Function<Direction, Boolean> faceRenderFunc){
+    public void drawCircle(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Color color, Function<Direction, Boolean> faceRenderFunc){
         boolean px = faceRenderFunc.apply(Direction.PX);
         boolean py = faceRenderFunc.apply(Direction.PY);
         boolean pz = faceRenderFunc.apply(Direction.PZ);
@@ -195,55 +191,55 @@ public abstract class AbstractBlock implements Pinnable{
         boolean ny = faceRenderFunc.apply(Direction.NY);
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
-        Renderer.setColor(color);
-        if(py)drawCircleBit(x,y,z,width,height,depth);
+        renderer.setColor(color);
+        if(py)drawCircleBit(renderer,x,y,z,width,height,depth);
         if(pz){
-            Renderer.model(new Matrix4f()
+            renderer.model(new Matrix4f()
                     .translate(x+width/2, y+height/2, z+depth/2)
                     .rotate((float)MathUtil.toRadians(90), 1, 0, 0)
                     .translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawCircleBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            drawCircleBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(nz){
-            Renderer.model(new Matrix4f()
+            renderer.model(new Matrix4f()
                     .translate(x+width/2, y+height/2, z+depth/2)
                     .rotate((float)MathUtil.toRadians(90), -1, 0, 0)
                     .translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawCircleBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            drawCircleBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(nx){
-            Renderer.model(new Matrix4f()
+            renderer.model(new Matrix4f()
                     .translate(x+width/2, y+height/2, z+depth/2)
                     .rotate((float)MathUtil.toRadians(90), 0, 0, 1)
                     .translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawCircleBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            drawCircleBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(px){
-            Renderer.model(new Matrix4f()
+            renderer.model(new Matrix4f()
                     .translate(x+width/2, y+height/2, z+depth/2)
                     .rotate((float)MathUtil.toRadians(90), 0, 0, -1)
                     .translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawCircleBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            drawCircleBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(ny){
-            Renderer.model(new Matrix4f()
+            renderer.model(new Matrix4f()
                     .translate(x+width/2, y+height/2, z+depth/2)
                     .rotate((float)MathUtil.toRadians(180), 0, 0, 1)
                     .translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawCircleBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            drawCircleBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
-        Renderer.setColor(Color.WHITE);
+        renderer.setWhite();
     }
-    private void drawCircleBit(float x, float y, float z, float width, float height, float depth){
+    private void drawCircleBit(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth){
         float innerRadius = width/4;
         float outerRadius = width/8*3;
         int resolution = (int)(Math.max(12,2*Math.PI*outerRadius*100));
-        Renderer.unbindTexture();
+        renderer.unbindTexture();
         float angle = 0;
         float thickness = width/32;
         for(int i = 0; i<resolution; i++){
@@ -258,19 +254,19 @@ public abstract class AbstractBlock implements Pinnable{
             float nextOutX = (float)(x+width/2+MathUtil.cos(MathUtil.toRadians(nextAngle-90))*outerRadius);
             float nextOutZ = (float)(z+depth/2+MathUtil.sin(MathUtil.toRadians(nextAngle-90))*outerRadius);
             //inner face
-            Renderer.drawQuad(
+            renderer.drawQuad(
                     new Vector3f(inX, y+height, inZ),
                     new Vector3f(nextInX, y+height, nextInZ),
                     new Vector3f(nextInX, y+height+thickness, nextInZ),
                     new Vector3f(inX, y+height+thickness, inZ), new Vector2f(), new Vector2f(), new Vector2f(), new Vector2f(), new Vector3f());
             //middle face
-            Renderer.drawQuad(
+            renderer.drawQuad(
                     new Vector3f(inX, y+height+thickness, inZ),
                     new Vector3f(nextInX, y+height+thickness, nextInZ),
                     new Vector3f(nextOutX, y+height+thickness, nextOutZ),
                     new Vector3f(outX, y+height+thickness, outZ), new Vector2f(), new Vector2f(), new Vector2f(), new Vector2f(), new Vector3f());
             //outer face
-            Renderer.drawQuad(
+            renderer.drawQuad(
                     new Vector3f(outX, y+height, outZ),
                     new Vector3f(nextOutX, y+height, nextOutZ),
                     new Vector3f(nextOutX, y+height+thickness, nextOutZ),
@@ -278,12 +274,12 @@ public abstract class AbstractBlock implements Pinnable{
             angle = nextAngle;
         }
     }
-    public void drawOutline(float x, float y, float width, float height, Color color){
-        Renderer.setColor(color);
-        Renderer.fillRect(x, y, x+width, y+height, ResourceManager.getTexture(Core.outlineSquare));
-        Renderer.setColor(Color.WHITE);
+    public void drawOutline(PlanneratorRenderer renderer, float x, float y, float width, float height, Color color){
+        renderer.setColor(color);
+        renderer.drawImage(Core.outlineSquare, x, y, x+width, y+height);
+        renderer.setWhite();
     }
-    public void drawOutline(float x, float y, float z, float width, float height, float depth, Color color, Function<Direction, Boolean> faceRenderFunc){
+    public void drawOutline(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Color color, Function<Direction, Boolean> faceRenderFunc){
         boolean px = faceRenderFunc.apply(Direction.PX);
         boolean py = faceRenderFunc.apply(Direction.PY);
         boolean pz = faceRenderFunc.apply(Direction.PZ);
@@ -291,44 +287,44 @@ public abstract class AbstractBlock implements Pinnable{
         boolean ny = faceRenderFunc.apply(Direction.NY);
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
-        Renderer.setColor(color);
-        if(py)drawOutlineBit(x,y,z,width,height,depth);
+        renderer.setColor(color);
+        if(py)drawOutlineBit(renderer,x,y,z,width,height,depth);
         if(pz){
-            Renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 1, 0, 0).translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawOutlineBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 1, 0, 0).translate(-x-width/2, -y-height/2, -z-depth/2));
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(nz){
-            Renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), -1, 0, 0).translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawOutlineBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), -1, 0, 0).translate(-x-width/2, -y-height/2, -z-depth/2));
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(nx){
-            Renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 0, 0, 1).translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawOutlineBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 0, 0, 1).translate(-x-width/2, -y-height/2, -z-depth/2));
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(px){
-            Renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 0, 0, -1).translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawOutlineBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(90), 0, 0, -1).translate(-x-width/2, -y-height/2, -z-depth/2));
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
         if(ny){
-            Renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(180), 0, 0, 1).translate(-x-width/2, -y-height/2, -z-depth/2));
-            drawOutlineBit(x,y,z,width,height,depth);
-            Renderer.resetModelMatrix();
+            renderer.model(new Matrix4f().translate(x+width/2, y+height/2, z+depth/2).rotate((float)MathUtil.toRadians(180), 0, 0, 1).translate(-x-width/2, -y-height/2, -z-depth/2));
+            drawOutlineBit(renderer,x,y,z,width,height,depth);
+            renderer.resetModelMatrix();
         }
-        Renderer.setColor(Color.WHITE);
+        renderer.setWhite();
     }
-    private void drawOutlineBit(float x, float y, float z, float width, float height, float depth){
+    private void drawOutlineBit(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth){
         float w = width/32f;//pixel
         float h = height/32f;//pixel
         float d = depth/32f;//pixel
         Function<Direction, Boolean> func = (Direction t) -> t!=Direction.NY;//don't render the bottom face; this is rendering on top
-        PlanneratorRenderer.drawCube(x+w/2, y+height, z+d/2, x+width-w/2, y+height+h/2, z+d*3/2, null, func);//top
-        PlanneratorRenderer.drawCube(x+w/2, y+height, z+width-d*3/2, x+width-w/2, y+height+h/2, z+width-d/2, null, func);//bottom
-        PlanneratorRenderer.drawCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2, null, func);//left
-        PlanneratorRenderer.drawCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2, null, func);//right
+        renderer.drawCube(x+w/2, y+height, z+d/2, x+width-w/2, y+height+h/2, z+d*3/2, null, func);//top
+        renderer.drawCube(x+w/2, y+height, z+width-d*3/2, x+width-w/2, y+height+h/2, z+width-d/2, null, func);//bottom
+        renderer.drawCube(x+w/2, y+height, z+d*3/2, x+w*3/2, y+height+h/2, z+width-d*3/2, null, func);//left
+        renderer.drawCube(x+width-w*3/2, y+height, z+d*3/2, x+width-w/2, y+height+h/2, z+width-d*3/2, null, func);//right
     }
     public AbstractBlock copy(BlockPos pos){
         AbstractBlock b = newInstance(pos);

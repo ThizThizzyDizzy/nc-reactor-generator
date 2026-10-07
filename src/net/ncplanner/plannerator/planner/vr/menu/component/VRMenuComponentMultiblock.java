@@ -1,10 +1,10 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.Random;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.vr.VRMenuComponent;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuMain;
 import org.joml.Matrix4f;
@@ -33,57 +33,51 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         this.multiblock = multiblock;
     }
     @Override
-    public void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         anglingFlipIn-=deltaTime*20;
-//         if(anglingFlipIn<=0){
-//             anglingFlipIn+=rand.nextInt(200);
-//             anglingTo = (float)Math.max(minAng,Math.min(maxAng,rand.nextGaussian()/2));
-//         }
-//         angling = MathUtil.getValueBetweenTwoValues(0, angling, 1, anglingTo, snappingFactor);
-//         if(dy>1.75f)angle = 180;
-//         if(dy<.75f)angle = 0;
-//         super.render(renderer, tdpb, deltaTime);
-//
+    public void render(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
+        anglingFlipIn-=deltaTime*20;
+        if(anglingFlipIn<=0){
+            anglingFlipIn+=rand.nextInt(200);
+            anglingTo = (float)Math.max(minAng,Math.min(maxAng,rand.nextGaussian()/2));
+        }
+        angling = MathUtil.getValueBetweenTwoValues(0, angling, 1, anglingTo, snappingFactor);
+        if(dy>1.75f)angle = 180;
+        if(dy<.75f)angle = 0;
+        super.render(renderer, tdpb, deltaTime);
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         angle+=angling;
-//         float vel = (float)(this.vel*Math.exp(boost/20f));
-//         boost*=.95f;
-//         float[] dir = MathUtil.rotatePoint(0, vel, angle, 0, 0);
-//
-//         dx+=dir[0];
-//         dy+=dir[1];
-//         float tRy = (float)Math.toDegrees(dx);
-//         float ty = dy;
-//         float[] txz = MathUtil.rotatePoint(0, -1, tRy, 0, 0);
-//         float tx = txz[0];
-//         float tz = txz[1];
-//         x = MathUtil.getValueBetweenTwoValues(0, x, 1, tx, snappingFactor);
-//         y = MathUtil.getValueBetweenTwoValues(0, y, 1, ty, snappingFactor);
-//         z = MathUtil.getValueBetweenTwoValues(0, z, 1, tz, snappingFactor);
-//         yRot = MathUtil.getValueBetweenTwoValues(0, yRot, 1, tRy, snappingFactor);
-//         if(isDeviceOver.isEmpty())renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         else renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
-//         renderer.unbindTexture();
-//         BoundingBox bbox = multiblock.getBoundingBox();
-//         float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
-//         renderer.pushModel(new Matrix4f()
-//                 .translate(width/2, height/2, depth/2)
-//                 .scale(scale, scale, scale)
-//                 .translate(-width/2, -height/2, -depth/2)
-//                 .scale(width, height, depth)
-//                 .scale(1/size, 1/size, 1/size));
-//         multiblock.draw3D();
-//         renderer.popModel();
-//
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+        angle+=angling;
+        float vel = (float)(this.vel*Math.exp(boost/20f));
+        boost*=.95f;
+        float[] dir = MathUtil.rotatePoint(0, vel, angle, 0, 0);
+
+        dx+=dir[0];
+        dy+=dir[1];
+        float tRy = (float)Math.toDegrees(dx);
+        float ty = dy;
+        float[] txz = MathUtil.rotatePoint(0, -1, tRy, 0, 0);
+        float tx = txz[0];
+        float tz = txz[1];
+        x = MathUtil.getValueBetweenTwoValues(0, x, 1, tx, snappingFactor);
+        y = MathUtil.getValueBetweenTwoValues(0, y, 1, ty, snappingFactor);
+        z = MathUtil.getValueBetweenTwoValues(0, z, 1, tz, snappingFactor);
+        yRot = MathUtil.getValueBetweenTwoValues(0, yRot, 1, tRy, snappingFactor);
+        if(isDeviceOver.isEmpty())renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        else renderer.setColor(Core.theme.getMouseoverUnselectableComponentColor(Core.getThemeIndex(this)));
+        renderer.unbindTexture();
+        BoundingBox bbox = multiblock.getBoundingBox();
+        float size = Math.max(bbox.getWidth(), Math.max(bbox.getHeight(), bbox.getDepth()));
+        renderer.pushModel(new Matrix4f()
+                .translate(width/2, height/2, depth/2)
+                .scale(scale, scale, scale)
+                .translate(-width/2, -height/2, -depth/2)
+                .scale(width, height, depth)
+                .scale(1/size, 1/size, 1/size));
+        multiblock.draw3D();
+        renderer.popModel();
     }
     @Override
-    public void renderForeground(Renderer renderer){
+    public void renderForeground(PlanneratorRenderer renderer){
         super.renderForeground(renderer);
         renderer.pushModel(new Matrix4f()
                 .translate(width/2, height/2, depth/2)
@@ -94,7 +88,7 @@ public class VRMenuComponentMultiblock extends VRMenuComponent{
         renderer.popModel();
     }
     private void drawText(){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.pushModel(new Matrix4f()
                 .translate(0, height, depth/2)
                 .scale(1, -1, 1));

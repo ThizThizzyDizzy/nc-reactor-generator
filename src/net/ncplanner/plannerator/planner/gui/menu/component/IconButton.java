@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 public class IconButton extends Button{
     private final String icon;
@@ -13,11 +13,8 @@ public class IconButton extends Button{
     }
     @Override
     public void drawForeground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         renderer.drawElement(icon, x, y, width, height);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        renderer.drawElement(icon, x, y, width, height);
     }
 }

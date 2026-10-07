@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
@@ -157,7 +157,7 @@ public class MenuResize extends Menu{
     }
     @Override
     public void render2d(double deltaTime){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         done.width = gui.getWidth()/4;
         multibwauk.width = done.x = gui.getWidth()-done.width;
         done.height = 64;
@@ -210,7 +210,7 @@ public class MenuResize extends Menu{
         rects.add(new float[]{r, g, b, a, left, top, right, bottom});
     }
     public static void drawRects(){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         for(float[] rect : rects){
             renderer.setColor(rect[0], rect[1], rect[2], rect[3]);
             renderer.fillRect(rect[4], rect[5], rect[6], rect[7]);

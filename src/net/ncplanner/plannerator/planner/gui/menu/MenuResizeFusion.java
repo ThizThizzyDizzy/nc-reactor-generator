@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
@@ -85,7 +85,7 @@ public class MenuResizeFusion extends Menu{
         if(refreshNeeded){
             onOpened();
         }
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         done.width = gui.getWidth()/4;
         increaseInnerRadius.width = decreaseInnerRadius.width = increaseCoreSize.width = decreaseCoreSize.width = increaseToroidWidth.width = decreaseToroidWidth.width = increaseLiningThickness.width = decreaseLiningThickness.width = gui.getWidth()/8;
         multibwauk.width = done.x = increaseInnerRadius.x = increaseCoreSize.x = increaseToroidWidth.x = increaseLiningThickness.x = gui.getWidth()-done.width;
@@ -111,7 +111,7 @@ public class MenuResizeFusion extends Menu{
         rects.add(new float[]{r, g, b, a, left, top, right, bottom});
     }
     public static void drawRects(){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         for(float[] rect : rects){
             renderer.setColor(rect[0], rect[1], rect[2], rect[3]);
             renderer.fillRect(rect[4], rect[5], rect[6], rect[7]);

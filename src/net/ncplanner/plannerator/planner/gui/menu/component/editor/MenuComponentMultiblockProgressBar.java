@@ -1,15 +1,12 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.gui.menu.MenuEdit;
-import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
+import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 public class MenuComponentMultiblockProgressBar extends ProgressBar{
     private final MenuEdit editor;
     public MenuComponentMultiblockProgressBar(MenuEdit editor, float x, float y, float width, float height){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(x, y, width, height);
-//         this.editor = editor;
-//
+        super(x, y, width, height);
+        this.editor = editor;
     }
     @Override
     public Task getTask(){

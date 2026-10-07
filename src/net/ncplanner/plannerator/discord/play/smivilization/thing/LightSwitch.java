@@ -3,7 +3,7 @@ import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 public class LightSwitch extends HutThing{
     private boolean on = true;
     public LightSwitch(UUID uuid, Hut hut){
@@ -14,13 +14,10 @@ public class LightSwitch extends HutThing{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new LightSwitch(uuid, hut);
     }
-    /* @Override */
-    public void draw(Renderer renderer, float left, float top, float right, float bottom){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png", left, top, right, bottom);
-//         renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png", left, top, right, bottom);
-//
+    @Override
+    public void draw(PlanneratorRenderer renderer, float left, float top, float right, float bottom){
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch casing.png", left, top, right, bottom);
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/lamp/switch "+(on?"on":"off")+".png", left, top, right, bottom);
     }
     @Override
     public int[] getDimensions(){

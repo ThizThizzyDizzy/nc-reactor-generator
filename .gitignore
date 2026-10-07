@@ -24,3 +24,6 @@
 /dist/
 /build/
 /*.cfg
+
+# NetBeans local settings
+/nbproject/private/

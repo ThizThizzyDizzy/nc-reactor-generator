@@ -8,40 +8,34 @@ import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 public class MenuImportConfirm extends MenuDialog{
     public MenuImportConfirm(GUI gui, Menu parent, List<Project> projects, Runnable onImport){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         int total = 0;
-//         for(Project p : projects)total+=p.designs.size();
-//         textBox.addText(total+" Designs:");
-//         for(Project p : projects){
-//             for(Design d : p.designs){
-//                 textBox.addText("\n"+d.definition.type);
-//                 if(!p.isConfigEmpty())textBox.addText(" (Conversion required)");
-//             }
-//         }
-//         addButton("Import", () -> {
-//             for(Project p : projects){
-//                 for(Design d : p.designs){
-//                     if(d instanceof MultiblockDesign){
-//                         if(!p.isConfigEmpty())d.file = Core.project;
-//                         MultiblockDesign design = (MultiblockDesign)d;
-//                         if(!p.isConfigEmpty())((MultiblockDesign)d).convertElements();
-//                         Core.multiblocks.add(design.toMultiblock());
-//                     }
-//                 }
-//             }
-//             onImport.run();
-//         }, true);
-//         addButton("Cancel");
-//
+        super(gui, parent);
+        int total = 0;
+        for(Project p : projects)total+=p.designs.size();
+        textBox.addText(total+" Designs:");
+        for(Project p : projects){
+            for(Design d : p.designs){
+                textBox.addText("\n"+d.definition.type);
+                if(!p.isConfigEmpty())textBox.addText(" (Conversion required)");
+            }
+        }
+        addButton("Import", () -> {
+            for(Project p : projects){
+                for(Design d : p.designs){
+                    if(d instanceof MultiblockDesign){
+                        if(!p.isConfigEmpty())d.file = Core.project;
+                        MultiblockDesign design = (MultiblockDesign)d;
+                        if(!p.isConfigEmpty())((MultiblockDesign)d).convertElements();
+                        Core.multiblocks.add(design.toMultiblock());
+                    }
+                }
+            }
+            onImport.run();
+        }, true);
+        addButton("Cancel");
     }
-    /* @Override */
+    @Override
     public void onOpened(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.onOpened();
-//         buttons.get(0).runActions();//automatically press import since this menu isn't otherwise very useful
-//
+        super.onOpened();
+        buttons.get(0).runActions();//automatically press import since this menu isn't otherwise very useful
     }
 }

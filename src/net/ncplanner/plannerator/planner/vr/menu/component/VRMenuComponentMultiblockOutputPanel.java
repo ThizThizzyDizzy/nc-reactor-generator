@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.vr.menu.VRMenuEdit;
 import org.lwjgl.openvr.TrackedDevicePose;
 public class VRMenuComponentMultiblockOutputPanel extends VRMenuComponentTextPanel{
@@ -10,7 +10,7 @@ public class VRMenuComponentMultiblockOutputPanel extends VRMenuComponentTextPan
         snap = -1;
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
         text = editor.getMultiblock().getFullTooltip();
         super.renderComponent(renderer, tdpb);
     }

@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
@@ -58,22 +58,19 @@ public class MenuImageExportPreview extends Menu{
     }
     @Override
     public void render2d(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.render2d(deltaTime);
-//         float xScale = (gui.getWidth()-sidebarWidth)/(float)image.getWidth();
-//         float yScale = gui.getHeight()/(float)image.getHeight();
-//         float scale = Math.min(xScale,yScale);
-//         Renderer renderer = new Renderer();
-//         renderer.setWhite();
-//         if(xScale>yScale){
-//             float wid = image.getWidth()*scale;
-//             renderer.drawImage(image, sidebarWidth+(gui.getWidth()-sidebarWidth)/2-wid/2, 0, sidebarWidth+(gui.getWidth()-sidebarWidth)/2+wid/2, gui.getHeight());
-//         }else{
-//             float hig = image.getHeight()*scale;
-//             renderer.drawImage(image, sidebarWidth+0, gui.getHeight()/2-hig/2, sidebarWidth+(gui.getWidth()-sidebarWidth), gui.getHeight()/2+hig/2);
-//         }
-//
+        super.render2d(deltaTime);
+        float xScale = (gui.getWidth()-sidebarWidth)/(float)image.getWidth();
+        float yScale = gui.getHeight()/(float)image.getHeight();
+        float scale = Math.min(xScale,yScale);
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setWhite();
+        if(xScale>yScale){
+            float wid = image.getWidth()*scale;
+            renderer.drawImage(image, sidebarWidth+(gui.getWidth()-sidebarWidth)/2-wid/2, 0, sidebarWidth+(gui.getWidth()-sidebarWidth)/2+wid/2, gui.getHeight());
+        }else{
+            float hig = image.getHeight()*scale;
+            renderer.drawImage(image, sidebarWidth+0, gui.getHeight()/2-hig/2, sidebarWidth+(gui.getWidth()-sidebarWidth), gui.getHeight()/2+hig/2);
+        }
     }
     @Override
     public void onKeyEvent(int key, int scancode, int action, int mods){

@@ -10,25 +10,18 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.Legacy
 public class MenuPickCondition extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickCondition(GUI gui, Menu parent, Consumer<Condition> onConfirm){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         throw new UnsupportedOperationException("Pending refactor");
-// //
-// //
-// //         minWidth = minHeight = 0;
-// //         for(Supplier<Condition> supplier : Condition.registeredConditions.values()){
-// //             Condition condition = supplier.get();
-// //             buttons.add(new Button(condition.getTitle(), true).setTooltip(condition.getTooltip()).addAction(() -> {
-// //                 close();
-// //                 onConfirm.accept(condition);
-// //             }));
-// //         }
-// //         setContent(new LegacyExpandingGridLayout(128, 64, 2).addAll(buttons));
-// //         addButton("Cancel", () -> {
-// //             close();
-// //         });
-// //
-//
+        super(gui, parent);
+        minWidth = minHeight = 0;
+        for(Supplier<Condition> supplier : Condition.registeredConditions.values()){
+            Condition condition = supplier.get();
+            buttons.add(new Button(condition.getTitle(), true).setTooltip(condition.getTooltip()).addAction(() -> {
+                close();
+                onConfirm.accept(condition);
+            }));
+        }
+        setContent(new LegacyExpandingGridLayout(128, 64, 2).addAll(buttons));
+        addButton("Cancel", () -> {
+            close();
+        });
     }
 }

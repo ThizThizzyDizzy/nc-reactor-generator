@@ -10,38 +10,35 @@ public class LegacyNCPF7Reader extends LegacyNCPF8Reader {
     protected byte getTargetVersion() {
         return (byte) 7;
     }
-    /* @Override */
+    @Override
     protected synchronized Design readMultiblock(Project ncpf, InputStream in, RecoveryHandler recovery){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Config data = Config.newConfig();
-//         data.load(in);
-//         Design design;
-//         int id = data.get("id");
-//         switch(id){
-//             case 0:
-//                 design = readMultiblockUnderhaulSFR(ncpf, data, recovery);
-//                 break;
-//             case 1:
-//                 design = readMultiblockOverhaulSFR(ncpf, data, recovery);
-//                 break;
-//             case 2:
-//                 design = readMultiblockOverhaulMSR(ncpf, data, recovery);
-//                 break;
-//             case 3:
-//                 design = readMultiblockOverhaulTurbine(ncpf, data, recovery);
-//                 break;
-//             default:
-//                 throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
-//         }
-//         if(data.hasProperty("metadata")){
-//             Config metadata = data.get("metadata");
-//             for(String key : metadata.properties()){
-//                 design.metadata.put(key, metadata.get(key));
-//             }
-//         }
-//         return design;
-//
+        Config data = Config.newConfig();
+        data.load(in);
+        Design design;
+        int id = data.get("id");
+        switch(id){
+            case 0:
+                design = readMultiblockUnderhaulSFR(ncpf, data, recovery);
+                break;
+            case 1:
+                design = readMultiblockOverhaulSFR(ncpf, data, recovery);
+                break;
+            case 2:
+                design = readMultiblockOverhaulMSR(ncpf, data, recovery);
+                break;
+            case 3:
+                design = readMultiblockOverhaulTurbine(ncpf, data, recovery);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Multiblock ID: "+id);
+        }
+        if(data.hasProperty("metadata")){
+            Config metadata = data.get("metadata");
+            for(String key : metadata.properties()){
+                design.metadata.put(key, metadata.get(key));
+            }
+        }
+        return design;
     }
     @Override
     protected void loadOverhaulFusionGeneratorBlocks(NCPFConfigurationContainer project, Config overhaul, boolean loadSettings){

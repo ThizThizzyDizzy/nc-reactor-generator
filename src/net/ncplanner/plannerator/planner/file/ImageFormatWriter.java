@@ -26,24 +26,21 @@ public abstract class ImageFormatWriter extends FormatWriter{
     public abstract Image write(Project ncpf);
     @Override
     public void openExportSettings(Project ncpf, Runnable onExport){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         overlays.clear();
-//         Multiblock mb = null;
-//         for(Module m : Core.modules){
-//             if(m.isActive()){
-//                 Design d = ncpf.designs.get(0);
-//                 if(d instanceof MultiblockDesign){
-//                     mb = ((MultiblockDesign)d).toMultiblock();
-//                     m.getEditorOverlays(mb, overlays);
-//                 }
-//             }
-//         }
-//         for(EditorOverlay o : overlays){
-//             if(!o.isActive())continue;
-//             o.refresh(mb);
-//         }
-//         new MenuImageExportPreview(()->{return write(ncpf);}, onExport, overlays, mb).open();
-//
+        overlays.clear();
+        Multiblock mb = null;
+        for(Module m : Core.modules){
+            if(m.isActive()){
+                Design d = ncpf.designs.get(0);
+                if(d instanceof MultiblockDesign){
+                    mb = ((MultiblockDesign)d).toMultiblock();
+                    m.getEditorOverlays(mb, overlays);
+                }
+            }
+        }
+        for(EditorOverlay o : overlays){
+            if(!o.isActive())continue;
+            o.refresh(mb);
+        }
+        new MenuImageExportPreview(Core.gui, Core.gui.menu, ()->{return write(ncpf);}, onExport, overlays, mb).open();
     }
 }

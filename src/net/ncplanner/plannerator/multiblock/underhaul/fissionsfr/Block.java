@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock.underhaul.fissionsfr;
 import java.util.List;
 import java.util.function.Function;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -10,7 +10,7 @@ import net.ncplanner.plannerator.multiblock.configuration.IBlockRecipe;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
@@ -77,44 +77,38 @@ public class Block extends AbstractBlock{
     }
     @Override
     public String getTooltip(Multiblock multiblock){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         String tip = getName();
-//         if(recipe!=null){
-//             tip+="\n"+recipe.getDisplayName();
-//         }
-//         if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
-//         if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
-//         if(isFuelCell()){
-//             tip+="\n"
-//             + " Adjacent Cells: "+adjacentCells+"\n"
-//             + " Adjacent Moderators: "+adjacentModerators+"\n"
-//             + " Energy Multiplier: "+MathUtil.percent(energyMult, 0)+"\n"
-//             + " Heat Multiplier: "+MathUtil.percent(heatMult, 0);
-//         }
-//         if(isModerator()){
-//             tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"));
-//         }
-//         if(isCooler()){
-//             tip+="\nCooler "+(coolerValid?"Valid":"Invalid");
-//         }
-//         if(template.activeCooler!=null){
-//             tip+="\nActive Cooler "+(coolerValid?"Valid":"Invalid");
-//         }
-//         return tip;
-//
+        String tip = getName();
+        if(recipe!=null){
+            tip+="\n"+recipe.getDisplayName();
+        }
+        if(isController())tip+="\nController "+(casingValid?"Valid":"Invalid");
+        if(isCasing())tip+="\nCasing "+(casingValid?"Valid":"Invalid");
+        if(isFuelCell()){
+            tip+="\n"
+            + " Adjacent Cells: "+adjacentCells+"\n"
+            + " Adjacent Moderators: "+adjacentModerators+"\n"
+            + " Energy Multiplier: "+MathUtil.percent(energyMult, 0)+"\n"
+            + " Heat Multiplier: "+MathUtil.percent(heatMult, 0);
+        }
+        if(isModerator()){
+            tip+="\nModerator "+(moderatorActive?"Active":(moderatorValid?"Valid":"Invalid"));
+        }
+        if(isCooler()){
+            tip+="\nCooler "+(coolerValid?"Valid":"Invalid");
+        }
+        if(template.activeCooler!=null){
+            tip+="\nActive Cooler "+(coolerValid?"Valid":"Invalid");
+        }
+        return tip;
     }
-    /* @Override */
-    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(!isValid()){
-//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
-//         }
-//         if(isActive()&&isModerator()){
-//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
-//         }
-//
+    @Override
+    public void renderOverlay(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+        if(!isValid()){
+            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
+        }
+        if(isActive()&&isModerator()){
+            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
+        }
     }
     @Override
     public boolean canRequire(AbstractBlock oth){

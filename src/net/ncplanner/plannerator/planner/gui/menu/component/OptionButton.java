@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -64,33 +64,30 @@ public class OptionButton extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.draw(deltaTime);
-//         Renderer renderer = new Renderer();
-//         Color col;
-//         if(darker){
-//              col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(isLeftPressed||isRightPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//         }else{
-//             col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(isLeftPressed||isRightPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//         }
-//         renderer.setColor(col);
-//         renderer.fillRect(x, y, x+width, y+height);
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         drawText(renderer);
-//
+        super.draw(deltaTime);
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        Color col;
+        if(darker){
+             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(isLeftPressed||isRightPressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
+            }
+        }else{
+            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(isLeftPressed||isRightPressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+            }
+        }
+        renderer.setColor(col);
+        renderer.fillRect(x, y, x+width, y+height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        drawText(renderer);
     }
     public void cycle(int diff){
         currentIndex+=diff;
@@ -117,7 +114,7 @@ public class OptionButton extends Component{
     public String getSelectedString(){
         return options[currentIndex];
     }
-    public void drawText(Renderer renderer){
+    public void drawText(PlanneratorRenderer renderer){
         String text = label+": "+getSelectedString();
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);

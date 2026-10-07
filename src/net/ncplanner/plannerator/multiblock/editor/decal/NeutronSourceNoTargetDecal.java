@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.multiblock.editor.decal;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Decal;
 import net.ncplanner.plannerator.planner.Core;
@@ -7,21 +7,15 @@ public class NeutronSourceNoTargetDecal extends Decal{
     public NeutronSourceNoTargetDecal(BlockPos pos){
         super(pos);
     }
-    /* @Override */
-    public void render(Renderer renderer, float x, float y, float blockSize){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(Core.theme.getDecalColorNeutronSourceNoTarget());
-//         renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
-//
+    @Override
+    public void render(PlanneratorRenderer renderer, float x, float y, float blockSize){
+        renderer.setColor(Core.theme.getDecalColorNeutronSourceNoTarget());
+        renderer.fillRect(x+blockSize*.375f, y+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f);
     }
-    /* @Override */
-    public void render3D(Renderer renderer, float x, float y, float z, float blockSize){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(Core.theme.getDecalColorNeutronSourceNoTarget());
-//         renderer.drawCube(x+blockSize*.375f, y+blockSize*.375f, z+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f, z+blockSize*.625f, null);
-//
+    @Override
+    public void render3D(PlanneratorRenderer renderer, float x, float y, float z, float blockSize){
+        renderer.setColor(Core.theme.getDecalColorNeutronSourceNoTarget());
+        renderer.drawCube(x+blockSize*.375f, y+blockSize*.375f, z+blockSize*.375f, x+blockSize*.625f, y+blockSize*.625f, z+blockSize*.625f, null);
     }
     @Override
     public String getTooltip(){

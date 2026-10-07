@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.ncplanner.ncpf.structure.NcpfAddon;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.Priority;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
@@ -31,17 +30,17 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
-import net.ncplanner.plannerator.planner.configuration.CannedConfiguration;
-import net.ncplanner.plannerator.planner.configuration.ConfigurationManager;
 import net.ncplanner.plannerator.planner.editor.overlay.EditorOverlay;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestor;
 import net.ncplanner.plannerator.planner.file.FileReader;
+import net.ncplanner.plannerator.planner.ncpf.Addon;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 public abstract class Module<T>{
     private boolean active;
     public final String name;
-    public ArrayList<CannedConfiguration> ownConfigs = new ArrayList<>();//used for loading configs on startup
+    public ArrayList<Configuration> ownConfigs = new ArrayList<>();//used for loading configs on startup
     public boolean unlocked = true;
     public String secretKey;
     public Module(String name){
@@ -94,12 +93,18 @@ public abstract class Module<T>{
     public String getTooltip(Multiblock m, T o){
         return null;
     }
-    public final void addConfiguration(CannedConfiguration c, String link, String author){
-        ConfigurationManager.addInternalConfiguration(c, link, author);
+    public final void addConfiguration(Configuration c, String link, String author){
+        if(!(c instanceof net.ncplanner.plannerator.planner.configuration.CannedConfiguration)){
+            c = new net.ncplanner.plannerator.planner.configuration.CannedConfiguration(c);
+        }
+        Configuration.addInternalConfiguration(c, link, author);
+        net.ncplanner.plannerator.planner.configuration.ConfigurationManager.addInternalConfiguration(
+            (net.ncplanner.plannerator.planner.configuration.CannedConfiguration)c, link, author);
+        c.path = "modules/"+name+"/"+c.getName();
         ownConfigs.add(c);
     }
-    public final void addAddon(NcpfAddon addon, String link, String author){
-        ConfigurationManager.addInternalAddon(addon, link, author);
+    public final void addAddon(Addon addon, String link, String author){
+        Configuration.addInternalAddon(addon, link, author);
     }
     public void getSuggestors(Multiblock multiblock, ArrayList<Suggestor> suggestors){
     }
@@ -222,18 +227,15 @@ public abstract class Module<T>{
     }
     private ArrayList<Runnable> tasks = new ArrayList<>();
     protected void addConfigurationTask(Task t, String name, String filepath, String link, String author, String... alternatives){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Task task = t.addSubtask(name);
-//         tasks.add(() -> {
-//             CannedConfiguration config = new CannedConfiguration(FileReader.read(() -> Core.getInputStream(filepath)));
-//             for(String alt : alternatives){
-//                 config.addAlias(alt);
-//             }
-//             addConfiguration(config, link, author);
-//             task.finish();
-//         });
-//
+        Task task = t.addSubtask(name);
+        tasks.add(() -> {
+            Configuration config = new Configuration(FileReader.read(() -> Core.getInputStream(filepath)));
+            for(String alt : alternatives){
+                config.addAlternative(alt);
+            }
+            addConfiguration(config, link, author);
+            task.finish();
+        });
     }
     protected void addAddonTask(Task t, String name, String filepath, String link, String author){
         Task task = t.addSubtask(name);

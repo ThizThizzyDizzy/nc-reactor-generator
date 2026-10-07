@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.module.Module;
@@ -16,22 +16,19 @@ public class MenuComponentModule extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(isFocused){
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
-//         }else{
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         }
-//         renderer.fillRect(x, y, x+width, y+height);
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         drawText(renderer, module.getDisplayName()+" ("+(module.isActive()?"Active":"Inactive")+")");
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(isFocused){
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
+        renderer.fillRect(x, y, x+width, y+height);
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        drawText(renderer, module.getDisplayName()+" ("+(module.isActive()?"Active":"Inactive")+")");
     }
-    public void drawText(Renderer renderer, String text){
+    public void drawText(PlanneratorRenderer renderer, String text){
         if(Core.isControlPressed()){
             if(max==0){
                 text = min+"+";

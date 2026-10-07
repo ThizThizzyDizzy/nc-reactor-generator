@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.List;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.planner.Core;
@@ -15,13 +15,10 @@ public class VRMenuComponentMultiblockSettingsPanel extends VRMenuComponent{
         this.editor = editor;
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(refreshNeeded)refresh();
-//         renderer.setColor(Core.theme.getVRPanelOutlineColor());
-//         renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
-//
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+        if(refreshNeeded)refresh();
+        renderer.setColor(Core.theme.getVRPanelOutlineColor());
+        renderer.drawCubeOutline(-.005f, -.005f, -.005f, width+.005f, height+.005f, depth+.005f, .005f);//half cm
     }
     public synchronized void refresh(){
         components.clear();

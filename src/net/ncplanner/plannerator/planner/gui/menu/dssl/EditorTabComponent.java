@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import org.lwjgl.glfw.GLFW;
 public class EditorTabComponent extends Label{
@@ -13,7 +13,7 @@ public class EditorTabComponent extends Label{
     public void render2d(double deltaTime) {
         text = tab.getName();
         darker = isFocused;
-        Renderer r = new Renderer();
+        PlanneratorRenderer r = new PlanneratorRenderer();
         width = r.getStringWidth(text, height-textInset*2)+textInset*2;
         super.render2d(deltaTime);
     }

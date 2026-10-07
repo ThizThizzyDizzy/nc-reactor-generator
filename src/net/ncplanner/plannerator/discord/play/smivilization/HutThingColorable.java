@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.discord.play.smivilization;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.UUID;
 import net.ncplanner.plannerator.config2.Config;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public abstract class HutThingColorable extends HutThing{
     private Color color;
     public HutThingColorable(UUID uuid, Hut hut, String name, String textureName, long price, Color defaultColor){
@@ -26,9 +26,9 @@ public abstract class HutThingColorable extends HutThing{
         color = new Color(config.get("rgb"));
     }
     @Override
-    public void draw(float left, float top, float right, float bottom){
-        Renderer.setColor(getColor());
-        super.draw(left, top, right, bottom);
+    public void draw(PlanneratorRenderer renderer, float left, float top, float right, float bottom){
+        renderer.setColor(getColor());
+        super.draw(renderer, left, top, right, bottom);
     }
     @Override
     public abstract int[] getDimensions();

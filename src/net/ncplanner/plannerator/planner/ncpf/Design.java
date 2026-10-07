@@ -21,6 +21,7 @@ public class Design<T extends NCPFDesignDefinition> extends NCPFDesign<T>{
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
         metadata = getModule(MetadataModule::new);
+        if(metadata==null)metadata = new MetadataModule();
     }
     @Override
     public void convertToObject(NCPFObject ncpf){

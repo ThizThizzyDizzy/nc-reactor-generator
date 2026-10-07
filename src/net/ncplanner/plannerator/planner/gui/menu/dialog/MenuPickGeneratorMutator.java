@@ -12,27 +12,20 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.Legacy
 public class MenuPickGeneratorMutator<T extends LiteMultiblock> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickGeneratorMutator(GUI gui, Menu parent, Mutator<T> mutator, Consumer<GeneratorMutator<T>> onConfirm){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         throw new UnsupportedOperationException("Pending refactor");
-// //
-// //
-// //         minWidth = minHeight = 0;
-// //         for(Supplier<GeneratorMutator> func : GeneratorMutator.registeredMutators.values()){
-// //             GeneratorMutator<T> genMutator = func.get();
-// //             genMutator.mutator = mutator;
-// //             buttons.add(new Button(genMutator.getTitle(), true).setTooltip(genMutator.getTooltip()).addAction(() -> {
-// //                 close();
-// //                 onConfirm.accept(genMutator);
-// //             }));
-// //         }
-// //         setTitle("Choose Mutator Type");
-// //         setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
-// //         addButton("Cancel", () -> {
-// //             close();
-// //         });
-// //
-//
+        super(gui, parent);
+        minWidth = minHeight = 0;
+        for(Supplier<GeneratorMutator> func : GeneratorMutator.registeredMutators.values()){
+            GeneratorMutator<T> genMutator = func.get();
+            genMutator.mutator = mutator;
+            buttons.add(new Button(genMutator.getTitle(), true).setTooltip(genMutator.getTooltip()).addAction(() -> {
+                close();
+                onConfirm.accept(genMutator);
+            }));
+        }
+        setTitle("Choose Mutator Type");
+        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
+        addButton("Cancel", () -> {
+            close();
+        });
     }
 }

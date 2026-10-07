@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Pinnable;
@@ -21,16 +21,13 @@ public class VRMenuComponentEditorListBlock extends VRMenuComponent implements P
         this.blockID = blockID;
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-//         renderer.drawCube(0, 0, 0, width, height, depth, block.getTexture());
-//         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
-//         if(editor.getSelectedBlock(id).isEqual(block)){
-//             renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
-//         }
-//
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+        renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
+        renderer.drawCube(0, 0, 0, width, height, depth, block.getTexture());
+        renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
+        if(editor.getSelectedBlock(id).isEqual(block)){
+            renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
+        }
     }
     @Override
     public void keyEvent(int device, int button, boolean pressed){

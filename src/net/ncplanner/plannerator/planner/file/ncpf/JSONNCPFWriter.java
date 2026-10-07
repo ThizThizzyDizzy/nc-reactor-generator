@@ -1,36 +1,19 @@
 package net.ncplanner.plannerator.planner.file.ncpf;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import net.ncplanner.plannerator.ncpf.io.NCPFList;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import net.ncplanner.ncpf.io.NcpfJsonConverter;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.file.JSON;
-@Deprecated
 public class JSONNCPFWriter implements NCPFFormatWriter{
     @Override
-    public void write(NCPFObject ncpf, OutputStream stream) throws IOException{
-        toJSON(ncpf).write(stream);
-    }
-    private JSON.JSONObject toJSON(NCPFObject ncpf){
-        JSON.JSONObject json = new JSON.JSONObject();
-        for(String key : ncpf.keySet()){
-            Object value = ncpf.get(key);
-            if(value instanceof NCPFObject)value = toJSON((NCPFObject)value);
-            if(value instanceof NCPFList)value = toJSON((NCPFList)value);
-            json.put(key, value);
-        }
-        return json;
-    }
-    private JSON.JSONArray toJSON(NCPFList ncpf){
-        JSON.JSONArray json = new JSON.JSONArray();
-        for(Object value : ncpf){
-            if(value instanceof NCPFObject)value = toJSON((NCPFObject)value);
-            if(value instanceof NCPFList)value = toJSON((NCPFList)value);
-            json.add(value);
-        }
-        return json;
+    public void write(NCPFObject object,OutputStream stream) throws IOException{
+        JsonWriter writer=new JsonWriter(new OutputStreamWriter(stream,StandardCharsets.UTF_8));
+        NcpfJsonConverter.gson.toJson(NcpfJsonConverter.gson.toJsonTree(object),writer);
+        writer.flush();
     }
     @Override
-    public String getExtension(){
-        return "json";
-    }
+    public String getExtension(){return "json";}
+    public String getName(){return "JSON";}
 }

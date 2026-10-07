@@ -1,11 +1,8 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
@@ -20,15 +17,15 @@ public class PasteTool extends EditorTool{
         super(editor, id);
     }
     @Override
-    public void render(float x, float y, float width, float height, int themeIndex){
-        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        Renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
-        Renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        Renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
-        Renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
-        Renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
-        Renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
-        Renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
+    public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, int themeIndex){
+        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+        renderer.fillRect(x+width*.35f, y+height*.15f, x+width*.8f, y+height*.75f);
+        renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
+        renderer.fillRect(x+width*.4f, y+height*.2f, x+width*.75f, y+height*.7f);
+        renderer.setColor(Core.theme.getEditorToolTextColor(themeIndex));
+        renderer.fillRect(x+width*.2f, y+height*.25f, x+width*.65f, y+height*.85f);
+        renderer.setColor(Core.theme.getEditorToolBackgroundColor(themeIndex));
+        renderer.fillRect(x+width*.25f, y+height*.3f, x+width*.6f, y+height*.8f);
     }
     @Override
     public void mouseReset(EditorSpace editorSpace, int button){}
@@ -52,7 +49,7 @@ public class PasteTool extends EditorTool{
         return true;
     }
     @Override
-    public void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
+    public void drawGhosts(PlanneratorRenderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture){
         if(cursorPos==null)return;
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
@@ -66,15 +63,15 @@ public class PasteTool extends EditorTool{
                 if(sz!=layer)continue;
                 if(sx<0||sx>x2)continue;
                 if(sy<0||sy>y2)continue;
-                if(entry.block!=null)Renderer.setColor(Color.WHITE, .5f);
-                else Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-                Renderer.fillRect(x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize, entry.block==null?0:ResourceManager.getTexture(entry.block.getTexture()));
+                if(entry.block!=null)renderer.setWhite(.5f);
+                else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+                renderer.drawImage(entry.block==null?null:entry.block.getTexture(), x+sx*blockSize, y+sy*blockSize, x+(sx+1)*blockSize, y+(sy+1)*blockSize);
             }
         }
-        Renderer.setColor(Color.WHITE);
+        renderer.setWhite();
     }
     @Override
-    public void drawVRGhosts(EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
+    public void drawVRGhosts(PlanneratorRenderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture){
         if(cursorPos==null)return;
         synchronized(editor.getClipboard(id)){
             for(ClipboardEntry entry : editor.getClipboard(id)){
@@ -84,12 +81,12 @@ public class PasteTool extends EditorTool{
                 if(pos.x<bbox.x1||pos.x>bbox.x2)continue;
                 if(pos.y<bbox.y1||pos.y>bbox.y2)continue;
                 if(pos.z<bbox.z1||pos.z>bbox.z2)continue;
-                if(entry.block!=null)Renderer.setColor(Color.WHITE, .5f);
-                else Renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
-                PlanneratorRenderer.drawCube(x+pos.x*blockSize, y+pos.y*blockSize, z+pos.z*blockSize, x+(pos.x+1)*blockSize, y+(pos.y+1)*blockSize, z+(pos.z+1)*blockSize, entry.block==null?null:entry.block.getTexture());
+                if(entry.block!=null)renderer.setWhite(.5f);
+                else renderer.setColor(Core.theme.getEditorBackgroundColor(), .5f);
+                renderer.drawCube(x+pos.x*blockSize, y+pos.y*blockSize, z+pos.z*blockSize, x+(pos.x+1)*blockSize, y+(pos.y+1)*blockSize, z+(pos.z+1)*blockSize, entry.block==null?null:entry.block.getTexture());
             }
         }
-        Renderer.setColor(Color.WHITE);
+        renderer.setWhite();
     }
     @Override
     public String getTooltip(){

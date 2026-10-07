@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.discord;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import com.thizthizzydizzy.dizzyengine.io.ImageIO;
@@ -65,9 +65,9 @@ public abstract class KeywordCommand extends Command{
         }
         int border = 5;
         int textHeight = 20;
-        int wide = (int)Renderer.getStringWidth(args, textHeight)+1;
+        int wide = (int)PlanneratorRenderer.getStringWidth(args, textHeight)+1;
         for(Keyword w : words){
-            wide = Math.max(wide, (int)Renderer.getStringWidth(w.name+" | "+w.input, textHeight)+1);
+            wide = Math.max(wide, (int)PlanneratorRenderer.getStringWidth(w.name+" | "+w.input, textHeight)+1);
         }
         int width = wide;
         if(!text.isEmpty()){
@@ -76,18 +76,18 @@ public abstract class KeywordCommand extends Command{
                 float x = 5;
                 for(Object o : debugText){
                     if(o instanceof Color){
-                        Renderer.setColor((Color)o);
+                        PlanneratorRenderer.setColor((Color)o);
                     }else if(o instanceof String){
                         String s = (String)o;
-                        float len = Renderer.getStringWidth(s, textHeight);
-                        Renderer.drawText(x, border, width+border, border+textHeight, s);
+                        float len = PlanneratorRenderer.getStringWidth(s, textHeight);
+                        PlanneratorRenderer.drawText(x, border, width+border, border+textHeight, s);
                         x+=len;
                     }
                 }
                 for(int i = 0; i<words.size(); i++){
                     Keyword word = words.get(i);
-                    Renderer.setColor(word.getColor());
-                    Renderer.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
+                    PlanneratorRenderer.setColor(word.getColor());
+                    PlanneratorRenderer.drawText(border, border+(i+1)*textHeight, width+border, border+(i+2)*textHeight, word.name+" | "+word.input);
                 }
             });
             File debugFile = new File("debug.png");

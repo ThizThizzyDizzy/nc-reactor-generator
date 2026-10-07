@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import net.ncplanner.plannerator.planner.gui.menu.component.*;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 public class ScrollableDsslEditor extends Scrollable{
@@ -21,7 +21,7 @@ public class ScrollableDsslEditor extends Scrollable{
     }
     @Override
     public void render2d(double deltaTime){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         if(editor!=null){
             editor.debug = debug;
             ArrayList<FormattedText> lines = editor.textDisplay.splitLines();
@@ -33,20 +33,17 @@ public class ScrollableDsslEditor extends Scrollable{
     }
     @Override
     public void drawBackground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(editor!=null){
-//             focusedComponent = editor;
-//             editor.isFocused = isFocused;
-//             editor.width = Math.max(editor.width, width);
-//             editor.height = Math.max(editor.height, height);
-//         }
-//         renderer.setColor(Core.theme.getCodeBackgroundColor());
-//         renderer.fillRect(x, y, x+width, y+height);
-//         renderer.setWhite();
-//         super.drawBackground(deltaTime);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(editor!=null){
+            focusedComponent = editor;
+            editor.isFocused = isFocused;
+            editor.width = Math.max(editor.width, width);
+            editor.height = Math.max(editor.height, height);
+        }
+        renderer.setColor(Core.theme.getCodeBackgroundColor());
+        renderer.fillRect(x, y, x+width, y+height);
+        renderer.setWhite();
+        super.drawBackground(deltaTime);
     }
     @Override
     public void draw(double deltaTime){

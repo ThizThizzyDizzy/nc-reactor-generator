@@ -15,7 +15,7 @@ import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.LayoutMenu;
 import net.ncplanner.plannerator.planner.gui.menu.component.BenchmarkComponent;
-import net.ncplanner.plannerator.planner.ui.component.ProgressBar;
+import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
@@ -30,93 +30,89 @@ public class MenuBenchmark extends LayoutMenu{
     private BenchmarkComponent benchmark;
     public MenuBenchmark(GUI gui){
         super(gui, new SplitLayout(SplitLayout.Y_AXIS, 0));
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//
-//         File f = new File("benchmark.ncpf.json");
-//         if(!f.exists())f = new File("benchmark.ncpf");
-//         if(!f.exists())f = new File("benchmark.json");
-//         task = new Task(f.exists()?"Loading "+f.getName():"Benchmark not found");
-//         bar = add(new ProgressBar(3){
-//             @Override
-//             public Task getTask(){
-//                 return task;
-//             }
-//         });
-//         grid = add(new GridLayout(1, 0));
-//         File file = f;
-//         Thread thread = new Thread(() -> {
-//             Project ncpf = FileReader.read(file);
-//             if(ncpf==null)return;
-//             Core.multiblocks.clear();
-//             Core.saved = true;
-//             Core.setConfiguration(new Configuration(ncpf));
-//             for(Design d : ncpf.designs){
-//                 d.file = Core.project;
-//                 if(d instanceof MultiblockDesign){
-//                     ((MultiblockDesign)d).convertElements();
-//                     Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
-//                 }
-//             }
-//             task.finish();
-//             while(true){
-//                 Multiblock multiblock = Core.multiblocks.get(0);
-//                 switch(new MenuMessageDialog("Choose Benchmark").addButton("V3").addButton("V4 (Lite)").addButton("Done").openAsync()){
-//                     case 0:
-//                         benchmark(new String[]{"V3 stp/clc", "V3 clc", "V3 cp/clc"}, ()->{
-//                             multiblock.clearCaches();
-//                             ArrayList<AbstractBlock> blocks = multiblock.getBlocks();
-//                             multiblock.clearData(blocks);
-//                             multiblock.validate();
-//                             {
-//                                 multiblock.calculateTask = new Task("Calculating Multiblock");
-//                                 multiblock.genCalcSubtasks();
-//                                 while(multiblock.doCalculationStep(blocks, true))multiblock.decals.clear();
-//                                 multiblock.calculationPaused = false;
-//                                 for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
-//                                     if(m.isActive()){
-//                                         Object result = m.calculateMultiblock(multiblock);
-//                                         if(result!=null)multiblock.moduleData.put(m, result);
-//                                     }
-//                                 }
-//                                 multiblock.calculateTask = null;
-//                             }
-//                             multiblock.calculate(blocks);
-//                         }, multiblock::recalculate, ()->{
-//                             Multiblock v = multiblock.copy();
-//                             v.recalculate();
-//                         });
-//                         break;
-//                     case 1: //lite
-//                         if(multiblock instanceof UnderhaulSFR){
-//                             System.out.println("Commencing test...");
-//                             LiteUnderhaulSFR lite = ((UnderhaulSFR)multiblock).compile();
-//                             CompiledUnderhaulSFRConfiguration compiledConfig = lite.configuration;
-//                             lite.calculate();
-//                             System.out.println(lite.getTooltip());
-//                             benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
-//                                 lite.copy().calculate();
-//                             });
-//                         }else if(multiblock instanceof OverhaulSFR){
-//                             System.out.println("Commencing test...");
-//                             LiteOverhaulSFR lite = ((OverhaulSFR)multiblock).compile();
-//                             CompiledOverhaulSFRConfiguration compiledConfig = lite.configuration;
-//                             lite.calculate();
-//                             System.out.println(lite.getTooltip());
-//                             benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
-//                                 lite.copy().calculate();
-//                             });
-//                         }else new MenuMessageDialog("No lite model exists for "+multiblock.getDefinitionName()+"!").openAsync();
-//                         break;
-//                     case 2:
-//                         gui.open(new MenuMain(gui));
-//                         return;
-//                 }
-//             }
-//         }, "Benchmark Thread");
-//         thread.setDaemon(true);
-//         thread.start();
-//
+        File f = new File("benchmark.ncpf.json");
+        if(!f.exists())f = new File("benchmark.ncpf");
+        if(!f.exists())f = new File("benchmark.json");
+        task = new Task(f.exists()?"Loading "+f.getName():"Benchmark not found");
+        bar = add(new ProgressBar(3){
+            @Override
+            public Task getTask(){
+                return task;
+            }
+        });
+        grid = add(new GridLayout(1, 0));
+        File file = f;
+        Thread thread = new Thread(() -> {
+            Project ncpf = FileReader.read(file);
+            if(ncpf==null)return;
+            Core.multiblocks.clear();
+            Core.saved = true;
+            Core.setConfiguration(new Configuration(ncpf));
+            for(Design d : ncpf.designs){
+                d.file = Core.project;
+                if(d instanceof MultiblockDesign){
+                    ((MultiblockDesign)d).convertElements();
+                    Core.multiblocks.add(((MultiblockDesign)d).toMultiblock());
+                }
+            }
+            task.finish();
+            while(true){
+                Multiblock multiblock = Core.multiblocks.get(0);
+                switch(new MenuMessageDialog("Choose Benchmark").addButton("V3").addButton("V4 (Lite)").addButton("Done").openAsync()){
+                    case 0:
+                        benchmark(new String[]{"V3 stp/clc", "V3 clc", "V3 cp/clc"}, ()->{
+                            multiblock.clearCaches();
+                            ArrayList<AbstractBlock> blocks = multiblock.getBlocks();
+                            multiblock.clearData(blocks);
+                            multiblock.validate();
+                            {
+                                multiblock.calculateTask = new Task("Calculating Multiblock");
+                                multiblock.genCalcSubtasks();
+                                while(multiblock.doCalculationStep(blocks, true))multiblock.decals.clear();
+                                multiblock.calculationPaused = false;
+                                for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+                                    if(m.isActive()){
+                                        Object result = m.calculateMultiblock(multiblock);
+                                        if(result!=null)multiblock.moduleData.put(m, result);
+                                    }
+                                }
+                                multiblock.calculateTask = null;
+                            }
+                            multiblock.calculate(blocks);
+                        }, multiblock::recalculate, ()->{
+                            Multiblock v = multiblock.copy();
+                            v.recalculate();
+                        });
+                        break;
+                    case 1: //lite
+                        if(multiblock instanceof UnderhaulSFR){
+                            System.out.println("Commencing test...");
+                            LiteUnderhaulSFR lite = ((UnderhaulSFR)multiblock).compile();
+                            CompiledUnderhaulSFRConfiguration compiledConfig = lite.configuration;
+                            lite.calculate();
+                            System.out.println(lite.getTooltip());
+                            benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
+                                lite.copy().calculate();
+                            });
+                        }else if(multiblock instanceof OverhaulSFR){
+                            System.out.println("Commencing test...");
+                            LiteOverhaulSFR lite = ((OverhaulSFR)multiblock).compile();
+                            CompiledOverhaulSFRConfiguration compiledConfig = lite.configuration;
+                            lite.calculate();
+                            System.out.println(lite.getTooltip());
+                            benchmark(new String[]{"V4 Lite clc", "V4 Lite cp/clc"}, lite::calculate, ()->{
+                                lite.copy().calculate();
+                            });
+                        }else new MenuMessageDialog("No lite model exists for "+multiblock.getDefinitionName()+"!").openAsync();
+                        break;
+                    case 2:
+                        gui.open(new MenuMain(gui));
+                        return;
+                }
+            }
+        }, "Benchmark Thread");
+        thread.setDaemon(true);
+        thread.start();
     }
     @Override
     public void render2d(double deltaTime){

@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.ui.component.layer;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.ui.component.Component;
 import com.thizthizzydizzy.dizzyengine.ui.component.layer.ComponentLayer;
@@ -14,8 +14,8 @@ public class SecondaryComponentBackgroundLayer extends ComponentLayer{
         }else{
             color = Core.theme.getSecondaryComponentColor(index);
         }
-        
-        Renderer.setColor(color);
-        Renderer.fillRect(c.x, c.y, c.x+c.getWidth(), c.y+c.getHeight());
+
+        PlanneratorRenderer.setColor(color);
+        PlanneratorRenderer.fillRect(c.x, c.y, c.x+c.getWidth(), c.y+c.getHeight());
     }
 }

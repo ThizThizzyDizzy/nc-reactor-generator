@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.module;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 public class QuantumTraversedEfficiencyModule extends Module<Float>{
     public QuantumTraversedEfficiencyModule(){
         super("quantum_traversed_efficiency_score");
@@ -31,9 +31,6 @@ public class QuantumTraversedEfficiencyModule extends Module<Float>{
     }
     @Override
     public String getTooltip(Multiblock m, Float o){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         return "Quantum Traversed Efficiency: "+MathUtil.percent(o, 0);
-//
+        return "Quantum Traversed Efficiency: "+MathUtil.percent(o, 0);
     }
 }

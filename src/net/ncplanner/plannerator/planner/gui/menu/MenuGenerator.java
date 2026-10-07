@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
@@ -29,7 +29,7 @@ import net.ncplanner.plannerator.multiblock.generator.lite.variable.Variable;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Parameter;
 import net.ncplanner.plannerator.planner.Core;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
@@ -151,221 +151,215 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         textView.setText(this.multiblock.getTooltip());
     }
     public void rebuildGUI(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         setScrollTo = stageSettings.scrollY;
-//         stageSettings.components.clear();
-//         if(!customizing){
-//             stageSettings.add(new Label(0, 0, 0, 40, "Generator Presets", true));
-//             for(int i = 0; i<gens.length; i++){
-//                 LiteGenerator<T> gen = gens[i];
-//                 final int ii = i;
-//                 stageSettings.add(new Label(0, 0, 0, 36, ""){
-//                     Button reset = add(new Button(0, 0, ii<internalGens?height*2.5f:0, height, "Reset", true, true).addAction(() -> {
-//                         boolean flag = generator==gens[ii];
-//                         gens[ii] = createGenerators(MenuGenerator.this.multiblock, priorityMultiblock)[ii];
-//                         if(flag)generator = gens[ii];
-//                         currentStage = 0;
-//                         rebuildGUI();
-//                     }));
-//                     Button select = add(new Button(0, 0, height*2.5f, height, gen.name.get(), true, false).addAction(() -> {
-//                         generator = gens[ii];
-//                         currentStage = 0;
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         select.width = reset.x = width-reset.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 });
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 32, "New Preset", true).addAction(() -> {
-//                 LiteGenerator<T>[] newGens = new LiteGenerator[gens.length+1];
-//                 for(int i = 0; i<gens.length; i++){
-//                     newGens[i] = gens[i];
-//                 }
-//                 newGens[gens.length] = new LiteGenerator<>();
-//                 newGens[gens.length].stages.add(new GeneratorStage<>());
-//                 generator = newGens[gens.length];
-//                 currentStage = 0;
-//                 gens = newGens;
-//                 rebuildGUI();
-//             }));
-//             stageSettings.add(new Button(0, 0, 0, 32, "Load Generator Settings", true).addAction(() -> {
-//                 current = this;
-//                 new MenuLoadFile(gui, this, (ncpf) -> {
-//                     generator = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
-//                     generator.setIndicies(multiblock);
-//                     currentStage = 0;
-//                     rebuildGUI();
-//                 }).open();
-//             }));
-//             addSettings(stageSettings.add(new Label(0, 0, 0, 36, "Generator", true)), generator, 1);
-//             stageSettings.add(new Button(0, 0, 0, 32, "Customize", true).addAction(() -> {
-//                 customizing = true;
-//                 rebuildGUI();
-//             }));
-//         }else{
-//             stageSettings.add(new Button(0, 0, 0, 32, "Finish Customizing", true).addAction(() -> {
-//                 customizing = false;
-//                 rebuildGUI();
-//             }));
-//             generator.name.addSettings(stageSettings, this);
-//             stageSettings.add(new Label(0, 0, 0, 40, "Generator Parameters", true));
-//             for(Parameter setting : generator.parameters){
-//                 stageSettings.add(new Label(0, 0, 0, 36, setting.getName()){
-//                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-//                         generator.parameters.remove(setting);
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         del.x = width-del.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 });
-//                 setting.addSettings(stageSettings, this);
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 36, "Add Parameter", true).addAction(() -> {
-//                 new MenuPickParameter<>(gui, this, multiblock, (var)->{
-//                     generator.parameters.add(var);
-//                     rebuildGUI();
-//                 }).open();
-//             }));
-//             stageSettings.add(new Label(0, 0, 0, 10, "", true));
-//             stageSettings.add(new Label(0, 0, 0, 40, "Stage "+(currentStage+1)));
-//             GeneratorStage<T> stage = generator.stages.get(currentStage);
-//             stageSettings.add(new Label(0, 0, 0, 36, "Mutators", true));
-//             for(GeneratorMutator<T> mutator : stage.steps){
-//                 if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
-//                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-//                         stage.steps.remove(mutator);
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         del.x = width-del.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 }.setTooltip(mutator.getTooltip())), mutator)){
-//                     addConditionSettings(mutator.conditions);
-//                     addExpandedSettings(mutator);
-//                     addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
-//                 }
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 32, "Add Mutator", true).addAction(() -> {
-//                 new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
-//                     new MenuPickGeneratorMutator<>(gui, this, mutator, (genMutator)->{
-//                         stage.steps.add(genMutator);
-//                         rebuildGUI();
-//                     }).open();
-//                 }).open();
-//             }));
-//             stageSettings.add(new Label(0, 0, 0, 36, "Priorities", true));
-//             for(int i = 0; i<stage.priorities.size(); i++){
-//                 Priority<T> priority = stage.priorities.get(i);
-//                 if(expand(stageSettings.add(new Label(0, 0, 0, 32, "Priority "+(i+1)){
-//                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-//                         stage.priorities.remove(priority);
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         del.x = width-del.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 }), priority)){
-//                     addConditionSettings(priority.conditions);
-//                     addExpandedSettings(priority);
-//                 }
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 32, "Add Priority", true).addAction(() -> {
-//                 stage.priorities.add(new Priority<>());
-//                 rebuildGUI();
-//             }));
-//             stageSettings.add(new Label(0, 0, 0, 36, "Post-Processing Mutators", true));
-//             for(GeneratorMutator<T> mutator : stage.postProcessing){
-//                 if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
-//                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-//                         stage.postProcessing.remove(mutator);
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         del.x = width-del.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 }.setTooltip(mutator.getTooltip())), mutator)){
-//                     addConditionSettings(mutator.conditions);
-//                     addExpandedSettings(mutator);
-//                     addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
-//                 }
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 32, "Add Post-Processing Mutator", true).addAction(() -> {
-//                 new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
-//                     new MenuPickGeneratorMutator<>(gui, this, mutator, (genMutator)->{
-//                         stage.postProcessing.add(genMutator);
-//                         rebuildGUI();
-//                     }).open();
-//                 }).open();
-//             }));
-//             stageSettings.add(new Label(0, 0, 0, 36, "Stage Transitions", true));
-//             for(int i = 0; i<stage.stageTransitions.size(); i++){
-//                 StageTransition<T> transition = stage.stageTransitions.get(i);
-//                 if(addSettings(stageSettings.add(new Label(0, 0, 0, 32, "Transition "+(i+1)){
-//                     Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
-//                         stage.stageTransitions.remove(transition);
-//                         rebuildGUI();
-//                     }));
-//                     @Override
-//                     public void draw(double deltaTime){
-//                         del.x = width-del.width;
-//                         super.draw(deltaTime);
-//                     }
-//                 }), transition))addConditionSettings(transition.conditions);
-//             }
-//             stageSettings.add(new Button(0, 0, 0, 32, "Add Transition", true).addAction(() -> {
-//                 stage.stageTransitions.add(new StageTransition<>());
-//                 rebuildGUI();
-//             }));
-//             stageSettings.add(new Button(0, 0, 0, 32, "Save Generator Settings", true).addAction(() -> {
-//                 Project ncpf = new Project();
-//                 ncpf.configuration = Core.project.configuration;
-//                 ncpf.conglomeration = Core.project.conglomeration;
-//                 GeneratorSettingsModule settings = new GeneratorSettingsModule();
-//                 current = this;
-//                 settings.generator = generator;
-//                 ncpf.setModule(settings);
-//                 new MenuSaveDialog(gui, this, ncpf, null).open();
-//             }));
-//         }
-//
+        setScrollTo = stageSettings.scrollY;
+        stageSettings.components.clear();
+        if(!customizing){
+            stageSettings.add(new Label(0, 0, 0, 40, "Generator Presets", true));
+            for(int i = 0; i<gens.length; i++){
+                LiteGenerator<T> gen = gens[i];
+                final int ii = i;
+                stageSettings.add(new Label(0, 0, 0, 36, ""){
+                    Button reset = add(new Button(0, 0, ii<internalGens?height*2.5f:0, height, "Reset", true, true).addAction(() -> {
+                        boolean flag = generator==gens[ii];
+                        gens[ii] = createGenerators(MenuGenerator.this.multiblock, priorityMultiblock)[ii];
+                        if(flag)generator = gens[ii];
+                        currentStage = 0;
+                        rebuildGUI();
+                    }));
+                    Button select = add(new Button(0, 0, height*2.5f, height, gen.name.get(), true, false).addAction(() -> {
+                        generator = gens[ii];
+                        currentStage = 0;
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        select.width = reset.x = width-reset.width;
+                        super.draw(deltaTime);
+                    }
+                });
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "New Preset", true).addAction(() -> {
+                LiteGenerator<T>[] newGens = new LiteGenerator[gens.length+1];
+                for(int i = 0; i<gens.length; i++){
+                    newGens[i] = gens[i];
+                }
+                newGens[gens.length] = new LiteGenerator<>();
+                newGens[gens.length].stages.add(new GeneratorStage<>());
+                generator = newGens[gens.length];
+                currentStage = 0;
+                gens = newGens;
+                rebuildGUI();
+            }));
+            stageSettings.add(new Button(0, 0, 0, 32, "Load Generator Settings", true).addAction(() -> {
+                current = this;
+                new MenuLoadFile(gui, this, (ncpf) -> {
+                    generator = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
+                    generator.setIndicies(multiblock);
+                    currentStage = 0;
+                    rebuildGUI();
+                }).open();
+            }));
+            addSettings(stageSettings.add(new Label(0, 0, 0, 36, "Generator", true)), generator, 1);
+            stageSettings.add(new Button(0, 0, 0, 32, "Customize", true).addAction(() -> {
+                customizing = true;
+                rebuildGUI();
+            }));
+        }else{
+            stageSettings.add(new Button(0, 0, 0, 32, "Finish Customizing", true).addAction(() -> {
+                customizing = false;
+                rebuildGUI();
+            }));
+            generator.name.addSettings(stageSettings, this);
+            stageSettings.add(new Label(0, 0, 0, 40, "Generator Parameters", true));
+            for(Parameter setting : generator.parameters){
+                stageSettings.add(new Label(0, 0, 0, 36, setting.getName()){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        generator.parameters.remove(setting);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                });
+                setting.addSettings(stageSettings, this);
+            }
+            stageSettings.add(new Button(0, 0, 0, 36, "Add Parameter", true).addAction(() -> {
+                new MenuPickParameter<>(gui, this, multiblock, (var)->{
+                    generator.parameters.add(var);
+                    rebuildGUI();
+                }).open();
+            }));
+            stageSettings.add(new Label(0, 0, 0, 10, "", true));
+            stageSettings.add(new Label(0, 0, 0, 40, "Stage "+(currentStage+1)));
+            GeneratorStage<T> stage = generator.stages.get(currentStage);
+            stageSettings.add(new Label(0, 0, 0, 36, "Mutators", true));
+            for(GeneratorMutator<T> mutator : stage.steps){
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        stage.steps.remove(mutator);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                }.setTooltip(mutator.getTooltip())), mutator)){
+                    addConditionSettings(mutator.conditions);
+                    addExpandedSettings(mutator);
+                    addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
+                }
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "Add Mutator", true).addAction(() -> {
+                new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
+                    new MenuPickGeneratorMutator<>(gui, this, mutator, (genMutator)->{
+                        stage.steps.add(genMutator);
+                        rebuildGUI();
+                    }).open();
+                }).open();
+            }));
+            stageSettings.add(new Label(0, 0, 0, 36, "Priorities", true));
+            for(int i = 0; i<stage.priorities.size(); i++){
+                Priority<T> priority = stage.priorities.get(i);
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, "Priority "+(i+1)){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        stage.priorities.remove(priority);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                }), priority)){
+                    addConditionSettings(priority.conditions);
+                    addExpandedSettings(priority);
+                }
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "Add Priority", true).addAction(() -> {
+                stage.priorities.add(new Priority<>());
+                rebuildGUI();
+            }));
+            stageSettings.add(new Label(0, 0, 0, 36, "Post-Processing Mutators", true));
+            for(GeneratorMutator<T> mutator : stage.postProcessing){
+                if(expand(stageSettings.add(new Label(0, 0, 0, 32, mutator.mutator.getTitle()){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        stage.postProcessing.remove(mutator);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                }.setTooltip(mutator.getTooltip())), mutator)){
+                    addConditionSettings(mutator.conditions);
+                    addExpandedSettings(mutator);
+                    addSettings(stageSettings.add(new Label(0, 0, 0, 30, "Mutator Settings").setTooltip(mutator.mutator.getTooltip())), mutator.mutator);
+                }
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "Add Post-Processing Mutator", true).addAction(() -> {
+                new MenuPickMutator<>(gui, this, multiblock, (mutator)->{
+                    new MenuPickGeneratorMutator<>(gui, this, mutator, (genMutator)->{
+                        stage.postProcessing.add(genMutator);
+                        rebuildGUI();
+                    }).open();
+                }).open();
+            }));
+            stageSettings.add(new Label(0, 0, 0, 36, "Stage Transitions", true));
+            for(int i = 0; i<stage.stageTransitions.size(); i++){
+                StageTransition<T> transition = stage.stageTransitions.get(i);
+                if(addSettings(stageSettings.add(new Label(0, 0, 0, 32, "Transition "+(i+1)){
+                    Button del = add(new Button(0, 0, height, height, "X", true, true).addAction(() -> {
+                        stage.stageTransitions.remove(transition);
+                        rebuildGUI();
+                    }));
+                    @Override
+                    public void draw(double deltaTime){
+                        del.x = width-del.width;
+                        super.draw(deltaTime);
+                    }
+                }), transition))addConditionSettings(transition.conditions);
+            }
+            stageSettings.add(new Button(0, 0, 0, 32, "Add Transition", true).addAction(() -> {
+                stage.stageTransitions.add(new StageTransition<>());
+                rebuildGUI();
+            }));
+            stageSettings.add(new Button(0, 0, 0, 32, "Save Generator Settings", true).addAction(() -> {
+                Project ncpf = new Project();
+                ncpf.configuration = Core.project.configuration;
+                ncpf.conglomeration = Core.project.conglomeration;
+                GeneratorSettingsModule settings = new GeneratorSettingsModule();
+                current = this;
+                settings.generator = generator;
+                ncpf.setModule(settings);
+                new MenuSaveDialog(gui, this, ncpf, null).open();
+            }));
+        }
     }
     private LiteGenerator<T>[] createGenerators(T multiblock, T priorityMultiblock) {
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         current = this;
-//         ArrayList<Supplier<InputStream>> generators = new ArrayList<>();
-//         for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
-//             if(m.isActive()){
-//                 m.getGenerators(multiblock, generators);
-//             }
-//         }
-//         LiteGenerator<T>[] gens = new LiteGenerator[generators.size()];
-//         for (int i = 0; i < generators.size(); i++) {
-//             Supplier<InputStream> file = generators.get(i);
-//             Project ncpf = FileReader.read(file);
-//             gens[i] = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
-//             for(GeneratorStage<T> stage : gens[i].stages){
-//                 for(GeneratorMutator<T> step : stage.steps){
-//                     Mutator<T> mutator = step.mutator;
-//                     mutator.importFrom(multiblock, ncpf.configuration);
-//                 }
-//             }
-//         }
-//         return gens;
-//
+        current = this;
+        ArrayList<Supplier<InputStream>> generators = new ArrayList<>();
+        for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+            if(m.isActive()){
+                m.getGenerators(multiblock, generators);
+            }
+        }
+        LiteGenerator<T>[] gens = new LiteGenerator[generators.size()];
+        for (int i = 0; i < generators.size(); i++) {
+            Supplier<InputStream> file = generators.get(i);
+            Project ncpf = FileReader.read(file);
+            gens[i] = ncpf.getModule(GeneratorSettingsModule<T>::new).generator;
+            for(GeneratorStage<T> stage : gens[i].stages){
+                for(GeneratorMutator<T> step : stage.steps){
+                    Mutator<T> mutator = step.mutator;
+                    mutator.importFrom(multiblock, ncpf.configuration);
+                }
+            }
+        }
+        return gens;
     }
     float rot = 0;
     private Animation nextAnim(float pos){
@@ -418,7 +412,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
         start.x = remThread.x+remThread.width;
         start.width = addThread.x-start.x;
         super.render2d(deltaTime);
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.setColor(Core.theme.getComponentTextColor(0));//TODO make this a status bar label instead
         renderer.drawText(textView.width, gui.getHeight()-20, stageSettings.x, gui.getHeight(), (running?"ACTIVE":"IDLE")+" | "+generator.getStatus()+" | "+generator.storedMultiblocks.size());
         if(setScrollTo>=0){
@@ -428,64 +422,61 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     }
     @Override
     public void render3d(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         anim.pos+=deltaTime*getAnimationSpeedModifier();
-//         if(anim.pos>anim.length)anim = nextAnim(anim.pos-anim.length);
-//         Renderer renderer = new Renderer();
-//         int w = multiblock.getDimension(0);
-//         int h = multiblock.getDimension(1);
-//         int d = multiblock.getDimension(2);
-//         float size = Math.max(w, Math.max(h, d));
-//         rot+=deltaTime*20*7/size*getAnimationSpeedModifier();
-//         renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size, 2f/size, 2f/size).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
-//         for(int x = 0; x<w; x++){
-//             for(int y = 0; y<h; y++){
-//                 for(int z = 0; z<d; z++){
-//                     Image tex = multiblock.getBlockTexture(x, y, z);
-//                     if(tex!=null)renderer.drawCube(
-//                             x+multiblock.getCubeBounds(x,y,z,0)+(float)anim.getCubeOffset(x,y,z,w,h,d,0),
-//                             y+multiblock.getCubeBounds(x,y,z,1)+(float)anim.getCubeOffset(x,y,z,w,h,d,1),
-//                             z+multiblock.getCubeBounds(x,y,z,2)+(float)anim.getCubeOffset(x,y,z,w,h,d,2),
-//                             x+multiblock.getCubeBounds(x,y,z,3)+(float)anim.getCubeOffset(x,y,z,w,h,d,3),
-//                             y+multiblock.getCubeBounds(x,y,z,4)+(float)anim.getCubeOffset(x,y,z,w,h,d,4),
-//                             z+multiblock.getCubeBounds(x,y,z,5)+(float)anim.getCubeOffset(x,y,z,w,h,d,5), tex);
-//                 }
-//             }
-//         }
-//         renderer.popModel();
-//         synchronized(storeAnims){
-//             for(Iterator<T> it = storeAnims.keySet().iterator(); it.hasNext();){
-//                 T multiblock = it.next();
-//                 StoreAnimation anim = storeAnims.get(multiblock);
-//                 anim.pos+=deltaTime;
-//                 if(!anim.closing&&anim.pos>anim.length)anim.pos = anim.length;
-//                 if(anim.pos>anim.length*2)it.remove();
-//                 w = multiblock.getDimension(0);
-//                 h = multiblock.getDimension(1);
-//                 d = multiblock.getDimension(2);
-//                 size = Math.max(w, Math.max(h, d));
-//                 float scale = 1;
-//                 if(anim.getPercent()>1)scale = 1-anim.getPercent()/4;
-//                 renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size*scale, 2f/size*scale, 2f/size*scale).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
-//                 for(int x = 0; x<w; x++){
-//                     for(int y = 0; y<h; y++){
-//                         for(int z = 0; z<d; z++){
-//                             Image tex = multiblock.getBlockTexture(x, y, z);
-//                             if(tex!=null)renderer.drawCube(
-//                                     x+multiblock.getCubeBounds(x,y,z,0)+(float)anim.getCubeOffset(x,y,z,w,h,d,0),
-//                                     y+multiblock.getCubeBounds(x,y,z,1)+(float)anim.getCubeOffset(x,y,z,w,h,d,1),
-//                                     z+multiblock.getCubeBounds(x,y,z,2)+(float)anim.getCubeOffset(x,y,z,w,h,d,2),
-//                                     x+multiblock.getCubeBounds(x,y,z,3)+(float)anim.getCubeOffset(x,y,z,w,h,d,3),
-//                                     y+multiblock.getCubeBounds(x,y,z,4)+(float)anim.getCubeOffset(x,y,z,w,h,d,4),
-//                                     z+multiblock.getCubeBounds(x,y,z,5)+(float)anim.getCubeOffset(x,y,z,w,h,d,5), tex);
-//                         }
-//                     }
-//                 }
-//                 renderer.popModel();
-//             }
-//         }
-//
+        anim.pos+=deltaTime*getAnimationSpeedModifier();
+        if(anim.pos>anim.length)anim = nextAnim(anim.pos-anim.length);
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        int w = multiblock.getDimension(0);
+        int h = multiblock.getDimension(1);
+        int d = multiblock.getDimension(2);
+        float size = Math.max(w, Math.max(h, d));
+        rot+=deltaTime*20*7/size*getAnimationSpeedModifier();
+        renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size, 2f/size, 2f/size).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
+        for(int x = 0; x<w; x++){
+            for(int y = 0; y<h; y++){
+                for(int z = 0; z<d; z++){
+                    Image tex = multiblock.getBlockTexture(x, y, z);
+                    if(tex!=null)renderer.drawCube(
+                            x+multiblock.getCubeBounds(x,y,z,0)+(float)anim.getCubeOffset(x,y,z,w,h,d,0),
+                            y+multiblock.getCubeBounds(x,y,z,1)+(float)anim.getCubeOffset(x,y,z,w,h,d,1),
+                            z+multiblock.getCubeBounds(x,y,z,2)+(float)anim.getCubeOffset(x,y,z,w,h,d,2),
+                            x+multiblock.getCubeBounds(x,y,z,3)+(float)anim.getCubeOffset(x,y,z,w,h,d,3),
+                            y+multiblock.getCubeBounds(x,y,z,4)+(float)anim.getCubeOffset(x,y,z,w,h,d,4),
+                            z+multiblock.getCubeBounds(x,y,z,5)+(float)anim.getCubeOffset(x,y,z,w,h,d,5), tex);
+                }
+            }
+        }
+        renderer.popModel();
+        synchronized(storeAnims){
+            for(Iterator<T> it = storeAnims.keySet().iterator(); it.hasNext();){
+                T multiblock = it.next();
+                StoreAnimation anim = storeAnims.get(multiblock);
+                anim.pos+=deltaTime;
+                if(!anim.closing&&anim.pos>anim.length)anim.pos = anim.length;
+                if(anim.pos>anim.length*2)it.remove();
+                w = multiblock.getDimension(0);
+                h = multiblock.getDimension(1);
+                d = multiblock.getDimension(2);
+                size = Math.max(w, Math.max(h, d));
+                float scale = 1;
+                if(anim.getPercent()>1)scale = 1-anim.getPercent()/4;
+                renderer.pushModel(new Matrix4f().rotate((float)MathUtil.toRadians(rot+anim.getYRotOffset()), 0, 1, 0).scale(2f/size*scale, 2f/size*scale, 2f/size*scale).translate(-multiblock.getDimension(0)/2f, -multiblock.getDimension(1)/2f, -multiblock.getDimension(2)/2f));
+                for(int x = 0; x<w; x++){
+                    for(int y = 0; y<h; y++){
+                        for(int z = 0; z<d; z++){
+                            Image tex = multiblock.getBlockTexture(x, y, z);
+                            if(tex!=null)renderer.drawCube(
+                                    x+multiblock.getCubeBounds(x,y,z,0)+(float)anim.getCubeOffset(x,y,z,w,h,d,0),
+                                    y+multiblock.getCubeBounds(x,y,z,1)+(float)anim.getCubeOffset(x,y,z,w,h,d,1),
+                                    z+multiblock.getCubeBounds(x,y,z,2)+(float)anim.getCubeOffset(x,y,z,w,h,d,2),
+                                    x+multiblock.getCubeBounds(x,y,z,3)+(float)anim.getCubeOffset(x,y,z,w,h,d,3),
+                                    y+multiblock.getCubeBounds(x,y,z,4)+(float)anim.getCubeOffset(x,y,z,w,h,d,4),
+                                    z+multiblock.getCubeBounds(x,y,z,5)+(float)anim.getCubeOffset(x,y,z,w,h,d,5), tex);
+                        }
+                    }
+                }
+                renderer.popModel();
+            }
+        }
     }
     public void addConditionSettings(ArrayList<Condition> conditions){
         stageSettings.add(new Label(0, 0, 0, 28, "Conditions", true));

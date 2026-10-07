@@ -1,14 +1,14 @@
 package net.ncplanner.plannerator.planner.editor.tool;
-import com.thizthizzydizzy.dizzyengine.MathUtil;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.Axis;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.editor.Editor;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -19,13 +19,14 @@ public abstract class EditorTool{
         this.editor = editor;
         this.id = id;
     }
-    public abstract void render(float x, float y, float width, float height, int themeIndex);
+    public abstract void render(PlanneratorRenderer renderer, float x, float y, float width, float height, int themeIndex);
     public void render(int x, int y, int z, float width, float height, float depth, int themeIndex){
-        Renderer.pushModel(new Matrix4f().translate(x, y+height, z+depth+.001f-1).scale(1, -1, 1));
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.pushModel(new Matrix4f().translate(x, y+height, z+depth+.001f-1).scale(1, -1, 1));
         GL11.glDisable(GL11.GL_CULL_FACE);
-        render(0, 0, width, height, themeIndex);//draw 2D
+        render(renderer, 0, 0, width, height, themeIndex);//draw 2D
         GL11.glEnable(GL11.GL_CULL_FACE);
-        Renderer.popModel();
+        renderer.popModel();
     }//TODO VR: make this abstract fancy tool rendering
     public abstract void mouseReset(EditorSpace editorSpace, int button);
     public abstract void mousePressed(Object obj, EditorSpace editorSpace, BlockPos pos, int button);
@@ -33,8 +34,8 @@ public abstract class EditorTool{
     public abstract void mouseDragged(Object obj, EditorSpace editorSpace, BlockPos pos, int button);
     public abstract void mouseMoved(Object obj, EditorSpace editorSpace, BlockPos pos);
     public abstract void mouseMovedElsewhere(Object obj, EditorSpace editorSpace);
-    public abstract void drawGhosts(EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture);
-    public abstract void drawVRGhosts(EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture);
+    public abstract void drawGhosts(PlanneratorRenderer renderer, EditorSpace editorSpace, int x1, int y1, int x2, int y2, int blocksWide, int blocksHigh, Axis axis, int layer, float x, float y, float width, float height, int blockSize, Image texture);
+    public abstract void drawVRGhosts(PlanneratorRenderer renderer, EditorSpace editorSpace, float x, float y, float z, float width, float height, float depth, float blockSize, Image texture);
     public abstract boolean isEditTool();
     public abstract String getTooltip();
     public static interface TraceStep{

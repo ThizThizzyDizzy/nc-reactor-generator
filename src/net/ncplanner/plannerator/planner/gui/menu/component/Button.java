@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -12,12 +12,9 @@ public class Button extends Component{
     public boolean enabled, pressed;
     public int textInset = 5;
     public final boolean darker;
-    private Supplier<Color> textColor = ((java.util.function.Supplier<Supplier<Color>>) () -> {
-        throw new UnsupportedOperationException("Pending refactor");
-// () -> {
-//         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
-//     }
-    }).get();
+    private Supplier<Color> textColor = () -> {
+        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
+    };
     private ArrayList<Runnable> actions = new ArrayList<>();
     public Button(String text, boolean enabled){
         this(text, enabled, false);
@@ -40,35 +37,32 @@ public class Button extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.draw(deltaTime);
-//         Renderer renderer = new Renderer();
-//         Color col;
-//         if(darker){
-//              col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(pressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//         }else{
-//             col = Core.theme.getComponentColor(Core.getThemeIndex(this));
-//             if(enabled){
-//                 if(pressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
-//                 else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
-//             }else{
-//                 col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
-//             }
-//         }
-//         renderer.setColor(col);
-//         renderer.fillRect(x, y, x+width, y+height);
-//         renderer.setColor(textColor.get());
-//         drawText(renderer, deltaTime);
-//
+        super.draw(deltaTime);
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        Color col;
+        if(darker){
+             col = Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(pressed)col = Core.theme.getSecondaryComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseFocused)col = Core.theme.getSecondaryComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getSecondaryComponentDisabledColor(Core.getThemeIndex(this));
+            }
+        }else{
+            col = Core.theme.getComponentColor(Core.getThemeIndex(this));
+            if(enabled){
+                if(pressed)col = Core.theme.getComponentPressedColor(Core.getThemeIndex(this));
+                else if(isMouseFocused)col = Core.theme.getComponentMouseoverColor(Core.getThemeIndex(this));
+            }else{
+                col = Core.theme.getComponentDisabledColor(Core.getThemeIndex(this));
+            }
+        }
+        renderer.setColor(col);
+        renderer.fillRect(x, y, x+width, y+height);
+        renderer.setColor(textColor.get());
+        drawText(renderer, deltaTime);
     }
-    public void drawText(Renderer renderer, double deltaTime){
+    public void drawText(PlanneratorRenderer renderer, double deltaTime){
         String text = this.text;
         float textLength = renderer.getStringWidth(text, height-textInset*2);
         if(textLength<0)return;

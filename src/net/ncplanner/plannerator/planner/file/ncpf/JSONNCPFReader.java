@@ -1,33 +1,18 @@
 package net.ncplanner.plannerator.planner.file.ncpf;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonReader;
 import java.io.InputStream;
-import net.ncplanner.plannerator.ncpf.io.NCPFList;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import net.ncplanner.ncpf.io.NcpfJsonConverter;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.file.JSON;
-@Deprecated
 public class JSONNCPFReader implements NCPFFormatReader{
     @Override
     public NCPFObject read(InputStream stream){
-        NCPFObject ncpf = toNCPF(JSON.parse(stream));
-        if(!ncpf.containsKey("version")||!(ncpf.get("version") instanceof Integer))return null;
-        return ncpf;
-    }
-    private NCPFObject toNCPF(JSON.JSONObject json){
-        NCPFObject ncpf = new NCPFObject();
-        for(String key : json.keySet()){
-            Object value = json.get(key);
-            if(value instanceof JSON.JSONObject)value = toNCPF((JSON.JSONObject)value);
-            if(value instanceof JSON.JSONArray)value = toNCPF((JSON.JSONArray)value);
-            ncpf.put(key, value);
-        }
-        return ncpf;
-    }
-    private NCPFList toNCPF(JSON.JSONArray json){
-        NCPFList ncpf = new NCPFList();
-        for(Object value : json){//TODO reject multiple types in a list! (and maybe return a typed list?)
-            if(value instanceof JSON.JSONObject)value = toNCPF((JSON.JSONObject)value);
-            if(value instanceof JSON.JSONArray)value = toNCPF((JSON.JSONArray)value);
-            ncpf.add(value);
-        }
-        return ncpf;
+        JsonElement tree=NcpfJsonConverter.gson.fromJson(new JsonReader(new InputStreamReader(stream,StandardCharsets.UTF_8)),JsonElement.class);
+        if(tree==null||!tree.isJsonObject())return null;
+        NCPFObject object=(NCPFObject)NcpfBridge.fromJson(tree);
+        if(!(object.get("version") instanceof Integer))return null;
+        return object;
     }
 }

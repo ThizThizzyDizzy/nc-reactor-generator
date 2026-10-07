@@ -1,9 +1,13 @@
 package net.ncplanner.plannerator.planner.gui;
+import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.ui.FlatUI;
+import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.ui.PlanneratorMenu;
 import net.ncplanner.plannerator.planner.gui.menu.MenuCalibrateCursor;
 import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.glfw.GLFWDropCallback;
 @Deprecated
-public abstract class GUI{
+public class GUI{
     private final long window;
     public GUI(long window){
         this.window = window;
@@ -61,6 +65,10 @@ public abstract class GUI{
         });
     }
     public <T extends Menu> T open(T menu){
+        if(!Core.isUIThread()){
+            Core.runOnUIThread(() -> open(menu));
+            return menu;
+        }
         if(this.menu!=null)this.menu.onClosed();
         this.menu = menu;
         if(menu!=null){
@@ -68,10 +76,12 @@ public abstract class GUI{
             menu.height = getHeight();
             menu.onOpened();
         }
+        if(this.menu!=menu)return menu;
+        DizzyEngine.getLayer(FlatUI.class).open(menu==null?null:new PlanneratorMenu(menu));
         return menu;
     }
-    public abstract int getWidth();
-    public abstract int getHeight();
+    public int getWidth(){return (int)(DizzyEngine.screenSize.x/MenuCalibrateCursor.xGUIScale);}
+    public int getHeight(){return (int)(DizzyEngine.screenSize.y/MenuCalibrateCursor.yGUIScale);}
     private synchronized void onChar(int codepoint){
         menu.onCharTyped((char)codepoint);
     }

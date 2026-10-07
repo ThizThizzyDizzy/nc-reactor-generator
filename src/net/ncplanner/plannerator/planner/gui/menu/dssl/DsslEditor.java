@@ -1,11 +1,11 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
 import java.util.ArrayList;
 import java.util.HashSet;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.dssl.DSSLProcessor;
 import net.ncplanner.plannerator.planner.dssl.Tokenizer;
 import net.ncplanner.plannerator.planner.dssl.token.ArrayOrFieldAccessToken;
@@ -96,190 +96,187 @@ public class DsslEditor extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(pendingDisplayUpdate){
-//             textDisplay.clear();
-//             for(String s : text)textDisplay.addText(s+"\n", Core.theme.getCodeTextColor());
-//             updateScroll();
-//             if(displayUpdateThread==null){
-//                 displayUpdateThread = new Thread(() -> {
-//                     pendingDisplayUpdate = false;
-//                     cursorTimer = 0;
-//                     cursorVisible = true;
-//                     ArrayList<Token> tokens = Tokenizer.tokenize(getText());
-//                     if(pendingDisplayUpdate){
-//                         displayUpdateThread = null;
-//                         return;
-//                     }
-//                     HashSet<String> cachedLabels = new HashSet<>();
-//                     textDisplay.clear();
-//                     for(int i = 0; i<tokens.size(); i++){
-//                         Token token = tokens.get(i);
-//                         Color col = Core.theme.getCodeTextColor();
-//                         if(token instanceof ImportKeyword&&i>1){
-//                             Token t = tokens.get(i-2);
-//                             if(t instanceof StringValueToken){
-// //                                cachedLabels.addAll(libraries.getOrDefault(((StringValueToken) t).value, new HashSet<>()));
-//                             }
-//                         }
-//                         if(token instanceof DefKeyword){
-//                             findDoc(tokens, i);//TODO actually use the found docs
-//                         }
-//                         if(token instanceof Keyword){
-//                             col = Core.theme.getCodeKeywordTextColor(((Keyword) token).getFlavor());
-//                         }
-//                         if(token instanceof Operator){
-//                             col = Core.theme.getCodeOperatorTextColor();
-//                         }
-//                         if(token instanceof BoolValueToken){
-//                             col = Core.theme.getCodeBooleanTextColor();
-//                         }
-//                         if(token instanceof CharValueToken){
-//                             col = Core.theme.getCodeCharTextColor();
-//                         }
-//                         if(token instanceof CommentToken){
-//                             col = Core.theme.getCodeCommentTextColor();
-//                         }
-//                         if(token instanceof FloatValueToken){
-//                             col = Core.theme.getCodeFloatTextColor();
-//                         }
-//                         if(token instanceof IntValueToken){
-//                             col = Core.theme.getCodeIntTextColor();
-//                         }
-//                         if(token instanceof LabelToken){
-//                             col = Core.theme.getCodeLabelTextColor();
-//                         }
-//                         if(token instanceof StringValueToken){
-//                             col = Core.theme.getCodeStringTextColor();
-//                         }
-//                         boolean underline = false;
-//                         if(token instanceof IdentifierToken){
-//                             String nam = ((IdentifierToken)token).text;
-//                             ensureCache(cachedLabels, nam, tokens);
-//                             if(cachedLabels.contains(nam))col = Core.theme.getCodeIdentifierTextColor();
-//                             else underline = true;
-//                         }
-//                         if(token instanceof ClassInstanceMemberReferenceToken){
-//                             col = Core.theme.getCodeIdentifierTextColor();
-//                         }
-//                         if(token instanceof ClassStaticMemberReferenceToken){
-//                             col = Core.theme.getCodeIdentifierTextColor();
-//                         }
-//                         if(token instanceof InvalidToken){
-//                             col = Core.theme.getCodeInvalidTextColor();
-//                         }
-//                         if(token instanceof ESSLToken){
-//                             if(!essl)underline = true;
-//                             else{
-//                                 //special ESSL tokens
-//                                 if(token instanceof ArrayOrFieldAccessToken){
-//                                     ArrayOrFieldAccessToken t = (ArrayOrFieldAccessToken) token;
-//                                     //IDENTIFIER
-//                                     ensureCache(cachedLabels, t.identifier, tokens);
-//                                     if(cachedLabels.contains(t.identifier))col = Core.theme.getCodeIdentifierTextColor();
-//                                     else underline = true;
-//                                     textDisplay.addText(t.identifier, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
-//                                     for(Object o : t.accesses){
-// //                                        textDisplay.addText((o instanceof StackString)?".":"[", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
-//                                         if(o instanceof Long){
-//                                             textDisplay.addText(o.toString(), Core.theme.getCodeIntTextColor(), false, false, null, null);
-//                                         }else if(o instanceof String){
-//                                             String s = (String)o;
-//                                             ensureCache(cachedLabels, s, tokens);
-//                                             if(cachedLabels.contains(s))textDisplay.addText(s, Core.theme.getCodeIdentifierTextColor(), false, false, null, null);
-//                                             else textDisplay.addText(s, Core.theme.getCodeTextColor(), false, false, Core.theme.getCodeInvalidTextColor(), null);
-// //                                        }else if(o instanceof StackString){
-// //                                            textDisplay.addText(((StackString) o).getValue(), Core.theme.getCodeStringTextColor(), false, false, null, null);
-//                                         }
-//                                         /*if(!(o instanceof StackString))*/textDisplay.addText("]", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
-//                                     }
-//                                 }
-//                                 continue;
-//                             }
-//                         }
-//                         textDisplay.addText(token.text, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
-//                     }
-//                     displayUpdateThread = null;
-//                 });
-//                 displayUpdateThread.setDaemon(true);
-//                 displayUpdateThread.start();
-//             }
-//         }
-//         cursorTimer+=deltaTime*20;
-//         if(cursorTimer>=10){
-//             cursorTimer-=10;
-//             cursorVisible = !cursorVisible;
-//         }
-//         //TICK DONE
-//         Renderer renderer = new Renderer();
-//         renderer.setFont(Core.theme.getCodeFont());
-//         ArrayList<FormattedText> lines = textDisplay.splitLines();
-//         float xOff = (lines.size()+"").length()*textWidth;
-//         for(int i = 0; i<lines.size(); i++){
-//             FormattedText line = lines.get(i);
-//             renderer.drawFormattedText(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight, line, -1);
-//         }
-//         renderer.setColor(Core.theme.getCodeDebugBreakpointTextColor(), 0.5f);
-//         for(int i : breakpoints){
-//             renderer.fillRect(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight);
-//         }
-//         if(processor!=null&&processor.isActive()){
-//             Token token = processor.getCurrentToken();
-//             renderer.setColor(Core.theme.getCodeDebugHighlightTextColor(), 0.5f);
-//             int startX = 0;
-//             int startY = 0;
-//             int pos = token.start;
-//             while(pos>0){
-//                 startX++;
-//                 String txt = text.get(startY);
-//                 if(startX>=txt.length()){
-//                     startY++;
-//                     startX = 0;
-//                     pos--;
-//                 }
-//                 if(!txt.isEmpty())pos--;
-//             }
-//             int endX = startX;
-//             int endY = startY;
-//             pos = token.text.length();
-//             while(pos>0){
-//                 endX++;
-//                 String txt = text.get(endY);
-//                 if(endX>=txt.length()){
-//                     endY++;
-//                     endX = 0;
-//                     pos--;
-//                 }
-//                 if(!txt.isEmpty())pos--;
-//             }
-//             for(int Y = startY; Y<=endY; Y++){
-//                 if(text.size()<=Y)continue;
-//                 float top = y+border+Y*textHeight;
-//                 float bottom = y+border+(Y+1)*textHeight;
-//                 float left = x+xOff+border*2;
-//                 float right = x+xOff+border*2+text.get(Y).length()*textWidth;
-//                 if(Y==endY)right = left+endX*textWidth;
-//                 if(Y==startY)left += startX*textWidth;
-//                 renderer.fillRect(left, top, right, bottom);
-//             }
-//             if(debug&&(startX!=lastDebugX||startY!=lastDebugY)){
-//                 lastDebugX = cursorX = startX;
-//                 lastDebugY = cursorY = startY;
-//                 updateCursor();
-//             }
-//         }
-//         renderer.setColor(Core.theme.getCodeTextColor());
-//         if(isFocused&&cursorVisible)renderer.fillRect(x+xOff+cursorX*textWidth+border*2, y+border+cursorY*textHeight, x+xOff+cursorX*textWidth+border*2+2, y+border+(cursorY+1)*textHeight);
-//         renderer.setColor(Core.theme.getCodeLineMarkerColor());
-//         renderer.fillRect(x, y, x+xOff+border*3/2, y+height);
-//         renderer.setColor(Core.theme.getCodeLineMarkerTextColor());
-//         for(int i = 0; i<Math.max(1, text.size()); i++){
-//             renderer.drawText(x+border, y+border+i*textHeight, x+xOff+border, y+border+(i+1)*textHeight, (i+1)+"");
-//         }
-//         renderer.setWhite();
-//         renderer.resetFont();
-//
+        if(pendingDisplayUpdate){
+            textDisplay.clear();
+            for(String s : text)textDisplay.addText(s+"\n", Core.theme.getCodeTextColor());
+            updateScroll();
+            if(displayUpdateThread==null){
+                displayUpdateThread = new Thread(() -> {
+                    pendingDisplayUpdate = false;
+                    cursorTimer = 0;
+                    cursorVisible = true;
+                    ArrayList<Token> tokens = Tokenizer.tokenize(getText());
+                    if(pendingDisplayUpdate){
+                        displayUpdateThread = null;
+                        return;
+                    }
+                    HashSet<String> cachedLabels = new HashSet<>();
+                    textDisplay.clear();
+                    for(int i = 0; i<tokens.size(); i++){
+                        Token token = tokens.get(i);
+                        Color col = Core.theme.getCodeTextColor();
+                        if(token instanceof ImportKeyword&&i>1){
+                            Token t = tokens.get(i-2);
+                            if(t instanceof StringValueToken){
+//                                cachedLabels.addAll(libraries.getOrDefault(((StringValueToken) t).value, new HashSet<>()));
+                            }
+                        }
+                        if(token instanceof DefKeyword){
+                            findDoc(tokens, i);//TODO actually use the found docs
+                        }
+                        if(token instanceof Keyword){
+                            col = Core.theme.getCodeKeywordTextColor(((Keyword) token).getFlavor());
+                        }
+                        if(token instanceof Operator){
+                            col = Core.theme.getCodeOperatorTextColor();
+                        }
+                        if(token instanceof BoolValueToken){
+                            col = Core.theme.getCodeBooleanTextColor();
+                        }
+                        if(token instanceof CharValueToken){
+                            col = Core.theme.getCodeCharTextColor();
+                        }
+                        if(token instanceof CommentToken){
+                            col = Core.theme.getCodeCommentTextColor();
+                        }
+                        if(token instanceof FloatValueToken){
+                            col = Core.theme.getCodeFloatTextColor();
+                        }
+                        if(token instanceof IntValueToken){
+                            col = Core.theme.getCodeIntTextColor();
+                        }
+                        if(token instanceof LabelToken){
+                            col = Core.theme.getCodeLabelTextColor();
+                        }
+                        if(token instanceof StringValueToken){
+                            col = Core.theme.getCodeStringTextColor();
+                        }
+                        boolean underline = false;
+                        if(token instanceof IdentifierToken){
+                            String nam = ((IdentifierToken)token).text;
+                            ensureCache(cachedLabels, nam, tokens);
+                            if(cachedLabels.contains(nam))col = Core.theme.getCodeIdentifierTextColor();
+                            else underline = true;
+                        }
+                        if(token instanceof ClassInstanceMemberReferenceToken){
+                            col = Core.theme.getCodeIdentifierTextColor();
+                        }
+                        if(token instanceof ClassStaticMemberReferenceToken){
+                            col = Core.theme.getCodeIdentifierTextColor();
+                        }
+                        if(token instanceof InvalidToken){
+                            col = Core.theme.getCodeInvalidTextColor();
+                        }
+                        if(token instanceof ESSLToken){
+                            if(!essl)underline = true;
+                            else{
+                                //special ESSL tokens
+                                if(token instanceof ArrayOrFieldAccessToken){
+                                    ArrayOrFieldAccessToken t = (ArrayOrFieldAccessToken) token;
+                                    //IDENTIFIER
+                                    ensureCache(cachedLabels, t.identifier, tokens);
+                                    if(cachedLabels.contains(t.identifier))col = Core.theme.getCodeIdentifierTextColor();
+                                    else underline = true;
+                                    textDisplay.addText(t.identifier, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
+                                    for(Object o : t.accesses){
+//                                        textDisplay.addText((o instanceof StackString)?".":"[", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+                                        if(o instanceof Long){
+                                            textDisplay.addText(o.toString(), Core.theme.getCodeIntTextColor(), false, false, null, null);
+                                        }else if(o instanceof String){
+                                            String s = (String)o;
+                                            ensureCache(cachedLabels, s, tokens);
+                                            if(cachedLabels.contains(s))textDisplay.addText(s, Core.theme.getCodeIdentifierTextColor(), false, false, null, null);
+                                            else textDisplay.addText(s, Core.theme.getCodeTextColor(), false, false, Core.theme.getCodeInvalidTextColor(), null);
+//                                        }else if(o instanceof StackString){
+//                                            textDisplay.addText(((StackString) o).getValue(), Core.theme.getCodeStringTextColor(), false, false, null, null);
+                                        }
+                                        /*if(!(o instanceof StackString))*/textDisplay.addText("]", Core.theme.getCodeKeywordTextColor(Keyword.KeywordFlavor.COLLECTION), false, false, null, null);
+                                    }
+                                }
+                                continue;
+                            }
+                        }
+                        textDisplay.addText(token.text, col, false, false, underline?Core.theme.getCodeInvalidTextColor():null, null);
+                    }
+                    displayUpdateThread = null;
+                });
+                displayUpdateThread.setDaemon(true);
+                displayUpdateThread.start();
+            }
+        }
+        cursorTimer+=deltaTime*20;
+        if(cursorTimer>=10){
+            cursorTimer-=10;
+            cursorVisible = !cursorVisible;
+        }
+        //TICK DONE
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setFont(Core.theme.getCodeFont());
+        ArrayList<FormattedText> lines = textDisplay.splitLines();
+        float xOff = (lines.size()+"").length()*textWidth;
+        for(int i = 0; i<lines.size(); i++){
+            FormattedText line = lines.get(i);
+            renderer.drawFormattedText(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight, line, -1);
+        }
+        renderer.setColor(Core.theme.getCodeDebugBreakpointTextColor(), 0.5f);
+        for(int i : breakpoints){
+            renderer.fillRect(x+xOff+border*2, y+border+i*textHeight, x+width-border, y+border+(i+1)*textHeight);
+        }
+        if(processor!=null&&processor.isActive()){
+            Token token = processor.getCurrentToken();
+            renderer.setColor(Core.theme.getCodeDebugHighlightTextColor(), 0.5f);
+            int startX = 0;
+            int startY = 0;
+            int pos = token.start;
+            while(pos>0){
+                startX++;
+                String txt = text.get(startY);
+                if(startX>=txt.length()){
+                    startY++;
+                    startX = 0;
+                    pos--;
+                }
+                if(!txt.isEmpty())pos--;
+            }
+            int endX = startX;
+            int endY = startY;
+            pos = token.text.length();
+            while(pos>0){
+                endX++;
+                String txt = text.get(endY);
+                if(endX>=txt.length()){
+                    endY++;
+                    endX = 0;
+                    pos--;
+                }
+                if(!txt.isEmpty())pos--;
+            }
+            for(int Y = startY; Y<=endY; Y++){
+                if(text.size()<=Y)continue;
+                float top = y+border+Y*textHeight;
+                float bottom = y+border+(Y+1)*textHeight;
+                float left = x+xOff+border*2;
+                float right = x+xOff+border*2+text.get(Y).length()*textWidth;
+                if(Y==endY)right = left+endX*textWidth;
+                if(Y==startY)left += startX*textWidth;
+                renderer.fillRect(left, top, right, bottom);
+            }
+            if(debug&&(startX!=lastDebugX||startY!=lastDebugY)){
+                lastDebugX = cursorX = startX;
+                lastDebugY = cursorY = startY;
+                updateCursor();
+            }
+        }
+        renderer.setColor(Core.theme.getCodeTextColor());
+        if(isFocused&&cursorVisible)renderer.fillRect(x+xOff+cursorX*textWidth+border*2, y+border+cursorY*textHeight, x+xOff+cursorX*textWidth+border*2+2, y+border+(cursorY+1)*textHeight);
+        renderer.setColor(Core.theme.getCodeLineMarkerColor());
+        renderer.fillRect(x, y, x+xOff+border*3/2, y+height);
+        renderer.setColor(Core.theme.getCodeLineMarkerTextColor());
+        for(int i = 0; i<Math.max(1, text.size()); i++){
+            renderer.drawText(x+border, y+border+i*textHeight, x+xOff+border, y+border+(i+1)*textHeight, (i+1)+"");
+        }
+        renderer.setWhite();
+        renderer.resetFont();
     }
     private int lastDebugX = -1, lastDebugY = -1;
     @Override
@@ -533,16 +530,13 @@ public class DsslEditor extends Component{
         updateScroll();
     }
     private void shiftBreakpoints(int y, int off){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         ArrayList<Integer> brkpnts = new ArrayList<>(breakpoints);
-//         for(int i : brkpnts){
-//             if(i>=y){
-//                 breakpoints.remove(i);
-//                 breakpoints.add(MathUtil.max(0, i+off));
-//             }
-//         }
-//
+        ArrayList<Integer> brkpnts = new ArrayList<>(breakpoints);
+        for(int i : brkpnts){
+            if(i>=y){
+                breakpoints.remove(i);
+                breakpoints.add(MathUtil.max(0, i+off));
+            }
+        }
     }
     private String findDoc(ArrayList<Token> tokens, int index){
         int braces = 0;

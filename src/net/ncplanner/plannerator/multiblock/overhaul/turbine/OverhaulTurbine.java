@@ -24,7 +24,7 @@ import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFPlacementRule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Queue;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.editor.suggestion.Suggestion;
@@ -53,6 +53,7 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     private double totalFluidEfficiency;
     private long totalOutput, safeOutput, unsafeOutput;
     public ArrayList<Multiblock> inputs = new ArrayList<>();
+    public final ArrayList<Integer> inputDesignIndices = new ArrayList<>();
     public double[] idealExpansion;
     public double[] actualExpansion;
     private boolean hasInlet, hasOutlet;
@@ -220,212 +221,209 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     @Override
     public boolean doCalculationStep(List<Block> blocks, boolean addDecals){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(calcSubstep>=10000)throw new RuntimeException("Calculation overflow on step "+calcStep+"! (Halted after "+calcSubstep+" iterations)");
-//         switch(calcStep){
-//             case 0://calculate casing
-//                 numControllers = missingCasings = 0;
-//                 hasInlet = hasOutlet = false;
-//                 forEachCasingPosition((pos) -> {
-//                     Block block = getBlock(pos);
-//                     if(block==null){
-//                         missingCasings++;
-//                         if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
-//                     }
-//                     if(block!=null){
-//                         if(block.template.inlet!=null)hasInlet = true;
-//                         if(block.template.outlet!=null)hasOutlet = true;
-//                         if(block.template.controller!=null)numControllers++;
-//                         if(block.template.casing!=null||block.template.inlet!=null||block.template.outlet!=null||block.template.controller!=null){
-//                             block.valid = true;
-//                             if(addDecals)decals.enqueue(new BlockValidDecal(pos));
-//                         }
-//                     }
-//                 });
-//                 calcCasing.finish();
-//                 calcStep++;
-//                 return true;
-//             case 1://calculate bearing
-//                 int minBearingDiameter = getMinBearingDiameter();
-//                 int maxBearingDiameter = getMaxBearingDiameter();
-//                 Queue<Block> realToValidate = new Queue<>();
-//                 BEARING:
-//                 for(int i = minBearingDiameter; i<=maxBearingDiameter; i += 2){
-//                     Queue<Block> toValidate = new Queue<>();
-//                     int bearingMin = getExternalWidth()/2-i/2;
-//                     int bearingMax = getExternalWidth()/2+i/2-(i%2==0?1:0);
-//                     for(int x = bearingMin; x<=bearingMax; x++){
-//                         for(int y = bearingMin; y<=bearingMax; y++){
-//                             for(int z = 0; z<getExternalDepth(); z++){
-//                                 Block block = getBlock(new BlockPos(x, y, z));
-//                                 boolean valid = block!=null&&((z==0||z==getExternalDepth()-1)?block.template.bearing!=null:block.template.shaft!=null);
-//                                 if(!valid)break BEARING;
-//                                 toValidate.enqueue(block);
-//                             }
-//                         }
-//                     }
-//                     bearingDiameter = i;
-//                     realToValidate = toValidate;
-//                     calcBearing.progress = (i-minBearingDiameter)/(maxBearingDiameter-minBearingDiameter+1d);
-//                 }
-//                 for(Block b : realToValidate){
-//                     b.valid = true;
-//                     if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
-//                 }
-//                 calcBearing.finish();
-//                 calcStep++;
-//                 return true;
-//             case 2://calculate blades
-//                 blades = new BlockElement[getInternalDepth()];
-//                 bladesComplete = new boolean[getInternalDepth()];
-//                 int bearingMin = getExternalWidth()/2-bearingDiameter/2;
-//                 int bearingMax = getExternalWidth()/2+bearingDiameter/2-(bearingDiameter%2==0?1:0);
-//                 for(int z = 1; z<=getInternalDepth(); z++){
-//                     boolean badBlade = false;
-//                     boolean bladeIncomplete = false;
-//                     Queue<Block> toValidate = new Queue<>();
-//                     for(int x = 1; x<=getInternalWidth(); x++){
-//                         for(int y = 1; y<=getInternalHeight(); y++){
-//                             BlockPos pos = new BlockPos(x, y, z);
-//                             Block block = getBlock(pos);
-//                             boolean xBlade = x>=bearingMin&&x<=bearingMax;
-//                             boolean yBlade = y>=bearingMin&&y<=bearingMax;
-//                             if(xBlade&&yBlade)continue;//that's a bearing, already done
-//                             if(!xBlade&&!yBlade){
-//                                 if(block!=null&&addDecals)decals.enqueue(new BlockInvalidDecal(pos));
-//                                 continue;
-//                             }
-//                             if(block==null){
-//                                 decals.enqueue(new MissingBladeDecal(pos));
-//                                 bladeIncomplete = true;
-//                             }else{
-//                                 toValidate.enqueue(block);
-//                                 if(blades[z-1]==null)blades[z-1] = block.template;
-//                                 else if(blades[z-1]!=block.template)badBlade = true;
-//                             }
-//                         }
-//                     }
-//                     if(badBlade)blades[z-1] = null;
-//                     else{
-//                         for(Block b : toValidate){
-//                             b.valid = true;
-//                             if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
-//                         }
-//                     }
-//                     bladesComplete[z-1] = !bladeIncomplete;
-//                     calcBlades.progress = (z-1d)/getInternalDepth();
-//                 }
-//                 calcBlades.finish();
-//                 calcStep++;
-//                 return true;
-//             case 3://calculate rotor
-//                 rotorValid = true;
-//                 bladeCount = 0;
-//                 for(BlockElement blade : blades){
-//                     if(blade==null)rotorValid = false;
-//                     else
-//                         bladeCount++;
-//                 }
-//                 if(rotorValid){
-//                     idealExpansion = new double[blades.length];
-//                     actualExpansion = new double[blades.length];
-//                     double expansionSoFar = 1;
-//                     rotorEfficiency = 0;
-//                     float minBladeExpansion = Float.MAX_VALUE;
-//                     float maxBladeExpansion = 0;
-//                     float minStatorExpansion = 1;
-//                     int numBlades = 0;
-//                     int numberOfBlades = 0;
-//                     for(int i = 0; i<blades.length; i++){
-//                         float expansion = blades[i].stator!=null?blades[i].stator.expansion:blades[i].blade.expansion;
-//                         if(blades[i].stator!=null){
-//                             minStatorExpansion = Math.min(expansion, minStatorExpansion);
-//                         }else{
-//                             numberOfBlades++;
-//                             numBlades += bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
-//                             minBladeExpansion = Math.min(expansion, minBladeExpansion);
-//                             maxBladeExpansion = Math.max(expansion, maxBladeExpansion);
-//                         }
-//                         idealExpansion[i] = MathUtil.pow(recipe.stats.coefficient, (i+.5f)/blades.length);
-//                         actualExpansion[i] = expansionSoFar*Math.sqrt(expansion);
-//                         expansionSoFar *= expansion;
-//                         rotorEfficiency += blades[i].blade==null?0:blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
-//                     }
-//                     rotorEfficiency /= numberOfBlades;
-//                     maxInput = numBlades*getSpecificConfiguration().settings.fluidPerBlade;
-//                     maxUnsafeInput = maxInput*2;
-//                     int effectiveMaxLength;
-//                     if(minBladeExpansion<=1||minStatorExpansion>=1d){
-//                         effectiveMaxLength = getSpecificConfiguration().settings.maxSize;
-//                     }else{
-//                         effectiveMaxLength = (int)Math.ceil(Math.max(getSpecificConfiguration().settings.minLength, Math.min(getSpecificConfiguration().settings.maxSize, (MathUtil.log(recipe.stats.coefficient)-getSpecificConfiguration().settings.maxSize*MathUtil.log(minStatorExpansion))/(MathUtil.log(minBladeExpansion)-MathUtil.log(minStatorExpansion)))));
-//                     }
-//                     int bladeArea = bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
-//                     double rate = Math.min(getInputRate(), maxInput);
-//                     double lengthBonus = rate/(getSpecificConfiguration().settings.fluidPerBlade*bladeArea*effectiveMaxLength);
-//                     double areaBonus = Math.sqrt(2*rate/(getSpecificConfiguration().settings.fluidPerBlade*(getInternalDepth())*getSpecificConfiguration().settings.maxSize*effectiveMaxLength));
-//                     double effectiveMinLength = recipe.stats.coefficient<=1||maxBladeExpansion<=1?getSpecificConfiguration().settings.maxSize:Math.ceil(MathUtil.log(recipe.stats.coefficient)/MathUtil.log(maxBladeExpansion));
-//                     int minBladeArea = ((getSpecificConfiguration().settings.minWidth-1)*2);
-//                     double absoluteLeniency = effectiveMinLength*minBladeArea*getSpecificConfiguration().settings.fluidPerBlade;
-//                     double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
-//                     double throughputEfficiencyMult = throughputRatio>=getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold?1:(1-getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier)*Math.sin(throughputRatio*Math.PI/(2*getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold))+getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier;
-//                     throughputEfficiency = (1+getSpecificConfiguration().settings.powerBonus*MathUtil.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
-//                     idealityMultiplier = Math.min(expansionSoFar, recipe.stats.coefficient)/Math.max(expansionSoFar, recipe.stats.coefficient);
-//                 }
-//                 calcRotor.finish();
-//                 calcStep++;
-//                 return true;
-//             case 4://calculate coils
-//                 calcSubstep++;
-//                 boolean somethingChanged = false;
-//                 calcCoils.name = "Calculating Coils"+(calcSubstep>1?" ("+calcSubstep+")":"");
-//                 for(int i = 0; i<blocks.size(); i++){
-//                     if(calculateCoil(blocks.get(i), addDecals))somethingChanged = true;
-//                     calcCoils.progress = i/(double)blocks.size();
-//                 }
-//                 if(somethingChanged)return true;
-//                 calcCoils.finish();
-//                 calcSubstep = 0;
-//                 calcStep++;
-//                 return true;
-//             case 5://calculate stats
-//                 float inputEff = 0;
-//                 float outputEff = 0;
-//                 int inputCoils = 0;
-//                 int outputCoils = 0;
-//                 for(int x = 1; x<=getInternalWidth(); x++){
-//                     for(int y = 1; y<=getInternalHeight(); y++){
-//                         Block in = getBlock(new BlockPos(x, y, 0));
-//                         if(in!=null&&in.isCoil()&&in.isActive()){
-//                             inputEff += in.template.coil.efficiency;
-//                             inputCoils++;
-//                         }
-//                         Block out = getBlock(new BlockPos(x, y, getExternalDepth()-1));
-//                         if(out!=null&&out.isCoil()&&out.isActive()){
-//                             outputEff += out.template.coil.efficiency;
-//                             outputCoils++;
-//                         }
-//                     }
-//                 }
-//                 int bearings = bearingDiameter*bearingDiameter;
-//                 inputEff /= Math.max(inputCoils, bearings/2);
-//                 outputEff /= Math.max(outputCoils, bearings/2);
-//                 if(Float.isNaN(inputEff))inputEff = 0;
-//                 if(Float.isNaN(outputEff))outputEff = 0;
-//                 coilEfficiency = (inputEff+outputEff)/2;
-//                 totalEfficiency = coilEfficiency*rotorEfficiency*throughputEfficiency*idealityMultiplier;//*getConfiguration().overhaul.turbine.throughputEfficiencyLeniency;
-//                 totalFluidEfficiency = totalEfficiency*recipe.stats.power;
-//                 totalOutput = (long)(totalFluidEfficiency*getInputRate());
-//                 safeOutput = (long)(totalFluidEfficiency*maxInput);
-//                 unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
-//                 calcStats.finish();
-//                 calcStep = 0;
-//                 return false;
-//             default:
-//                 throw new IllegalStateException("Invalid calculation step: "+calcStep+"!");
-//         }
-//
+        if(calcSubstep>=10000)throw new RuntimeException("Calculation overflow on step "+calcStep+"! (Halted after "+calcSubstep+" iterations)");
+        switch(calcStep){
+            case 0://calculate casing
+                numControllers = missingCasings = 0;
+                hasInlet = hasOutlet = false;
+                forEachCasingPosition((pos) -> {
+                    Block block = getBlock(pos);
+                    if(block==null){
+                        missingCasings++;
+                        if(addDecals)decals.enqueue(new MissingCasingDecal(pos));
+                    }
+                    if(block!=null){
+                        if(block.template.inlet!=null)hasInlet = true;
+                        if(block.template.outlet!=null)hasOutlet = true;
+                        if(block.template.controller!=null)numControllers++;
+                        if(block.template.casing!=null||block.template.inlet!=null||block.template.outlet!=null||block.template.controller!=null){
+                            block.valid = true;
+                            if(addDecals)decals.enqueue(new BlockValidDecal(pos));
+                        }
+                    }
+                });
+                calcCasing.finish();
+                calcStep++;
+                return true;
+            case 1://calculate bearing
+                int minBearingDiameter = getMinBearingDiameter();
+                int maxBearingDiameter = getMaxBearingDiameter();
+                Queue<Block> realToValidate = new Queue<>();
+                BEARING:
+                for(int i = minBearingDiameter; i<=maxBearingDiameter; i += 2){
+                    Queue<Block> toValidate = new Queue<>();
+                    int bearingMin = getExternalWidth()/2-i/2;
+                    int bearingMax = getExternalWidth()/2+i/2-(i%2==0?1:0);
+                    for(int x = bearingMin; x<=bearingMax; x++){
+                        for(int y = bearingMin; y<=bearingMax; y++){
+                            for(int z = 0; z<getExternalDepth(); z++){
+                                Block block = getBlock(new BlockPos(x, y, z));
+                                boolean valid = block!=null&&((z==0||z==getExternalDepth()-1)?block.template.bearing!=null:block.template.shaft!=null);
+                                if(!valid)break BEARING;
+                                toValidate.enqueue(block);
+                            }
+                        }
+                    }
+                    bearingDiameter = i;
+                    realToValidate = toValidate;
+                    calcBearing.progress = (i-minBearingDiameter)/(maxBearingDiameter-minBearingDiameter+1d);
+                }
+                for(Block b : realToValidate){
+                    b.valid = true;
+                    if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
+                }
+                calcBearing.finish();
+                calcStep++;
+                return true;
+            case 2://calculate blades
+                blades = new BlockElement[getInternalDepth()];
+                bladesComplete = new boolean[getInternalDepth()];
+                int bearingMin = getExternalWidth()/2-bearingDiameter/2;
+                int bearingMax = getExternalWidth()/2+bearingDiameter/2-(bearingDiameter%2==0?1:0);
+                for(int z = 1; z<=getInternalDepth(); z++){
+                    boolean badBlade = false;
+                    boolean bladeIncomplete = false;
+                    Queue<Block> toValidate = new Queue<>();
+                    for(int x = 1; x<=getInternalWidth(); x++){
+                        for(int y = 1; y<=getInternalHeight(); y++){
+                            BlockPos pos = new BlockPos(x, y, z);
+                            Block block = getBlock(pos);
+                            boolean xBlade = x>=bearingMin&&x<=bearingMax;
+                            boolean yBlade = y>=bearingMin&&y<=bearingMax;
+                            if(xBlade&&yBlade)continue;//that's a bearing, already done
+                            if(!xBlade&&!yBlade){
+                                if(block!=null&&addDecals)decals.enqueue(new BlockInvalidDecal(pos));
+                                continue;
+                            }
+                            if(block==null){
+                                decals.enqueue(new MissingBladeDecal(pos));
+                                bladeIncomplete = true;
+                            }else{
+                                toValidate.enqueue(block);
+                                if(blades[z-1]==null)blades[z-1] = block.template;
+                                else if(blades[z-1]!=block.template)badBlade = true;
+                            }
+                        }
+                    }
+                    if(badBlade)blades[z-1] = null;
+                    else{
+                        for(Block b : toValidate){
+                            b.valid = true;
+                            if(addDecals)decals.enqueue(new BlockValidDecal(b.pos));
+                        }
+                    }
+                    bladesComplete[z-1] = !bladeIncomplete;
+                    calcBlades.progress = (z-1d)/getInternalDepth();
+                }
+                calcBlades.finish();
+                calcStep++;
+                return true;
+            case 3://calculate rotor
+                rotorValid = true;
+                bladeCount = 0;
+                for(BlockElement blade : blades){
+                    if(blade==null)rotorValid = false;
+                    else
+                        bladeCount++;
+                }
+                if(rotorValid){
+                    idealExpansion = new double[blades.length];
+                    actualExpansion = new double[blades.length];
+                    double expansionSoFar = 1;
+                    rotorEfficiency = 0;
+                    float minBladeExpansion = Float.MAX_VALUE;
+                    float maxBladeExpansion = 0;
+                    float minStatorExpansion = 1;
+                    int numBlades = 0;
+                    int numberOfBlades = 0;
+                    for(int i = 0; i<blades.length; i++){
+                        float expansion = blades[i].stator!=null?blades[i].stator.expansion:blades[i].blade.expansion;
+                        if(blades[i].stator!=null){
+                            minStatorExpansion = Math.min(expansion, minStatorExpansion);
+                        }else{
+                            numberOfBlades++;
+                            numBlades += bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
+                            minBladeExpansion = Math.min(expansion, minBladeExpansion);
+                            maxBladeExpansion = Math.max(expansion, maxBladeExpansion);
+                        }
+                        idealExpansion[i] = MathUtil.pow(recipe.stats.coefficient, (i+.5f)/blades.length);
+                        actualExpansion[i] = expansionSoFar*Math.sqrt(expansion);
+                        expansionSoFar *= expansion;
+                        rotorEfficiency += blades[i].blade==null?0:blades[i].blade.efficiency*Math.min(actualExpansion[i]/idealExpansion[i], idealExpansion[i]/actualExpansion[i]);
+                    }
+                    rotorEfficiency /= numberOfBlades;
+                    maxInput = numBlades*getSpecificConfiguration().settings.fluidPerBlade;
+                    maxUnsafeInput = maxInput*2;
+                    int effectiveMaxLength;
+                    if(minBladeExpansion<=1||minStatorExpansion>=1d){
+                        effectiveMaxLength = getSpecificConfiguration().settings.maxSize;
+                    }else{
+                        effectiveMaxLength = (int)Math.ceil(Math.max(getSpecificConfiguration().settings.minLength, Math.min(getSpecificConfiguration().settings.maxSize, (MathUtil.log(recipe.stats.coefficient)-getSpecificConfiguration().settings.maxSize*MathUtil.log(minStatorExpansion))/(MathUtil.log(minBladeExpansion)-MathUtil.log(minStatorExpansion)))));
+                    }
+                    int bladeArea = bearingDiameter*4*(getInternalWidth()/2-bearingDiameter/2);
+                    double rate = Math.min(getInputRate(), maxInput);
+                    double lengthBonus = rate/(getSpecificConfiguration().settings.fluidPerBlade*bladeArea*effectiveMaxLength);
+                    double areaBonus = Math.sqrt(2*rate/(getSpecificConfiguration().settings.fluidPerBlade*(getInternalDepth())*getSpecificConfiguration().settings.maxSize*effectiveMaxLength));
+                    double effectiveMinLength = recipe.stats.coefficient<=1||maxBladeExpansion<=1?getSpecificConfiguration().settings.maxSize:Math.ceil(MathUtil.log(recipe.stats.coefficient)/MathUtil.log(maxBladeExpansion));
+                    int minBladeArea = ((getSpecificConfiguration().settings.minWidth-1)*2);
+                    double absoluteLeniency = effectiveMinLength*minBladeArea*getSpecificConfiguration().settings.fluidPerBlade;
+                    double throughputRatio = maxInput==0?1:Math.min(1, (getInputRate()+absoluteLeniency)/maxInput);
+                    double throughputEfficiencyMult = throughputRatio>=getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold?1:(1-getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier)*Math.sin(throughputRatio*Math.PI/(2*getSpecificConfiguration().settings.throughputEfficiencyLeniencyThreshold))+getSpecificConfiguration().settings.throughputEfficiencyLeniencyMultiplier;
+                    throughputEfficiency = (1+getSpecificConfiguration().settings.powerBonus*MathUtil.pow(lengthBonus*areaBonus, 2/3d))*throughputEfficiencyMult;
+                    idealityMultiplier = Math.min(expansionSoFar, recipe.stats.coefficient)/Math.max(expansionSoFar, recipe.stats.coefficient);
+                }
+                calcRotor.finish();
+                calcStep++;
+                return true;
+            case 4://calculate coils
+                calcSubstep++;
+                boolean somethingChanged = false;
+                calcCoils.name = "Calculating Coils"+(calcSubstep>1?" ("+calcSubstep+")":"");
+                for(int i = 0; i<blocks.size(); i++){
+                    if(calculateCoil(blocks.get(i), addDecals))somethingChanged = true;
+                    calcCoils.progress = i/(double)blocks.size();
+                }
+                if(somethingChanged)return true;
+                calcCoils.finish();
+                calcSubstep = 0;
+                calcStep++;
+                return true;
+            case 5://calculate stats
+                float inputEff = 0;
+                float outputEff = 0;
+                int inputCoils = 0;
+                int outputCoils = 0;
+                for(int x = 1; x<=getInternalWidth(); x++){
+                    for(int y = 1; y<=getInternalHeight(); y++){
+                        Block in = getBlock(new BlockPos(x, y, 0));
+                        if(in!=null&&in.isCoil()&&in.isActive()){
+                            inputEff += in.template.coil.efficiency;
+                            inputCoils++;
+                        }
+                        Block out = getBlock(new BlockPos(x, y, getExternalDepth()-1));
+                        if(out!=null&&out.isCoil()&&out.isActive()){
+                            outputEff += out.template.coil.efficiency;
+                            outputCoils++;
+                        }
+                    }
+                }
+                int bearings = bearingDiameter*bearingDiameter;
+                inputEff /= Math.max(inputCoils, bearings/2);
+                outputEff /= Math.max(outputCoils, bearings/2);
+                if(Float.isNaN(inputEff))inputEff = 0;
+                if(Float.isNaN(outputEff))outputEff = 0;
+                coilEfficiency = (inputEff+outputEff)/2;
+                totalEfficiency = coilEfficiency*rotorEfficiency*throughputEfficiency*idealityMultiplier;//*getConfiguration().overhaul.turbine.throughputEfficiencyLeniency;
+                totalFluidEfficiency = totalEfficiency*recipe.stats.power;
+                totalOutput = (long)(totalFluidEfficiency*getInputRate());
+                safeOutput = (long)(totalFluidEfficiency*maxInput);
+                unsafeOutput = (long)(totalFluidEfficiency*maxUnsafeInput);
+                calcStats.finish();
+                calcStep = 0;
+                return false;
+            default:
+                throw new IllegalStateException("Invalid calculation step: "+calcStep+"!");
+        }
     }
     /**
      * Calculates the coil
@@ -464,39 +462,36 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     @Override
     public FormattedText getTooltip(boolean full){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         String tooltip;
-//         FormattedText text = new FormattedText();
-//         if(numControllers<1)text.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
-//         if(numControllers>1)text.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
-//         if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
-//         if(!hasInlet)text.addText("Missing inlet!", Core.theme.getTooltipInvalidTextColor());
-//         if(!hasOutlet)text.addText("Missing outlet!", Core.theme.getTooltipInvalidTextColor());
-//         text.addText(bearingDiameter==0?"Invalid Bearing!":"Bearing Diameter: "+bearingDiameter, bearingDiameter==0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor());
-//         if(bladesComplete!=null){
-//             for(int i = 0; i<bladesComplete.length; i++){
-//                 if(!bladesComplete[i])text.addText("Blade "+(i+1)+" incomplete!", Core.theme.getTooltipInvalidTextColor());
-//             }
-//         }
-//         if(rotorValid){
-//             tooltip = "Total output: "+totalOutput+" RF/t\n"
-//                 +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
-//                 +"Power Efficiency: "+MathUtil.round(totalFluidEfficiency, 2)+" RF/mb\n"
-//                 +"Total Efficiency: "+MathUtil.percent(totalEfficiency, 2)+"\n"
-//                 +"Rotor Efficiency: "+MathUtil.percent(rotorEfficiency, 2)+"\n"
-//                 +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2)+"\n"
-//                 +"Throughput Efficiency: "+MathUtil.percent(throughputEfficiency, 2)+"\n"
-//                 +"Ideality Multiplier: "+MathUtil.percent(idealityMultiplier, 2);
-//         }else{
-//             tooltip = "Rotor Invalid!"+(blades==null?"":" ("+bladeCount+"/"+blades.length+")")+"\n"
-//                 +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
-//                 +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2);
-//         }
-//         tooltip += getModuleTooltip();
-//         text.addText(tooltip, rotorValid?Core.theme.getTooltipTextColor():Core.theme.getTooltipInvalidTextColor());
-//         return text;
-//
+        String tooltip;
+        FormattedText text = new FormattedText();
+        if(numControllers<1)text.addText("No controller!", Core.theme.getTooltipInvalidTextColor());
+        if(numControllers>1)text.addText("Too many controllers!", Core.theme.getTooltipInvalidTextColor());
+        if(missingCasings>0)text.addText("Casing incomplete! (Missing "+missingCasings+")", Core.theme.getTooltipInvalidTextColor());
+        if(!hasInlet)text.addText("Missing inlet!", Core.theme.getTooltipInvalidTextColor());
+        if(!hasOutlet)text.addText("Missing outlet!", Core.theme.getTooltipInvalidTextColor());
+        text.addText(bearingDiameter==0?"Invalid Bearing!":"Bearing Diameter: "+bearingDiameter, bearingDiameter==0?Core.theme.getTooltipInvalidTextColor():Core.theme.getTooltipTextColor());
+        if(bladesComplete!=null){
+            for(int i = 0; i<bladesComplete.length; i++){
+                if(!bladesComplete[i])text.addText("Blade "+(i+1)+" incomplete!", Core.theme.getTooltipInvalidTextColor());
+            }
+        }
+        if(rotorValid){
+            tooltip = "Total output: "+totalOutput+" RF/t\n"
+                +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
+                +"Power Efficiency: "+MathUtil.round(totalFluidEfficiency, 2)+" RF/mb\n"
+                +"Total Efficiency: "+MathUtil.percent(totalEfficiency, 2)+"\n"
+                +"Rotor Efficiency: "+MathUtil.percent(rotorEfficiency, 2)+"\n"
+                +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2)+"\n"
+                +"Throughput Efficiency: "+MathUtil.percent(throughputEfficiency, 2)+"\n"
+                +"Ideality Multiplier: "+MathUtil.percent(idealityMultiplier, 2);
+        }else{
+            tooltip = "Rotor Invalid!"+(blades==null?"":" ("+bladeCount+"/"+blades.length+")")+"\n"
+                +"Input: "+getInputRate()+"/"+maxInput+" mb/t\n"
+                +"Coil Efficiency: "+MathUtil.percent(coilEfficiency, 2);
+        }
+        tooltip += getModuleTooltip();
+        text.addText(tooltip, rotorValid?Core.theme.getTooltipTextColor():Core.theme.getTooltipInvalidTextColor());
+        return text;
     }
     @Override
     public boolean validate(){
@@ -864,16 +859,14 @@ public class OverhaulTurbine extends CuboidalMultiblock<Block>{
     }
     @Override
     public OverhaulTurbineDesign convertToDesign(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
-//         forEachPosition((pos) -> {
-//             Block block = getBlock(pos);
-//             design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
-//         });
-//         design.recipe = recipe;
-//         return design;
-//
+        OverhaulTurbineDesign design = new OverhaulTurbineDesign(Core.project, x, y, z);
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+        });
+        design.recipe = recipe;
+        design.definition.inputIndices.addAll(inputDesignIndices);
+        return design;
     }
     @Override
     public NCPFElement[] getMultiblockRecipes(){

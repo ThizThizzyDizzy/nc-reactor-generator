@@ -23,48 +23,44 @@ public class NCPFElementComponent extends LayoutPanel{
     private final BorderLayout content;
     public NCPFElementComponent(NCPFElement element){
         super(new LayeredLayout());
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//
-//         add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
-//         content = add(new BorderLayout());
-//         if(element!=null)element.withModule(TextureModule::new, (tex) -> {
-//                 content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
-//             });
-//
-//         LayoutPanel textGrid = content.add(new LayoutPanel(new GridLayout(2, 1)));
-//
-//         TextDisplay mainText = textGrid.add(new TextDisplay().fitText());
-//         if(element==null)mainText.addText("No Target");
-//         else{
-//             element.withModule(DisplayNameModule::new, (nam) -> {
-//                 mainText.addText(nam.displayName);
-//             });
-//             if(element.definition instanceof NCPFModuleElement){
-//                 mainText.addText(NCPFModuleContainer.recognizedModules.get(((NCPFModuleElement)element.definition).name).get().getFriendlyName());
-//             }
-//             mainText.addText("\n"+element.definition.toString());
-//             for(NCPFModule module : element.modules.modules.values()){
-//                 if(module instanceof BlockFunctionModule){
-//                     mainText.addText("\n"+((BlockFunctionModule)module).getFunctionName());
-//                 }
-//                 if(module instanceof ElementStatsModule){
-//                     mainText.addText("\n"+((ElementStatsModule)module).getTooltip());
-//                 }
-//             }
-//         }
-//
-//         if(element!=null){
-//             element.withModule(LegacyNamesModule::new, (module) -> {
-//                 TextDisplay legacyNames = textGrid.add(new TextDisplay().fitText());
-//                 legacyNames.addText(module.legacyNames.size()+" Legacy Name"+(module.legacyNames.size()==1?"":"s")+":");
-//                 for(String nam : module.legacyNames)legacyNames.addText("\n"+nam);
-//             });
-//         }
-//         if(textGrid.layout.components.size()==1)((GridLayout)textGrid.layout).columns = 1;
-//
-//         buttons = add(new ListButtonsLayout());
-//
+        add(new Panel().setBackgroundColor(Core.theme::getTextViewBackgroundColor));
+        content = add(new BorderLayout());
+        if(element!=null)element.withModule(TextureModule::new, (tex) -> {
+                content.add(new Panel().setImage(tex.texture), BorderLayout.LEFT, 96);
+            });
+
+        LayoutPanel textGrid = content.add(new LayoutPanel(new GridLayout(2, 1)));
+
+        TextDisplay mainText = textGrid.add(new TextDisplay().fitText());
+        if(element==null)mainText.addText("No Target");
+        else{
+            element.withModule(DisplayNameModule::new, (nam) -> {
+                mainText.addText(nam.displayName);
+            });
+            if(element.definition instanceof NCPFModuleElement){
+                mainText.addText(NCPFModuleContainer.recognizedModules.get(((NCPFModuleElement)element.definition).name).get().getFriendlyName());
+            }
+            mainText.addText("\n"+element.definition.toString());
+            for(NCPFModule module : element.modules.modules.values()){
+                if(module instanceof BlockFunctionModule){
+                    mainText.addText("\n"+((BlockFunctionModule)module).getFunctionName());
+                }
+                if(module instanceof ElementStatsModule){
+                    mainText.addText("\n"+((ElementStatsModule)module).getTooltip());
+                }
+            }
+        }
+
+        if(element!=null){
+            element.withModule(LegacyNamesModule::new, (module) -> {
+                TextDisplay legacyNames = textGrid.add(new TextDisplay().fitText());
+                legacyNames.addText(module.legacyNames.size()+" Legacy Name"+(module.legacyNames.size()==1?"":"s")+":");
+                for(String nam : module.legacyNames)legacyNames.addText("\n"+nam);
+            });
+        }
+        if(textGrid.layout.components.size()==1)((GridLayout)textGrid.layout).columns = 1;
+
+        buttons = add(new ListButtonsLayout());
     }
     public NCPFElementComponent addIconButton(String icon, String tooltip, Runnable onClick){
         buttons.add(new IconButton(icon, true, true).setTooltip(tooltip).addAction(onClick));

@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.theme;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
 import net.ncplanner.plannerator.planner.Core;
@@ -9,8 +9,8 @@ public abstract class ColorTheme extends Theme{
     }
     @Override
     public void drawKeywordBackground(float x, float y, float width, float height, float pixelScale){
-        Renderer.setColor(getKeywordBackgroundColor());
-        Renderer.fillRect(0, 0, width, height);
+        PlanneratorRenderer.setColor(getKeywordBackgroundColor());
+        PlanneratorRenderer.fillRect(0, 0, width, height);
     }
     public abstract Color getKeywordBackgroundColor();
     @Override
@@ -33,14 +33,14 @@ public abstract class ColorTheme extends Theme{
                 col = getComponentDisabledColor(0);
             }
         }
-        Renderer.setColor(col);
-        Renderer.fillRect(x, y, x+width, y+height);
+        PlanneratorRenderer.setColor(col);
+        PlanneratorRenderer.fillRect(x, y, x+width, y+height);
     }
     @Override
     public void drawThemeButtonText(float x, float y, float width, float height, float textHeight, String text){
-        Renderer.setFont(getDefaultFont());
-        Renderer.setColor(getComponentTextColor(0));
-        Renderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
+        PlanneratorRenderer.setFont(getDefaultFont());
+        PlanneratorRenderer.setColor(getComponentTextColor(0));
+        PlanneratorRenderer.drawCenteredText(x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public Font getDefaultFont(){

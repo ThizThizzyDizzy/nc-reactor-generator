@@ -30,21 +30,24 @@ public class NCPFElementReference extends DefinedNCPFObject{
     @Override
     public void setReferences(List<NCPFElement> elements, boolean soft){
         if(target!=null&&soft)return;
+        NCPFElement resolved = null;
         for(NCPFElement elem : elements){
             boolean isMatch = elem.definition.matches(definition);
             for(String legacy : elem.definition.getLegacyNames()){
                 isMatch |= legacy.equals(definition.toString());
             }
             if(isMatch){
-                if(target==elem)continue;//it's fine, it's the EXACT same reference.
-                if(target!=null){
+                if(resolved==elem)continue;
+                if(resolved!=null){
                     if(soft)return;
-                    throw new IllegalArgumentException("Element Reference "+definition.toString()+" matches more than one element: "+elem.getDisplayName()+" and "+target.getDisplayName());
+                    throw new IllegalArgumentException("Element Reference "+definition+" matches more than one element: "+elem.definition+" and "+resolved.definition);
                 }
-                target = elem;
+                resolved = elem;
             }
         }
+        if(resolved!=null)target = resolved;
     }
+
     public String getDisplayName(){
         return target==null?definition.toString():target.getDisplayName();
     }

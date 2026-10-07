@@ -1,12 +1,11 @@
 package net.ncplanner.plannerator.discord.play.smivilization.thing;
-import com.thizthizzydizzy.dizzyengine.ResourceManager;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.UUID;
 import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingColorable;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 public class WastelandBed extends HutThingColorable{
     public WastelandBed(UUID uuid, Hut hut){
         super(uuid, hut, "Wasteland Bed", "wasteland bed", 48, Color.WHITE);
@@ -17,11 +16,11 @@ public class WastelandBed extends HutThingColorable{
         return new WastelandBed(uuid, hut);
     }
     @Override
-    public void draw(float left, float top, float right, float bottom){
-        Renderer.setColor(Color.WHITE);
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/frame.png"));
-        Renderer.setColor(getColor());
-        Renderer.fillRect(left, top, right, bottom, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/matress.png"));
+    public void draw(PlanneratorRenderer renderer, float left, float top, float right, float bottom){
+        renderer.setColor(Color.WHITE);
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/frame.png", left, top, right, bottom);
+        renderer.setColor(getColor());
+        renderer.drawImage("/textures/smivilization/buildings/huts/gliese/furniture/wasteland bed/matress.png", left, top, right, bottom);
     }
     @Override
     public int[] getDimensions(){

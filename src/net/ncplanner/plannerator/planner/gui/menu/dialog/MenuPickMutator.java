@@ -11,26 +11,23 @@ import net.ncplanner.plannerator.planner.gui.menu.component.layout.legacy.Legacy
 public class MenuPickMutator<T extends LiteMultiblock> extends MenuDialog{
     private final ArrayList<Button> buttons = new ArrayList<>();
     public MenuPickMutator(GUI gui, Menu parent, T multiblock, Consumer<Mutator<T>> onConfirm){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super(gui, parent);
-//         minWidth = minHeight = 0;
-//         for(Supplier<Mutator> supplier : Mutator.registeredMutators.values()){
-//             try{
-//                 Mutator<T> mutator = supplier.get();
-//                 mutator.init(multiblock);
-//                 mutator.setIndicies(multiblock);
-//                 buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
-//                     close();
-//                     onConfirm.accept(mutator);
-//                 }));
-//             }catch(ClassCastException ex){}
-//         }
-//         setTitle("Choose a mutator");
-//         setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
-//         addButton("Cancel", () -> {
-//             close();
-//         });
-//
+        super(gui, parent);
+        minWidth = minHeight = 0;
+        for(Supplier<Mutator> supplier : Mutator.registeredMutators.values()){
+            try{
+                Mutator<T> mutator = supplier.get();
+                mutator.init(multiblock);
+                mutator.setIndicies(multiblock);
+                buttons.add(new Button(mutator.getTitle(), true).setTooltip(mutator.getTooltip()).addAction(() -> {
+                    close();
+                    onConfirm.accept(mutator);
+                }));
+            }catch(ClassCastException ex){}
+        }
+        setTitle("Choose a mutator");
+        setContent(new LegacyExpandingGridLayout(192, 64, 3).addAll(buttons));
+        addButton("Cancel", () -> {
+            close();
+        });
     }
 }

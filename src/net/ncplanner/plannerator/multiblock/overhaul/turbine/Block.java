@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.multiblock.overhaul.turbine;
 import java.util.ArrayList;
 import java.util.function.Function;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.Direction;
@@ -37,17 +37,14 @@ public class Block extends AbstractBlock{
         if(isCoil())tip+="\nCoil "+(isActive()?"Active":"Invalid");
         return tip;
     }
-    /* @Override */
-    public void renderOverlay(Renderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(!isValid()){
-//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
-//         }
-//         if(isActive()&&isCoil()){
-//             drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
-//         }
-//
+    @Override
+    public void renderOverlay(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){
+        if(!isValid()){
+            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineInvalid(), faceRenderFunc);
+        }
+        if(isActive()&&isCoil()){
+            drawOutline(renderer, x, y, z, width, height, depth, Core.theme.getBlockColorOutlineActive(), faceRenderFunc);
+        }
     }
     @Override
     public boolean isValid(){

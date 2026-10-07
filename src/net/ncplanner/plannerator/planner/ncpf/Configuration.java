@@ -29,14 +29,7 @@ public class Configuration{
         internalAddonAuthors.put(addon, author);
     }
     public static void initNuclearcraftConfiguration(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(NUCLEARCRAFT!=null)return;//already done m8
-//         NUCLEARCRAFT = new Configuration(FileReader.read(() -> {
-//             return Core.getInputStream("configurations/nuclearcraft.ncpf.json");
-//         }), "default").addAlternative("").addAlternative("SF4");
-//         configurations.add(0, NUCLEARCRAFT);
-//
+        net.ncplanner.plannerator.planner.configuration.ConfigurationManager.initNuclearcraftConfiguration();
     }
     public static void clearConfigurations(){
         configurations.clear();
@@ -58,6 +51,13 @@ public class Configuration{
     public List<Addon> addons = new ArrayList<>();
     public String path;
     public ArrayList<String> alternatives = new ArrayList<>();
+    public Project toProject(){
+        Project project = new Project();
+        project.configuration = configuration;
+        project.addons = addons;
+        project.conglomerate();
+        return project;
+    }
     public String getName(){
         for(String key : NCPFConfigurationContainer.configOrder){
             if(configuration.configurations.containsKey(key)){

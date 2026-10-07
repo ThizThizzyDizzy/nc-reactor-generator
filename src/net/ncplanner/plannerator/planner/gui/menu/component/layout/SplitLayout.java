@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.layout;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class SplitLayout extends Layout{
@@ -72,7 +72,7 @@ public class SplitLayout extends Layout{
             }
         }
         if(borderColor!=null&&borderSize>0){
-            Renderer renderer = new Renderer();
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
             renderer.setColor(borderColor.get());
             if(axis==X_AXIS)renderer.fillRect(x+split, y, x+split+borderSize, y+height);
             else renderer.fillRect(x, y+split, x+width, y+split+borderSize);

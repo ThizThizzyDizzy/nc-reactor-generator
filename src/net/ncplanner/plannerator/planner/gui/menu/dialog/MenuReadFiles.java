@@ -24,21 +24,18 @@ public class MenuReadFiles extends MenuTaskDialog{
     }
     @Override
     public void runTask(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         for(File file : files){
-//             try{
-//                 Project loaded = FileReader.read(file);
-//                 loadedFiles.add(loaded);
-//             }catch(Exception ex){
-//                 closeListeners.clear();
-//                 close();
-//                 running = false;
-//                 Core.error("Failed to read file "+file.getName()+"!", ex);
-//             }
-//             task.getCurrentSubtask().finish();
-//             if(!running)return;
-//         }
-//
+        for(File file : files){
+            try{
+                Project loaded = FileReader.read(file);
+                loadedFiles.add(loaded);
+            }catch(Exception ex){
+                closeListeners.clear();
+                close();
+                running = false;
+                Core.error("Failed to read file "+file.getName()+"!", ex);
+            }
+            task.getCurrentSubtask().finish();
+            if(!running)return;
+        }
     }
 }

@@ -1,6 +1,9 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
 public class MenuSiezureTheme extends MenuDialog{
-    public MenuSiezureTheme(Runnable onYes, Runnable onNo){
+    public MenuSiezureTheme(GUI gui, Menu parent, Runnable onYes, Runnable onNo){
+        super(gui, parent);
         textBox.setText("CONTAINS LOTS OF FLASHING COLORS\nCONTINUE?");
         addButton("Yes", () -> {
             close();

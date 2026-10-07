@@ -811,20 +811,17 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
     }
     @Override
     public OverhaulFusionDesign convertToDesign(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
-//         forEachPosition((pos) -> {
-//             Block block = getBlock(pos);
-//             design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
-//             if(block!=null){
-//                 design.breedingBlanketRecipes[pos.x][pos.y][pos.z] = block.breedingBlanketRecipe;
-//             }
-//         });
-//         design.recipe = recipe;
-//         design.coolantRecipe = coolantRecipe;
-//         return design;
-//
+        OverhaulFusionDesign design = new OverhaulFusionDesign(Core.project, innerRadius, coreSize, toroidWidth, liningThickness);
+        forEachPosition((pos) -> {
+            Block block = getBlock(pos);
+            design.design[pos.x][pos.y][pos.z] = block==null?null:block.template;
+            if(block!=null){
+                design.breedingBlanketRecipes[pos.x][pos.y][pos.z] = block.breedingBlanketRecipe;
+            }
+        });
+        design.recipe = recipe;
+        design.coolantRecipe = coolantRecipe;
+        return design;
     }
     @Override
     public NCPFElement[] getMultiblockRecipes(){

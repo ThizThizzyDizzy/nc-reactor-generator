@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.gui.Component;
 public class HorizontalList extends Scrollable{
     private Supplier<Color> backgroundColor;
@@ -12,29 +12,26 @@ public class HorizontalList extends Scrollable{
     }
     @Override
     public void drawBackground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(!enableSelection)focusedComponent = null;
-//         if(backgroundColor!=null){
-//             Color c = backgroundColor.get();
-//             renderer.setColor(c);
-//             renderer.fillRect(x, y, x+width, y+height);
-//             renderer.setWhite();
-//         }
-//         scrollMagnitude = MathUtil.min(width, height)/20;
-//         for(int i = 0; i<components.size(); i++){
-//             components.get(i).isFocused = getSelectedIndex()==i;
-//         }
-//         float x = 0;
-//         for(Component c : components){
-//             c.x = x;
-//             c.y = 0;
-//             x+=c.width;
-//             c.height = height-(hasHorizScrollbar()?horizScrollbarHeight:0);
-//         }
-//         super.drawBackground(deltaTime);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(!enableSelection)focusedComponent = null;
+        if(backgroundColor!=null){
+            Color c = backgroundColor.get();
+            renderer.setColor(c);
+            renderer.fillRect(x, y, x+width, y+height);
+            renderer.setWhite();
+        }
+        scrollMagnitude = MathUtil.min(width, height)/20;
+        for(int i = 0; i<components.size(); i++){
+            components.get(i).isFocused = getSelectedIndex()==i;
+        }
+        float x = 0;
+        for(Component c : components){
+            c.x = x;
+            c.y = 0;
+            x+=c.width;
+            c.height = height-(hasHorizScrollbar()?horizScrollbarHeight:0);
+        }
+        super.drawBackground(deltaTime);
     }
     public int getSelectedIndex(){
         return components.indexOf(focusedComponent);

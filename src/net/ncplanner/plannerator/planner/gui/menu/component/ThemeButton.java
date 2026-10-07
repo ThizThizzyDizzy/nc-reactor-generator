@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.theme.Theme;
 public class ThemeButton extends Button{
@@ -13,7 +13,7 @@ public class ThemeButton extends Button{
     }
     @Override
     public void draw(double deltaTime){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         theme.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, isMouseFocused);
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);

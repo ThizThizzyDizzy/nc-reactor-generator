@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
@@ -12,12 +12,9 @@ public class Label extends Component implements Searchable{
     public String text;
     public boolean darker;
     public float textInset = 4;
-    public Supplier<Color> textColor = ((java.util.function.Supplier<Supplier<Color>>) () -> {
-        throw new UnsupportedOperationException("Pending refactor");
-// () -> {
-//         return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
-//     }
-    }).get();
+    public Supplier<Color> textColor = () -> {
+        return Core.theme.getComponentTextColor(Core.getThemeIndex(this));
+    };
     private boolean noBackground;
     private boolean alignLeft;
     private ArrayList<Image> images = new ArrayList<>();
@@ -61,24 +58,21 @@ public class Label extends Component implements Searchable{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         if(!noBackground){
-//             renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//             renderer.fillRect(x, y, x+width, y+height);
-//         }
-//         if(!images.isEmpty()){
-//             renderer.setWhite();
-//             for(int i = 0; i<images.size(); i++){
-//                 renderer.drawImage(images.get(i), x+i*height, y, x+(i+1)*height, y+height);
-//             }
-//         }
-//         renderer.setColor(textColor.get());
-//         drawText(renderer);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        if(!noBackground){
+            renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+            renderer.fillRect(x, y, x+width, y+height);
+        }
+        if(!images.isEmpty()){
+            renderer.setWhite();
+            for(int i = 0; i<images.size(); i++){
+                renderer.drawImage(images.get(i), x+i*height, y, x+(i+1)*height, y+height);
+            }
+        }
+        renderer.setColor(textColor.get());
+        drawText(renderer);
     }
-    public void drawText(Renderer renderer){
+    public void drawText(PlanneratorRenderer renderer){
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-images.size()*height-textInset*2)/textLength);
         float textHeight = (int)((height-textInset*2)*scale);

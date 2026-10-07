@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
 import net.ncplanner.plannerator.planner.Core;
@@ -12,13 +12,10 @@ public class MenuComponentMultiblock extends Component{
     public final Button edit = add(new Button("", true, true){
         @Override
         public void drawForeground(double deltaTime){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             super.drawForeground(deltaTime);
-//             Renderer renderer = new Renderer();
-//             renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//             renderer.drawElement("pencil", x, y, width, height);
-//
+            super.drawForeground(deltaTime);
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
+            renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+            renderer.drawElement("pencil", x, y, width, height);
         }
     }.setTooltip("Modify multiblock"));
     public MenuComponentMultiblock(MenuMain main, Multiblock multiblock){
@@ -35,32 +32,26 @@ public class MenuComponentMultiblock extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         //TODO global recipe stuff
-//         if(isFocused){
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
-//         }else{
-//             if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
-//             else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         }
-//         renderer.fillRect(x, y, x+width, y+height);
-//         if(main.getSelectedMultiblock()!=null&&main.getSelectedMultiblock() instanceof OverhaulTurbine&&((OverhaulTurbine)main.getSelectedMultiblock()).inputs.contains(multiblock)){
-//             renderer.setColor(Core.theme.getMultiblockSelectedInputColor(), .25f);
-//             renderer.fillRect(x, y, x+width, y+height);
-//         }
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        //TODO global recipe stuff
+        if(isFocused){
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverSelectedComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getSelectedComponentColor(Core.getThemeIndex(this)));
+        }else{
+            if(isMouseFocused)renderer.setColor(Core.theme.getMouseoverComponentColor(Core.getThemeIndex(this)));
+            else renderer.setColor(Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        }
+        renderer.fillRect(x, y, x+width, y+height);
+        if(main.getSelectedMultiblock()!=null&&main.getSelectedMultiblock() instanceof OverhaulTurbine&&((OverhaulTurbine)main.getSelectedMultiblock()).inputs.contains(multiblock)){
+            renderer.setColor(Core.theme.getMultiblockSelectedInputColor(), .25f);
+            renderer.fillRect(x, y, x+width, y+height);
+        }
     }
     @Override
     public void drawForeground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         renderer.drawText(x, y, x+width, y+height/4, multiblock.getName());
-//         renderer.drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        renderer.drawText(x, y, x+width, y+height/4, multiblock.getName());
+        renderer.drawText(x, y+height/4, x+width, y+height/2, multiblock.getDefinitionName());
     }
 }

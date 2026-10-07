@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.ui.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.ui.component.Component;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
@@ -23,15 +23,15 @@ public abstract class ProgressBar extends Component{
         Task task = getTask();
         float Y = y;
         while(task!=null){
-            Renderer.setColor(Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)));
-            Renderer.fillRect(x, Y, x+getWidth(), Y+textHeight+progressBarHeight+textInset*3);
-            Renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-            Renderer.drawText(x+textInset, Y+textInset, x+getWidth()-textInset, Y+textHeight+textInset, task.name);
-            Renderer.setColor(Core.theme.getProgressBarBackgroundColor());
-            Renderer.fillRect(x+textInset, Y+textHeight+textInset*2, x+getWidth()-textInset, Y+textHeight+progressBarHeight+textInset*2);
+            PlanneratorRenderer.setColor(Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)));
+            PlanneratorRenderer.fillRect(x, Y, x+getWidth(), Y+textHeight+progressBarHeight+textInset*3);
+            PlanneratorRenderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+            PlanneratorRenderer.drawText(x+textInset, Y+textInset, x+getWidth()-textInset, Y+textHeight+textInset, task.name);
+            PlanneratorRenderer.setColor(Core.theme.getProgressBarBackgroundColor());
+            PlanneratorRenderer.fillRect(x+textInset, Y+textHeight+textInset*2, x+getWidth()-textInset, Y+textHeight+progressBarHeight+textInset*2);
             float w = getWidth()-textInset*2;
-            Renderer.setColor(Core.theme.getProgressBarColor());
-            Renderer.fillRect(x+textInset, Y+textHeight+textInset*2, x+textInset+w*task.getProgressF(), Y+textHeight+progressBarHeight+textInset*2);
+            PlanneratorRenderer.setColor(Core.theme.getProgressBarColor());
+            PlanneratorRenderer.fillRect(x+textInset, Y+textHeight+textInset*2, x+textInset+w*task.getProgressF(), Y+textHeight+progressBarHeight+textInset*2);
             task = task.getCurrentSubtask();
             Y+=textHeight+progressBarHeight+textInset*3;
         }

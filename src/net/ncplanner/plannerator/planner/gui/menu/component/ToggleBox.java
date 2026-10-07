@@ -1,7 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
+import com.thizthizzydizzy.dizzyengine.DizzyEngine;
 import java.util.ArrayList;
 import java.util.function.Consumer;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -56,28 +57,25 @@ public class ToggleBox extends Component{
     }
     @Override
     public void draw(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
-//         renderer.fillRect(x, y, x+width, y+height);//why is this here?
-//         renderer.setColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
-//         renderer.fillRect(x, y, x+height, y+height);
-//         renderer.setColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));
-//         renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
-//         if(isMouseFocused&&!enabled){
-//             renderer.setColor(Core.theme.getToggleBoxSelectedColor(Core.getThemeIndex(this)), .25f);
-//             renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
-//         }
-//         if(image!=null){
-//             renderer.setWhite();
-//             renderer.drawImage(image, x+height, y, x+height*2, y+height);
-//         }
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         drawText(renderer);
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setColor(darker?Core.theme.getSecondaryComponentColor(Core.getThemeIndex(this)):Core.theme.getComponentColor(Core.getThemeIndex(this)));
+        renderer.fillRect(x, y, x+width, y+height);//why is this here?
+        renderer.setColor(darker?Core.theme.getSecondaryToggleBoxBorderColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBorderColor(Core.getThemeIndex(this)));
+        renderer.fillRect(x, y, x+height, y+height);
+        renderer.setColor(isToggledOn?Core.theme.getToggleBoxMouseoverColor(Core.getThemeIndex(this)):Core.theme.getToggleBoxBackgroundColor(Core.getThemeIndex(this)));
+        renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
+        if(isMouseFocused&&!enabled){
+            renderer.setColor(Core.theme.getToggleBoxSelectedColor(Core.getThemeIndex(this)), .25f);
+            renderer.fillRect(x+boxInset*height, y+boxInset*height, x+height-boxInset*height, y+height-boxInset*height);
+        }
+        if(image!=null){
+            renderer.setWhite();
+            renderer.drawImage(image, x+height, y, x+height*2, y+height);
+        }
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        drawText(renderer);
     }
-    public void drawText(Renderer renderer){
+    public void drawText(PlanneratorRenderer renderer){
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-height-(image==null?0:height)-textInset*2)/textLength);
         float textHeight = (int)((height-textInset*2)*scale)-2;
@@ -100,14 +98,11 @@ public class ToggleBox extends Component{
     }
     @Override
     public void onCursorEntered(){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.onCursorEntered();
-//         if(sliding!=null&&allowSliding&&glfwGetMouseButton(Core.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
-//             isToggledOn = sliding;
-//             changeListeners.forEach(Runnable::run);
-//         }
-//
+        super.onCursorEntered();
+        if(sliding!=null&&allowSliding&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+            isToggledOn = sliding;
+            changeListeners.forEach(Runnable::run);
+        }
     }
     public ToggleBox onChange(Runnable r){
         changeListeners.add(r);

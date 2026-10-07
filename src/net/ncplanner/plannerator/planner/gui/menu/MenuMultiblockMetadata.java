@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
@@ -61,7 +61,7 @@ public class MenuMultiblockMetadata extends Menu{
             list.add(new TextBox(0,0,0,0,"", true));
             list.add(new TextBox(0,0,0,0,"", true));
         }
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.setColor(Core.theme.getMetadataPanelBackgroundColor());
         renderer.fillRect(0, 0, gui.getWidth(), gui.getHeight());
         renderer.setColor(Core.theme.getMetadataPanelHeaderColor());

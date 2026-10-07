@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.graphics.Font;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.text.Font;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -19,32 +19,29 @@ public class TextView extends Scrollable{
         view = add(new Component(0, 0, width, height){
             @Override
             public void draw(double deltaTime){
-                throw new UnsupportedOperationException("Pending refactor");
-//
-//                 Renderer renderer = new Renderer();
-//                 renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//                 renderer.setFont(font!=null?font:Core.theme.getTextViewFont());
-//                 float Y = y+textInset;
-//                 for(int i = 0; i<text.size(); i++){
-//                     FormattedText t = text.get(i);
-//                     do{
-//                         if(wordWrap){
-//                             t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
-//                         }else{
-//                             renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
-//                             t = null;
-//                         }
-//                         Y+=textHeight;
-//                     }while(t!=null&&!t.isEmpty());
-//                 }
-//                 renderer.resetFont();
-//
+                PlanneratorRenderer renderer = new PlanneratorRenderer();
+                renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+                renderer.setFont(font!=null?font:Core.theme.getTextViewFont());
+                float Y = y+textInset;
+                for(int i = 0; i<text.size(); i++){
+                    FormattedText t = text.get(i);
+                    do{
+                        if(wordWrap){
+                            t = renderer.drawFormattedTextWithWordWrap(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
+                        }else{
+                            renderer.drawFormattedText(x+textInset, Y, x+width-textInset, Y+textHeight, t, snap);
+                            t = null;
+                        }
+                        Y+=textHeight;
+                    }while(t!=null&&!t.isEmpty());
+                }
+                renderer.resetFont();
             }
         });
     }
     @Override
     public void render2d(double deltaTime){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.setColor(Core.theme.getTextViewBackgroundColor());
         renderer.fillRect(x, y, x+width, y+height);
         float width = 0;

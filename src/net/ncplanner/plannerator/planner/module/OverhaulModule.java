@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.CuboidalMultiblock;
@@ -78,87 +78,69 @@ public class OverhaulModule extends Module<Object>{
         runTasks();
     }
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             if(block.isModeratorActive()){
-//                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
+            if(block.isModeratorActive()){
+                block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrActiveModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Active Moderators", "Highlights active moderators with a green outline", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             if(block.isModeratorActive()){
-//                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
+            if(block.isModeratorActive()){
+                block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block> validCoilOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.turbine.Block>("Valid Coils", "Highlights valid coils with a green outline", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.turbine.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             if(block.isActive()&&block.isCoil()){
-//                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.turbine.Block block, Multiblock multiblock){
+            if(block.isActive()&&block.isCoil()){
+                block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrBlockRecipeOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Block Recipes", "Shows the chosen recipe on blocks that have multiple recipes", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-//             if(b.fuel!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
-//                 renderer.setWhite(b.template.parent==null?1:0.75f);
-//                 renderer.drawImage(b.fuel.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
-//             }
-//             if(b.irradiatorRecipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
-//                 renderer.setWhite(b.template.parent==null?1:0.75f);
-//                 renderer.drawImage(b.irradiatorRecipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
+            net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+            if(b.fuel!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
+                renderer.setWhite(b.template.parent==null?1:0.75f);
+                renderer.drawImage(b.fuel.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
+            }
+            if(b.irradiatorRecipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
+                renderer.setWhite(b.template.parent==null?1:0.75f);
+                renderer.drawImage(b.irradiatorRecipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrBlockRecipeOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Block Recipes", "Shows the chosen recipe on blocks that have multiple recipes", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-//             if(b.fuel!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
-//                 renderer.setWhite(b.template.parent==null?1:.75f);
-//                 renderer.drawImage(b.fuel.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
-//             }
-//             if(b.irradiatorRecipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
-//                 renderer.setWhite(b.template.parent==null?1:.75f);
-//                 renderer.drawImage(b.irradiatorRecipe.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
+            net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+            if(b.fuel!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
+                renderer.setWhite(b.template.parent==null?1:.75f);
+                renderer.drawImage(b.fuel.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
+            }
+            if(b.irradiatorRecipe!=null&&(b.template.parent==null?b.template.getBlockRecipes():b.template.parent.getBlockRecipes()).size()>1){
+                renderer.setWhite(b.template.parent==null?1:.75f);
+                renderer.drawImage(b.irradiatorRecipe.getDisplayTexture(), x+width*.25f, y+height*.25f, x+width*.75f, y+height*.75f);
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrPrimedCellOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Primed Cells", "Shows which cells are primed", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             if(mode==1)return;
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-//             if(b.template.fuelCell!=null&&b.fuel!=null){
-//                 boolean self = b.fuel.stats.selfPriming;
-//                 net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block src = b.source;
-//                 if(src!=null||self){
-//                     b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
-//                 }
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
+            if(mode==1)return;
+            net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+            if(b.template.fuelCell!=null&&b.fuel!=null){
+                boolean self = b.fuel.stats.selfPriming;
+                net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block src = b.source;
+                if(src!=null||self){
+                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
+                }
+            }
         }
         @Override
         public void refresh(Multiblock multiblock){
@@ -184,20 +166,17 @@ public class OverhaulModule extends Module<Object>{
         }
     }.addMode("Circle", "Shows a marker on primed cells.").addMode("Decal", "Draws a line from neutron sources to the cells they are priming").addMode("Both", "Shows a marker on primed cells and a line to the neutron source priming them");
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrPrimedVesselOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Primed Vessels", "Shows which cells are primed", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             if(mode==1)return;
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-//             if(b.template.fuelVessel!=null&&b.fuel!=null){
-//                 boolean self = b.fuel.stats.selfPriming;
-//                 net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block src = b.source;
-//                 if(src!=null||self){
-//                     b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
-//                 }
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
+            if(mode==1)return;
+            net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+            if(b.template.fuelVessel!=null&&b.fuel!=null){
+                boolean self = b.fuel.stats.selfPriming;
+                net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block src = b.source;
+                if(src!=null||self){
+                    b.drawCircle(renderer, x, y, width, height, Core.theme.getBlockColorSourceCircle(src==null?1:src.template.neutronSource.efficiency, self));
+                }
+            }
         }
         @Override
         public void refresh(Multiblock multiblock){
@@ -222,171 +201,165 @@ public class OverhaulModule extends Module<Object>{
         }
     }.addMode("Circle", "Shows a marker on primed vessels.").addMode("Decal", "Draws a line from neutron sources to the vessels they are priming").addMode("Both", "Shows a marker on primed vessels and a line to the neutron source priming them");
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrClusterOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Clusters", "Outlines clusters in the reactor", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
-//             OverhaulSFR.Cluster cluster = b.cluster;
-//             if(cluster!=null){
-//                 Color primaryColor = null;
-//                 if(cluster.netHeat>0){
-//                     primaryColor = Core.theme.getClusterOverheatingColor();
-//                 }
-//                 if(cluster.coolingPenaltyMult<1){
-//                     primaryColor = Core.theme.getClusterOvercoolingColor();
-//                 }
-//                 if(primaryColor!=null){
-//                     renderer.setColor(primaryColor, .125f);
-//                     renderer.fillRect(x, y, x+width, y+height);
-//                     renderer.setColor(primaryColor, .75f);
-//                     float border = width/8;
-//                     boolean top = cluster.contains(b.pos.offset(Direction.NZ));
-//                     boolean right = cluster.contains(b.pos.offset(Direction.PX));
-//                     boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
-//                     boolean left = cluster.contains(b.pos.offset(Direction.NX));
-//                     if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
-//                         renderer.fillRect(x, y, x+border, y+border);
-//                     }
-//                     if(!top){//top
-//                         renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
-//                     }
-//                     if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
-//                         renderer.fillRect(x+width-border, y, x+width, y+border);
-//                     }
-//                     if(!right){//right
-//                         renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
-//                     }
-//                     if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
-//                         renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
-//                     }
-//                     if(!bottom){//bottom
-//                         renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
-//                     }
-//                     if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
-//                         renderer.fillRect(x, y+height-border, x+border, y+height);
-//                     }
-//                     if(!left){//left
-//                         renderer.fillRect(x, y+height/2-border, x+border, y+height/2+border);
-//                     }
-//                 }
-//                 Color secondaryColor = null;
-//                 if(!cluster.isConnectedToWall){
-//                     secondaryColor = Core.theme.getClusterDisconnectedColor();
-//                 }
-//                 if(!cluster.isCreated()){
-//                     secondaryColor = Core.theme.getClusterInvalidColor();
-//                 }
-//                 if(secondaryColor!=null){
-//                     renderer.setColor(secondaryColor, .75f);
-//                     float border = width/8;
-//                     boolean top = cluster.contains(b.pos.offset(Direction.NZ));
-//                     boolean right = cluster.contains(b.pos.offset(Direction.PX));
-//                     boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
-//                     boolean left = cluster.contains(b.pos.offset(Direction.NX));
-//                     if(!top){//top
-//                         renderer.fillRect(x+border, y, x+width/2-border, y+border);
-//                         renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
-//                     }
-//                     if(!right){//right
-//                         renderer.fillRect(x+width-border, y+border, x+width, y+height/2-border);
-//                         renderer.fillRect(x+width-border, y+height/2+border, x+width, y+height-border);
-//                     }
-//                     if(!bottom){//bottom
-//                         renderer.fillRect(x+border, y+height-border, x+width/2-border, y+height);
-//                         renderer.fillRect(x+width/2+border, y+height-border, x+width-border, y+height);
-//                     }
-//                     if(!left){//left
-//                         renderer.fillRect(x, y+border, x+border, y+height/2-border);
-//                         renderer.fillRect(x, y+height/2+border, x+border, y+height-border);
-//                     }
-//                 }
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block block, Multiblock multiblock){
+            net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)block;
+            OverhaulSFR.Cluster cluster = b.cluster;
+            if(cluster!=null){
+                Color primaryColor = null;
+                if(cluster.netHeat>0){
+                    primaryColor = Core.theme.getClusterOverheatingColor();
+                }
+                if(cluster.coolingPenaltyMult<1){
+                    primaryColor = Core.theme.getClusterOvercoolingColor();
+                }
+                if(primaryColor!=null){
+                    renderer.setColor(primaryColor, .125f);
+                    renderer.fillRect(x, y, x+width, y+height);
+                    renderer.setColor(primaryColor, .75f);
+                    float border = width/8;
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
+                        renderer.fillRect(x, y, x+border, y+border);
+                    }
+                    if(!top){//top
+                        renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
+                    }
+                    if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
+                        renderer.fillRect(x+width-border, y, x+width, y+border);
+                    }
+                    if(!right){//right
+                        renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
+                    }
+                    if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
+                        renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
+                    }
+                    if(!bottom){//bottom
+                        renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
+                    }
+                    if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
+                        renderer.fillRect(x, y+height-border, x+border, y+height);
+                    }
+                    if(!left){//left
+                        renderer.fillRect(x, y+height/2-border, x+border, y+height/2+border);
+                    }
+                }
+                Color secondaryColor = null;
+                if(!cluster.isConnectedToWall){
+                    secondaryColor = Core.theme.getClusterDisconnectedColor();
+                }
+                if(!cluster.isCreated()){
+                    secondaryColor = Core.theme.getClusterInvalidColor();
+                }
+                if(secondaryColor!=null){
+                    renderer.setColor(secondaryColor, .75f);
+                    float border = width/8;
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top){//top
+                        renderer.fillRect(x+border, y, x+width/2-border, y+border);
+                        renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
+                    }
+                    if(!right){//right
+                        renderer.fillRect(x+width-border, y+border, x+width, y+height/2-border);
+                        renderer.fillRect(x+width-border, y+height/2+border, x+width, y+height-border);
+                    }
+                    if(!bottom){//bottom
+                        renderer.fillRect(x+border, y+height-border, x+width/2-border, y+height);
+                        renderer.fillRect(x+width/2+border, y+height-border, x+width-border, y+height);
+                    }
+                    if(!left){//left
+                        renderer.fillRect(x, y+border, x+border, y+height/2-border);
+                        renderer.fillRect(x, y+height/2+border, x+border, y+height-border);
+                    }
+                }
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block> msrClusterOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block>("Clusters", "Outlines clusters in the reactor", true){
-        /* @Override */
-        public void render(Renderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
-            throw new UnsupportedOperationException("Pending refactor");
-//
-//             net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
-//             OverhaulMSR.Cluster cluster = b.cluster;
-//             if(cluster!=null){
-//                 Color primaryColor = null;
-//                 if(cluster.netHeat>0){
-//                     primaryColor = Core.theme.getClusterOverheatingColor();
-//                 }
-//                 if(cluster.coolingPenaltyMult<1){
-//                     primaryColor = Core.theme.getClusterOvercoolingColor();
-//                 }
-//                 if(primaryColor!=null){
-//                     renderer.setColor(primaryColor, .125f);
-//                     renderer.fillRect(x, y, x+width, y+height);
-//                     renderer.setColor(primaryColor, .75f);
-//                     float border = width/8;
-//                     boolean top = cluster.contains(b.pos.offset(Direction.NZ));
-//                     boolean right = cluster.contains(b.pos.offset(Direction.PX));
-//                     boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
-//                     boolean left = cluster.contains(b.pos.offset(Direction.NX));
-//                     if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
-//                         renderer.fillRect(x, y, x+border, y+border);
-//                     }
-//                     if(!top){//top
-//                         renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
-//                     }
-//                     if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
-//                         renderer.fillRect(x+width-border, y, x+width, y+border);
-//                     }
-//                     if(!right){//right
-//                         renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
-//                     }
-//                     if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
-//                         renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
-//                     }
-//                     if(!bottom){//bottom
-//                         renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
-//                     }
-//                     if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
-//                         renderer.fillRect(x, y+height-border, x+border, y+height);
-//                     }
-//                     if(!left){//left
-//                         renderer.fillRect(x, y+height/2-border, x+border, y+height/2+border);
-//                     }
-//                 }
-//                 Color secondaryColor = null;
-//                 if(!cluster.isConnectedToWall){
-//                     secondaryColor = Core.theme.getClusterDisconnectedColor();
-//                 }
-//                 if(!cluster.isCreated()){
-//                     secondaryColor = Core.theme.getClusterInvalidColor();
-//                 }
-//                 if(secondaryColor!=null){
-//                     renderer.setColor(secondaryColor, .75f);
-//                     float border = width/8;
-//                     boolean top = cluster.contains(b.pos.offset(Direction.NZ));
-//                     boolean right = cluster.contains(b.pos.offset(Direction.PX));
-//                     boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
-//                     boolean left = cluster.contains(b.pos.offset(Direction.NX));
-//                     if(!top){//top
-//                         renderer.fillRect(x+border, y, x+width/2-border, y+border);
-//                         renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
-//                     }
-//                     if(!right){//right
-//                         renderer.fillRect(x+width-border, y+border, x+width, y+height/2-border);
-//                         renderer.fillRect(x+width-border, y+height/2+border, x+width, y+height-border);
-//                     }
-//                     if(!bottom){//bottom
-//                         renderer.fillRect(x+border, y+height-border, x+width/2-border, y+height);
-//                         renderer.fillRect(x+width/2+border, y+height-border, x+width-border, y+height);
-//                     }
-//                     if(!left){//left
-//                         renderer.fillRect(x, y+border, x+border, y+height/2-border);
-//                         renderer.fillRect(x, y+height/2+border, x+border, y+height-border);
-//                     }
-//                 }
-//             }
-//
+        @Override
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block block, Multiblock multiblock){
+            net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block)block;
+            OverhaulMSR.Cluster cluster = b.cluster;
+            if(cluster!=null){
+                Color primaryColor = null;
+                if(cluster.netHeat>0){
+                    primaryColor = Core.theme.getClusterOverheatingColor();
+                }
+                if(cluster.coolingPenaltyMult<1){
+                    primaryColor = Core.theme.getClusterOvercoolingColor();
+                }
+                if(primaryColor!=null){
+                    renderer.setColor(primaryColor, .125f);
+                    renderer.fillRect(x, y, x+width, y+height);
+                    renderer.setColor(primaryColor, .75f);
+                    float border = width/8;
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top||!left||!cluster.contains(b.pos.offset(-1, 0, -1))){//top left
+                        renderer.fillRect(x, y, x+border, y+border);
+                    }
+                    if(!top){//top
+                        renderer.fillRect(x+width/2-border, y, x+width/2+border, y+border);
+                    }
+                    if(!top||!right||!cluster.contains(b.pos.offset(1, 0, -1))){//top right
+                        renderer.fillRect(x+width-border, y, x+width, y+border);
+                    }
+                    if(!right){//right
+                        renderer.fillRect(x+width-border, y+height/2-border, x+width, y+height/2+border);
+                    }
+                    if(!bottom||!right||!cluster.contains(b.pos.offset(1, 0, 1))){//bottom right
+                        renderer.fillRect(x+width-border, y+height-border, x+width, y+height);
+                    }
+                    if(!bottom){//bottom
+                        renderer.fillRect(x+width/2-border, y+height-border, x+width/2+border, y+height);
+                    }
+                    if(!bottom||!left||!cluster.contains(b.pos.offset(-1, 0, 1))){//bottom left
+                        renderer.fillRect(x, y+height-border, x+border, y+height);
+                    }
+                    if(!left){//left
+                        renderer.fillRect(x, y+height/2-border, x+border, y+height/2+border);
+                    }
+                }
+                Color secondaryColor = null;
+                if(!cluster.isConnectedToWall){
+                    secondaryColor = Core.theme.getClusterDisconnectedColor();
+                }
+                if(!cluster.isCreated()){
+                    secondaryColor = Core.theme.getClusterInvalidColor();
+                }
+                if(secondaryColor!=null){
+                    renderer.setColor(secondaryColor, .75f);
+                    float border = width/8;
+                    boolean top = cluster.contains(b.pos.offset(Direction.NZ));
+                    boolean right = cluster.contains(b.pos.offset(Direction.PX));
+                    boolean bottom = cluster.contains(b.pos.offset(Direction.PZ));
+                    boolean left = cluster.contains(b.pos.offset(Direction.NX));
+                    if(!top){//top
+                        renderer.fillRect(x+border, y, x+width/2-border, y+border);
+                        renderer.fillRect(x+width/2+border, y, x+width-border, y+border);
+                    }
+                    if(!right){//right
+                        renderer.fillRect(x+width-border, y+border, x+width, y+height/2-border);
+                        renderer.fillRect(x+width-border, y+height/2+border, x+width, y+height-border);
+                    }
+                    if(!bottom){//bottom
+                        renderer.fillRect(x+border, y+height-border, x+width/2-border, y+height);
+                        renderer.fillRect(x+width/2+border, y+height-border, x+width-border, y+height);
+                    }
+                    if(!left){//left
+                        renderer.fillRect(x, y+border, x+border, y+height/2-border);
+                        renderer.fillRect(x, y+height/2+border, x+border, y+height-border);
+                    }
+                }
+            }
         }
     };
     private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block> sfrFluxOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block>("Neutron Flux Propogation", "Shows the neutron flux propogation through the reactor", false){
@@ -484,7 +457,7 @@ public class OverhaulModule extends Module<Object>{
                 if(badCellFluxes.contains(next))it.remove();
             }
         }
-    }.addMode("Initial", "Shows the first flux propogation, before inactive cells are excluded").addMode("Final", "Shows the final flux propogation, after inactive cells are excluded and calculation is complete").addMode("Shutdown", "Shows the flux propogation after all neutron shields are closed");    
+    }.addMode("Initial", "Shows the first flux propogation, before inactive cells are excluded").addMode("Final", "Shows the final flux propogation, after inactive cells are excluded and calculation is complete").addMode("Shutdown", "Shows the flux propogation after all neutron shields are closed");
     @Override
     public void getEditorOverlays(Multiblock multiblock, ArrayList overlays){
         if(multiblock instanceof OverhaulSFR){

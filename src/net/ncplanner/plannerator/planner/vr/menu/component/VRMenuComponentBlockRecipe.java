@@ -1,5 +1,5 @@
 package net.ncplanner.plannerator.planner.vr.menu.component;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
@@ -24,20 +24,17 @@ public class VRMenuComponentBlockRecipe extends VRMenuComponent{
         this.recipeID = recipeID;
     }
     @Override
-    public void renderComponent(Renderer renderer, TrackedDevicePose.Buffer tdpb){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
-//         renderer.drawCube(0, 0, 0, width, height, depth, null);
-//         renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
-//         NCPFElement r = editor.getSelectedBlockRecipe(id);
-//         if(r!=null&&r.equals(recipe))renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
-//         renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
-//         drawText(recipe.getDisplayName());
-//
+    public void renderComponent(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb){
+        renderer.setColor(isDeviceOver.isEmpty()?Core.theme.getVRComponentColor(Core.getThemeIndex(this)):Core.theme.getVRDeviceoverComponentColor(Core.getThemeIndex(this)));
+        renderer.drawCube(0, 0, 0, width, height, depth, null);
+        renderer.setColor(Core.theme.getVRSelectedOutlineColor(Core.getThemeIndex(this)));
+        NCPFElement r = editor.getSelectedBlockRecipe(id);
+        if(r!=null&&r.equals(recipe))renderer.drawCubeOutline(-.0025f, -.0025f, -.0025f, width+.0025f, height+.0025f, depth+.0025f, .0025f);//2.5fmm
+        renderer.setColor(Core.theme.getComponentTextColor(Core.getThemeIndex(this)));
+        drawText(recipe.getDisplayName());
     }
     public void drawText(String text){
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
         float textHeight = ((height-textInset*2)*scale)-.005f;
@@ -54,7 +51,7 @@ public class VRMenuComponentBlockRecipe extends VRMenuComponent{
             }
         }
     }
-    @Override    
+    @Override
     public String getTooltip(int device){
         String ttp = "";
         for(NCPFModule module : recipe.modules.modules.values()){

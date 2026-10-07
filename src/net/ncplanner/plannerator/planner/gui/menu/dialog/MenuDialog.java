@@ -1,19 +1,16 @@
 package net.ncplanner.plannerator.planner.gui.menu.dialog;
-import com.thizthizzydizzy.dizzyengine.DizzyEngine;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
-import com.thizthizzydizzy.dizzyengine.ui.FlatUI;
-import com.thizthizzydizzy.dizzyengine.ui.Menu;
-import com.thizthizzydizzy.dizzyengine.ui.component.Button;
-import com.thizthizzydizzy.dizzyengine.ui.component.Component;
-import com.thizthizzydizzy.dizzyengine.ui.component.Label;
-import com.thizthizzydizzy.dizzyengine.ui.component.Scrollable;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.gui.Component;
+import net.ncplanner.plannerator.planner.gui.GUI;
+import net.ncplanner.plannerator.planner.gui.Menu;
+import net.ncplanner.plannerator.planner.gui.menu.component.Button;
+import net.ncplanner.plannerator.planner.gui.menu.component.Label;
+import net.ncplanner.plannerator.planner.gui.menu.component.Scrollable;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextDisplay;
-import net.ncplanner.plannerator.planner.ui.component.layer.SecondaryComponentBackgroundLayer;
 public class MenuDialog extends Menu{
-    private Scrollable textPanel = add(new Scrollable(16, 16));
+    private Scrollable textPanel = add(new Scrollable(0, 0, 0, 0, 16, 16));
     public TextDisplay textBox = textPanel.add(new TextDisplay(""));
     private Label title;
     public Component content = textBox;
@@ -26,58 +23,73 @@ public class MenuDialog extends Menu{
     public int titleHeight = 48;
     public ArrayList<Button> buttons = new ArrayList<>();
     private boolean isClosed;
-    public float scrollBarWidth = 0;
-    public Menu parentMenu;
+    public MenuDialog(Menu parent){
+        super(parent);
+    }
+    public MenuDialog(GUI gui, Menu parent){
+        super(gui, parent);
+    }
+    float scrollBarWidth = 0;
     @Override
-    public void draw(double deltaTime){
-        FlatUI ui = DizzyEngine.getLayer(FlatUI.class);
-        if(isClosed&&ui.menu==this){
-            ui.menu = parentMenu;
+    public void render2d(double deltaTime){
+        if(isClosed&&gui.menu==this){
+            gui.menu = parent;
             closeListeners.forEach(Runnable::run);
         }
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         try{
-            if(parentMenu!=null)parentMenu.draw(deltaTime);
-        }catch(Exception ignored){
-        }
-        Renderer.setColor(Core.theme.getDialogBorderColor());
-        scrollBarWidth = Math.max(scrollBarWidth, textPanel.vertScrollbarSize*(textPanel.allowVerticalScrolling?1:0));
-        float w = Math.max(getWidth()*minWidth, Math.min(getWidth()*maxWidth, content.getWidth()+scrollBarWidth));
-        float h = Math.max(getHeight()*minHeight, Math.min(getHeight()*maxHeight, content.getHeight()+scrollBarWidth));
-        Renderer.fillRect(getWidth()/2-w/2-border, getHeight()/2-h/2-border-(title==null?0:titleHeight), getWidth()/2+w/2+border, getHeight()/2+h/2+border+buttonHeight);
-        Renderer.setColor(Core.theme.getDialogBackgroundColor());
-        Renderer.fillRect(getWidth()/2-w/2, getHeight()/2-h/2, getWidth()/2+w/2, getHeight()/2+h/2);
-        Renderer.setColor(Color.WHITE);
-
-        textPanel.x = getWidth()/2-w/2;
-        textPanel.y = getHeight()/2-h/2;
-        textPanel.setSize(w, h);
+            if(parent!=null)parent.render2d(deltaTime);
+        }catch(Exception ignored){}
+        renderer.setColor(Core.theme.getDialogBorderColor());
+        scrollBarWidth = Math.max(scrollBarWidth, textPanel.vertScrollbarWidth*(textPanel.vertScrollbarPresent?1:0));
+        float w = Math.max(gui.getWidth()*minWidth, Math.min(gui.getWidth()*maxWidth, content.width+scrollBarWidth));
+        float h = Math.max(gui.getHeight()*minHeight, Math.min(gui.getHeight()*maxHeight, content.height+scrollBarWidth));
+        renderer.fillRect(gui.getWidth()/2-w/2-border, gui.getHeight()/2-h/2-border-(title==null?0:titleHeight), gui.getWidth()/2+w/2+border, gui.getHeight()/2+h/2+border+buttonHeight);
+        renderer.setColor(Core.theme.getDialogBackgroundColor());
+        renderer.fillRect(gui.getWidth()/2-w/2, gui.getHeight()/2-h/2, gui.getWidth()/2+w/2, gui.getHeight()/2+h/2);
+        renderer.setWhite();
+        textPanel.x = gui.getWidth()/2-w/2;
+        textPanel.y = gui.getHeight()/2-h/2;
+        textPanel.width = w;
+        textPanel.height = h;
         for(int i = 0; i<buttons.size(); i++){
-            buttons.get(i).setWidth(w/buttons.size());
-            buttons.get(i).x = getWidth()/2-w/2+buttons.get(i).getWidth()*i;
-            buttons.get(i).y = getHeight()/2+h/2;
+            buttons.get(i).width = w/buttons.size();
+            buttons.get(i).x = gui.getWidth()/2-w/2+buttons.get(i).width*i;
+            buttons.get(i).y = gui.getHeight()/2+h/2;
         }
         if(title!=null){
-            title.setWidth(w);
-            title.x = getWidth()/2-w/2;
-            title.y = getHeight()/2-h/2-titleHeight;
+            title.width = w;
+            title.x = gui.getWidth()/2-w/2;
+            title.y = gui.getHeight()/2-h/2-titleHeight;
         }
-        super.draw(deltaTime);
+        super.render2d(deltaTime);
+    }
+    @Override
+    public void render3d(double deltaTime){
+        try{
+            if(parent!=null)parent.render3d(deltaTime);
+        }catch(Exception ignored){}
+        super.render3d(deltaTime);
     }
     public void close(){
-        FlatUI ui = DizzyEngine.getLayer(FlatUI.class);
-        if(ui.menu==this){
-            ui.menu = parentMenu;
+        if(gui.menu==this){
+            gui.menu = parent;
             closeListeners.forEach(Runnable::run);
         }
         isClosed = true;
     }
     public void open(){
-        FlatUI ui = DizzyEngine.getLayer(FlatUI.class);
-        parentMenu = ui.menu;
-        setSize(ui.size);
-        ui.menu = this;
-        onMenuOpened();
-//        content.focus();
+        if(!Core.isUIThread()){
+            Core.runOnUIThread(this::open);
+            return;
+        }
+        gui.menu = this;
+        onOpened();
+        content.focus();
+    }
+    @Override
+    public void onOpened(){
+        super.onOpened();
     }
     protected final ArrayList<Runnable> closeListeners = new ArrayList<>();
     public MenuDialog onClose(Runnable action){
@@ -88,8 +100,7 @@ public class MenuDialog extends Menu{
         return addButton(text, onClick, false);
     }
     public MenuDialog addButton(String text, Runnable onClick, boolean closeOnClick){
-        Button b = new Button(text, true);
-        b.background = new SecondaryComponentBackgroundLayer();
+        Button b = new Button(0, 0, 0, buttonHeight, text, true, true);
         b.addAction(() -> {
             if(closeOnClick)close();
             if(onClick!=null)onClick.run();
@@ -104,13 +115,8 @@ public class MenuDialog extends Menu{
         return addButton(text, null, closeOnClick);
     }
     public MenuDialog setTitle(String text){
-        if(title==null){
-            title = add(new Label(text));
-            title.background = new SecondaryComponentBackgroundLayer();
-        }
-        else
-            title.label.setLabel(text);
-        title.setHeight(titleHeight);
+        if(title==null)title = add(new Label(0, 0, 0, titleHeight, text, true));
+        else title.text = text;
         return this;
     }
     public <T extends Component> T setContent(T component){

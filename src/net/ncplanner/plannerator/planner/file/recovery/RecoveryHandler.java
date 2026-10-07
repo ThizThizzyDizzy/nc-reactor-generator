@@ -1,71 +1,27 @@
 package net.ncplanner.plannerator.planner.file.recovery;
-import net.ncplanner.ncpf.runtime.RuntimeNcpf;
-import net.ncplanner.ncpf.structure.element.NcpfElement;
+import net.ncplanner.plannerator.ncpf.NCPFElement;
+import net.ncplanner.plannerator.planner.ncpf.Project;
 public interface RecoveryHandler{
-    public default NcpfElement recoverUnderhaulSFRFuelLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverUnderhaulSFRBlockLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRCoolantRecipeLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRBlockLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRBlockRecipeLegacyNCPF(RuntimeNcpf ncpf, NcpfElement block, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulMSRBlockLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulMSRBlockRecipeLegacyNCPF(RuntimeNcpf ncpf, NcpfElement block, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulTurbineRecipeLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulTurbineBlockLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulFusionCoolantRecipeLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulFusionRecipeLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulFusionBlockLegacyNCPF(RuntimeNcpf ncpf, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulFusionBlockRecipeLegacyNCPF(RuntimeNcpf ncpf, NcpfElement block, int id) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverUnderhaulSFRFuel(String name, Float heat, Float power) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverUnderhaulSFRBlock(String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRCoolantRecipe(String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRBlock(String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRFuel(NcpfElement block, String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulSFRBlockRecipe(NcpfElement block, String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulMSRBlock(String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulMSRFuel(NcpfElement block, String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
-    public default NcpfElement recoverOverhaulMSRBlockRecipe(NcpfElement block, String name) /* ; */ {
-        throw new UnsupportedOperationException("Pending refactor");
-    }
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuelLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlockLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recoverOverhaulSFRCoolantRecipeLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlockLegacyNCPF(Project ncpf, int id);
+    public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlockLegacyNCPF(Project ncpf, int id);
+    public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.TurbineRecipe recoverOverhaulTurbineRecipeLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement recoverOverhaulTurbineBlockLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.CoolantRecipe recoverOverhaulFusionCoolantRecipeLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.Recipe recoverOverhaulFusionRecipeLegacyNCPF(Project ncpf, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement recoverOverhaulFusionBlockLegacyNCPF(Project ncpf, int id);
+    public <T extends NCPFElement> T recoverOverhaulFusionBlockRecipeLegacyNCPF(Project ncpf, net.ncplanner.plannerator.planner.ncpf.configuration.overhaulFusion.BlockElement block, int id);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel recoverUnderhaulSFRFuel(String name, Float heat, Float power);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement recoverUnderhaulSFRBlock(String name);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe recoverOverhaulSFRCoolantRecipe(String name);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlock(String name);
+    public <T extends NCPFElement> T recoverOverhaulSFRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name);
+    public <T extends NCPFElement> T recoverOverhaulSFRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement block, String name);
+    public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement recoverOverhaulMSRBlock(String name);
+    public <T extends NCPFElement> T recoverOverhaulMSRFuel(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name);
+    public <T extends NCPFElement> T recoverOverhaulMSRBlockRecipe(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulMSR.BlockElement block, String name);
 }

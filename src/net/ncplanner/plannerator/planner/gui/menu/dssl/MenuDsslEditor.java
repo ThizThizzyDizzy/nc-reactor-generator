@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.FormattedText;
@@ -49,15 +49,12 @@ public class MenuDsslEditor extends Menu{
     public SingleColumnList variablesDisplay = add(new SingleColumnList(0, 48, 384, 0, 32));
     public HorizontalList tabsList = add(new HorizontalList(0, 48, 0, 32, 0));
     public ArrayList<EditorTab> tabs = new ArrayList<>();
-    public TextView output = ((java.util.function.Supplier<TextView>) () -> {
-        throw new UnsupportedOperationException("Pending refactor");
-// add(new TextView(0, 0, 0, 192, 20, 20){
-//         {
-//             font = Core.FONT_MONO_20;
-//             bottomWhitespaceLines++;
-//         }
-//     })
-    }).get();
+    public TextView output = add(new TextView(0, 0, 0, 192, 20, 20){
+        {
+            font = Core.FONT_MONO_20;
+            bottomWhitespaceLines++;
+        }
+    });
     public boolean showOutput = false;
     public TextBox input = add(new TextBox(0, 0, 0, 32, "", true));
     public ScrollableDsslEditor editor;
@@ -157,7 +154,7 @@ public class MenuDsslEditor extends Menu{
 //                    ArrayList<Component> components = new ArrayList<>(stackDisplay.components);
 //                    components.add(new Label(0, 0, 100, 20, cap(100, Objects.toString(obj).replace("\n", "\\n")), components.size()%2==0){
 //                        @Override
-//                        public void drawText(Renderer renderer){
+//                        public void drawText(PlanneratorRenderer renderer){
 //                            renderer.drawCenteredText(x, y, x+width, y+height, text);
 //                        }
 //                    });
@@ -222,7 +219,7 @@ public class MenuDsslEditor extends Menu{
 //                        ArrayList<Component> comps = new ArrayList<>(variablesDisplay.components);
 //                        comps.add(new Label(0, 0, 100, 20, var, comps.size()%2==0){
 //                            @Override
-//                            public void drawText(Renderer renderer){
+//                            public void drawText(PlanneratorRenderer renderer){
 //                                renderer.drawCenteredText(x, y, x+width, y+height, cap(100, vars.get(var).toString().replace("\n", "\\n")));
 //                            }
 //                        });
@@ -254,7 +251,7 @@ public class MenuDsslEditor extends Menu{
         variablesDisplay.y = output.y = input.y-output.height;
         variablesDisplay.height = input.height+output.height;
         super.render2d(deltaTime);
-        Renderer renderer = new Renderer();
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.setColor(Core.theme.getComponentTextColor(0));
         float textHeight = 40;
         float textLength = renderer.getStringWidth("Saved", textHeight);
@@ -272,14 +269,11 @@ public class MenuDsslEditor extends Menu{
     }
     @Override
     public void onOpened() {
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         super.onOpened();
-//         MenuMain.enables = true;
-//         focusedComponent = editor;
-//         editor.isFocused = true;
-//         Core.setWindowTitle("DSSL Editor");
-//
+        super.onOpened();
+        MenuMain.enables = true;
+        focusedComponent = editor;
+        editor.isFocused = true;
+        com.thizthizzydizzy.dizzyengine.DizzyEngine.setTitle("DSSL Editor");
     }
     @Override
     public void onClosed() {
@@ -348,28 +342,25 @@ public class MenuDsslEditor extends Menu{
         }
     }
     private void close(EditorTab tab) {
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         if(tab.unsavedChanges){
-//             new MenuMessageDialog(gui, this, "Unsaved changes detected!\nSave changes?").addButton("save", () -> {
-//                 save(false, () -> {
-//                     close(tab);
-//                 });
-//             }, true).addButton("Discard", () -> {
-//                 tab.unsavedChanges = false;
-//                 close(tab);
-//             }, true).addButton("Cancel", true).open();
-//             return;
-//         }
-//         int idx = tabs.indexOf(tab);
-//         tabs.remove(tab);
-//         tabsList.components.remove(idx);
-//         currentTab = tabs.isEmpty()?null:tabs.get(idx = Math.min(idx, tabs.size()-1));
-//         if(editor.editor==tab.editor){
-//             editor.setEditor(currentTab==null?null:currentTab.editor);
-//             tabsList.setSelectedIndex(idx);
-//         }
-//
+        if(tab.unsavedChanges){
+            new MenuMessageDialog(gui, this, "Unsaved changes detected!\nSave changes?").addButton("save", () -> {
+                save(false, () -> {
+                    close(tab);
+                });
+            }, true).addButton("Discard", () -> {
+                tab.unsavedChanges = false;
+                close(tab);
+            }, true).addButton("Cancel", true).open();
+            return;
+        }
+        int idx = tabs.indexOf(tab);
+        tabs.remove(tab);
+        tabsList.components.remove(idx);
+        currentTab = tabs.isEmpty()?null:tabs.get(idx = Math.min(idx, tabs.size()-1));
+        if(editor.editor==tab.editor){
+            editor.setEditor(currentTab==null?null:currentTab.editor);
+            tabsList.setSelectedIndex(idx);
+        }
     }
     private void loadFile(File file){
         if(file.isDirectory())return;
@@ -404,7 +395,7 @@ public class MenuDsslEditor extends Menu{
         }));
         comp.select();
     }
-    private void open(){
+    private void openFile(){
         try{
             Core.createFileChooser((file) -> {
                 loadFile(file);

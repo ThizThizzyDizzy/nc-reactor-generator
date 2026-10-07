@@ -16,6 +16,15 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Turb
 @Deprecated
 public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineDesign, OverhaulTurbine>{
     public TurbineRecipe recipe;
+    public final java.util.ArrayList<MultiblockDesign> inputs = new java.util.ArrayList<>();
+    public void resolveInputs(java.util.List<net.ncplanner.plannerator.planner.ncpf.Design> designs){
+        inputs.clear();
+        for(int index : definition.inputIndices){
+            if(index<0||index>=designs.size()||!(designs.get(index) instanceof MultiblockDesign))
+                throw new IllegalArgumentException("Invalid turbine input design index: "+index);
+            inputs.add((MultiblockDesign)designs.get(index));
+        }
+    }
     public BlockElement[][][] design;
     public OverhaulTurbineDesign(NCPFFile file){
         super(file);
@@ -28,7 +37,7 @@ public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineD
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        recipe = definition.recipe.copyTo(TurbineRecipe::new);
+        recipe = definition.recipe==null?null:definition.recipe.copyTo(TurbineRecipe::new);
         match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulTurbineConfiguration::new).blocks);
     }
     @Override

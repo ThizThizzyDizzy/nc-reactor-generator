@@ -21,27 +21,26 @@ public class Project extends NCPFFile{
     public List<Design> designs = new ArrayList<>();
     @Override
     public void postConvertFromObject(NCPFObject ncpf){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         addons = copyList(super.addons, Addon::new);
-//         super.postConvertFromObject(ncpf);
-//         designs = new ArrayList<>();
-//         for(NCPFDesign d : super.designs){
-//             designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(isConfigEmpty()?Core.project:this)));
-//         }
-//         metadata = getModule(MetadataModule::new);
-//
+        addons = copyList(super.addons, Addon::new);
+        super.postConvertFromObject(ncpf);
+        designs = new ArrayList<>();
+        for(NCPFDesign d : super.designs){
+            designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(isConfigEmpty()?Core.project:this)));
+        }
+        for(Design d : designs){
+            if(d instanceof net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign)
+                ((net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign)d).resolveInputs(designs);
+        }
+        metadata = getModule(MetadataModule::new);
+        if(metadata==null)metadata = new MetadataModule();
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         setModule(metadata);
-//         super.addons = copyList(addons, NCPFAddon::new);
-//         super.convertToObject(ncpf);
-//         super.designs = copyList(designs, ()->new NCPFDesign(isConfigEmpty()?Core.project:this));
-//         super.convertToObject(ncpf);
-//
+        setModule(metadata);
+        super.addons = copyList(addons, NCPFAddon::new);
+        super.convertToObject(ncpf);
+        super.designs = copyList(designs, ()->new NCPFDesign(isConfigEmpty()?Core.project:this));
+        super.convertToObject(ncpf);
     }
     @Override
     public void conglomerate(){

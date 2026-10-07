@@ -1,6 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.function.Supplier;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.planner.gui.Component;
@@ -13,18 +13,15 @@ public class Panel extends Component{
     private Supplier<Color> background = null;
     @Override
     public void drawBackground(double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         Renderer renderer = new Renderer();
-//         renderer.setWhite();
-//         if(background!=null){
-//             renderer.setColor(background.get());
-//             renderer.fillRect(x, y, x+width, y+height);
-//         }
-//         if(image!=null){
-//             renderer.drawImage(image, x, y, x+width, y+height);
-//         }
-//
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.setWhite();
+        if(background!=null){
+            renderer.setColor(background.get());
+            renderer.fillRect(x, y, x+width, y+height);
+        }
+        if(image!=null){
+            renderer.drawImage(image, x, y, x+width, y+height);
+        }
     }
     public Panel setBackgroundColor(Supplier<Color> color){
         background = color;

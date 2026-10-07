@@ -57,7 +57,7 @@ public class NCPFObject extends HashMap<String, Object>{
         }
         setNCPFList(key, ncpf);
     }
-    
+
     public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSetOrEmpty(String key, Supplier<T> objectSupplier){
         return (V)new HashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
     }
@@ -70,6 +70,15 @@ public class NCPFObject extends HashMap<String, Object>{
 
     public <T extends DefinedNCPFObject> void getDefined3DArray(String name, T[][][] array, List<T> indicies){
         NCPFList list3 = getNCPFList(name);
+        if(list3!=null&&!list3.isEmpty()&&list3.get(0) instanceof Number){
+            int i=0;
+            for(int x=0;x<array.length;x++)for(int y=0;y<array[x].length;y++)for(int z=0;z<array[x][y].length;z++){
+                int idx=list3.getInteger(i++);
+                if(idx>=0)array[x][y][z]=indicies.get(idx);
+            }
+            if(i!=list3.size())throw new IllegalArgumentException("Incorrect flattened "+name+" dimensions");
+            return;
+        }
         for(int x = 0; x<array.length; x++){
             NCPFList list2 = list3.getNCPFList(x);
             for(int y = 0; y<array[x].length; y++){
@@ -140,6 +149,17 @@ public class NCPFObject extends HashMap<String, Object>{
 
     public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
         NCPFList list3 = getNCPFList(name);
+        if(list3!=null&&!list3.isEmpty()&&list3.get(0) instanceof Number){
+            int i=0;
+            for(int x=0;x<design.length;x++)for(int y=0;y<design[x].length;y++)for(int z=0;z<design[x][y].length;z++){
+                if(design[x][y][z]!=null&&design[x][y][z].hasModule(NCPFBlockRecipesModule::new)){
+                    int idx=list3.getInteger(i++);
+                    if(idx>=0)array[x][y][z]=design[x][y][z].getModule(NCPFBlockRecipesModule::new).recipes.get(idx);
+                }
+            }
+            if(i!=list3.size())throw new IllegalArgumentException("Incorrect flattened "+name+" recipe count");
+            return;
+        }
         int X = -1;
         int lastX = -1;
         for(int x = 0; x<design.length; x++){

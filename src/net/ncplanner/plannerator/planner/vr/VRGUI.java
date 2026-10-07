@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.vr;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import net.ncplanner.plannerator.planner.MathUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.openvr.HmdMatrix34;
 import org.lwjgl.openvr.TrackedDevicePose;
@@ -21,19 +21,16 @@ public class VRGUI{
         if(menu!=null)menu.onOpened();
         return (V)menu;
     }
-    public synchronized void render(Renderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         for(int i = 0; i<tdpb.limit(); i++){
-//             TrackedDevicePose tdp = tdpb.get(i);
-//             if(tdp.bDeviceIsConnected()&&tdp.bPoseIsValid()){
-//                 while(buttonsWereDown.size()<=i)buttonsWereDown.add(new ArrayList<>());
-//                 HmdMatrix34 m = tdp.mDeviceToAbsoluteTracking();
-//                 onDeviceMoved(i, new Matrix4f(MathUtil.convertHmdMatrix(m)).mul(Multitool.editOffsetmatrix));
-//             }
-//         }
-//         if(menu!=null)menu.render(renderer, tdpb, deltaTime);
-//
+    public synchronized void render(PlanneratorRenderer renderer, TrackedDevicePose.Buffer tdpb, double deltaTime){
+        for(int i = 0; i<tdpb.limit(); i++){
+            TrackedDevicePose tdp = tdpb.get(i);
+            if(tdp.bDeviceIsConnected()&&tdp.bPoseIsValid()){
+                while(buttonsWereDown.size()<=i)buttonsWereDown.add(new ArrayList<>());
+                HmdMatrix34 m = tdp.mDeviceToAbsoluteTracking();
+                onDeviceMoved(i, new Matrix4f(MathUtil.convertHmdMatrix(m)).mul(Multitool.editOffsetmatrix));
+            }
+        }
+        if(menu!=null)menu.render(renderer, tdpb, deltaTime);
     }
     public void onKeyEvent(int device, int button, boolean pressed){
         IntBuffer pError = IntBuffer.allocate(1);

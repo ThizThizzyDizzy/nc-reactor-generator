@@ -187,290 +187,287 @@ public class Bot extends ListenerAdapter{
             }
             @Override
             public void run(User user, MessageChannel channel, ArrayList<Keyword> keywords, boolean debug){
-                throw new UnsupportedOperationException("Pending refactor");
-//
-//                 if(generator!=null){
-//                     channel.sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
-//                     return;
-//                 }
-//                 KeywordMultiblock multiblockKeyword = null;
-//                 Configuration configuration = null;
-//                 ArrayList<Range<String>> stringRanges = new ArrayList<>();
-//                 ArrayList<String> fuelStrings = new ArrayList<>();
-//                 ArrayList<String> priorityStrings = new ArrayList<>();
-//                 ArrayList<String> symmetryStrings = new ArrayList<>();
-//                 ArrayList<String> formatStrings = new ArrayList<>();
-//                 int x = 0, y = 0, z = 0;
-//                 //<editor-fold defaultstate="collapsed" desc="Keyword Scanning">
-//                 for(Keyword keyword : keywords){
-//                     if(keyword instanceof KeywordConfiguration){
-//                         if(configuration!=null){
-//                             channel.sendMessage("Please choose no more than one configuration!").queue();
-//                             return;
-//                         }
-//                         configuration = ((KeywordConfiguration)keyword).config;
-//                     }else if(keyword instanceof KeywordMultiblock){
-//                         if(multiblockKeyword!=null){
-//                             channel.sendMessage("Please choose no more than one multiblock type!").queue();
-//                             return;
-//                         }
-//                         multiblockKeyword = (KeywordMultiblock)keyword;
-//                     }else if(keyword instanceof KeywordCube){
-//                         KeywordCube cube = (KeywordCube)keyword;
-//                         if(x==0&&y==0&&z==0){
-//                             x = y = z = cube.size;
-//                         }else{
-//                             channel.sendMessage("You may only choose one size!").queue();
-//                             return;
-//                         }
-//                     }else if(keyword instanceof KeywordCuboid){
-//                         KeywordCuboid cuboid = (KeywordCuboid)keyword;
-//                         if(x==0&&y==0&&z==0){
-//                             x = cuboid.x;
-//                             y = cuboid.y;
-//                             z = cuboid.z;
-//                         }else{
-//                             channel.sendMessage("You may only choose one size!").queue();
-//                             return;
-//                         }
-//                     }else if(keyword instanceof KeywordBlockRange){
-//                         KeywordBlockRange range = (KeywordBlockRange)keyword;
-//                         stringRanges.add(new Range(range.block, range.min, range.max));
-//                     }else if(keyword instanceof KeywordFuel){
-//                         fuelStrings.add(((KeywordFuel)keyword).fuel);
-//                     }else if(keyword instanceof KeywordPriority){
-//                         priorityStrings.add(((KeywordPriority)keyword).input);
-//                     }else if(keyword instanceof KeywordSymmetry){
-//                         symmetryStrings.add(((KeywordSymmetry)keyword).input);
-//                     }else if(keyword instanceof KeywordFormat){
-//                         formatStrings.add(((KeywordFormat)keyword).input);
-//                     }
-//                 }
-// //</editor-fold>
-//                 //<editor-fold defaultstate="collapsed" desc="Validation">
-//                 if(x==0||y==0||z==0){
-//                     x = y = z = 3;
-//                 }
-//                 if(configuration==null)configuration = Configuration.configurations.get(0);
-//                 Core.setConfiguration(configuration);
-//                 Multiblock multiblock = null;
-//                 if(multiblockKeyword==null){
-//                     multiblockKeyword = new KeywordMultiblock();
-//                     multiblockKeyword.read("SFR");
-//                 }
-//                 Multiblock template = multiblockKeyword.getMultiblock();
-//                 if(template==null){
-//                     channel.sendMessage("Unknown multiblock: `"+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
-//                     return;
-//                 }
-//                 multiblock = template.newInstance(Core.project.conglomeration);
-//                 ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
-//                 if(multiblock instanceof CuboidalMultiblock){
-//                     CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
-//                     if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
-//                         channel.sendMessage("Too small! Minimum size: "+cm.getMinX()+"x"+cm.getMinY()+"x"+cm.getMinZ()).queue();
-//                         return;
-//                     }
-//                     if(x>cm.getMaxX()||y>cm.getMaxY()||z>cm.getMaxZ()){
-//                         channel.sendMessage("Too big! Maximum size: "+cm.getMaxX()+"x"+cm.getMaxY()+"x"+cm.getMaxZ()).queue();
-//                         return;
-//                     }
-//                 }
-//                 ArrayList<AbstractBlock> availableBlocks = new ArrayList<>();
-//                 multiblock.getAvailableBlocks(availableBlocks);
-//                 FOR:for(Range<String> range : stringRanges){
-//                     for(AbstractBlock block : availableBlocks){
-//                         if(block.roughMatch(range.obj)){
-//                             blockRanges.add(new Range(block, range.min, range.max));
-//                             continue FOR;
-//                         }
-//                     }
-//                     channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
-//                     return;
-//                 }
-//                 HashMap<Integer, NCPFElement> theMultiblockRecipes = new HashMap<>();
-//                 List<NCPFElement>[] multiblockRecipes = multiblock.getSpecificConfiguration().getMultiblockRecipes();
-//                 MBR:for(int i = 0; i<multiblockRecipes.length; i++){
-//                     NCPFElement recipe = null;
-//                     RECIPE:for(String str : fuelStrings){
-//                         for(NCPFElement r : multiblockRecipes[i]){
-//                             for(String nam : r.getLegacyNames()){
-//                                 if(nam.equalsIgnoreCase(str)){
-//                                     if(recipe!=null){
-//                                         channel.sendMessage("You can only pick one multiblock recipe!").queue();
-//                                         return;
-//                                     }
-//                                     recipe = r;
-//                                     continue RECIPE;
-//                                 }
-//                             }
-//                         }
-//                         channel.sendMessage("Unknown multiblock recipe: "+str).queue();
-//                         break MBR;
-//                     }
-//                     if(recipe==null)recipe = multiblockRecipes[i].get(0);
-//                     theMultiblockRecipes.put(i, recipe);
-//                 }
-//                 ArrayList<NCPFElement> blockRecipes = new ArrayList<>();
-//                 NCPFElement defaultRecipe = null;
-//                 for(AbstractBlock b : availableBlocks){
-//                     if(b.hasRecipes()&&defaultRecipe==null)defaultRecipe = (NCPFElement)b.getRecipes().get(0);
-//                 }
-//                 RECIPE:for(String str : fuelStrings){
-//                     for(AbstractBlock b : availableBlocks){
-//                         if(!b.hasRecipes())continue;
-//                         for(IBlockRecipe recip : b.getRecipes()){
-//                             NCPFElement recipe = (NCPFElement)recip;
-//                             if(recip.getDisplayName().equalsIgnoreCase(str)){
-//                                 blockRecipes.add(recipe);
-//                                 continue RECIPE;
-//                             }
-//                             for(String s : recipe.getLegacyNames()){
-//                                 if(s.equalsIgnoreCase(str)){
-//                                     blockRecipes.add(recipe);
-//                                     continue RECIPE;
-//                                 }
-//                             }
-//                         }
-//                     }
-//                     channel.sendMessage("Unknown block recipe: "+str).queue();
-//                     break;
-//                 }
-// //</editor-fold>
-//                 //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
-//                 if(!symmetryStrings.isEmpty())channel.sendMessage("TODO symmetry configuration").queue();//TODO symmetry configuration
-//                 ArrayList<FormatWriter> formats = new ArrayList<>();
-//                 ArrayList<NCPFFormatWriter> ncpfFormats = new ArrayList<>();
-//                 for(String format : formatStrings){
-//                     for(FormatWriter writer : FileWriter.formats){
-//                         for(String extention : writer.getExtensions()){
-//                             if(format.toLowerCase(Locale.ROOT).contains(extention)){
-//                                 formats.add(writer);
-//                                 break;
-//                             }
-//                         }
-//                     }
-//                 }
-//                 for(String format : formatStrings){
-//                     for(NCPFFormatWriter writer : NCPFFileWriter.formats){
-//                         if(format.toLowerCase(Locale.ROOT).contains(writer.getExtension())){
-//                             ncpfFormats.add(writer);
-//                             break;
-//                         }
-//                     }
-//                 }
-//                 if(formats.isEmpty()){
-//                     ncpfFormats.add(NCPFFileWriter.formats.get(0));
-//                 }
-//                 formats.add(FileWriter.PNG);
-//                 Multiblock multiblockInstance = multiblock.newInstance(Core.project.conglomeration,x,y,z);
-//                 for(int i : theMultiblockRecipes.keySet()){
-//                     multiblockInstance.setMultiblockRecipe(i, theMultiblockRecipes.get(i));
-//                 }
-//                 if(!blockRecipes.isEmpty())channel.sendMessage("TODO block recipes filtering").queue();//TODO block recipes filtering
-// //</editor-fold>
-//                 generator = Core.gui.open(new MenuGenerator(Core.gui, null, multiblockInstance));
-//                 LiteGenerator gen = null;
-//                 for(String str : priorityStrings){
-//                     for(LiteGenerator g : generator.gens){
-//                         if(g.name.get().equalsIgnoreCase(str)){
-//                             if(gen!=null){
-//                                 channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
-//                                 return;
-//                             }
-//                             gen = g;
-//                         }
-//                     }
-//                 }
-//                 if(gen!=null)generator.generator = gen;
-//                 if(generator.generator==null)throw new IllegalArgumentException("No generators available for multiblock!");
-//                 if(!blockRanges.isEmpty())channel.sendMessage("TODO block ranges").queue();//TODO block ranges
-//                 //<editor-fold defaultstate="collapsed" desc="Generation">
-//                 Thread t = new Thread(() -> {
-//                     generator.start();
-//                     synchronized(storedDesigns){
-//                         for(Design d : storedDesigns){
-//                             if(d instanceof MultiblockDesign){
-//                                 Multiblock m = ((MultiblockDesign)d).toMultiblock();
-//                                 if(m.getDefinitionName().equals(multiblockInstance.getDefinitionName())){
-//                                     channel.sendMessage("TODO import multiblocks");//TODO import multiblocks
-//                                     break;
-//                                 }
-//                             }
-//                         }
-//                     }
-//                     String configName = Core.project.getConfigName();
-//                     generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).complete();
-//                     int time = 0;
-//                     int interval = 1500;//1.5 sec
-//                     int timeout = 600000;//10 minutes
-//                     while(true){
-//                         try{
-//                             Thread.sleep(interval);
-//                         }catch(InterruptedException ex){
-//                             printErrorMessage(channel, "Generation Interrupted!", ex);
-//                             break;
-//                         }
-//                         time+=interval;
-//                         if(!generator.running)break;
-//                         generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).queue();
-//                         if(time>timeout)break;
-//                     }
-//                     generator.running = false;
-//                     Multiblock finalMultiblock = generator.multiblock.export(Core.project.conglomeration);
-//                     if(finalMultiblock==null||finalMultiblock.isEmpty()){
-//                         generateMessage.editMessage(createEmbed("No "+multiblockInstance.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
-//                     }else{
-//                         generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()).addField(multiblockInstance.getGeneralName(), finalMultiblock.getBotTooltip()+"\n"+generator.generator.getStatus().split("\\|")[1], false).build()).queue();
-//                         Project ncpf = new Project();
-//                         String name = UUID.randomUUID().toString();
-//                         ncpf.metadata.put("Author", "S'plodo-Bot");
-//                         ncpf.metadata.put("Name", name);
-//                         finalMultiblock.metadata.put("Author", "S'plodo-Bot");
-//                         finalMultiblock.metadata.put("Name", name);
-//                         GregorianCalendar calendar = new GregorianCalendar();
-//                         String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-//                         ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
-//                         ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
-//                         ncpf.designs.add(finalMultiblock.toDesign());
-//                         ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
-//                         NCPFObject pureNCPF = new NCPFObject();
-//                         ncpf.convertToObject(pureNCPF);
-//                         for(NCPFFormatWriter writer : ncpfFormats){
-//                             CircularStream stream = new CircularStream(1024*1024);//1MB
-//                             CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+".ncpf."+writer.getExtension()).submit();
-//                             try{
-//                                 NCPFWriter.format = writer;
-//                                 FileWriter.write(ncpf, stream, FileWriter.NCPF);
-//                                 writer.write(pureNCPF, stream);
-//                             }catch(Exception ex){
-//                                 printErrorMessage(channel, "Failed to write file", ex);
-//                                 submit.cancel(true);
-//                                 stream.close();
-//                             }
-//                         }
-//                         for(FormatWriter writer : formats){
-//                             if(writer.isMultiblockSupported(finalMultiblock)){
-//                                 CircularStream stream = new CircularStream(1024*1024);//1MB
-//                                 CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+"."+writer.getExtensions()[0]).submit();
-//                                 try{
-//                                     writer.write(ncpf, stream);
-//                                 }catch(Exception ex){
-//                                     printErrorMessage(channel, "Failed to write file", ex);
-//                                     submit.cancel(true);
-//                                     stream.close();
-//                                 }
-//                             }
-//                         }
-//                     }
-//                     generator = null;
-//                     generateMessage = null;
-//                 });
-//                 t.setDaemon(true);
-//                 t.setName("Discord Bot Generation Thread");
-//                 t.start();
-// //</editor-fold>
-//
+                if(generator!=null){
+                    channel.sendMessage("Generator is already running!\nUse `"+prefixes.get(0)+"stop` to stop generation").queue();
+                    return;
+                }
+                KeywordMultiblock multiblockKeyword = null;
+                Configuration configuration = null;
+                ArrayList<Range<String>> stringRanges = new ArrayList<>();
+                ArrayList<String> fuelStrings = new ArrayList<>();
+                ArrayList<String> priorityStrings = new ArrayList<>();
+                ArrayList<String> symmetryStrings = new ArrayList<>();
+                ArrayList<String> formatStrings = new ArrayList<>();
+                int x = 0, y = 0, z = 0;
+                //<editor-fold defaultstate="collapsed" desc="Keyword Scanning">
+                for(Keyword keyword : keywords){
+                    if(keyword instanceof KeywordConfiguration){
+                        if(configuration!=null){
+                            channel.sendMessage("Please choose no more than one configuration!").queue();
+                            return;
+                        }
+                        configuration = ((KeywordConfiguration)keyword).config;
+                    }else if(keyword instanceof KeywordMultiblock){
+                        if(multiblockKeyword!=null){
+                            channel.sendMessage("Please choose no more than one multiblock type!").queue();
+                            return;
+                        }
+                        multiblockKeyword = (KeywordMultiblock)keyword;
+                    }else if(keyword instanceof KeywordCube){
+                        KeywordCube cube = (KeywordCube)keyword;
+                        if(x==0&&y==0&&z==0){
+                            x = y = z = cube.size;
+                        }else{
+                            channel.sendMessage("You may only choose one size!").queue();
+                            return;
+                        }
+                    }else if(keyword instanceof KeywordCuboid){
+                        KeywordCuboid cuboid = (KeywordCuboid)keyword;
+                        if(x==0&&y==0&&z==0){
+                            x = cuboid.x;
+                            y = cuboid.y;
+                            z = cuboid.z;
+                        }else{
+                            channel.sendMessage("You may only choose one size!").queue();
+                            return;
+                        }
+                    }else if(keyword instanceof KeywordBlockRange){
+                        KeywordBlockRange range = (KeywordBlockRange)keyword;
+                        stringRanges.add(new Range(range.block, range.min, range.max));
+                    }else if(keyword instanceof KeywordFuel){
+                        fuelStrings.add(((KeywordFuel)keyword).fuel);
+                    }else if(keyword instanceof KeywordPriority){
+                        priorityStrings.add(((KeywordPriority)keyword).input);
+                    }else if(keyword instanceof KeywordSymmetry){
+                        symmetryStrings.add(((KeywordSymmetry)keyword).input);
+                    }else if(keyword instanceof KeywordFormat){
+                        formatStrings.add(((KeywordFormat)keyword).input);
+                    }
+                }
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Validation">
+                if(x==0||y==0||z==0){
+                    x = y = z = 3;
+                }
+                if(configuration==null)configuration = Configuration.configurations.get(0);
+                Core.setConfiguration(configuration);
+                Multiblock multiblock = null;
+                if(multiblockKeyword==null){
+                    multiblockKeyword = new KeywordMultiblock();
+                    multiblockKeyword.read("SFR");
+                }
+                Multiblock template = multiblockKeyword.getMultiblock();
+                if(template==null){
+                    channel.sendMessage("Unknown multiblock: `"+multiblockKeyword.text.toUpperCase(Locale.ROOT)+"`!").queue();
+                    return;
+                }
+                multiblock = template.newInstance(Core.project.conglomeration);
+                ArrayList<Range<AbstractBlock>> blockRanges = new ArrayList<>();
+                if(multiblock instanceof CuboidalMultiblock){
+                    CuboidalMultiblock cm = (CuboidalMultiblock)multiblock;
+                    if(x<cm.getMinX()||y<cm.getMinY()||z<cm.getMinZ()){
+                        channel.sendMessage("Too small! Minimum size: "+cm.getMinX()+"x"+cm.getMinY()+"x"+cm.getMinZ()).queue();
+                        return;
+                    }
+                    if(x>cm.getMaxX()||y>cm.getMaxY()||z>cm.getMaxZ()){
+                        channel.sendMessage("Too big! Maximum size: "+cm.getMaxX()+"x"+cm.getMaxY()+"x"+cm.getMaxZ()).queue();
+                        return;
+                    }
+                }
+                ArrayList<AbstractBlock> availableBlocks = new ArrayList<>();
+                multiblock.getAvailableBlocks(availableBlocks);
+                FOR:for(Range<String> range : stringRanges){
+                    for(AbstractBlock block : availableBlocks){
+                        if(block.roughMatch(range.obj)){
+                            blockRanges.add(new Range(block, range.min, range.max));
+                            continue FOR;
+                        }
+                    }
+                    channel.sendMessage("Unknown block: `"+range.obj+"`!").queue();
+                    return;
+                }
+                HashMap<Integer, NCPFElement> theMultiblockRecipes = new HashMap<>();
+                List<NCPFElement>[] multiblockRecipes = multiblock.getSpecificConfiguration().getMultiblockRecipes();
+                MBR:for(int i = 0; i<multiblockRecipes.length; i++){
+                    NCPFElement recipe = null;
+                    RECIPE:for(String str : fuelStrings){
+                        for(NCPFElement r : multiblockRecipes[i]){
+                            for(String nam : r.getLegacyNames()){
+                                if(nam.equalsIgnoreCase(str)){
+                                    if(recipe!=null){
+                                        channel.sendMessage("You can only pick one multiblock recipe!").queue();
+                                        return;
+                                    }
+                                    recipe = r;
+                                    continue RECIPE;
+                                }
+                            }
+                        }
+                        channel.sendMessage("Unknown multiblock recipe: "+str).queue();
+                        break MBR;
+                    }
+                    if(recipe==null)recipe = multiblockRecipes[i].get(0);
+                    theMultiblockRecipes.put(i, recipe);
+                }
+                ArrayList<NCPFElement> blockRecipes = new ArrayList<>();
+                NCPFElement defaultRecipe = null;
+                for(AbstractBlock b : availableBlocks){
+                    if(b.hasRecipes()&&defaultRecipe==null)defaultRecipe = (NCPFElement)b.getRecipes().get(0);
+                }
+                RECIPE:for(String str : fuelStrings){
+                    for(AbstractBlock b : availableBlocks){
+                        if(!b.hasRecipes())continue;
+                        for(IBlockRecipe recip : b.getRecipes()){
+                            NCPFElement recipe = (NCPFElement)recip;
+                            if(recip.getDisplayName().equalsIgnoreCase(str)){
+                                blockRecipes.add(recipe);
+                                continue RECIPE;
+                            }
+                            for(String s : recipe.getLegacyNames()){
+                                if(s.equalsIgnoreCase(str)){
+                                    blockRecipes.add(recipe);
+                                    continue RECIPE;
+                                }
+                            }
+                        }
+                    }
+                    channel.sendMessage("Unknown block recipe: "+str).queue();
+                    break;
+                }
+//</editor-fold>
+                //<editor-fold defaultstate="collapsed" desc="Calculations and stuff">
+                if(!symmetryStrings.isEmpty())channel.sendMessage("TODO symmetry configuration").queue();//TODO symmetry configuration
+                ArrayList<FormatWriter> formats = new ArrayList<>();
+                ArrayList<NCPFFormatWriter> ncpfFormats = new ArrayList<>();
+                for(String format : formatStrings){
+                    for(FormatWriter writer : FileWriter.formats){
+                        for(String extention : writer.getExtensions()){
+                            if(format.toLowerCase(Locale.ROOT).contains(extention)){
+                                formats.add(writer);
+                                break;
+                            }
+                        }
+                    }
+                }
+                for(String format : formatStrings){
+                    for(NCPFFormatWriter writer : NCPFFileWriter.formats){
+                        if(format.toLowerCase(Locale.ROOT).contains(writer.getExtension())){
+                            ncpfFormats.add(writer);
+                            break;
+                        }
+                    }
+                }
+                if(formats.isEmpty()){
+                    ncpfFormats.add(NCPFFileWriter.formats.get(0));
+                }
+                formats.add(FileWriter.PNG);
+                Multiblock multiblockInstance = multiblock.newInstance(Core.project.conglomeration,x,y,z);
+                for(int i : theMultiblockRecipes.keySet()){
+                    multiblockInstance.setMultiblockRecipe(i, theMultiblockRecipes.get(i));
+                }
+                if(!blockRecipes.isEmpty())channel.sendMessage("TODO block recipes filtering").queue();//TODO block recipes filtering
+//</editor-fold>
+                generator = Core.gui.open(new MenuGenerator(Core.gui, null, multiblockInstance));
+                LiteGenerator gen = null;
+                for(String str : priorityStrings){
+                    for(LiteGenerator g : generator.gens){
+                        if(g.name.get().equalsIgnoreCase(str)){
+                            if(gen!=null){
+                                channel.sendMessage("You can only target one priority at a time!\nDownload the generator for more control over generation priorities (see footnote)").queue();
+                                return;
+                            }
+                            gen = g;
+                        }
+                    }
+                }
+                if(gen!=null)generator.generator = gen;
+                if(generator.generator==null)throw new IllegalArgumentException("No generators available for multiblock!");
+                if(!blockRanges.isEmpty())channel.sendMessage("TODO block ranges").queue();//TODO block ranges
+                //<editor-fold defaultstate="collapsed" desc="Generation">
+                Thread t = new Thread(() -> {
+                    generator.start();
+                    synchronized(storedDesigns){
+                        for(Design d : storedDesigns){
+                            if(d instanceof MultiblockDesign){
+                                Multiblock m = ((MultiblockDesign)d).toMultiblock();
+                                if(m.getDefinitionName().equals(multiblockInstance.getDefinitionName())){
+                                    channel.sendMessage("TODO import multiblocks");//TODO import multiblocks
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    String configName = Core.project.getConfigName();
+                    generateMessage = channel.sendMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).complete();
+                    int time = 0;
+                    int interval = 1500;//1.5 sec
+                    int timeout = 600000;//10 minutes
+                    while(true){
+                        try{
+                            Thread.sleep(interval);
+                        }catch(InterruptedException ex){
+                            printErrorMessage(channel, "Generation Interrupted!", ex);
+                            break;
+                        }
+                        time+=interval;
+                        if(!generator.running)break;
+                        generateMessage.editMessage(createEmbed("Generating "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()+"s...").addField(multiblockInstance.getGeneralName(), generator.multiblock.getTooltip()+"\n"+generator.generator.getStatus()+"\n"+generator.generator.storedMultiblocks.size()+" stored "+multiblockInstance.getGeneralName()+(generator.generator.storedMultiblocks.size()==1?"":"s"), false).build()).queue();
+                        if(time>timeout)break;
+                    }
+                    generator.running = false;
+                    Multiblock finalMultiblock = generator.multiblock.export(Core.project.conglomeration);
+                    if(finalMultiblock==null||finalMultiblock.isEmpty()){
+                        generateMessage.editMessage(createEmbed("No "+multiblockInstance.getGeneralName().toLowerCase(Locale.ROOT)+" was generated. :(").build()).queue();
+                    }else{
+                        generateMessage.editMessage(createEmbed("Generated "+(configName==null?"":configName+" ")+multiblockInstance.getGeneralName()).addField(multiblockInstance.getGeneralName(), finalMultiblock.getBotTooltip()+"\n"+generator.generator.getStatus().split("\\|")[1], false).build()).queue();
+                        Project ncpf = new Project();
+                        String name = UUID.randomUUID().toString();
+                        ncpf.metadata.put("Author", "S'plodo-Bot");
+                        ncpf.metadata.put("Name", name);
+                        finalMultiblock.metadata.put("Author", "S'plodo-Bot");
+                        finalMultiblock.metadata.put("Name", name);
+                        GregorianCalendar calendar = new GregorianCalendar();
+                        String[] months = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+                        ncpf.metadata.put("Generation Date", months[calendar.get(Calendar.MONTH)]+" "+calendar.get(Calendar.DAY_OF_MONTH)+", "+calendar.get(Calendar.YEAR));
+                        ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
+                        ncpf.designs.add(finalMultiblock.toDesign());
+                        ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
+                        NCPFObject pureNCPF = new NCPFObject();
+                        ncpf.convertToObject(pureNCPF);
+                        for(NCPFFormatWriter writer : ncpfFormats){
+                            CircularStream stream = new CircularStream(1024*1024);//1MB
+                            CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+".ncpf."+writer.getExtension()).submit();
+                            try{
+                                NCPFWriter.format = writer;
+                                FileWriter.write(ncpf, stream, FileWriter.NCPF);
+                                writer.write(pureNCPF, stream);
+                            }catch(Exception ex){
+                                printErrorMessage(channel, "Failed to write file", ex);
+                                submit.cancel(true);
+                                stream.close();
+                            }
+                        }
+                        for(FormatWriter writer : formats){
+                            if(writer.isMultiblockSupported(finalMultiblock)){
+                                CircularStream stream = new CircularStream(1024*1024);//1MB
+                                CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+"."+writer.getExtensions()[0]).submit();
+                                try{
+                                    writer.write(ncpf, stream);
+                                }catch(Exception ex){
+                                    printErrorMessage(channel, "Failed to write file", ex);
+                                    submit.cancel(true);
+                                    stream.close();
+                                }
+                            }
+                        }
+                    }
+                    generator = null;
+                    generateMessage = null;
+                });
+                t.setDaemon(true);
+                t.setName("Discord Bot Generation Thread");
+                t.start();
+//</editor-fold>
             }
             @Override
             public void addKeywords(){
@@ -1807,41 +1804,38 @@ public class Bot extends ListenerAdapter{
         channelRead.start();
     }
     public void storeMultiblocks(Message message){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         for(Attachment att : message.getAttachments()){
-//             if(att!=null&&att.getFileExtension()!=null){
-//                 switch(att.getFileExtension().toLowerCase(Locale.ROOT)){
-//                     case "png":
-//                     case "gif":
-//                     case "jpg":
-//                     case "xlsx":
-//                     case "txt":
-//                         continue;
-//                 }
-//             }
-//             try{
-//                 Project ncpf = FileReader.read(() -> {
-//                     try{
-//                         return att.retrieveInputStream().get();
-//                     }catch(InterruptedException|ExecutionException ex){
-//                         throw new RuntimeException(ex);
-//                     }
-//                 });
-//                 if(ncpf!=null){
-//                     for(Design d : ncpf.designs){
-//                         if(!ncpf.isConfigEmpty())d.file = Core.project;
-//                         MultiblockDesign design = (MultiblockDesign)d;
-//                         if(!ncpf.isConfigEmpty())((MultiblockDesign)d).convertElements();
-//                         design.metadata.metadata.put("Original Source", message.getJumpUrl());
-//                         storedDesigns.add(design);
-//                     }
-//                 }
-//             }catch(Exception ex){
-//                 System.err.println("Failed to read file: "+(att==null?null:att.getFileName()));
-//             }
-//         }
-//
+        for(Attachment att : message.getAttachments()){
+            if(att!=null&&att.getFileExtension()!=null){
+                switch(att.getFileExtension().toLowerCase(Locale.ROOT)){
+                    case "png":
+                    case "gif":
+                    case "jpg":
+                    case "xlsx":
+                    case "txt":
+                        continue;
+                }
+            }
+            try{
+                Project ncpf = FileReader.read(() -> {
+                    try{
+                        return att.retrieveInputStream().get();
+                    }catch(InterruptedException|ExecutionException ex){
+                        throw new RuntimeException(ex);
+                    }
+                });
+                if(ncpf!=null){
+                    for(Design d : ncpf.designs){
+                        if(!ncpf.isConfigEmpty())d.file = Core.project;
+                        MultiblockDesign design = (MultiblockDesign)d;
+                        if(!ncpf.isConfigEmpty())((MultiblockDesign)d).convertElements();
+                        design.metadata.metadata.put("Original Source", message.getJumpUrl());
+                        storedDesigns.add(design);
+                    }
+                }
+            }catch(Exception ex){
+                System.err.println("Failed to read file: "+(att==null?null:att.getFileName()));
+            }
+        }
     }
     private static EmbedBuilder createEmbed(String title){
         EmbedBuilder builder = new EmbedBuilder();

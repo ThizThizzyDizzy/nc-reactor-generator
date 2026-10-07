@@ -4,7 +4,7 @@ import net.ncplanner.plannerator.discord.play.smivilization.Hut;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThing;
 import net.ncplanner.plannerator.discord.play.smivilization.HutThingExclusive;
 import net.ncplanner.plannerator.discord.play.smivilization.Wall;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
 public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     int frameType = 2;
@@ -15,66 +15,63 @@ public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
     public HutThing newInstance(UUID uuid, Hut hut){
         return new GlowshroomGlowshroomGlowshroomPoster(uuid, hut);
     }
-    /* @Override */
-    public void render(Renderer renderer, float imgScale){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         renderer.setWhite();
-//         renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background"));
-//         switch(wall){
-//             case LEFT:
-//                 quad(renderer,
-//                         0,0,x,y+getDimY(),z,
-//                         0,1,x,y+getDimY(),z+getDimZ(),
-//                         1,0,x,y,z,
-//                         1,1,x,y,z+getDimZ());
-//                 break;
-//             case BACK:
-//                 quad(renderer,
-//                         0, 0, x, y, z,
-//                         0, 1, x, y, z+getDimZ(),
-//                         1, 0, x+getDimX(), y, z,
-//                         1, 1, x+getDimX(), y, z+getDimZ());
-//                 break;
-//             case RIGHT:
-//                 quad(renderer,
-//                         0,0,x,y,z,
-//                         0,1,x,y,z+getDimZ(),
-//                         1,0,x,y+getDimY(),z,
-//                         1,1,x,y+getDimY(),z+getDimZ());
-//                 break;
-//             default:
-//                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
-//         }
-//         renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType));
-//         switch(wall){
-//             case LEFT:
-//                 quad(renderer,
-//                         0,0,x,y+getDimY(),z,
-//                         0,1,x,y+getDimY(),z+getDimZ(),
-//                         1,0,x,y,z,
-//                         1,1,x,y,z+getDimZ());
-//                 break;
-//             case BACK:
-//                 quad(renderer,
-//                         0, 0, x, y, z,
-//                         0, 1, x, y, z+getDimZ(),
-//                         1, 0, x+getDimX(), y, z,
-//                         1, 1, x+getDimX(), y, z+getDimZ());
-//                 break;
-//             case RIGHT:
-//                 quad(renderer,
-//                         0,0,x,y,z,
-//                         0,1,x,y,z+getDimZ(),
-//                         1,0,x,y+getDimY(),z,
-//                         1,1,x,y+getDimY(),z+getDimZ());
-//                 break;
-//             default:
-//                 throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
-//         }
-//
+    @Override
+    public void render(PlanneratorRenderer renderer, float imgScale){
+        renderer.setWhite();
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/background"));
+        switch(wall){
+            case LEFT:
+                quad(renderer,
+                        0,0,x,y+getDimY(),z,
+                        0,1,x,y+getDimY(),z+getDimZ(),
+                        1,0,x,y,z,
+                        1,1,x,y,z+getDimZ());
+                break;
+            case BACK:
+                quad(renderer,
+                        0, 0, x, y, z,
+                        0, 1, x, y, z+getDimZ(),
+                        1, 0, x+getDimX(), y, z,
+                        1, 1, x+getDimX(), y, z+getDimZ());
+                break;
+            case RIGHT:
+                quad(renderer,
+                        0,0,x,y,z,
+                        0,1,x,y,z+getDimZ(),
+                        1,0,x,y+getDimY(),z,
+                        1,1,x,y+getDimY(),z+getDimZ());
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
+        }
+        renderer.bindTexture(TextureManager.getImage("smivilization/buildings/huts/gliese/furniture/special/glowshroom_poster/frame "+frameType));
+        switch(wall){
+            case LEFT:
+                quad(renderer,
+                        0,0,x,y+getDimY(),z,
+                        0,1,x,y+getDimY(),z+getDimZ(),
+                        1,0,x,y,z,
+                        1,1,x,y,z+getDimZ());
+                break;
+            case BACK:
+                quad(renderer,
+                        0, 0, x, y, z,
+                        0, 1, x, y, z+getDimZ(),
+                        1, 0, x+getDimX(), y, z,
+                        1, 1, x+getDimX(), y, z+getDimZ());
+                break;
+            case RIGHT:
+                quad(renderer,
+                        0,0,x,y,z,
+                        0,1,x,y,z+getDimZ(),
+                        1,0,x,y+getDimY(),z,
+                        1,1,x,y+getDimY(),z+getDimZ());
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot render on wall "+wall.toString()+"!");
+        }
     }
-    private void quad(Renderer renderer, float s1, float t1, float x1, float y1, float z1, float s2, float t2, float x2, float y2, float z2, float s3, float t3, float x3, float y3, float z3, float s4, float t4, float x4, float y4, float z4){
+    private void quad(PlanneratorRenderer renderer, float s1, float t1, float x1, float y1, float z1, float s2, float t2, float x2, float y2, float z2, float s3, float t3, float x3, float y3, float z3, float s4, float t4, float x4, float y4, float z4){
         float[] pos1 = Hut.convertXYZtoXY512(x1, y1, z1);
         float[] pos2 = Hut.convertXYZtoXY512(x2, y2, z2);
         float[] pos3 = Hut.convertXYZtoXY512(x3, y3, z3);
@@ -87,7 +84,7 @@ public class GlowshroomGlowshroomGlowshroomPoster extends HutThingExclusive{
         else return new int[]{1,3,4};
     }
     @Override
-    public int[] getDefaultLocation(){    
+    public int[] getDefaultLocation(){
         return new int[]{7,0,5};
     }
     @Override

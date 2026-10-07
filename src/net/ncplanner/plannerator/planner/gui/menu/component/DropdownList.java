@@ -1,8 +1,8 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.planner.Core;
-// import net.ncplanner.plannerator.planner.MathUtil;
+import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.planner.Pinnable;
 import net.ncplanner.plannerator.planner.gui.Component;
 import static org.lwjgl.glfw.GLFW.*;
@@ -34,31 +34,28 @@ public class DropdownList extends Component{
             }
             @Override
             public void onMouseButton(double x, double y, int button, int action, int mods){
-                throw new UnsupportedOperationException("Pending refactor");
-//
-//                 super.onMouseButton(x, y, button, action, mods);
-//                 if(button==0&&action==GLFW_PRESS&&Core.isShiftPressed()){
-//                     //doing it again, but this time not actually passing events, just checking for pinned stuff to toggle
-//                     if(x>width-(hasVertScrollbar()?vertScrollbarWidth:0)||y>height-(hasHorizScrollbar()?horizScrollbarHeight:0)){//Click events on the scrollbar
-//                         x=y=Double.NaN;
-//                     }else{
-//                         x+=getHorizScroll();
-//                         y+=getVertScroll();
-//                     }
-//                     boolean clicked = false;
-//                     for(int i = components.size()-1; i>=0; i--){
-//                         if(i>=components.size()) continue;
-//                         Component component = components.get(i);
-//                         if(!Double.isNaN(x)&&!clicked&&MathUtil.isPointWithinRect(x, y, component.x, component.y, component.x+component.width, component.y+component.height)){
-//                             clicked = true;
-//                             if(component instanceof Pinnable){
-//                                 Pinnable.togglePin((Pinnable)component);
-//                                 refreshSearch();
-//                             }
-//                         }
-//                     }
-//                 }
-//
+                super.onMouseButton(x, y, button, action, mods);
+                if(button==0&&action==GLFW_PRESS&&Core.isShiftPressed()){
+                    //doing it again, but this time not actually passing events, just checking for pinned stuff to toggle
+                    if(x>width-(hasVertScrollbar()?vertScrollbarWidth:0)||y>height-(hasHorizScrollbar()?horizScrollbarHeight:0)){//Click events on the scrollbar
+                        x=y=Double.NaN;
+                    }else{
+                        x+=getHorizScroll();
+                        y+=getVertScroll();
+                    }
+                    boolean clicked = false;
+                    for(int i = components.size()-1; i>=0; i--){
+                        if(i>=components.size()) continue;
+                        Component component = components.get(i);
+                        if(!Double.isNaN(x)&&!clicked&&MathUtil.isPointWithinRect(x, y, component.x, component.y, component.x+component.width, component.y+component.height)){
+                            clicked = true;
+                            if(component instanceof Pinnable){
+                                Pinnable.togglePin((Pinnable)component);
+                                refreshSearch();
+                            }
+                        }
+                    }
+                }
             }
         };
         searchBox = new TextBox(0, 0, width, searchable?height:0, "", searchable, "Search", 0){
@@ -138,7 +135,7 @@ public class DropdownList extends Component{
     @Override
     public void draw(double deltaTime){
         if(!isDown){
-            Renderer renderer = new Renderer();
+            PlanneratorRenderer renderer = new PlanneratorRenderer();
             if(!list.components.isEmpty()&&list.getSelectedIndex()!=-1){
                 Component c = list.components.get(list.getSelectedIndex());
                 c.width = width-(showButton?getVertScrollbarWidth():0);

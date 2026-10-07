@@ -40,7 +40,7 @@ public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, O
     @Override
     public void convertFromObject(NCPFObject ncpf){
         super.convertFromObject(ncpf);
-        coolantRecipe = definition.coolantRecipe.copyTo(CoolantRecipe::new);
+        coolantRecipe = definition.coolantRecipe==null?null:definition.coolantRecipe.copyTo(CoolantRecipe::new);
         match3DArray(definition.design, design = new BlockElement[definition.design.length][definition.design[0].length][definition.design[0][0].length], file.getConfiguration(OverhaulSFRConfiguration::new).blocks);
         match3DArrayConditional(definition.blockRecipes, fuels = new Fuel[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement cell)->matchElement(cell).fuels, (BlockElement cell)->matchModule(cell, FuelCellModule::new));
         match3DArrayConditional(definition.blockRecipes, irradiatorRecipes = new IrradiatorRecipe[definition.design.length][definition.design[0].length][definition.design[0][0].length], design, (BlockElement irradiator)->matchElement(irradiator).irradiatorRecipes, (BlockElement irradiator)->matchModule(irradiator, IrradiatorModule::new));
@@ -53,12 +53,9 @@ public class OverhaulSFRDesign extends MultiblockDesign<NCPFOverhaulSFRDesign, O
         super.convertToObject(ncpf);
     }
     public BlockElement matchElement(BlockElement block){
-        throw new UnsupportedOperationException("Pending refactor");
-//
-//         OverhaulSFRConfiguration config = file.getConfiguration(OverhaulSFRConfiguration::new);
-//         if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulSFRConfiguration::new));
-//         return block;
-//
+        OverhaulSFRConfiguration config = file.getConfiguration(OverhaulSFRConfiguration::new);
+        if(config.settings==null)block = config.convertElement(block, Core.project.getConfiguration(OverhaulSFRConfiguration::new));
+        return block;
     }
     public boolean matchModule(BlockElement block, Supplier<NCPFModule> module){
         block = matchElement(block);

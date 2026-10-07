@@ -1,12 +1,12 @@
 package net.ncplanner.plannerator.planner.gui;
 import java.util.ArrayList;
-import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import static org.lwjgl.glfw.GLFW.*;
 @Deprecated
-public class Component{
+public class Component extends com.thizthizzydizzy.dizzyengine.ui.component.Component{
     public GUI gui;
     public Component parent;
-    public float x, y, width, height;
+    public float width, height;
     public boolean isMouseFocused, isFocused;
     public Component focusedComponent;
     public Component mouseFocusedComponent;
@@ -34,18 +34,30 @@ public class Component{
         this.width = width;
         this.height = height;
     }
+    @Override
+    public void render(double deltaTime){render2d(deltaTime);}
+    @Override
+    public float getWidth(){return width;}
+    @Override
+    public float getHeight(){return height;}
+    @Override
+    public void onResize(org.joml.Vector2f size){width=size.x;height=size.y;}
     public void render2d(double deltaTime){
-        Renderer renderer = new Renderer();
-//        renderer.bound(x, y, x+width, y+height);
-        drawBackground(deltaTime);
-        draw(deltaTime);
-        renderer.translate(x, y);
-        for(Component c : components){
-            c.render2d(deltaTime);
+        PlanneratorRenderer renderer = new PlanneratorRenderer();
+        renderer.bound(x, y, x+width, y+height);
+        try{
+            drawBackground(deltaTime);
+            draw(deltaTime);
+            renderer.translate(x, y);
+            try{
+                for(Component c : components)c.render2d(deltaTime);
+            }finally{
+                renderer.unTranslate();
+            }
+            drawForeground(deltaTime);
+        }finally{
+            renderer.unBound();
         }
-        renderer.unTranslate();
-        drawForeground(deltaTime);
-//        renderer.unBound();
     }
     public void drawBackground(double deltaTime){}
     public void draw(double deltaTime){}
