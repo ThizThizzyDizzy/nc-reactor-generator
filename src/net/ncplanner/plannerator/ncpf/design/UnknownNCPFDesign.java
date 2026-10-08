@@ -10,17 +10,18 @@ public class UnknownNCPFDesign extends NCPFDesignDefinition{
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
-        this.design.addAll(ncpf.getNCPFList("design"));
+        this.design.clear();
+        if(ncpf.getNCPFList("design")!=null)this.design.addAll(ncpf.getNCPFList("design"));
         this.ncpf = new NCPFObject();
         this.ncpf.putAll(ncpf);
         this.ncpf.remove("modules");//don't load module data
-        this.ncpf.remove("design");//don't load design data
+        // Retain whether the opaque document originally had a design array.
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
         NCPFList<Integer> design = new NCPFList<>();
         design.addAll(this.design);
-        ncpf.put("design", design);
         ncpf.putAll(this.ncpf);
+        if(this.ncpf.containsKey("design")||!design.isEmpty())ncpf.put("design", design);
     }
 }

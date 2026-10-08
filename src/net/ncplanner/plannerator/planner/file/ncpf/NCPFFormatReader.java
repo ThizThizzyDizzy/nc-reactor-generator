@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.planner.file.ncpf;
 import java.io.InputStream;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-@Deprecated
+import net.ncplanner.ncpf.structure.NcpfRoot;
 public interface NCPFFormatReader{
-    public NCPFObject read(InputStream stream);
+    public NcpfRoot read(InputStream stream);
 }

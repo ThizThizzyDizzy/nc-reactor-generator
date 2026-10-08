@@ -21,7 +21,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFLegacyFluidElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFLegacyItemElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFListElement;
 import net.ncplanner.plannerator.ncpf.element.NCPFOredictElement;
-import net.ncplanner.plannerator.ncpf.io.NCPFObject;
+import net.ncplanner.ncpf.structure.NcpfRoot;
 import net.ncplanner.plannerator.ncpf.module.NCPFModule;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.JSON;
@@ -34,7 +34,6 @@ import net.ncplanner.plannerator.planner.ncpf.module.NuclearCraftGeneratedModule
 import net.ncplanner.plannerator.planner.ncpf.module.TagsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.TextureModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
-@Deprecated
 public class NCPFFileReader{
     public static final ArrayList<NCPFFormatReader> formats = new ArrayList<>();
     private static JSONNCPFReader json;
@@ -42,17 +41,18 @@ public class NCPFFileReader{
         formats.add(json = new JSONNCPFReader());
     }
     public static Project read(Supplier<InputStream> provider, File fileContext){
-        Project project = new Project();
-        NCPFObject ncpf = null;
+        NcpfRoot root = null;
         for(NCPFFormatReader reader : formats){
-            try{
-                ncpf = reader.read(provider.get());
+            try(InputStream stream = provider.get()){
+                if(stream==null)throw new IllegalArgumentException("Could not open NCPF document");
+                root = reader.read(stream);
                 break;
-            }catch(Throwable t){
-            }//TODO properly separate error handling and incorrect format
+            }catch(java.io.IOException ex){
+                throw new java.io.UncheckedIOException("Failed to read NCPF document", ex);
+            }
         }
-        if(ncpf==null)return null; // another way of saying "this isn't NCPF, invalid format"
-        project.convertFromObject(ncpf);
+        if(root==null)throw new IllegalArgumentException("Empty NCPF document");
+        Project project = NcpfBridge.toProject(root);
         project.withModule(NuclearCraftGeneratedModule::new, (generatedModule) -> {
             // Populate the generated configureation with config metadata (name/version)
             for(NCPFConfiguration config : project.configuration.configurations.values()){

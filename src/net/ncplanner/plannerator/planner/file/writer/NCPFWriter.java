@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
-import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
@@ -22,16 +21,20 @@ public class NCPFWriter extends FormatWriter{
     }
     @Override
     public void write(Project ncpf, OutputStream stream){
-        ncpf = ncpf.copyTo(Project::new);
-        ncpf.makePartial();
-        NCPFObject obj = new NCPFObject();
-        ncpf.convertToObject(obj);
-        trimPlanneratorModules(obj);
+        net.ncplanner.ncpf.structure.NcpfRoot root = prepare(ncpf);
         try{
-            format.write(obj, stream);
+            format.write(root, stream);
         }catch(IOException ex){
-            Core.error("Failed to write NCPF file!", ex);
+            throw new java.io.UncheckedIOException("Failed to write NCPF file!", ex);
         }
+    }
+    public net.ncplanner.ncpf.structure.NcpfRoot prepare(Project project){
+        Project copy = project.copyTo(Project::new);
+        copy.makePartial();
+        NCPFObject obj = new NCPFObject();
+        copy.convertToObject(obj);
+        trimPlanneratorModules(obj);
+        return net.ncplanner.plannerator.planner.file.ncpf.NcpfBridge.toNcpfRoot(obj);
     }
     @Override
     public boolean isMultiblockSupported(Multiblock multi){

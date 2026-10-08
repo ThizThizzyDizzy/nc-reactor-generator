@@ -26,7 +26,9 @@ public class ConfigurationManager{
     }
     public static void initNuclearcraftConfiguration(){
         if(NUCLEARCRAFT!=null)return;//already done m8
-        NUCLEARCRAFT = new CannedConfiguration(NcpfJsonConverter.parseJson(ResourceManager.getInternalResource("configurations/nuclearcraft.ncpf.json")), "default").addAlias("").addAlias("SF4");
+        try(java.io.InputStream stream = ResourceManager.getInternalResource("configurations/nuclearcraft.ncpf.json")){
+            NUCLEARCRAFT = new CannedConfiguration(NcpfJsonConverter.parseJson(stream), "default").addAlias("").addAlias("SF4");
+        }catch(java.io.IOException ex){throw new java.io.UncheckedIOException("Failed to load default NuclearCraft configuration", ex);}
         configurations.add(0, NUCLEARCRAFT);
         net.ncplanner.plannerator.planner.ncpf.Configuration.NUCLEARCRAFT=NUCLEARCRAFT;
         net.ncplanner.plannerator.planner.ncpf.Configuration.configurations.add(0,NUCLEARCRAFT);

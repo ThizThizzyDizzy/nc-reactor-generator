@@ -23,6 +23,8 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
     public BreedingBlanketRecipe[][][] breedingBlanketRecipes;
     public OverhaulFusionDesign(NCPFFile file){
         super(file);
+        definition = new OverhaulFusionDefinition();
+        definition.file = file;
     }
     public OverhaulFusionDesign(NCPFFile file, int innerRadius, int coreSize, int toroidWidth, int liningThickness){
         this(file);
@@ -31,6 +33,7 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
         this.toroidWidth = toroidWidth;
         this.liningThickness = liningThickness;
         design = new BlockElement[width()][height()][width()];
+        breedingBlanketRecipes = new BreedingBlanketRecipe[width()][height()][width()];
     }
     @Override
     public void convertFromObject(NCPFObject ncpf){
@@ -42,6 +45,7 @@ public class OverhaulFusionDesign extends MultiblockDesign<OverhaulFusionDefinit
         liningThickness = dims.getInteger(3);
         OverhaulFusionConfiguration config = definition.getConfiguration();
         design = new BlockElement[width()][height()][width()];
+        breedingBlanketRecipes = new BreedingBlanketRecipe[width()][height()][width()];
         recipe = config.recipes.get(ncpf.getInteger("recipe"));
         coolantRecipe = config.coolantRecipes.get(ncpf.getInteger("coolant_recipe"));
         ncpf.getDefined3DArray("design", design, config.blocks);

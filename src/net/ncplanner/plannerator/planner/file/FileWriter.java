@@ -27,6 +27,11 @@ public class FileWriter{
         format.write(ncpf, stream);
     }
     public static void write(Project ncpf, File file, FormatWriter format){
+        if(format instanceof NCPFWriter){
+            net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter.write(
+                ((NCPFWriter)format).prepare(ncpf), file, NCPFWriter.format);
+            return;
+        }
         if(file.exists())file.delete();
         try{
             file.createNewFile();

@@ -18,6 +18,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.AirModule;
 @Deprecated
 public class NCPFPlacementRule extends DefinedNCPFObject{
     public RuleType rule;
+    private NCPFObject unknownRule;
     public NCPFElementReference target;//block or module reference
     public int min;
     public int max;
@@ -25,6 +26,8 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
     @Override
     public void convertFromObject(NCPFObject ncpf){
         rule = RuleType.match(ncpf.getString("type"));
+        unknownRule = rule==null?ncpf:null;
+        if(unknownRule!=null)return;
         if(rule.hasQuantity){
             min = ncpf.getInteger("min");
             max = ncpf.getInteger("max");
@@ -37,6 +40,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
     }
     @Override
     public void convertToObject(NCPFObject ncpf){
+        if(unknownRule!=null){ncpf.putAll(unknownRule);return;}
         ncpf.setString("type", rule.name);
         if(rule.hasQuantity){
             ncpf.setInteger("min", min);
@@ -49,6 +53,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         }
     }
     public boolean containsTarget(NCPFElementDefinition definition){
+        if(unknownRule!=null)return false;
         if(rule.hasSubRules){
             for(NCPFPlacementRule rule : rules){
                 if(rule.containsTarget(definition))return true;
@@ -215,6 +220,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
         }
     }
     public <T extends AbstractBlock> boolean isValid(AbstractBlock block, Multiblock<T> reactor) {
+        if(unknownRule!=null)throw new UnsupportedOperationException("Cannot evaluate placement rule: "+unknownRule.getString("type"));
         int num = 0;
         boolean isAirMatch = isAirMatch();
         switch (rule) {
@@ -286,6 +292,7 @@ public class NCPFPlacementRule extends DefinedNCPFObject{
     }
     @Override
     public void setReferences(List<NCPFElement> lst, boolean soft){
+        if(unknownRule!=null)return;
         rules.forEach((t) -> t.setReferences(lst, soft));
         if(lst==null){
             if(target==null)return;

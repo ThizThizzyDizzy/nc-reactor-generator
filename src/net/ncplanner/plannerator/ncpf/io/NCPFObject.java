@@ -1,7 +1,6 @@
 package net.ncplanner.plannerator.ncpf.io;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -59,10 +58,10 @@ public class NCPFObject extends HashMap<String, Object>{
     }
 
     public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSetOrEmpty(String key, Supplier<T> objectSupplier){
-        return (V)new HashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
+        return (V)new java.util.LinkedHashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
     }
     public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSet(String key, Supplier<T> objectSupplier){
-        return (V)new HashSet<T>(getDefinedNCPFList(key, objectSupplier));
+        return (V)new java.util.LinkedHashSet<T>(getDefinedNCPFList(key, objectSupplier));
     }
     public <T extends DefinedNCPFObject> void setDefinedNCPFSet(String key, Set<T> set){
         setDefinedNCPFList(key, new ArrayList<>(set));
@@ -149,6 +148,12 @@ public class NCPFObject extends HashMap<String, Object>{
 
     public <T extends DefinedNCPFModularObject> void getRecipe3DArray(String name, NCPFElement[][][] array, T[][][] design){
         NCPFList list3 = getNCPFList(name);
+        // The library represents flat recipe input as one packed row. Reading that
+        // row sequentially is also equivalent for a standard single-row recipe array.
+        if(list3!=null&&list3.size()==1&&list3.get(0) instanceof NCPFList){
+            NCPFList plane = list3.getNCPFList(0);
+            if(plane.size()==1&&plane.get(0) instanceof NCPFList)list3 = plane.getNCPFList(0);
+        }
         if(list3!=null&&!list3.isEmpty()&&list3.get(0) instanceof Number){
             int i=0;
             for(int x=0;x<design.length;x++)for(int y=0;y<design[x].length;y++)for(int z=0;z<design[x][y].length;z++){

@@ -29,6 +29,7 @@ public class CompiledPlacementRule{
         this.casing = casing.get().name;
     }
     public static CompiledPlacementRule compile(NCPFPlacementRule rule, ArrayList<? extends Supplier> blocks, Supplier<NCPFModule> casing){
+        if(rule.rule==null)throw new UnsupportedOperationException("Cannot compile unknown placement rule");
         String blockType = null;
         int block = -1;
         if(!rule.rule.hasSubRules){

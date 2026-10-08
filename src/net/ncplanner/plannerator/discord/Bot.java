@@ -432,15 +432,12 @@ public class Bot extends ListenerAdapter{
                         ncpf.metadata.put("Generation Time", calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND)+"."+calendar.get(Calendar.MILLISECOND));
                         ncpf.designs.add(finalMultiblock.toDesign());
                         ncpf.configuration = ncpf.conglomeration = Core.project.conglomeration;
-                        NCPFObject pureNCPF = new NCPFObject();
-                        ncpf.convertToObject(pureNCPF);
                         for(NCPFFormatWriter writer : ncpfFormats){
                             CircularStream stream = new CircularStream(1024*1024);//1MB
                             CompletableFuture<Message> submit = channel.sendFile(stream.getInput(), (configName==null?"":configName+" ")+multiblockInstance.getDimensionsStr()+" "+multiblockInstance.getGeneralName()+".ncpf."+writer.getExtension()).submit();
                             try{
                                 NCPFWriter.format = writer;
                                 FileWriter.write(ncpf, stream, FileWriter.NCPF);
-                                writer.write(pureNCPF, stream);
                             }catch(Exception ex){
                                 printErrorMessage(channel, "Failed to write file", ex);
                                 submit.cancel(true);
