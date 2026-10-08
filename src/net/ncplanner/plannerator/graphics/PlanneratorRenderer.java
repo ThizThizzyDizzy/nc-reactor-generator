@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.graphics;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
 import static com.thizthizzydizzy.dizzyengine.graphics.Renderer.bindTexture;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.util.function.Function;
@@ -11,7 +12,6 @@ import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.multiblock.Direction;
-import net.ncplanner.plannerator.planner.Core;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -476,7 +476,7 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
      * @param texture the texture used to render the cube
      */
     public static void drawCube(float x1, float y1, float z1, float x2, float y2, float z2, Image texture){
-        bindTexture(Math.max(0,Core.getTexture(texture)));
+        bindTexture(Math.max(0,ResourceManager.getTexture(texture)));
         drawElement("cube", x1, y1, z1, x2-x1, y2-y1, z2-z1);
     }
     /**
@@ -498,7 +498,7 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
         boolean ny = faceRenderFunc.apply(Direction.NY);
         boolean nz = faceRenderFunc.apply(Direction.NZ);
         if(!px&&!py&&!pz&&!nx&&!ny&&!nz)return;//no faces are actually rendering, save some GL calls
-        bindTexture(Math.max(0,Core.getTexture(texture)));
+        bindTexture(Math.max(0,ResourceManager.getTexture(texture)));
         if(pz)drawElement("cube_pz", x1, y1, z1, x2-x1, y2-y1, z2-z1);
         if(nz)drawElement("cube_nz", x1, y1, z1, x2-x1, y2-y1, z2-z1);
         if(py)drawElement("cube_py", x1, y1, z1, x2-x1, y2-y1, z2-z1);
@@ -743,12 +743,12 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
     public static void setWhite(){setColor(Color.WHITE);}
     public static void setWhite(float alpha){setColor(Color.WHITE,alpha);}
     public static void drawImage(Image image,float left,float top,float right,float bottom){
-        fillRect(left,top,right,bottom,Core.getTexture(image));
+        fillRect(left,top,right,bottom,ResourceManager.getTexture(image));
     }
     public static void drawImage(String path,float left,float top,float right,float bottom){
-        fillRect(left,top,right,bottom,Core.loadTexture(path));
+        fillRect(left,top,right,bottom,ResourceManager.getTexture(path));
     }
-    public static void bindTexture(Image image){bindTexture(Core.getTexture(image));}
+    public static void bindTexture(Image image){bindTexture(ResourceManager.getTexture(image));}
     public static void drawTexture(int texture,float left,float top,float right,float bottom){
         fillRect(left,top,right,bottom,texture);
     }

@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.discord.play.model;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,7 +27,7 @@ public class Material{
             if(image.isEmpty()){
                 return 0;
             }
-            return Core.getTexture(TextureManager.getImageRaw(name));
+            return ResourceManager.getTexture(TextureManager.getImageRaw(name));
         }
         return texture;
     }

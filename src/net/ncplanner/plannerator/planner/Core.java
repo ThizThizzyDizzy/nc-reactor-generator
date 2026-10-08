@@ -253,8 +253,8 @@ public class Core{
     public static void render2d(PlanneratorRenderer renderer, double deltaTime){
         renderer.setColor(Color.WHITE);
         if(delCircle&&sourceCircle!=null){
-            Core.deleteTexture(sourceCircle);
-            Core.deleteTexture(outlineSquare);
+            ResourceManager.deleteTexture(sourceCircle);
+            ResourceManager.deleteTexture(outlineSquare);
             sourceCircle = outlineSquare = null;
             delCircle = false;
         }
@@ -277,18 +277,7 @@ public class Core{
 //        gui.render2d(deltaTime);
         if(Main.isBot)Bot.render2D();
     }
-    private static final HashMap<Image, Integer> imgs = new HashMap<>();
     private static final HashMap<Image, Boolean> alphas = new HashMap<>();
-    public static int getTexture(Image image){
-        if(image==null)return 0;
-        if(!imgs.containsKey(image)){
-            imgs.put(image, loadTexture(image.getWidth(), image.getHeight(), image.getGLData()));
-        }
-        return imgs.get(image);
-    }
-    public static void deleteTexture(Image image){
-        imgs.remove(image);
-    }
     public static void setTheme(Theme t){
         t.onSet();
         theme = t;
@@ -718,39 +707,6 @@ public class Core{
         }catch(IOException ex){
             throw new RuntimeException(ex);
         }
-    }
-    private static HashMap<String, Integer> texturesCache = new HashMap<>();
-    public static int loadTexture(String path){
-        if(texturesCache.containsKey(path))return texturesCache.get(path);
-        //read image
-        ByteBuffer imageData = null;
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
-        try(InputStream input = getInputStream(path)){
-            imageData = stbi_load_from_memory(loadData(input), width, height, BufferUtils.createIntBuffer(1), 4);
-        }catch(IOException ex){
-            Logger.error(ex);
-        }
-        if(imageData==null)
-            throw new RuntimeException("Failed to load image: "+stbi_failure_reason());
-        //finish read image
-        int texture = loadTexture(width.get(0), height.get(0), imageData);
-        stbi_image_free(imageData);
-        texturesCache.put(path, texture);
-        return texture;
-    }
-    public static int loadTexture(int width, int height, ByteBuffer imageData){
-        int texture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texture);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        return texture;
     }
     public static void warning(String message, Throwable error){
         System.err.println("Warning:");

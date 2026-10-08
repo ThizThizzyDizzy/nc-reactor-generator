@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.graphics.model;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
 import com.thizthizzydizzy.dizzyengine.graphics.Shader;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class Model{
         for(int i = 0; i<Assimp.aiGetMaterialTextureCount(mat, aitype); i++){
             AIString path = AIString.mallocStack();
             Assimp.aiGetMaterialTexture(mat, aitype, i, path, null, null, new float[1], null, null, null);
-            textures.add(Core.loadTexture(dir+"/"+path));
+            textures.add(ResourceManager.getTexture(dir+"/"+path));
         }
         return material;
     }

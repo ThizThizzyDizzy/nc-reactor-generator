@@ -1,7 +1,7 @@
 package net.ncplanner.plannerator.graphics.legacyobj.model;
+import com.thizthizzydizzy.dizzyengine.ResourceManager;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.configuration.TextureManager;
-import net.ncplanner.plannerator.planner.Core;
 @Deprecated
 public class Material{
     public final String name;
@@ -23,7 +23,7 @@ public class Material{
             if(image.isEmpty()){
                 return 0;
             }
-            return Core.getTexture(TextureManager.getImageRaw(image));
+            return ResourceManager.getTexture(TextureManager.getImageRaw(image));
         }
         return texture;
     }
