@@ -82,7 +82,7 @@ public class MenuElementConfiguration extends ConfigurationMenu{
             ((SplitLayout)content).minSize1 = 0;
         }else{
             SplitLayout definition = add(new SplitLayout(SplitLayout.X_AXIS, 0, 192, 0));
-            definition.add(new TextureButton(() -> element.getOrCreateModule(TextureModule::new).texture, (img) -> element.getOrCreateModule(TextureModule::new).texture = img));
+            definition.add(new TextureButton(() -> element.getOrCreateModule(TextureModule::new).texture, (img) -> element.getOrCreateModule(TextureModule::new).texture = img).setImportContext(element, cnfg));
             SplitLayout definitionList = definition.add(new SplitLayout(SplitLayout.Y_AXIS, 0, 48, 0));
             SplitLayout definitionHeader = definitionList.add(new SplitLayout(SplitLayout.X_AXIS, 0.3f));
             definitionHeader.add(new Button(element.definition.getTypeName(), true).addAction(() -> {
