@@ -261,7 +261,7 @@ public class Core{
         if(sourceCircle==null){
             sourceCircle = Core.makeImage(circleSize, circleSize, (bufferWidth, bufferHeight) -> {
                 PlanneratorRenderer.setColor(Color.WHITE);
-                PlanneratorRenderer.fillHollowRegularPolygon(bufferWidth/2, bufferHeight/2, 24, bufferWidth*(4/16f), bufferWidth*(6/16f));
+                PlanneratorRenderer.drawOval(bufferWidth/2f, bufferHeight/2f, bufferWidth*(6/16f), bufferHeight*(6/16f), bufferWidth*(2/16f), bufferHeight*(2/16f), 64);
             });
         }
         if(outlineSquare==null){
