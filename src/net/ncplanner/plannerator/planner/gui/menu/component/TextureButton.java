@@ -34,10 +34,11 @@ public class TextureButton extends Button{
                 Core.createFileChooser((file) -> {
                     try{
                         Image img = ImageIO.read(file);
-                        if(img.getWidth()!=img.getHeight()){
-                            Core.error("Image is not square!", null);
+                        if(img.getHeight()%img.getWidth()!=0){
+                            Core.error("Image must be square or a vertical strip of square frames!", null);
                             return;
                         }
+                        if(img.getWidth()!=img.getHeight())img = img.getSubimage(0, 0, img.getWidth(), img.getWidth());
                         setTextureFunc.accept(img);
                     }catch(IOException ex){
                         Core.error("Failed to load texture "+file.getName()+"!", ex);
@@ -65,10 +66,11 @@ public class TextureButton extends Button{
         for(String s : files){
             try{
                 Image img = ImageIO.read(new File(s));
-                if(img.getWidth()!=img.getHeight()){
-                    Core.error("Image is not square!", null);
+                if(img.getHeight()%img.getWidth()!=0){
+                    Core.error("Image must be square or a vertical strip of square frames!", null);
                     continue;
                 }
+                if(img.getWidth()!=img.getHeight())img = img.getSubimage(0, 0, img.getWidth(), img.getWidth());
                 setTextureFunc.accept(img);
             }catch(IOException ex){
                 Core.error("Failed to load texture "+s+"!", ex);
