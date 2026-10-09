@@ -78,7 +78,7 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         Block controller = null;
         for(BlockElement template : getSpecificConfiguration().blocks){
             if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), null, template);
-            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributer==null)window = new Block(getConfiguration(), null, template);
+            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributor==null)window = new Block(getConfiguration(), null, template);
             if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
         }
         final Block theCasing = casing;

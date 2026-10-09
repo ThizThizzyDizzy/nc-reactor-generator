@@ -74,7 +74,7 @@ public class Block extends AbstractBlock{
         return template.reboilingUnit!=null;
     }
     public boolean isLiquidDistributor(){
-        return template.liquidDistributer!=null;
+        return template.liquidDistributor!=null;
     }
     @Override
     public void renderOverlay(PlanneratorRenderer renderer, float x, float y, float z, float width, float height, float depth, Multiblock multiblock, Function<Direction, Boolean> faceRenderFunc){

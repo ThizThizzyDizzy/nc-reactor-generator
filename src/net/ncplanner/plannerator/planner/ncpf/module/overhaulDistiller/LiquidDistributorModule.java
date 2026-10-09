@@ -3,12 +3,12 @@ import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.ncpf.module.BlockFunctionModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
-public class LiquidDistributerModule extends BlockFunctionModule{
-    public LiquidDistributerModule(){
-        super("nuclearcraft:overhaul_distiller:liquid_distributer");
+public class LiquidDistributorModule extends BlockFunctionModule{
+    public LiquidDistributorModule(){
+        super("nuclearcraft:overhaul_distiller:liquid_distributor");
     }
     @Override
     public String getFunctionName(){
-        return "Liquid Distributer";
+        return "Liquid Distributor";
     }
 }

@@ -2,7 +2,7 @@ package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulDistiller;
 import net.ncplanner.plannerator.planner.ncpf.configuration.NamedTexturedNCPFElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ControllerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributerModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PowerPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ProcessPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ReboilingUnitModule;
@@ -16,7 +16,7 @@ public class BlockElement extends NamedTexturedNCPFElement{
     public PowerPortModule powerPort;
     public ProcessPortModule processPort;
     public ReservoirPortModule reservoirPort;
-    public LiquidDistributerModule liquidDistributer;
+    public LiquidDistributorModule liquidDistributor;
     public RefluxUnitModule refluxUnit;
     public ReboilingUnitModule reboilingUnit;
     public SieveTrayModule sieveTray;
@@ -27,7 +27,7 @@ public class BlockElement extends NamedTexturedNCPFElement{
         definePlanneratorModule(() -> powerPort, (m) -> powerPort = m, PowerPortModule::new);
         definePlanneratorModule(() -> processPort, (m) -> processPort = m, ProcessPortModule::new);
         definePlanneratorModule(() -> reservoirPort, (m) -> reservoirPort = m, ReservoirPortModule::new);
-        definePlanneratorModule(() -> liquidDistributer, (m) -> liquidDistributer = m, LiquidDistributerModule::new);
+        definePlanneratorModule(() -> liquidDistributor, (m) -> liquidDistributor = m, LiquidDistributorModule::new);
         definePlanneratorModule(() -> refluxUnit, (m) -> refluxUnit = m, RefluxUnitModule::new);
         definePlanneratorModule(() -> reboilingUnit, (m) -> reboilingUnit = m, ReboilingUnitModule::new);
         definePlanneratorModule(() -> sieveTray, (m) -> sieveTray = m, SieveTrayModule::new);

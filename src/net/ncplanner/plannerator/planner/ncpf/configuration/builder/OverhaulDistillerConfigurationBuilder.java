@@ -9,7 +9,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.LegacyNamesModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.settings.OverhaulDistillerSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.CasingModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ControllerModule;
-import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributerModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PowerPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ProcessPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ReboilingUnitModule;
@@ -81,7 +81,7 @@ public class OverhaulDistillerConfigurationBuilder extends ConfigurationBuilder<
             return this;
         }
         public BlockBuilder liquidDistributor(){
-            block.liquidDistributer = new LiquidDistributerModule();
+            block.liquidDistributor = new LiquidDistributorModule();
             return this;
         }
         public BlockBuilder sieve(float efficiency){
