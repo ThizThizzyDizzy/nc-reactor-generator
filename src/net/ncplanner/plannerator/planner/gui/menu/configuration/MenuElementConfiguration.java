@@ -131,6 +131,12 @@ public class MenuElementConfiguration extends ConfigurationMenu{
                 ListLayout defFields = definitionFields.add(new ListLayout(48));
                 for(String setting : def.settings){
                     if(def.types.get(setting).special)continue;
+                    if(def.types.get(setting)==Type.BOOLEAN){
+                        Supplier<Boolean> get = def.gets.get(setting);
+                        Consumer<Boolean> set = def.sets.get(setting);
+                        defFields.add(new ToggleBox(def.titles.get(setting), get.get()).onChange(set));
+                        continue;
+                    }
                     Supplier<String> get = def.gets.get(setting);
                     Consumer<String> set = def.sets.get(setting);
                     TextBox box = new TextBox(get.get(), true, def.titles.get(setting)).onChange((s) -> {

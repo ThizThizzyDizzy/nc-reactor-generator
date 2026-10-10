@@ -4,10 +4,10 @@ import net.ncplanner.plannerator.planner.ncpf.module.NCPFSettingsModule;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = OverhaulModule.class)
 public class OverhaulDistillerSettingsModule extends NCPFSettingsModule{
-    public int minSize;
-    public int maxSize;
-    public int baseTime;
-    public int basePower;
+    public int minSize = 1;
+    public int maxSize = 24;
+    public int baseTime = 800;
+    public int basePower = 10;
     public OverhaulDistillerSettingsModule(){
         super("nuclearcraft:overhaul_distiller_configuration_settings");
         addInteger("min_size", () -> minSize, (v) -> minSize = v, "Minimum Size", "The minimum size of this multiblock");

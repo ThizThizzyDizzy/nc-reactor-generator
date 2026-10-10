@@ -25,6 +25,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public void copyProperties(AbstractBlock other){
+        ((Block)other).valid = valid;
     }
     @Override
     public NCPFElement getTemplate(){
@@ -32,6 +33,7 @@ public class Block extends AbstractBlock{
     }
     @Override
     public void clearData(){
+        valid = false;
     }
     @Override
     public String getTooltip(Multiblock multiblock){
@@ -59,7 +61,8 @@ public class Block extends AbstractBlock{
         return template.controller!=null;
     }
     public boolean isCasing(){
-        return template.casing!=null;
+        return template.casing!=null||isController()||isRefluxUnit()||isReboilingUnit()||isLiquidDistributor()
+                ||template.powerPort!=null||template.processPort!=null||template.reservoirPort!=null;
     }
     public boolean isSieveAssembly(){
         return template.sieveAssembly!=null;

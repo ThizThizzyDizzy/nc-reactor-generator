@@ -5,9 +5,11 @@ import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 @RegisterWith(module = CoreModule.class)
 public class NCPFLegacyFluidElement extends NCPFSettingsElement{
     public String name = "";
+    public boolean gaseous;
     public NCPFLegacyFluidElement(){
         super("legacy_fluid");
         addString("name", () -> name, (v) -> name = v, "Name", Type.NAME);
+        addBoolean("gaseous", () -> gaseous, (v) -> gaseous = Boolean.TRUE.equals(v), "Gas");
     }
     public NCPFLegacyFluidElement(String name){
         this();

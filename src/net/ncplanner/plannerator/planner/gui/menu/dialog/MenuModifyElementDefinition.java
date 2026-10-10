@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.Label;
 import net.ncplanner.plannerator.planner.gui.menu.component.Panel;
 import net.ncplanner.plannerator.planner.gui.menu.component.SingleColumnList;
 import net.ncplanner.plannerator.planner.gui.menu.component.TextBox;
+import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.BorderLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.LayeredLayout;
@@ -57,6 +58,12 @@ public class MenuModifyElementDefinition extends MenuDialog{
             ListLayout defFields = definitionFields.add(new ListLayout(48));
             for(String setting : def.settings){
                 if(def.types.get(setting).special)continue;
+                if(def.types.get(setting)==NCPFSettingsElement.Type.BOOLEAN){
+                    Supplier<Boolean> get = def.gets.get(setting);
+                    Consumer<Boolean> set = def.sets.get(setting);
+                    defFields.add(new ToggleBox(def.titles.get(setting), get.get()).onChange(set));
+                    continue;
+                }
                 Supplier<String> get = def.gets.get(setting);
                 Consumer<String> set = def.sets.get(setting);
                 TextBox box = new TextBox(get.get(), true, def.titles.get(setting)).onChange((s) -> {

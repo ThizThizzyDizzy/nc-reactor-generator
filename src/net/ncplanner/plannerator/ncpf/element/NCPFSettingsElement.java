@@ -69,11 +69,21 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         types.put(name, type);
         titles.put(name, title);
     }
+    public void addBoolean(String name, Supplier<Boolean> get, Consumer<Boolean> set, String title){
+        settings.add(name);
+        gets.put(name, get);
+        sets.put(name, set);
+        types.put(name, Type.BOOLEAN);
+        titles.put(name, title);
+    }
     @Override
     public void convertFromObject(NCPFObject ncpf){
         for(String setting : settings){
             Consumer set = sets.get(setting);
             switch(types.get(setting)){
+                case BOOLEAN:
+                    ((Consumer<Boolean>)set).accept(ncpf.getBoolean(setting));
+                    break;
                 case METADATA:
                     ((Consumer<Integer>)set).accept(ncpf.getInteger(setting));
                     break;
@@ -119,6 +129,9 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         for(String setting : settings){
             Supplier get = gets.get(setting);
             switch(types.get(setting)){
+                case BOOLEAN:
+                    ncpf.setBoolean(setting, ((Supplier<Boolean>)get).get());
+                    break;
                 case METADATA:
                     ncpf.setInteger(setting, ((Supplier<Integer>)get).get());
                     break;
@@ -223,7 +236,7 @@ public abstract class NCPFSettingsElement extends NCPFElementDefinition{
         return "["+s.substring(1)+"]";
     }
     public static enum Type{
-        NAMESPACED_NAME, NAME, NBT, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true), ELEMENT_STACK_SET(true), ELEMENT_STACK_LIST(true);
+        NAMESPACED_NAME, NAME, NBT, BOOLEAN, BLOCKSTATE(true), METADATA(true), TAG, OREDICT, ELEMENT_LIST(true), ELEMENT_STACK_SET(true), ELEMENT_STACK_LIST(true);
         public final boolean special;
         private Type(){
             this(false);

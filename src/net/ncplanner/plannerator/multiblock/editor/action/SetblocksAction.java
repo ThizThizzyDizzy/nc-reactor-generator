@@ -7,6 +7,7 @@ import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.BoundingBox;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
+import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
 import net.ncplanner.plannerator.multiblock.symmetry.Symmetry;
 public class SetblocksAction extends Action<Multiblock>{
     public final HashSet<BlockPos> locations = new HashSet<>();
@@ -57,6 +58,8 @@ public class SetblocksAction extends Action<Multiblock>{
         HashSet<BlockPos> newLocs = new HashSet<>();
         BoundingBox bbox = multiblock.getBoundingBox();
         locations.forEach((t) -> symmetry.apply(t, bbox.getWidth(), bbox.getHeight(), bbox.getDepth(), newLocs::add));
+        ArrayList<EditorSpace> spaces = multiblock.getEditorSpaces();
+        newLocs.removeIf(pos -> spaces.stream().noneMatch(space -> space.contains(pos)&&space.isSpaceValid(block, pos)));
         locations.addAll(newLocs);
     }
 }
