@@ -120,11 +120,11 @@ public class PNGWriter extends ImageFormatWriter{
                             .setTranslation(bufferWidth-totalTextHeight/2, totalTextHeight/2, -1)
                             .scale(1, 1, 0.0001f)
                             .rotate((float)MathUtil.toRadians(45), 1, 0, 0)
-                            .rotate((float)MathUtil.toRadians(45), 0, 1, 0)
+                            .rotate((float)MathUtil.toRadians(-45), 0, 1, 0)
                             .scale(totalTextHeight/2, totalTextHeight/2, totalTextHeight/2)
                             .scale(1/size, 1/size, 1/size)
                             .rotate((float)MathUtil.toRadians(180), 1, 0, 0)
-                            .translate(-bbox3.getWidth()/2f, -bbox3.getHeight()/2f, -bbox3.getDepth()/2f));
+                            .translate(-bbox3.x1-bbox3.getWidth()/2f, -bbox3.y1-bbox3.getHeight()/2f, -bbox3.z1-bbox3.getDepth()/2f));
                     mb.draw3DInOrder(Core.imageExportCasing3D);
                     renderer.resetModelMatrix();
                 }

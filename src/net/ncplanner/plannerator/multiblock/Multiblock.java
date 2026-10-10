@@ -239,7 +239,7 @@ public abstract class Multiblock<T extends AbstractBlock>{
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
                 renderer.bindTexture(block.getBaseTexture());
             }
-            drawCube(block, false, true);
+            drawCube(block, true);
             last = block;
         }
     }
@@ -251,19 +251,18 @@ public abstract class Multiblock<T extends AbstractBlock>{
                 if(shouldHideWithCasing(block.pos))it.remove();
             }
         }
-        Collections.sort(blocks, (T o1, T o2) -> {
-            if(o1.pos.y!=o2.pos.y)return o1.pos.y-o2.pos.y;
-            int d1 = o1.pos.z-o1.pos.x;
-            int d2 = o2.pos.z-o2.pos.x;
-            return d1-d2;
-        });
+        // Match the export camera: -X, +Y and +Z are closest to the viewer.
+        // All three axes must participate so higher layers cannot cover nearer blocks.
+        Collections.sort(blocks, (T o1, T o2) -> Integer.compare(
+                -o1.pos.x+o1.pos.y+o1.pos.z,
+                -o2.pos.x+o2.pos.y+o2.pos.z));
         AbstractBlock last = null;
         PlanneratorRenderer renderer = new PlanneratorRenderer();
         for(T block : blocks){
             if(last==null||last.getBaseTexture()!=block.getBaseTexture()){
                 renderer.bindTexture(block.getBaseTexture());
             }
-            drawCube(block, true, includeCasing);
+            drawCube(block, includeCasing);
             last = block;
         }
     }
@@ -273,11 +272,9 @@ public abstract class Multiblock<T extends AbstractBlock>{
     protected float[] getCubeBounds(T block){
         return new float[]{0,0,0,1,1,1};
     }
-    protected void drawCube(T block, boolean inOrder, boolean includeCasing){
+    protected void drawCube(T block, boolean includeCasing){
         PlanneratorRenderer renderer = new PlanneratorRenderer();
         BlockPos pos = block.pos;
-        boolean invertedInOrder = inOrder;
-        inOrder = false;
         float[] bounds = getCubeBounds(block);
         float x1 = pos.x+bounds[0];
         float y1 = pos.y+bounds[1];
@@ -285,65 +282,12 @@ public abstract class Multiblock<T extends AbstractBlock>{
         float x2 = pos.x+bounds[3];
         float y2 = pos.y+bounds[4];
         float z2 = pos.z+bounds[5];
-        //xy +z
-        BlockPos offsetPos = pos.offset(0,0,1);
-        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
-            renderer.drawQuad(
-                    new Vector3f(x1, y1, z2),
-                    new Vector3f(x1, y2, z2),
-                    new Vector3f(x2, y1, z2),
-                    new Vector3f(x2, y2, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 1),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, 0, 1));
-        }
-        //xy -z
-        offsetPos = pos.offset(0,0,-1);
-        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
-            renderer.drawQuad(
-                    new Vector3f(x1, y1, z1),
-                    new Vector3f(x2, y1, z1),
-                    new Vector3f(x1, y2, z1),
-                    new Vector3f(x2, y2, z1),
-                    new Vector2f(0, 1),
-                    new Vector2f(1, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, 0, -1));
-        }
-        //xz +y
-        offsetPos = pos.offset(0,1,0);
-        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
-            renderer.drawQuad(
-                    new Vector3f(x1, y2, z1),
-                    new Vector3f(x2, y2, z1),
-                    new Vector3f(x1, y2, z2),
-                    new Vector3f(x2, y2, z2),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 0),
-                    new Vector2f(0, 1),
-                    new Vector2f(1, 1),
-                    new Vector3f(0, 1, 0));
-        }
-        //xz -y
-        offsetPos = pos.offset(0,-1,0);
-        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
-            renderer.drawQuad(
-                    new Vector3f(x1, y1, z1),
-                    new Vector3f(x1, y1, z2),
-                    new Vector3f(x2, y1, z1),
-                    new Vector3f(x2, y1, z2),
-                    new Vector2f(0, 1),
-                    new Vector2f(0, 0),
-                    new Vector2f(1, 1),
-                    new Vector2f(1, 0),
-                    new Vector3f(0, -1, 0));
-        }
+        BlockPos offsetPos;
+        // Back faces must precede front faces when exporting without a depth buffer.
+        // Keep them visible through glass, including the inside of the casing.
         //yz +x
         offsetPos = pos.offset(1,0,0);
-        if(!inOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
             renderer.drawQuad(
                     new Vector3f(x2, y1, z1),
                     new Vector3f(x2, y1, z2),
@@ -355,9 +299,37 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector2f(1, 0),
                     new Vector3f(1, 0, 0));
         }
+        //xz -y
+        offsetPos = pos.offset(0,-1,0);
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z1),
+                    new Vector3f(x1, y1, z2),
+                    new Vector3f(x2, y1, z1),
+                    new Vector3f(x2, y1, z2),
+                    new Vector2f(0, 1),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector3f(0, -1, 0));
+        }
+        //xy -z
+        offsetPos = pos.offset(0,0,-1);
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z1),
+                    new Vector3f(x2, y1, z1),
+                    new Vector3f(x1, y2, z1),
+                    new Vector3f(x2, y2, z1),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 0),
+                    new Vector3f(0, 0, -1));
+        }
         //yz -x
         offsetPos = pos.offset(-1,0,0);
-        if(!invertedInOrder&&(!contains(offsetPos)||shouldHideWithCasing(offsetPos)||block.shouldRenderFace(getBlock(offsetPos)))){
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
             renderer.drawQuad(
                     new Vector3f(x1, y1, z1),
                     new Vector3f(x1, y2, z1),
@@ -368,7 +340,35 @@ public abstract class Multiblock<T extends AbstractBlock>{
                     new Vector2f(1, 1),
                     new Vector2f(1, 0),
                     new Vector3f(-1, 0, 0));
+        }        //xz +y
+        offsetPos = pos.offset(0,1,0);
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
+            renderer.drawQuad(
+                    new Vector3f(x1, y2, z1),
+                    new Vector3f(x2, y2, z1),
+                    new Vector3f(x1, y2, z2),
+                    new Vector3f(x2, y2, z2),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 0),
+                    new Vector2f(0, 1),
+                    new Vector2f(1, 1),
+                    new Vector3f(0, 1, 0));
         }
+        //xy +z
+        offsetPos = pos.offset(0,0,1);
+        if(!contains(offsetPos)||(!includeCasing&&shouldHideWithCasing(offsetPos))||block.shouldRenderFace(getBlock(offsetPos))){
+            renderer.drawQuad(
+                    new Vector3f(x1, y1, z2),
+                    new Vector3f(x1, y2, z2),
+                    new Vector3f(x2, y1, z2),
+                    new Vector3f(x2, y2, z2),
+                    new Vector2f(0, 1),
+                    new Vector2f(0, 0),
+                    new Vector2f(1, 1),
+                    new Vector2f(1, 0),
+                    new Vector3f(0, 0, 1));
+        }
+
     }
     /**
      * @return true if anything changed
