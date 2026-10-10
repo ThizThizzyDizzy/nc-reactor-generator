@@ -375,16 +375,8 @@ public class OverhaulNCConfigReader implements FormatReader{
                 distiller.block("nuclearcraft:machine_frame", "Machine Casing", "overhaul/machine/casing").casing(true);
                 distiller.block("nuclearcraft:machine_glass", "Machine Glass", "overhaul/machine/glass").casing(false);
                 distiller.block("nuclearcraft:machine_power_port", "Machine Power Port", "overhaul/machine/power_port").blockstate("active", "false").powerPort();
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Input 1)", "overhaul/machine/process_port_fluid_in").blockstate("machine_port_sorption", "fluid_in").processPort(0);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Input 2)", "overhaul/machine/process_port_fluid_in").blockstate("machine_port_sorption", "fluid_in").processPort(1);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 1)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(2);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 2)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(3);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 3)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(4);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 4)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(5);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 5)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(6);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 6)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(7);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 7)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(8);
-                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output 8)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(9);
+                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Input)", "overhaul/machine/process_port_fluid_in").blockstate("machine_port_sorption", "fluid_in").processPort(false);
+                distiller.block("nuclearcraft:machine_process_port", "Machine Process Port (Output)", "overhaul/machine/process_port_fluid_out").blockstate("machine_port_sorption", "fluid_out").processPort(true);
                 distiller.block("nuclearcraft:distiller_sieve_tray", "Distiller Sieve Tray", "overhaul/machine/distiller/sieve_tray").sieveTray();
                 distiller.block("nuclearcraft:distiller_reflux_unit", "Distiller Reflux Unit", "overhaul/machine/distiller/reflux_unit").refluxUnit();
                 distiller.block("nuclearcraft:distiller_reboiling_unit", "Distiller Reboiling Unit", "overhaul/machine/distiller/reboiling_unit").reboilingUnit();

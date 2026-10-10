@@ -68,10 +68,10 @@ public class OverhaulDistillerConfigurationBuilder extends ConfigurationBuilder<
             block.port = new PortModule();
             return casing(false);
         }
-        public BlockBuilder processPort(int index){
+        public BlockBuilder processPort(boolean output){
             block.processPort = new ProcessPortModule();
-            block.processPort.index = index;
-            return casing(false).nbt("{setting:"+index+"}");
+            block.processPort.output = output;
+            return casing(false);
         }
         public BlockBuilder sieveTray(){
             block.sieveTray = new SieveTrayModule();

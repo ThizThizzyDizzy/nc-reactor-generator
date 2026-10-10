@@ -40,6 +40,7 @@ public class Block extends AbstractBlock{
         String tip = getName();
         if(isController())tip+="\nController "+(valid?"Valid":"Invalid");
         if(isCasing())tip+="\nCasing "+(valid?"Valid":"Invalid");
+        if(template.processPort!=null)tip+="\n"+(template.processPort.output?"Output":"Input")+" Port "+(valid?"Valid":"Invalid");
         if(isSieveAssembly()){
             tip+="\nSieve Assembly "+(valid?"Valid":"Invalid");
         }
@@ -62,7 +63,7 @@ public class Block extends AbstractBlock{
     }
     public boolean isCasing(){
         return template.casing!=null||isController()||isRefluxUnit()||isReboilingUnit()||isLiquidDistributor()
-                ||template.powerPort!=null||template.processPort!=null||template.reservoirPort!=null;
+                ||template.port!=null||template.powerPort!=null||template.processPort!=null||template.reservoirPort!=null;
     }
     public boolean isSieveAssembly(){
         return template.sieveAssembly!=null;

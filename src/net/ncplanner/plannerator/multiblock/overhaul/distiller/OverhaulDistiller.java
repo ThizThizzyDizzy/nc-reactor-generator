@@ -38,6 +38,7 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
     private static final OverhaulDistillerSettingsModule DEFAULT_SETTINGS = new OverhaulDistillerSettingsModule();
     public DistillerRecipe recipe;
     public int numControllers, missingCasings, traySieveCount, packedSieveCount;
+    public int inputPortCount, outputPortCount;
     public int refluxUnitCount, reboilingUnitCount, liquidDistributorCount;
     public double traySieveEfficiency, packedSieveEfficiency, baseSpeedMultiplier, basePowerMultiplier;
     public double refluxUnitBonus, reboilingUnitBonus, liquidDistributorBonus, speedMultiplier;
@@ -123,27 +124,58 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         Block casing = null;
         Block window = null;
         Block controller = null;
+        Block inputPort = null;
+        Block outputPort = null;
+        Block powerPort = null;
         for(BlockElement template : getSpecificConfiguration().blocks){
             if(isPlainCasing(template)){
                 if(template.casing.edge)casing = new Block(getConfiguration(), null, template);
                 else window = new Block(getConfiguration(), null, template);
             }
             if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
+            if(template.processPort!=null){
+                if(template.processPort.output)outputPort = new Block(getConfiguration(), null, template);
+                else inputPort = new Block(getConfiguration(), null, template);
+            }
+            if(template.powerPort!=null)powerPort = new Block(getConfiguration(), null, template);
         }
         final Block theCasing = casing;
         final Block theWindow = window==null?casing:window;
         final Block theController = controller;
+        final Block theInputPort = inputPort;
+        final Block theOutputPort = outputPort;
+        final Block thePowerPort = powerPort;
+        int[] ports = new int[2];
+        boolean[] hasPowerPort = new boolean[1];
         boolean[] hasPlacedTheController = new boolean[1];
-        for(Block block : getBlocks(true)){
-            if(block.template.controller!=null)hasPlacedTheController[0] = true;
-        }
+        forEachCasingFacePosition((pos) -> {
+            Block block = getBlock(pos);
+            if(block==null)return;
+            if(block.isController())hasPlacedTheController[0] = true;
+            if(block.template.powerPort!=null)hasPowerPort[0] = true;
+            if(block.template.processPort!=null)ports[block.template.processPort.output?1:0]++;
+        });
         forEachCasingFacePosition((pos) -> {
             Block block = getBlock(pos);
             if(block!=null&&!isPlainCasing(block.template))return;
-            if(!hasPlacedTheController[0]){
+            if(!hasPlacedTheController[0]&&theController!=null){
                 setBlock(pos, theController);
                 hasPlacedTheController[0] = true;
                 return;
+            }
+            if(!hasPowerPort[0]&&thePowerPort!=null){
+                setBlock(pos, thePowerPort);
+                hasPowerPort[0] = true;
+                return;
+            }
+            if(ports[0]<getRequiredPorts(false)&&theInputPort!=null){
+                setBlock(pos, theInputPort);
+                ports[0]++;
+                return;
+            }
+            if(ports[1]<getRequiredPorts(true)&&theOutputPort!=null){
+                setBlock(pos, theOutputPort);
+                ports[1]++;
             }
         });
         forEachCasingEdgePosition((pos) -> {
@@ -212,6 +244,10 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
                     setValid(block, valid, addDecals);
                     if(!valid)addError("Invalid casing block placement.");
                     else{
+                        if(block.template.processPort!=null){
+                            if(block.template.processPort.output)outputPortCount++;
+                            else inputPortCount++;
+                        }
                         if(block.isRefluxUnit())refluxUnitCount++;
                         if(block.isReboilingUnit())reboilingUnitCount++;
                         if(block.isLiquidDistributor())liquidDistributorCount++;
@@ -219,6 +255,8 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
                 });
                 if(numControllers!=1)addError(numControllers==0?"No controller!":"Too many controllers!");
                 if(missingCasings>0)addError("Casing incomplete! (Missing "+missingCasings+")");
+                checkPorts(false, inputPortCount);
+                checkPorts(true, outputPortCount);
                 calcCasing.finish();
                 return true;
             case 1:
@@ -302,6 +340,19 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
                 throw new IllegalStateException("Invalid calculation step: "+(calcStep-1));
         }
     }
+    private int getRequiredPorts(boolean output){
+        if(recipe==null)return 0;
+        Set<NCPFElementStack> stacks = output?recipe.getRecipeDefinition().outputs:recipe.getRecipeDefinition().inputs;
+        int count = 0;
+        for(NCPFElementStack stack : stacks){
+            if(stack.amount>0)count++;
+        }
+        return count;
+    }
+    private void checkPorts(boolean output, int count){
+        int missing = getRequiredPorts(output)-count;
+        if(missing>0)addError("Missing "+missing+(output?" output":" input")+" port"+(missing==1?"":"s")+"!");
+    }
     private void addError(String error){
         structureValid = false;
         if(!errors.contains(error))errors.add(error);
@@ -320,6 +371,7 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         super.clearData(blocks);
         numControllers = missingCasings = traySieveCount = packedSieveCount = 0;
         refluxUnitCount = reboilingUnitCount = liquidDistributorCount = 0;
+        inputPortCount = outputPortCount = 0;
         traySieveEfficiency = packedSieveEfficiency = baseSpeedMultiplier = basePowerMultiplier = 0;
         refluxUnitBonus = reboilingUnitBonus = liquidDistributorBonus = speedMultiplier = 0;
         processTime = processPower = processEnergy = 0;
@@ -358,6 +410,8 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         });
         copy.numControllers = numControllers;
         copy.missingCasings = missingCasings;
+        copy.inputPortCount = inputPortCount;
+        copy.outputPortCount = outputPortCount;
         copy.traySieveCount = traySieveCount;
         copy.packedSieveCount = packedSieveCount;
         copy.refluxUnitCount = refluxUnitCount;
