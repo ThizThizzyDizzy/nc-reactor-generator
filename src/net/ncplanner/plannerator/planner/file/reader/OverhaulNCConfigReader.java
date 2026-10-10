@@ -370,8 +370,8 @@ public class OverhaulNCConfigReader implements FormatReader{
                 distiller.settings.basePower = machine.getInt("machine_distiller_power");
 
                 distiller.block("nuclearcraft:distiller_controller", "Distiller Controller", "overhaul/machine/distiller/controller").controller();
-                distiller.block("nuclearcraft:machine_redstone_port", "Machine Redstone Port", "overhaul/machine/redstone_port").casing(false);
-                distiller.block("nuclearcraft:machine_computer_port", "Machine Computer Port", "overhaul/machine/computer_port").casing(false);
+                distiller.block("nuclearcraft:machine_redstone_port", "Machine Redstone Port", "overhaul/machine/redstone_port").port();
+                distiller.block("nuclearcraft:machine_computer_port", "Machine Computer Port", "overhaul/machine/computer_port").port();
                 distiller.block("nuclearcraft:machine_frame", "Machine Casing", "overhaul/machine/casing").casing(true);
                 distiller.block("nuclearcraft:machine_glass", "Machine Glass", "overhaul/machine/glass").casing(false);
                 distiller.block("nuclearcraft:machine_power_port", "Machine Power Port", "overhaul/machine/power_port").blockstate("active", "false").powerPort();

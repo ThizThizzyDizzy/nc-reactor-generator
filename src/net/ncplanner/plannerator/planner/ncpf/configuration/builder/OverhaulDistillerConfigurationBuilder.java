@@ -11,6 +11,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.CasingMod
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ControllerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PowerPortModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ProcessPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ReboilingUnitModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.RefluxUnitModule;
@@ -61,6 +62,10 @@ public class OverhaulDistillerConfigurationBuilder extends ConfigurationBuilder<
         }
         public BlockBuilder powerPort(){
             block.powerPort = new PowerPortModule();
+            return casing(false);
+        }
+        public BlockBuilder port(){
+            block.port = new PortModule();
             return casing(false);
         }
         public BlockBuilder processPort(int index){

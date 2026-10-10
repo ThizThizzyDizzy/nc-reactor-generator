@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.CasingMod
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ControllerModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.LiquidDistributorModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PowerPortModule;
+import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.PortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ProcessPortModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.ReboilingUnitModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.RefluxUnitModule;
@@ -13,6 +14,7 @@ import net.ncplanner.plannerator.planner.ncpf.module.overhaulDistiller.SieveTray
 public class BlockElement extends NamedTexturedNCPFElement{
     public CasingModule casing;
     public ControllerModule controller;
+    public PortModule port;
     public PowerPortModule powerPort;
     public ProcessPortModule processPort;
     public ReservoirPortModule reservoirPort;
@@ -24,6 +26,7 @@ public class BlockElement extends NamedTexturedNCPFElement{
     public BlockElement(){
         definePlanneratorModule(() -> casing, (m) -> casing = m, CasingModule::new);
         definePlanneratorModule(() -> controller, (m) -> controller = m, ControllerModule::new);
+        definePlanneratorModule(() -> port, (m) -> port = m, PortModule::new);
         definePlanneratorModule(() -> powerPort, (m) -> powerPort = m, PowerPortModule::new);
         definePlanneratorModule(() -> processPort, (m) -> processPort = m, ProcessPortModule::new);
         definePlanneratorModule(() -> reservoirPort, (m) -> reservoirPort = m, ReservoirPortModule::new);

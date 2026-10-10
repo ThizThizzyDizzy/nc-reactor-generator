@@ -124,21 +124,22 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         Block window = null;
         Block controller = null;
         for(BlockElement template : getSpecificConfiguration().blocks){
-            if(template.casing!=null&&template.casing.edge)casing = new Block(getConfiguration(), null, template);
-            if(template.casing!=null&&!template.casing.edge&&template.controller==null&&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributor==null)window = new Block(getConfiguration(), null, template);
+            if(isPlainCasing(template)){
+                if(template.casing.edge)casing = new Block(getConfiguration(), null, template);
+                else window = new Block(getConfiguration(), null, template);
+            }
             if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
         }
         final Block theCasing = casing;
         final Block theWindow = window==null?casing:window;
         final Block theController = controller;
         boolean[] hasPlacedTheController = new boolean[1];
-        for(Block block : getBlocks()){
+        for(Block block : getBlocks(true)){
             if(block.template.controller!=null)hasPlacedTheController[0] = true;
         }
         forEachCasingFacePosition((pos) -> {
-            if(getBlock(pos)!=null){
-                if(getBlock(pos).template!=theCasing.template&&getBlock(pos).template!=theWindow.template)return;
-            }
+            Block block = getBlock(pos);
+            if(block!=null&&!isPlainCasing(block.template))return;
             if(!hasPlacedTheController[0]){
                 setBlock(pos, theController);
                 hasPlacedTheController[0] = true;
@@ -153,6 +154,11 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
             if(getBlock(pos)!=null)return;
             setBlock(pos, theWindow);
         });
+    }
+    private static boolean isPlainCasing(BlockElement template){
+        return template.casing!=null&&template.controller==null
+                &&template.port==null&&template.powerPort==null&&template.processPort==null&&template.reservoirPort==null
+                &&template.reboilingUnit==null&&template.refluxUnit==null&&template.liquidDistributor==null;
     }
     @Override
     public String getDefinitionName(){
