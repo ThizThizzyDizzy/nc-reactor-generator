@@ -14,6 +14,8 @@ public class PlanneratorMenu extends Menu{
     public PlanneratorMenu(net.ncplanner.plannerator.planner.gui.Menu content){this.content=content;}
     @Override
     public void render(double deltaTime){
+        Renderer.setDefaultFont(net.ncplanner.plannerator.planner.Core.theme.getDefaultFont());
+        Renderer.resetFont();
         float width=content.gui.getWidth(),height=content.gui.getHeight();
         Renderer.projection(new Matrix4f().setOrtho(0,width,height,0,0.1f,10));
         net.ncplanner.plannerator.graphics.PlanneratorRenderer.resetClipping(

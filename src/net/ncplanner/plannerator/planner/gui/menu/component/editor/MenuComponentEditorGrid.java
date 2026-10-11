@@ -34,6 +34,8 @@ public class MenuComponentEditorGrid extends Component{
     public final MenuEdit editor;
     public int blockSize;
     public int[] mouseover;
+    /** Disable hardware polling for tutorial grids driven by simulated cursor/button events. */
+    public boolean usePhysicalMouseState = true;
     private static final int resonatingTime = 60;
     private static final float resonatingMin = .25f;
     private static final float resonatingMax = .5f;
@@ -67,10 +69,10 @@ public class MenuComponentEditorGrid extends Component{
     }
     @Override
     public void render2d(double deltaTime){
-        if(glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
+        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
             editor.getSelectedTool(0).mouseReset(editorSpace, 0);
         }
-        if(glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
+        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
             editor.getSelectedTool(0).mouseReset(editorSpace, 1);
         }
         resonatingTick+=deltaTime*20;
@@ -319,10 +321,8 @@ public class MenuComponentEditorGrid extends Component{
         if(axis.x!=0&&pos.x!=layer)return null;
         if(axis.y!=0&&pos.y!=layer)return null;
         if(axis.z!=0&&pos.z!=layer)return null;
-        if(sx<x1)return null;
-        if(sx>x2)return null;
-        if(sy<y1)return null;
-        if(sy>y2)return null;
+        if(sx<0||sx>x2-x1)return null;
+        if(sy<0||sy>y2-y1)return null;
         return new int[]{sx,sy};
     }
     @Override
@@ -331,9 +331,9 @@ public class MenuComponentEditorGrid extends Component{
         synchronized(synchronizer){
             mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
         }
-        if(glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
-        if(glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
-        if(glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
+        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
+        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
+        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
         if(Double.isNaN(x)||Double.isNaN(y)){
             return;
         }

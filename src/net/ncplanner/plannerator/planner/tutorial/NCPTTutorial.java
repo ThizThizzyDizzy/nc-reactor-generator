@@ -4,6 +4,9 @@ import java.util.Random;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.multiblock.BlockPos;
+import net.ncplanner.plannerator.multiblock.editor.Action;
+import net.ncplanner.plannerator.multiblock.editor.EditorSpace;
+import net.ncplanner.plannerator.planner.gui.menu.component.editor.MenuComponentEditorListBlock;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
@@ -157,11 +160,11 @@ public class NCPTTutorial extends Tutorial{
     public void special(String name, boolean addHeight){
         components.add(new Component() {
             private Image editorImage;
-            private MenuEdit pencilEditor,lineEditor,boxEditor,selectEditor,moveEditor;
             private MenuComponentEditorGrid pencil, line, box, select, move;
             private static final int squiggleLength = 40;//2 seconds of squiggle
             private static final int undoTime = 60;//3 seconds total
-            private static final int loopLength = 70;//3 seconds total
+            private static final int loopLength = 70;//3.5 seconds total
+            private int animationTick;
             private Random rand = new Random();
             @Override
             public void preRender(){
@@ -190,79 +193,71 @@ public class NCPTTutorial extends Tutorial{
                         }
                         break;
                     case "editor/tool/pencil":
-                        if(pencilEditor==null){
-                            pencilEditor = new MenuEdit(Core.gui, null, template.newInstance(tutorialConfig, 7, 1, 3));
-                            pencilEditor.onOpened();
-                            pencilEditor.tools.setSelectedIndex(2);
-                            pencil = (MenuComponentEditorGrid)pencilEditor.multibwauk.components.get(0);
-                            pencilEditor.render2d(0);
-                            pencilEditor.render2d(0);
-                        }
+                        if(pencil==null)pencil = createDemoGrid(template, tutorialConfig, 2);
                         break;
                     case "editor/tool/line":
-                        if(lineEditor==null){
-                            lineEditor = new MenuEdit(Core.gui, null, template.newInstance(tutorialConfig, 7, 1, 3));
-                            lineEditor.onOpened();
-                            lineEditor.tools.setSelectedIndex(3);
-                            line = (MenuComponentEditorGrid)lineEditor.multibwauk.components.get(0);
-                            lineEditor.render2d(0);
-                            lineEditor.render2d(0);
-                        }
+                        if(line==null)line = createDemoGrid(template, tutorialConfig, 3);
                         break;
                     case "editor/tool/box":
-                        if(boxEditor==null){
-                            boxEditor = new MenuEdit(Core.gui, null, template.newInstance(tutorialConfig, 7, 1, 3));
-                            boxEditor.onOpened();
-                            boxEditor.tools.setSelectedIndex(4);
-                            box = (MenuComponentEditorGrid)boxEditor.multibwauk.components.get(0);
-                            boxEditor.render2d(0);
-                            boxEditor.render2d(0);
-                        }
+                        if(box==null)box = createDemoGrid(template, tutorialConfig, 4);
                         break;
                     case "editor/tool/select":
-                        if(selectEditor==null){
-                            selectEditor = new MenuEdit(Core.gui, null, template.newInstance(tutorialConfig, 7, 1, 3));
-                            selectEditor.onOpened();
-                            selectEditor.tools.setSelectedIndex(1);
-                            select = (MenuComponentEditorGrid)selectEditor.multibwauk.components.get(0);
-                            selectEditor.render2d(0);
-                            selectEditor.render2d(0);
-                        }
+                        if(select==null)select = createDemoGrid(template, tutorialConfig, 1);
                         break;
                     case "editor/tool/move":
-                        if(moveEditor==null){
-                            moveEditor = new MenuEdit(Core.gui, null, template.newInstance(tutorialConfig, 7, 1, 3));
-                            moveEditor.onOpened();
-                            moveEditor.tools.setSelectedIndex(0);
-                            moveEditor.parts.setSelectedIndex(1);
-                            move = (MenuComponentEditorGrid)moveEditor.multibwauk.components.get(0);
-                            moveEditor.multiblock.action(new SetblocksAction(moveEditor.getSelectedBlock(0))
-                                .add(new BlockPos(0, 0, 1))
-                                .add(new BlockPos(1, 0, 1))
-                                .add(new BlockPos(2, 0, 1))
-                                .add(new BlockPos(0, 0, 2))
-                                .add(new BlockPos(1, 0, 2))
-                                .add(new BlockPos(2, 0, 2))
-                                .add(new BlockPos(0, 0, 3))
-                                .add(new BlockPos(1, 0, 3))
-                                .add(new BlockPos(2, 0, 3))
-                            , true, false);
-                            ArrayList<BlockPos> selection = new ArrayList<>();
-                            selection.add(new BlockPos(0, 0, 1));
-                            selection.add(new BlockPos(1, 0, 1));
-                            selection.add(new BlockPos(2, 0, 1));
-                            selection.add(new BlockPos(0, 0, 2));
-                            selection.add(new BlockPos(1, 0, 2));
-                            selection.add(new BlockPos(2, 0, 2));
-                            selection.add(new BlockPos(0, 0, 3));
-                            selection.add(new BlockPos(1, 0, 3));
-                            selection.add(new BlockPos(2, 0, 3));
-                            moveEditor.multiblock.action(new SetSelectionAction(moveEditor, 0, selection), true, false);
-                            moveEditor.render2d(0);
-                            moveEditor.render2d(0);
+                        if(move==null){
+                            move = createDemoGrid(template, tutorialConfig, 0);
+                            seedMoveDemo(move);
                         }
                         break;
                 }
+            }
+            private MenuComponentEditorGrid createDemoGrid(Multiblock template, NCPFConfigurationContainer configuration, int tool){
+                MenuEdit editor = new MenuEdit(Core.gui, null, template.newInstance(configuration, tool==0?9:7, 1, tool==0?5:3)){
+                    @Override
+                    public void action(Action action, boolean allowUndo){
+                        // Demos show tool behavior without adding automatic casing or recalculating the reactor.
+                        multiblock.action(action, false, allowUndo);
+                    }
+                };
+                editor.onOpened();
+                editor.tools.setSelectedIndex(tool);
+                for(int i = 0; i<editor.parts.components.size(); i++){
+                    MenuComponentEditorListBlock part = (MenuComponentEditorListBlock)editor.parts.components.get(i);
+                    if(part.block instanceof net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block
+                            &&((net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)part.block).template.fuelCell!=null
+                            ||part.block instanceof net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block
+                            &&((net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block)part.block).template.fuelCell!=null){
+                        editor.parts.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                for(net.ncplanner.plannerator.planner.gui.Component component : editor.multibwauk.components){
+                    MenuComponentEditorGrid grid = (MenuComponentEditorGrid)component;
+                    if(grid.layer!=1)continue;// Layer zero is casing; the tools operate in the interior.
+                    if(tool==0){
+                        // Keep the nine-by-five preview, shifted entirely inside a larger reactor.
+                        grid = new MenuComponentEditorGrid(0, 0, grid.blockSize, editor, editor.multiblock,
+                                (EditorSpace)editor.multiblock.getEditorSpaces().get(0), 1, 1, 9, 5, grid.axis, grid.layer);
+                    }
+                    grid.x = grid.y = 0;
+                    grid.usePhysicalMouseState = false;
+                    grid.isMouseFocused = true;
+                    return grid;
+                }
+                throw new IllegalStateException("Tutorial reactor has no interior editor layer");
+            }
+            private void seedMoveDemo(MenuComponentEditorGrid grid){
+                SetblocksAction blocks = new SetblocksAction(grid.editor.getSelectedBlock(0));
+                ArrayList<BlockPos> selection = new ArrayList<>();
+                // Center the selection on the unchanged preview drag start: cell (1, 2).
+                for(int x = 0; x<=2; x++)for(int z = 1; z<=3; z++){
+                    BlockPos pos = grid.gridToBlockCoords(x, z);
+                    blocks.add(pos);
+                    selection.add(pos);
+                }
+                grid.editor.multiblock.action(blocks, false, false);
+                grid.editor.multiblock.action(new SetSelectionAction(grid.editor, 0, selection), false, false);
             }
             @Override
             public void tick(int tick){
@@ -289,15 +284,14 @@ public class NCPTTutorial extends Tutorial{
                             throw new IllegalArgumentException("Unknown editor tool special: "+name);
                     }
                     if(grid==null)return;
-                    int t = tick%loopLength;//2.5 second loop
+                    int t = animationTick++%loopLength;
                     if(t<=squiggleLength){
                         double x = (6*t)/(float)squiggleLength+1.5f;
-                        double y = MathUtil.cos((MathUtil.pi()*(x-3))/3)+5/2f;
+                        double y = MathUtil.cos((MathUtil.pi()*(x-3))/3)+2.5;
                         double X = x*grid.blockSize;
                         double Y = y*grid.blockSize;
                         grid.onCursorMoved(X, Y);
                         if(t==0){
-                            grid.editor.parts.setSelectedIndex(1);
                             grid.onMouseButton(X, Y, 0, GLFW_PRESS, 0);
                         }
                         else if(t==squiggleLength){
@@ -308,30 +302,7 @@ public class NCPTTutorial extends Tutorial{
                     }
                     if(t==undoTime){
                         grid.editor.multiblock.undo(true);
-                        if(grid==move){
-                            grid.editor.multiblock.action(new SetblocksAction(grid.editor.getSelectedBlock(0))
-                                .add(new BlockPos(0, 0, 1))
-                                .add(new BlockPos(1, 0, 1))
-                                .add(new BlockPos(2, 0, 1))
-                                .add(new BlockPos(0, 0, 2))
-                                .add(new BlockPos(1, 0, 2))
-                                .add(new BlockPos(2, 0, 2))
-                                .add(new BlockPos(0, 0, 3))
-                                .add(new BlockPos(1, 0, 3))
-                                .add(new BlockPos(2, 0, 3))
-                            , true, false);
-                            ArrayList<BlockPos> selection = new ArrayList<>();
-                            selection.add(new BlockPos(0, 0, 1));
-                            selection.add(new BlockPos(1, 0, 1));
-                            selection.add(new BlockPos(2, 0, 1));
-                            selection.add(new BlockPos(0, 0, 2));
-                            selection.add(new BlockPos(1, 0, 2));
-                            selection.add(new BlockPos(2, 0, 2));
-                            selection.add(new BlockPos(0, 0, 3));
-                            selection.add(new BlockPos(1, 0, 3));
-                            selection.add(new BlockPos(2, 0, 3));
-                            grid.editor.multiblock.action(new SetSelectionAction(grid.editor, 0, selection), true, false);
-                        }
+                        if(grid==move)seedMoveDemo(grid);
                     }
                 }
             }

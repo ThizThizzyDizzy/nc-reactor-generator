@@ -13,9 +13,10 @@ public class MenuComponentTutorialDisplay extends Component{
     }
     @Override
     public void render2d(double deltaTime){
+        tutorial.preRender();
         int last = (int)tick;
         tick+=deltaTime*20;
-        if((int)tick>last)tutorial.tick((int)tick);//TODO make it all go based on the render method
+        for(int next = last+1; next<=(int)tick; next++)tutorial.tick(next);
         super.render2d(deltaTime);
     }
     @Override
