@@ -1,0 +1,788 @@
+{
+    "version": 1,
+    "configuration": {},
+    "addons": [],
+    "designs": [],
+    "modules": {
+        "plannerator:generator_settings": {
+            "settings": {
+                "name": "Power Efficiency",
+                "parameters": [
+                    {
+                        "name": "Distiller Count",
+                        "type": "int",
+                        "value": 4
+                    },
+                    {
+                        "name": "Min Speed Multiplier",
+                        "type": "float",
+                        "value": 1.0
+                    },
+                    {
+                        "name": "Core Timeout (ms)",
+                        "type": "int",
+                        "value": 500
+                    },
+                    {
+                        "name": "Timeout (ms)",
+                        "type": "int",
+                        "value": 2000
+                    },
+                    {
+                        "name": "Final Timeout (ms)",
+                        "type": "int",
+                        "value": 10000
+                    }
+                ],
+                "stages": [
+                    {
+                        "steps": [
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_layer",
+                                    "indicies": []
+                                }
+                            }
+                        ],
+                        "priorities": [
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Error Count"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Error Count"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Missing Sieve Trays"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Missing Sieve Trays"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock2.Speed Multiplier"
+                                        }
+                                    },
+                                    "v2": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Speed Multiplier"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Energy Per Process"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Energy Per Process"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Speed Multiplier"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Speed Multiplier"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Power Use"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Power Use"
+                                    }
+                                }
+                            }
+                        ],
+                        "post_processing": [],
+                        "stage_transitions": [
+                            {
+                                "target_stage": 1,
+                                "conditions": [
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.stages[0]{Stage 1}.Hits"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1000
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Last Update Nanos"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Core Timeout (ms)"
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Valid"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "store": false,
+                                "consolidate": false,
+                                "stop": false
+                            }
+                        ]
+                    },
+                    {
+                        "steps": [
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_layer",
+                                    "indicies": []
+                                }
+                            },
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_casing",
+                                    "indicies": []
+                                }
+                            }
+                        ],
+                        "priorities": [
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Error Count"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Error Count"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Missing Sieve Trays"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Missing Sieve Trays"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock2.Speed Multiplier"
+                                        }
+                                    },
+                                    "v2": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Speed Multiplier"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Energy Per Process"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Energy Per Process"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Speed Multiplier"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Speed Multiplier"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Power Use"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Power Use"
+                                    }
+                                }
+                            }
+                        ],
+                        "post_processing": [],
+                        "stage_transitions": [
+                            {
+                                "target_stage": 2,
+                                "conditions": [
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.stages[1]{Stage 2}.Hits"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1000
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Last Update Nanos"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Core Timeout (ms)"
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Valid"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "store": false,
+                                "consolidate": false,
+                                "stop": false
+                            }
+                        ]
+                    },
+                    {
+                        "steps": [
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_layer",
+                                    "indicies": []
+                                }
+                            },
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_casing",
+                                    "indicies": []
+                                }
+                            }
+                        ],
+                        "priorities": [
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Error Count"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Error Count"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Missing Sieve Trays"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Missing Sieve Trays"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock2.Speed Multiplier"
+                                        }
+                                    },
+                                    "v2": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Speed Multiplier"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Energy Per Process"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Energy Per Process"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Speed Multiplier"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Speed Multiplier"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Power Use"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Power Use"
+                                    }
+                                }
+                            }
+                        ],
+                        "post_processing": [],
+                        "stage_transitions": [
+                            {
+                                "target_stage": 0,
+                                "conditions": [
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.stages[2]{Stage 3}.Hits"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 10000
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Last Update Nanos"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Timeout (ms)"
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Valid"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1
+                                        }
+                                    },
+                                    {
+                                        "type": "less",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Stored Multiblocks"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Distiller Count"
+                                        }
+                                    }
+                                ],
+                                "store": true,
+                                "consolidate": false,
+                                "stop": false
+                            },
+                            {
+                                "target_stage": 3,
+                                "conditions": [
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.stages[2]{Stage 3}.Hits"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 10000
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Last Update Nanos"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Timeout (ms)"
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Valid"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Stored Multiblocks"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Distiller Count"
+                                        }
+                                    }
+                                ],
+                                "store": false,
+                                "consolidate": true,
+                                "stop": false
+                            }
+                        ]
+                    },
+                    {
+                        "steps": [
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_layer",
+                                    "indicies": []
+                                }
+                            },
+                            {
+                                "type": "single",
+                                "mutator": {
+                                    "type": "nuclearcraft:overhaul_distiller:random_casing",
+                                    "indicies": []
+                                }
+                            }
+                        ],
+                        "priorities": [
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Error Count"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Error Count"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Missing Sieve Trays"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Missing Sieve Trays"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock2.Speed Multiplier"
+                                        }
+                                    },
+                                    "v2": {
+                                        "type": "operator",
+                                        "operator": "min",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Min Speed Multiplier"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Speed Multiplier"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Energy Per Process"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Energy Per Process"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Speed Multiplier"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Speed Multiplier"
+                                    }
+                                }
+                            },
+                            {
+                                "conditions": [],
+                                "operator": {
+                                    "type": "operator",
+                                    "operator": "subtract",
+                                    "v1": {
+                                        "type": "variable",
+                                        "variable": "multiblock.Power Use"
+                                    },
+                                    "v2": {
+                                        "type": "variable",
+                                        "variable": "multiblock2.Power Use"
+                                    }
+                                }
+                            }
+                        ],
+                        "post_processing": [],
+                        "stage_transitions": [
+                            {
+                                "target_stage": 0,
+                                "conditions": [
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.stages[3]{Stage 4}.Hits"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 10000
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "generator.Last Update Nanos"
+                                        },
+                                        "v2": {
+                                            "type": "variable",
+                                            "variable": "generator.settings.Final Timeout (ms)"
+                                        }
+                                    },
+                                    {
+                                        "type": "greater_or_equal",
+                                        "v1": {
+                                            "type": "variable",
+                                            "variable": "multiblock.Valid"
+                                        },
+                                        "v2": {
+                                            "type": "constant",
+                                            "constant": "int",
+                                            "value": 1
+                                        }
+                                    }
+                                ],
+                                "store": false,
+                                "consolidate": false,
+                                "stop": true
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

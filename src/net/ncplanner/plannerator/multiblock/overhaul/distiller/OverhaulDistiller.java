@@ -15,7 +15,8 @@ import net.ncplanner.plannerator.multiblock.editor.decal.BlockValidDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.MissingCasingDecal;
 import net.ncplanner.plannerator.planner.Task;
 import net.ncplanner.plannerator.planner.MathUtil;
-import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulDistiller.CompiledOverhaulDistillerConfiguration;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulDistiller.LiteOverhaulDistiller;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementStack;
@@ -461,8 +462,10 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         return "multiblocks/overhaul_distiller";
     }
     @Override
-    public <T extends LiteMultiblock> T compile(){
-        return null;
+    public LiteOverhaulDistiller compile(){
+        LiteOverhaulDistiller distiller = new LiteOverhaulDistiller(CompiledOverhaulDistillerConfiguration.compile(getSpecificConfiguration()));
+        distiller.importAndConvert(this);
+        return distiller;
     }
     @Override
     public OverhaulDistillerDesign convertToDesign(){

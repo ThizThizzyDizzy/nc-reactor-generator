@@ -17,6 +17,7 @@ import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceLineDecal;
 import net.ncplanner.plannerator.multiblock.editor.decal.NeutronSourceTargetDecal;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.overhaulSFR.LiteOverhaulSFR;
+import net.ncplanner.plannerator.multiblock.generator.lite.overhaulDistiller.LiteOverhaulDistiller;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.OverhaulMSR;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.OverhaulTurbine;
@@ -478,6 +479,10 @@ public class OverhaulModule extends Module<Object>{
     }
     @Override
     public void getGenerators(LiteMultiblock multiblock, ArrayList<Supplier<InputStream>> generators){
+        if(multiblock instanceof LiteOverhaulDistiller){
+            generators.add(()-> Core.getInputStream("configurations/generators/overhaul_distiller/speed.ncpf.json"));
+            generators.add(()-> Core.getInputStream("configurations/generators/overhaul_distiller/efficiency.ncpf.json"));
+        }
         if(multiblock instanceof LiteOverhaulSFR){
             generators.add(()-> Core.getInputStream("configurations/generators/overhaul_sfr/output.ncpf.json"));
             generators.add(()-> Core.getInputStream("configurations/generators/overhaul_sfr/efficiency.ncpf.json"));
