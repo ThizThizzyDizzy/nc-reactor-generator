@@ -141,10 +141,12 @@ public class TextBox extends Component{
                 }
             }
         }
-        while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
-        if(text.startsWith(".")){
-            while(text.endsWith("0"))text = text.substring(0, text.length()-1);
-            if(text.equals("."))text = "0";
+        if(filter!=NONE){
+            while(text.startsWith("0")&&!text.startsWith("0.")&&text.length()>1)text = text.substring(1);
+            if(text.startsWith(".")){
+                while(text.endsWith("0"))text = text.substring(0, text.length()-1);
+                if(text.equals("."))text = "0";
+            }
         }
         changeListeners.forEach((t) -> t.accept(text));
     }

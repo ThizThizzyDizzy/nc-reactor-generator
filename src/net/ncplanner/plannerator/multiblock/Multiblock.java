@@ -790,6 +790,9 @@ public abstract class Multiblock<T extends AbstractBlock>{
         }
         return null;
     }
+    public boolean supportsGeneration(){
+        return false;
+    }
     public abstract <T extends LiteMultiblock> T compile();
     public <T extends MultiblockDesign> T toDesign(){
         T design = convertToDesign();

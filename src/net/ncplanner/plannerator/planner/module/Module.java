@@ -116,6 +116,7 @@ public abstract class Module<T>{
     }
     private final ArrayList<Multiblock> registeredMultiblocks = new ArrayList<>();
     public final void registerNCPF(){
+        registeredMultiblocks.clear();
         // 1. Initialize ClassGraph, scope it to your package, and perform a SINGLE fast scan.
         try(ScanResult scanResult = new ClassGraph()
             .acceptPackages("net.ncplanner.plannerator")

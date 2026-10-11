@@ -264,6 +264,8 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 }
             }.open();
         });
+        generate.enabled = multiblock.supportsGeneration();
+        if(!generate.enabled)generate.setTooltip("Generation is not available for this multiblock type");
         generate.addAction(() -> {
             gui.open(new MenuTransition(gui, this, new MenuGenerator(gui, this, multiblock), MenuTransition.SlideTransition.slideFrom(0, 1), 5));
         });
@@ -375,7 +377,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                 if(glfwGetKey(DizzyEngine.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
                 if(glfwGetKey(DizzyEngine.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
                 PlanneratorRenderer renderer = new PlanneratorRenderer();
-                renderer.projection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
+                renderer.setTemporaryProjection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
                 BoundingBox bbox = mb.getBoundingBox();
                 float size = MathUtil.max(bbox.getWidth(), MathUtil.max(bbox.getHeight(), bbox.getDepth()));
                 size/=mb.get3DPreviewScale();
@@ -388,7 +390,7 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
                         .translate(-bbox.getWidth()/2f, -bbox.getHeight()/2f, -bbox.getDepth()/2f));
                 draw3D();
                 renderer.popModel();
-                renderer.projection(new Matrix4f().setPerspective(45, gui.getWidth()/(float)gui.getHeight(), 0.1f, 100));
+                renderer.restoreProjection();
             }
         }
     }

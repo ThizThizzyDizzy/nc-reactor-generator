@@ -103,6 +103,7 @@ public class MenuPickReference extends MenuDialog{
             }));
         }
         addButton("Cancel");
+        if(!tabs.components.isEmpty())((Button)tabs.components.get(0)).runActions();
     }
     @Override
     public void render2d(double deltaTime){

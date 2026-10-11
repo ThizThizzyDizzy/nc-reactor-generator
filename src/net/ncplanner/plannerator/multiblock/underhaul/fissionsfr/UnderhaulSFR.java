@@ -610,7 +610,8 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
             if(template.casing!=null)casing = new Block(getConfiguration(), null, template);
             if(template.controller!=null)controller = new Block(getConfiguration(), null, template);
         }
-        for(BlockElement template : Core.project.getConfiguration(UnderhaulSFRConfiguration::new).blocks){
+        UnderhaulSFRConfiguration projectConfiguration = Core.project.getConfiguration(UnderhaulSFRConfiguration::new);
+        if(projectConfiguration!=null)for(BlockElement template : projectConfiguration.blocks){
             if(casing==null&&template.casing!=null)casing = new Block(getConfiguration(), null, template);
             if(controller==null&&template.controller!=null)controller = new Block(getConfiguration(), null, template);
         }
@@ -632,6 +633,10 @@ public class UnderhaulSFR extends CuboidalMultiblock<Block>{
     @Override
     public String getPreviewTexture(){
         return "multiblocks/underhaul_sfr";
+    }
+    @Override
+    public boolean supportsGeneration(){
+        return true;
     }
     @Override
     public LiteUnderhaulSFR compile(){

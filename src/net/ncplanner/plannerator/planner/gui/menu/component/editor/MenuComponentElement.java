@@ -36,12 +36,18 @@ public class MenuComponentElement extends Component implements Pinnable{
         if(text==null)text = "null";
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-(element.getTexture()!=null?height:0))/textLength);
-        float textHeight = (int)(height*scale)-1;
+        float textHeight = Math.max(Math.min(height-1, 16), (int)(height*scale)-1);
+        float availableWidth = width-(element.getTexture()!=null?height:0);
+        if(renderer.getStringWidth(text, textHeight)>availableWidth){
+            while(!text.isEmpty()&&renderer.getStringWidth(text+"...", textHeight)>availableWidth)
+                text = text.substring(0, text.length()-1);
+            text += "...";
+        }
         renderer.drawText(element.getTexture()!=null?x+height:x, y+height/2-textHeight/2, x+width, y+height/2+textHeight/2, text);
     }
     @Override
     public String getTooltip(){
-        String ttp = "";
+        String ttp = element.getDisplayName();
         for(NCPFModule module : element.modules.modules.values()){
             if(module instanceof ElementStatsModule){
                 ElementStatsModule stats = (ElementStatsModule)module;
