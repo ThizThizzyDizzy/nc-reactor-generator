@@ -111,14 +111,15 @@ public class Main{
                     }
                     String json = sb.toString();
 
-                    java.util.regex.Pattern p = java.util.regex.Pattern.compile("\\{[^\\{]*\"name\":\"([^\"]+)\"[^\\{]*\"browser_download_url\":\"([^\"]+)\"[^\\}]*\\}");
+                    java.util.regex.Pattern p = java.util.regex.Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]+)\"");
                     java.util.regex.Matcher m = p.matcher(json);
 
                     while(m.find()){
-                        String name = m.group(1);
-                        if(!name.endsWith(".jar")&&!name.contains(fileBaseName))
+                        String downloadUrl = m.group(1);
+                        String name = downloadUrl.substring(downloadUrl.lastIndexOf('/')+1);
+                        if(!name.endsWith(".jar")||!name.contains(fileBaseName))
                             continue;
-                        return m.group(2);
+                        return downloadUrl;
                     }
                 }
             }
