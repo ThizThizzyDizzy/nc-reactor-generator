@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR;
 import java.util.ArrayList;
 import java.util.List;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.ncpf.configuration.BlockRecipesElement;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.RecipePortsModule;
 import net.ncplanner.plannerator.planner.ncpf.module.overhaulSFR.CasingModule;
@@ -51,6 +52,12 @@ public class BlockElement extends BlockRecipesElement{
         definePlanneratorModule(() -> recipePorts, (m) -> recipePorts = m, RecipePortsModule::new);
         definePlanneratorRecipes(getClass(), () -> fuelCell, (e) -> e.fuels, () -> recipePorts, (e, lst) -> e.fuels = lst, Fuel::new);
         definePlanneratorRecipes(getClass(), () -> irradiator, (e) -> e.irradiatorRecipes, () -> recipePorts, (e, lst) -> e.irradiatorRecipes = lst, IrradiatorRecipe::new);
+    }
+    @Override
+    public void convertFromObject(NCPFObject ncpf){
+        super.convertFromObject(ncpf);
+        // Ports are face casing, even when their configuration omits the casing module.
+        if(port!=null&&casing==null)casing = setModule(new CasingModule(false));
     }
     public boolean blocksLOS(){
         return fuelCell!=null||irradiator!=null||reflector!=null;
