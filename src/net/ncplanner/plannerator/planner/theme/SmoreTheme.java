@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.theme;
+import java.lang.reflect.Field;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.Core;
@@ -681,18 +682,18 @@ public class SmoreTheme extends ColorTheme{
     @Override
     public void onSet(){
         try{
-            java.lang.reflect.Field field = Core.class.getDeclaredField("str");
+            Field field = Core.class.getDeclaredField("str");
             String str = (String)field.get(Core.class);
             if(str.startsWith("STA")&&str.endsWith("ACK")&&str.length()==5){
-                java.lang.reflect.Field f2 = MenuMain.class.getDeclaredField("enab"+"les");
+                Field f2 = MenuMain.class.getDeclaredField("enab"+"les");
                 f2.set(MenuMain.class, true);
             }
             //tried to hide it lol, I guess you found it
             for(Module m : Core.modules){
-                java.lang.reflect.Field key = Module.class.getDeclaredField("secr"+"etK"+"ey");
+                Field key = Module.class.getDeclaredField("secr"+"etK"+"ey");
                 String keyStr = (String)key.get(m);
                 if(str.equalsIgnoreCase(keyStr)){
-                    java.lang.reflect.Field lok = Module.class.getDeclaredField("unlo"+"cked");
+                    Field lok = Module.class.getDeclaredField("unlo"+"cked");
                     lok.set(m, true);
                 }
             }

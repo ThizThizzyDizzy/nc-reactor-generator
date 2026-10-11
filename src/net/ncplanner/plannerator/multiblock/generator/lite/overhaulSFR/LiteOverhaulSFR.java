@@ -15,6 +15,7 @@ import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulSFRConfiguration;
+import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.CoolantRecipe;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.Fuel;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.IrradiatorRecipe;
@@ -677,7 +678,7 @@ public class LiteOverhaulSFR extends LiteMultiblock<OverhaulSFR>{
             if(moderatorValid[pos.x-1][pos.y-1][pos.z-1]+blockActive[pos.x-1][pos.y-1][pos.z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
-                for(net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement b : config.blocks){
+                for(BlockElement b : config.blocks){
                     if(b.definition.matches(configuration.blockDefinition[block])){
                         bl = new Block(configg, pos, b);
                         NCPFElementDefinition recip = configuration.blockRecipe[block];

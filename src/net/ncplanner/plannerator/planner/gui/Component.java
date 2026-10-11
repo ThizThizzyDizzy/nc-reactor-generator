@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.planner.gui;
 import java.util.ArrayList;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
 @Deprecated
 public class Component extends com.thizthizzydizzy.dizzyengine.ui.component.Component{
@@ -41,7 +42,7 @@ public class Component extends com.thizthizzydizzy.dizzyengine.ui.component.Comp
     @Override
     public float getHeight(){return height;}
     @Override
-    public void onResize(org.joml.Vector2f size){width=size.x;height=size.y;}
+    public void onResize(Vector2f size){width=size.x;height=size.y;}
     public void render2d(double deltaTime){
         PlanneratorRenderer renderer = new PlanneratorRenderer();
         renderer.bound(x, y, x+width, y+height);

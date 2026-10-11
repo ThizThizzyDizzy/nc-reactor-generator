@@ -1,4 +1,6 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.overhaul.turbine.Block;
@@ -8,6 +10,7 @@ import net.ncplanner.plannerator.ncpf.design.NCPFOverhaulTurbineDesign;
 import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.annotation.RegisterWith;
 import net.ncplanner.plannerator.planner.ncpf.configuration.OverhaulTurbineConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.BlockElement;
@@ -16,8 +19,8 @@ import net.ncplanner.plannerator.planner.ncpf.configuration.overhaulTurbine.Turb
 @Deprecated
 public class OverhaulTurbineDesign extends MultiblockDesign<NCPFOverhaulTurbineDesign, OverhaulTurbine>{
     public TurbineRecipe recipe;
-    public final java.util.ArrayList<MultiblockDesign> inputs = new java.util.ArrayList<>();
-    public void resolveInputs(java.util.List<net.ncplanner.plannerator.planner.ncpf.Design> designs){
+    public final ArrayList<MultiblockDesign> inputs = new ArrayList<>();
+    public void resolveInputs(List<Design> designs){
         inputs.clear();
         for(int index : definition.inputIndices){
             if(index<0||index>=designs.size()||!(designs.get(index) instanceof MultiblockDesign))

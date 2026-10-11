@@ -43,6 +43,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickGeneratorMutato
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickMutator;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuPickParameter;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuSaveDialog;
+import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 import net.ncplanner.plannerator.planner.ncpf.module.GeneratorSettingsModule;
 import org.joml.Matrix4f;
@@ -342,7 +343,7 @@ public class MenuGenerator<T extends LiteMultiblock> extends Menu{
     private LiteGenerator<T>[] createGenerators(T multiblock, T priorityMultiblock) {
         current = this;
         ArrayList<Supplier<InputStream>> generators = new ArrayList<>();
-        for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+        for(Module m : Core.modules){
             if(m.isActive()){
                 m.getGenerators(multiblock, generators);
             }

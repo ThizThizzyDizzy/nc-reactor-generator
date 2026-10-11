@@ -2,6 +2,7 @@ package net.ncplanner.plannerator.planner.file.ncpf;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +20,7 @@ public class NCPFFileWriter{
     /** The caller retains ownership of the stream. */
     public static void write(NcpfRoot root, OutputStream stream, NCPFFormatWriter format){
         try{format.write(root, stream);}
-        catch(IOException ex){throw new java.io.UncheckedIOException("Failed to write NCPF document", ex);}
+        catch(IOException ex){throw new UncheckedIOException("Failed to write NCPF document", ex);}
     }
     public static void write(Project project, File file, NCPFFormatWriter format){
         write(NcpfBridge.toNcpfRoot(project), file, format);
@@ -32,7 +33,7 @@ public class NCPFFileWriter{
             try(OutputStream stream = Files.newOutputStream(temporary)){format.write(root, stream);}
             try{Files.move(temporary, destination, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);}
             catch(AtomicMoveNotSupportedException ex){Files.move(temporary, destination, StandardCopyOption.REPLACE_EXISTING);}
-        }catch(IOException ex){throw new java.io.UncheckedIOException("Failed to save NCPF document", ex);}
+        }catch(IOException ex){throw new UncheckedIOException("Failed to save NCPF document", ex);}
         finally{
             if(temporary!=null)try{Files.deleteIfExists(temporary);}catch(IOException ignored){}
         }

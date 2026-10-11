@@ -1,13 +1,16 @@
 package net.ncplanner.plannerator.planner.file.writer;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.Iterator;
+import net.ncplanner.ncpf.structure.NcpfRoot;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.io.NCPFList;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.file.FileFormat;
 import net.ncplanner.plannerator.planner.file.FormatWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
+import net.ncplanner.plannerator.planner.file.ncpf.NcpfBridge;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 public class NCPFWriter extends FormatWriter{
     public static NCPFFormatWriter format;
@@ -21,20 +24,20 @@ public class NCPFWriter extends FormatWriter{
     }
     @Override
     public void write(Project ncpf, OutputStream stream){
-        net.ncplanner.ncpf.structure.NcpfRoot root = prepare(ncpf);
+        NcpfRoot root = prepare(ncpf);
         try{
             format.write(root, stream);
         }catch(IOException ex){
-            throw new java.io.UncheckedIOException("Failed to write NCPF file!", ex);
+            throw new UncheckedIOException("Failed to write NCPF file!", ex);
         }
     }
-    public net.ncplanner.ncpf.structure.NcpfRoot prepare(Project project){
+    public NcpfRoot prepare(Project project){
         Project copy = project.copyTo(Project::new);
         copy.makePartial();
         NCPFObject obj = new NCPFObject();
         copy.convertToObject(obj);
         trimPlanneratorModules(obj);
-        return net.ncplanner.plannerator.planner.file.ncpf.NcpfBridge.toNcpfRoot(obj);
+        return NcpfBridge.toNcpfRoot(obj);
     }
     @Override
     public boolean isMultiblockSupported(Multiblock multi){

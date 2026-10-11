@@ -10,12 +10,15 @@ import java.io.OutputStreamWriter;
 import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 public class Main{
     public static boolean isBot = false;
     public static boolean headless = false;
@@ -100,10 +103,10 @@ public class Main{
         String url = "https://api.github.com/repos/"+repoOwner+"/"+repoName+"/releases/tags/"+version;
         HttpURLConnection conn;
         try{
-            conn = (HttpURLConnection)new java.net.URL(url).openConnection();
+            conn = (HttpURLConnection)new URL(url).openConnection();
             conn.setRequestMethod("GET");
             if(conn.getResponseCode()==200){
-                try(java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()))){
+                try(BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))){
                     StringBuilder sb = new StringBuilder();
                     String line;
                     while((line = reader.readLine())!=null){
@@ -111,8 +114,8 @@ public class Main{
                     }
                     String json = sb.toString();
 
-                    java.util.regex.Pattern p = java.util.regex.Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]+)\"");
-                    java.util.regex.Matcher m = p.matcher(json);
+                    Pattern p = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]+)\"");
+                    Matcher m = p.matcher(json);
 
                     while(m.find()){
                         String downloadUrl = m.group(1);

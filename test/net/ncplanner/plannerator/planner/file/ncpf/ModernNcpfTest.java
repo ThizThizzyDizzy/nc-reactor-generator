@@ -3,24 +3,37 @@ package net.ncplanner.plannerator.planner.file.ncpf;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonReader;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 import net.ncplanner.ncpf.io.NcpfJsonConverter;
 import net.ncplanner.ncpf.structure.NcpfRoot;
+import net.ncplanner.ncpf.structure.configuration.nuclearcraft.OverhaulSFRConfiguration;
+import net.ncplanner.ncpf.structure.design.nuclearcraft.OverhaulSFRDesign;
 import net.ncplanner.ncpf.structure.element.NcpfElement;
+import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.configuration.CannedConfiguration;
+import net.ncplanner.plannerator.planner.configuration.ConfigurationManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.file.FileWriter;
 import net.ncplanner.plannerator.planner.file.reader.NCPFReader;
@@ -29,6 +42,7 @@ import net.ncplanner.plannerator.planner.module.CoreModule;
 import net.ncplanner.plannerator.planner.module.FusionTestModule;
 import net.ncplanner.plannerator.planner.module.OverhaulModule;
 import net.ncplanner.plannerator.planner.module.UnderhaulModule;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 
 /** Standalone regression runner. Compares JSON structure and values, never formatting. */
@@ -36,7 +50,7 @@ public final class ModernNcpfTest{
     private static final JSONNCPFReader READER = new JSONNCPFReader();
     private static final JSONNCPFWriter WRITER = new JSONNCPFWriter();
     private static int passed;
-    private static final java.util.TreeSet<String> changes = new java.util.TreeSet<>();
+    private static final TreeSet<String> changes = new TreeSet<>();
     public static void main(String[] args) throws Exception{
         // The corpus verifies exact encoded texture preservation without repeatedly decoding PNGs.
         System.setProperty("plannerator.skipTextures", "true");
@@ -197,8 +211,8 @@ public final class ModernNcpfTest{
         System.clearProperty("plannerator.skipTextures");
         try{
             roundTrip(document.toString(), "decoded texture with detailed reactor");
-            com.thizthizzydizzy.dizzyengine.graphics.image.Image before = com.thizthizzydizzy.dizzyengine.graphics.image.Image.fromBase64(firstTexture(document));
-            com.thizthizzydizzy.dizzyengine.graphics.image.Image after = com.thizthizzydizzy.dizzyengine.graphics.image.Image.fromBase64(firstTexture(save(load(document.toString()))));
+            Image before = Image.fromBase64(firstTexture(document));
+            Image after = Image.fromBase64(firstTexture(save(load(document.toString()))));
             if(before.getWidth()!=after.getWidth()||before.getHeight()!=after.getHeight())throw new AssertionError("texture dimensions changed");
             for(int x=0;x<before.getWidth();x++)for(int y=0;y<before.getHeight();y++)if(before.getRGB(x,y)!=after.getRGB(x,y))throw new AssertionError("texture pixel changed");
         }
@@ -245,17 +259,17 @@ public final class ModernNcpfTest{
         JsonObject libraryExpected = write(parse(json)).getAsJsonObject();
         libraryExpected.addProperty("version", 2);
         equal(libraryExpected, write(root), "typed library edit must reach file");
-        net.ncplanner.ncpf.structure.design.nuclearcraft.OverhaulSFRDesign typed=(net.ncplanner.ncpf.structure.design.nuclearcraft.OverhaulSFRDesign)root.designs.get(0);
+        OverhaulSFRDesign typed=(OverhaulSFRDesign)root.designs.get(0);
         typed.design[0][0][0]=-1;
-        libraryExpected.getAsJsonArray("designs").get(0).getAsJsonObject().getAsJsonArray("design").get(0).getAsJsonArray().get(0).getAsJsonArray().set(0, new com.google.gson.JsonPrimitive(-1));
+        libraryExpected.getAsJsonArray("designs").get(0).getAsJsonObject().getAsJsonArray("design").get(0).getAsJsonArray().get(0).getAsJsonArray().set(0, new JsonPrimitive(-1));
         equal(libraryExpected, write(root), "typed cell edit reaches nested output");
         JsonObject configurationSource=JsonParser.parseString(Files.readString(Paths.get("src/configurations/nuclearcraft.ncpf.json"))).getAsJsonObject();
         JsonArray blocks=configurationSource.getAsJsonObject("configuration").getAsJsonObject("nuclearcraft:overhaul_sfr").getAsJsonArray("blocks");
         blocks.get(0).getAsJsonObject().addProperty("future", "first");
         blocks.get(1).getAsJsonObject().addProperty("future", "second");
         NcpfRoot reordered=parse(configurationSource.toString());
-        List<NcpfElement> typedBlocks = reordered.configuration.getConfiguration(net.ncplanner.ncpf.structure.configuration.nuclearcraft.OverhaulSFRConfiguration.class).blocks;
-        java.util.Collections.swap(typedBlocks,0,1);
+        List<NcpfElement> typedBlocks = reordered.configuration.getConfiguration(OverhaulSFRConfiguration.class).blocks;
+        Collections.swap(typedBlocks,0,1);
         configurationSource = write(parse(configurationSource.toString())).getAsJsonObject();
         blocks = configurationSource.getAsJsonObject("configuration").getAsJsonObject("nuclearcraft:overhaul_sfr").getAsJsonArray("blocks");
         JsonElement first=blocks.get(0);blocks.set(0,blocks.get(1));blocks.set(1,first);
@@ -273,16 +287,16 @@ public final class ModernNcpfTest{
     }
     private static void cannedConfigurations() throws Exception{
         JsonObject source=JsonParser.parseString(Files.readString(Paths.get("src/configurations/nuclearcraft.ncpf.json"))).getAsJsonObject();
-        net.ncplanner.plannerator.planner.configuration.ConfigurationManager.initNuclearcraftConfiguration();
-        equal(save(NcpfBridge.toProject(parse(source.toString()))),save(net.ncplanner.plannerator.planner.configuration.ConfigurationManager.NUCLEARCRAFT.toProject()),"default configuration loader");
+        ConfigurationManager.initNuclearcraftConfiguration();
+        equal(save(NcpfBridge.toProject(parse(source.toString()))),save(ConfigurationManager.NUCLEARCRAFT.toProject()),"default configuration loader");
         source.addProperty("future", "retained");
         source.getAsJsonObject("configuration").getAsJsonObject("nuclearcraft:overhaul_sfr").addProperty("future", "retained");
-        net.ncplanner.plannerator.planner.configuration.CannedConfiguration canned=new net.ncplanner.plannerator.planner.configuration.CannedConfiguration(parse(source.toString()));
+        CannedConfiguration canned=new CannedConfiguration(parse(source.toString()));
         source = save(NcpfBridge.toProject(parse(source.toString()))).getAsJsonObject();
         equal(source, save(canned.toProject()), "canned configuration document");
         equal(source, save(canned.safeCopy().toProject()), "canned configuration copy");
-        net.ncplanner.plannerator.planner.ncpf.Configuration legacy=new net.ncplanner.plannerator.planner.ncpf.Configuration(load(source.toString()));
-        equal(source, save(new net.ncplanner.plannerator.planner.configuration.CannedConfiguration(legacy).toProject()), "wrapped configuration document");
+        Configuration legacy=new Configuration(load(source.toString()));
+        equal(source, save(new CannedConfiguration(legacy).toProject()), "wrapped configuration document");
     }
     private static void exportsAndFailures() throws Exception{
         Project project = load(Files.readString(Paths.get("test/files/ncpf/detailed-reactor.ncpf.json")));
@@ -295,7 +309,7 @@ public final class ModernNcpfTest{
         equal(before, save(project), "export must not mutate source");
         Project copy = project.copyTo(Project::new);
         copy.makePartial();
-        net.ncplanner.plannerator.ncpf.io.NCPFObject old = new net.ncplanner.plannerator.ncpf.io.NCPFObject();
+        NCPFObject old = new NCPFObject();
         copy.convertToObject(old);
         JsonElement expected = NcpfJsonConverter.gson.toJsonTree(old);
         trim(expected);
@@ -309,8 +323,8 @@ public final class ModernNcpfTest{
                 public void write(NcpfRoot root, OutputStream stream) throws IOException{stream.write(123);throw new IOException("expected failure");}
             };
             try{NCPFFileWriter.write(project, destination.toFile(), failing);throw new AssertionError("write failure swallowed");}
-            catch(java.io.UncheckedIOException expectedFailure){}
-            if(!java.util.Arrays.equals(saved, Files.readAllBytes(destination)))throw new AssertionError("failed save destroyed destination");
+            catch(UncheckedIOException expectedFailure){}
+            if(!Arrays.equals(saved, Files.readAllBytes(destination)))throw new AssertionError("failed save destroyed destination");
             FileWriter.write(project, destination.toFile(), FileWriter.NCPF);
             equal(document, JsonParser.parseString(Files.readString(destination)), "file export endpoint");
         }finally{Files.deleteIfExists(destination);}
@@ -336,10 +350,10 @@ public final class ModernNcpfTest{
     private static void invalidDocuments(){
         for(String json : new String[]{"{}", "{\"version\":\"1\"}", "{\"version\":1.5}", "{\"version\":2147483648}", "{\"version\":1,\"designs\":42}", "{\"version\":1}{\"version\":1}", "{\"version\":1"}){
             try{READER.read(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));throw new AssertionError("accepted invalid document: "+json);}
-            catch(com.google.gson.JsonParseException expected){}
+            catch(JsonParseException expected){}
         }
         try{load("{\"version\":1,\"designs\":42}");throw new AssertionError("invalid modern document swallowed");}
-        catch(com.google.gson.JsonParseException expected){}
+        catch(JsonParseException expected){}
     }
     private static void checkTrimmed(JsonElement json){
         if(json.isJsonObject()){
@@ -384,7 +398,7 @@ public final class ModernNcpfTest{
         if(value.isJsonArray())for(JsonElement child:value.getAsJsonArray())flatten(child,target);
         else target.add(value);
     }
-    private static void recordChanges(JsonElement before, JsonElement after, String label, String path, java.util.Set<String> output){
+    private static void recordChanges(JsonElement before, JsonElement after, String label, String path, Set<String> output){
         if(sameValue(before,after))return;
         if(before.isJsonObject()&&after.isJsonObject()){
             JsonObject a=before.getAsJsonObject(), b=after.getAsJsonObject();
@@ -426,7 +440,7 @@ public final class ModernNcpfTest{
         if(sameValue(expected, actual))return "";
         if(expected.isJsonObject()&&actual.isJsonObject()){
             JsonObject a=expected.getAsJsonObject(), b=actual.getAsJsonObject();
-            java.util.TreeSet<String> keys=new java.util.TreeSet<>(a.keySet());keys.addAll(b.keySet());
+            TreeSet<String> keys=new TreeSet<>(a.keySet());keys.addAll(b.keySet());
             for(String key : keys){
                 if(!a.has(key)||!b.has(key))return path+"."+key+" (missing or added)";
                 if(!sameValue(a.get(key),b.get(key)))return difference(a.get(key),b.get(key),path+"."+key);

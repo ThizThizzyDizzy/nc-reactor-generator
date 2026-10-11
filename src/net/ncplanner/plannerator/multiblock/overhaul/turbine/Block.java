@@ -24,7 +24,7 @@ public class Block extends AbstractBlock{
         return new Block(getConfiguration(), pos, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){}
+    public void copyProperties(AbstractBlock other){}
     @Override
     public void clearData(){
         valid = false;
@@ -59,7 +59,7 @@ public class Block extends AbstractBlock{
         return isBearing()||isBlade();
     }
     @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
+    public boolean canRequire(AbstractBlock oth){
         if(template.coil!=null||template.connector!=null)return requires(oth, null);
         return false;
     }
@@ -73,13 +73,13 @@ public class Block extends AbstractBlock{
                 (template.casing!=null&&template.controller==null&&template.inlet==null&&template.outlet==null);
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
+    public AbstractBlock copy(){
         Block copy = new Block(getConfiguration(),pos,template);
         copy.valid = valid;
         return copy;
     }
     @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.AbstractBlock other){
+    public boolean isEqual(AbstractBlock other){
         return other instanceof Block&&((Block)other).template==template;
     }
     public boolean isBlade(){
@@ -99,7 +99,7 @@ public class Block extends AbstractBlock{
         return !isBlade();
     }
     @Override
-    public boolean shouldRenderFace(net.ncplanner.plannerator.multiblock.AbstractBlock against){
+    public boolean shouldRenderFace(AbstractBlock against){
         if(super.shouldRenderFace(against))return true;
         if(template.blade!=null||((Block)against).template.blade!=null)return true;
         if(template.stator!=null||((Block)against).template.stator!=null)return true;

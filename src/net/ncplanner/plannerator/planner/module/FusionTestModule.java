@@ -4,6 +4,7 @@ import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.multiblock.Direction;
 import net.ncplanner.plannerator.multiblock.Multiblock;
+import net.ncplanner.plannerator.multiblock.overhaul.fusion.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fusion.OverhaulFusionReactor;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
@@ -29,18 +30,18 @@ public class FusionTestModule extends Module<Object>{
         })).addAlternative("Fusion");
         Configuration.configurations.add(config);//not using addConfiguration, because you shouldn't auto-load into fusion test
     }
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block> augmentedBlanketOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block>("Augmente4d Breeding Blanket", "Highlights augmented breeding blankets with a green outline", true){
+    private final EditorOverlay<Block> augmentedBlanketOverlay = new EditorOverlay<Block>("Augmente4d Breeding Blanket", "Highlights augmented breeding blankets with a green outline", true){
         @Override
-        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block, Multiblock<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block> multiblock){
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, Block block, Multiblock<Block> multiblock){
             if(block.isBreedingBlanketAugmented()){
                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
             }
         }
     };
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block> clusterOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.overhaul.fusion.Block>("Clusters", "Outlines all clusters in the reactor", true){
+    private final EditorOverlay<Block> clusterOverlay = new EditorOverlay<Block>("Clusters", "Outlines all clusters in the reactor", true){
         @Override
-        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.overhaul.fusion.Block block, Multiblock multiblock){
-            net.ncplanner.plannerator.multiblock.overhaul.fusion.Block b = (net.ncplanner.plannerator.multiblock.overhaul.fusion.Block)block;
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, Block block, Multiblock multiblock){
+            Block b = (Block)block;
             OverhaulFusionReactor.Cluster cluster = b.cluster;
             if(cluster!=null){
                 Color primaryColor = null;

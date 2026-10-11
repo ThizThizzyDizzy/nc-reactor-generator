@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.platform.Input;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -370,10 +371,10 @@ public class MenuEdit extends Menu implements Editor, DebugInfoProvider{
         if(toggle3D.isToggledOn){
             Multiblock mb = getMultiblock();
             if(mb!=null){
-                if(glfwGetKey(DizzyEngine.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
-                if(glfwGetKey(DizzyEngine.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
-                if(glfwGetKey(DizzyEngine.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
-                if(glfwGetKey(DizzyEngine.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+                if(Input.getKey(DizzyEngine.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+                if(Input.getKey(DizzyEngine.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+                if(Input.getKey(DizzyEngine.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+                if(Input.getKey(DizzyEngine.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
                 PlanneratorRenderer renderer = new PlanneratorRenderer();
                 renderer.projection(new Matrix4f().setOrtho(0, gui.getWidth(), 0, gui.getHeight(), 1f, 10000f));
                 BoundingBox bbox = mb.getBoundingBox();

@@ -12,6 +12,7 @@ import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign;
 import net.ncplanner.plannerator.planner.ncpf.module.MetadataModule;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 @Deprecated
@@ -28,8 +29,8 @@ public class Project extends NCPFFile{
             designs.add(d.copyTo(()->Design.registeredDesigns.getOrDefault(d.definition.type, Design::new).apply(isConfigEmpty()?Core.project:this)));
         }
         for(Design d : designs){
-            if(d instanceof net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign)
-                ((net.ncplanner.plannerator.planner.ncpf.design.OverhaulTurbineDesign)d).resolveInputs(designs);
+            if(d instanceof OverhaulTurbineDesign)
+                ((OverhaulTurbineDesign)d).resolveInputs(designs);
         }
         metadata = getModule(MetadataModule::new);
         if(metadata==null)metadata = new MetadataModule();

@@ -6,6 +6,7 @@ import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.LiteMultiblock;
 import net.ncplanner.plannerator.multiblock.generator.lite.underhaulSFR.LiteUnderhaulSFR;
+import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.UnderhaulSFR;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.Task;
@@ -39,18 +40,18 @@ public class UnderhaulModule extends Module<Object>{
         addConfiguration(new Configuration(FileReader.read(() -> Core.getInputStream("configurations/enigmatica_2_expert.ncpf.json"))).addAlternative("E2E"), "https://www.curseforge.com/minecraft/modpacks/enigmatica2expert", "NillerMedDild");
         task.getCurrentSubtask().finish();
     }
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeModeratorOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Moderator", "Highlights active moderators with a green outline", true){
+    private final EditorOverlay<Block> activeModeratorOverlay = new EditorOverlay<Block>("Active Moderator", "Highlights active moderators with a green outline", true){
         @Override
-        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block, Multiblock<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> multiblock){
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, Block block, Multiblock<Block> multiblock){
             if(block.isActive()&&block.isModerator()){
                 block.drawOutline(renderer, x, y, width, height, Core.theme.getBlockColorOutlineActive());
             }
         }
     };
-    private final EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> activeCoolerRecipeOverlay = new EditorOverlay<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block>("Active Cooler Recipes", "Shows the chosen recipe on active coolers", true){
+    private final EditorOverlay<Block> activeCoolerRecipeOverlay = new EditorOverlay<Block>("Active Cooler Recipes", "Shows the chosen recipe on active coolers", true){
         @Override
-        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block block, Multiblock<net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block> multiblock){
-            net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block b = (net.ncplanner.plannerator.multiblock.underhaul.fissionsfr.Block)block;
+        public void render(PlanneratorRenderer renderer, float x, float y, float width, float height, Block block, Multiblock<Block> multiblock){
+            Block b = (Block)block;
             if(b.recipe!=null&&b.template.getBlockRecipes().size()>1){
                 renderer.setWhite(.75f);
                 renderer.drawImage(b.recipe.getDisplayTexture(), x+width*.125f, y+height*.125f, x+width*.875f, y+height*.875f);

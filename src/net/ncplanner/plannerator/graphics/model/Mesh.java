@@ -1,8 +1,7 @@
 package net.ncplanner.plannerator.graphics.model;
+import static com.thizthizzydizzy.dizzyengine.platform.GL.*;
 import com.thizthizzydizzy.dizzyengine.graphics.Shader;
 import java.util.ArrayList;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL30.*;
 @Deprecated //not stable yet!
 public class Mesh{
     public ArrayList<Vertex> verticies = new ArrayList<>();

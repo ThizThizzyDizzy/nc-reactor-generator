@@ -172,7 +172,7 @@ public class Hut{
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(new net.ncplanner.plannerator.graphics.PlanneratorRenderer(),.25f);
+                thing.render(new PlanneratorRenderer(),.25f);
             }
             if(type==HutType.NIGHT){
                 PlanneratorRenderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
@@ -194,7 +194,7 @@ public class Hut{
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(new net.ncplanner.plannerator.graphics.PlanneratorRenderer(),.25f);
+                thing.render(new PlanneratorRenderer(),.25f);
             }
             if(type==HutType.NIGHT){
                 PlanneratorRenderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));
@@ -293,7 +293,7 @@ public class Hut{
             boolean hasLamp = false;
             for(HutThing thing : furn){
                 if(thing.isLamp()&&thing.isOn())hasLamp = true;
-                thing.render(new net.ncplanner.plannerator.graphics.PlanneratorRenderer(),.25f);
+                thing.render(new PlanneratorRenderer(),.25f);
             }
             if(type==HutType.NIGHT){
                 PlanneratorRenderer.fillRect(0, 0, buffWidth, buffHeight, ResourceManager.getTexture("/textures/smivilization/buildings/huts/gliese/"+type.name().toLowerCase()+"/"+(hasLamp?"less_dark_":"")+"darkness.png"));

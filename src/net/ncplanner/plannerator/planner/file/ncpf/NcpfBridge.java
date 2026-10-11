@@ -1,7 +1,10 @@
 package net.ncplanner.plannerator.planner.file.ncpf;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import java.math.BigDecimal;
 import java.util.Map;
 import net.ncplanner.ncpf.io.NcpfJsonConverter;
 import net.ncplanner.ncpf.structure.NcpfRoot;
@@ -36,7 +39,7 @@ public final class NcpfBridge{
     }
     /** Gson's default map writer omits explicit nulls; opaque NCPF payloads must retain them. */
     private static JsonElement toJson(Object value){
-        if(value==null)return com.google.gson.JsonNull.INSTANCE;
+        if(value==null)return JsonNull.INSTANCE;
         if(value instanceof Map){
             Map<?, ?> map = (Map<?, ?>)value;
             JsonObject object = new JsonObject();
@@ -45,7 +48,7 @@ public final class NcpfBridge{
         }
         if(value instanceof Iterable){
             Iterable<?> list = (Iterable<?>)value;
-            com.google.gson.JsonArray array = new com.google.gson.JsonArray();
+            JsonArray array = new JsonArray();
             for(Object entry : list)array.add(toJson(entry));
             return array;
         }
@@ -68,7 +71,7 @@ public final class NcpfBridge{
         JsonPrimitive value=json.getAsJsonPrimitive();
         if(value.isBoolean())return value.getAsBoolean();
         if(value.isString())return value.getAsString();
-        java.math.BigDecimal number = value.getAsBigDecimal();
+        BigDecimal number = value.getAsBigDecimal();
         try{return number.intValueExact();}catch(ArithmeticException ignored){}
         try{return number.longValueExact();}catch(ArithmeticException ignored){}
         return number;

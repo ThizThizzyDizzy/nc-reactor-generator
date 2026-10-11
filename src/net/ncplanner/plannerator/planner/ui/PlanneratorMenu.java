@@ -1,13 +1,16 @@
 package net.ncplanner.plannerator.planner.ui;
+import static com.thizthizzydizzy.dizzyengine.platform.GL.*;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
 import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
+import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import com.thizthizzydizzy.dizzyengine.ui.Menu;
+import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
+import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.gui.menu.MenuCalibrateCursor;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWDropCallback;
-import static org.lwjgl.opengl.GL11.*;
 /** Adapts Plannerator's existing layouts and actions to a DizzyUI menu. */
 public class PlanneratorMenu extends Menu{
     public final net.ncplanner.plannerator.planner.gui.Menu content;
@@ -16,11 +19,11 @@ public class PlanneratorMenu extends Menu{
     public void render(double deltaTime){
         float width=content.gui.getWidth(),height=content.gui.getHeight();
         Renderer.projection(new Matrix4f().setOrtho(0,width,height,0,0.1f,10));
-        net.ncplanner.plannerator.graphics.PlanneratorRenderer.resetClipping(
+        PlanneratorRenderer.resetClipping(
             DizzyEngine.screenSize.x/Math.max(1,width),DizzyEngine.screenSize.y/Math.max(1,height));
-        Renderer.setColor(net.ncplanner.plannerator.planner.Core.theme.getMenuBackgroundColor());
+        Renderer.setColor(Core.theme.getMenuBackgroundColor());
         Renderer.fillRect(0,0,width,height);
-        Renderer.setColor(com.thizthizzydizzy.dizzyengine.graphics.image.Color.WHITE);
+        Renderer.setColor(Color.WHITE);
         content.width=width;
         content.height=height;
         Renderer.setTemporaryView(new Matrix4f().setTranslation(0,0,-5));
@@ -31,7 +34,7 @@ public class PlanneratorMenu extends Menu{
             Renderer.restoreView();Renderer.restoreProjection();
             glDisable(GL_DEPTH_TEST);glDisable(GL_CULL_FACE);
         }
-        net.ncplanner.plannerator.planner.Core.render2d(new net.ncplanner.plannerator.graphics.PlanneratorRenderer(), deltaTime);
+        Core.render2d(new PlanneratorRenderer(), deltaTime);
         content.render2d(deltaTime);
     }
     @Override

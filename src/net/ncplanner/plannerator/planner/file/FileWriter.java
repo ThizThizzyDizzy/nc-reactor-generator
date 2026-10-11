@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.file.writer.BGStringWriter;
 import net.ncplanner.plannerator.planner.file.writer.HellrageWriter;
 import net.ncplanner.plannerator.planner.file.writer.LegacyNCPFWriter;
@@ -28,7 +29,7 @@ public class FileWriter{
     }
     public static void write(Project ncpf, File file, FormatWriter format){
         if(format instanceof NCPFWriter){
-            net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter.write(
+            NCPFFileWriter.write(
                 ((NCPFWriter)format).prepare(ncpf), file, NCPFWriter.format);
             return;
         }

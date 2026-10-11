@@ -1,9 +1,15 @@
 package net.ncplanner.plannerator.graphics;
+import static com.thizthizzydizzy.dizzyengine.platform.GL.*;
 import com.thizthizzydizzy.dizzyengine.ResourceManager;
 import static com.thizthizzydizzy.dizzyengine.graphics.Renderer.bindTexture;
+import com.thizthizzydizzy.dizzyengine.graphics.Renderer;
 import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
+import com.thizthizzydizzy.dizzyengine.graphics.text.FontCharacter;
+import java.util.ArrayDeque;
 import java.util.function.Function;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.graphics.legacyobj.model.Model;
+import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -12,10 +18,7 @@ import com.thizthizzydizzy.dizzyengine.graphics.image.Color;
 import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.multiblock.Direction;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphics.Renderer{
+public class PlanneratorRenderer extends Renderer{
     @Deprecated
     public static void addCustomElements(){
         elements.put("cube_pz", new Element(){
@@ -679,8 +682,8 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
             drawCube(x2-thickness, y2-thickness, zm+thickness2, x2, y2, z2-thickness, null);//second sub-edge
         }
     }
-    private static final org.joml.Matrix4fStack clipTransform = new org.joml.Matrix4fStack(256);
-    private static final java.util.ArrayDeque<int[]> clips = new java.util.ArrayDeque<>();
+    private static final Matrix4fStack clipTransform = new Matrix4fStack(256);
+    private static final ArrayDeque<int[]> clips = new ArrayDeque<>();
     private static float clipScaleX=1,clipScaleY=1;
     public static void resetClipping(){resetClipping(1,1);}
     public static void resetClipping(float sx,float sy){
@@ -689,14 +692,14 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
         clips.clear();
         glDisable(GL_SCISSOR_TEST);
     }
-    private static final java.util.ArrayDeque<java.util.ArrayDeque<int[]>> offscreenClips = new java.util.ArrayDeque<>();
-    private static final java.util.ArrayDeque<float[]> offscreenScales = new java.util.ArrayDeque<>();
+    private static final ArrayDeque<ArrayDeque<int[]>> offscreenClips = new ArrayDeque<>();
+    private static final ArrayDeque<float[]> offscreenScales = new ArrayDeque<>();
     public static void beginOffscreen(){
         offscreenScales.push(new float[]{clipScaleX,clipScaleY});
         clipScaleX=clipScaleY=1;
         pushModel(new Matrix4f(clipTransform).invert());
         clipTransform.pushMatrix().identity();
-        offscreenClips.push(new java.util.ArrayDeque<>(clips));
+        offscreenClips.push(new ArrayDeque<>(clips));
         clips.clear();
         glDisable(GL_SCISSOR_TEST);
     }
@@ -711,15 +714,15 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
     public static void translate(float x,float y){translate(x,y,1,1);}
     public static void translate(float x,float y,float sx,float sy){
         clipTransform.pushMatrix().translate(x,y,0).scale(sx,sy,1);
-        com.thizthizzydizzy.dizzyengine.graphics.Renderer.translate(x,y,sx,sy);
+        Renderer.translate(x,y,sx,sy);
     }
     public static void unTranslate(){
         clipTransform.popMatrix();
-        com.thizthizzydizzy.dizzyengine.graphics.Renderer.unTranslate();
+        Renderer.unTranslate();
     }
     public static void bound(float left,float top,float right,float bottom){
-        org.joml.Vector3f a=clipTransform.transformPosition(new org.joml.Vector3f(left,top,0));
-        org.joml.Vector3f b=clipTransform.transformPosition(new org.joml.Vector3f(right,bottom,0));
+        Vector3f a=clipTransform.transformPosition(new Vector3f(left,top,0));
+        Vector3f b=clipTransform.transformPosition(new Vector3f(right,bottom,0));
         int[] rect={(int)Math.floor(Math.min(a.x,b.x)),(int)Math.floor(Math.min(a.y,b.y)),
             (int)Math.ceil(Math.max(a.x,b.x)),(int)Math.ceil(Math.max(a.y,b.y))};
         if(!clips.isEmpty()){
@@ -919,7 +922,7 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
         bindTexture(getFont().texture);
         for(int i = 0; i<text.length(); i++){
             char c = text.charAt(i);
-            com.thizthizzydizzy.dizzyengine.graphics.text.FontCharacter character = getFont().getCharacter(c);
+            FontCharacter character = getFont().getCharacter(c);
             model(new Matrix4f().translate(x, y+height, 0).scale(height, height, 1));
             character.drawItalic();
             x+=character.dx/getFont().height*height;
@@ -943,7 +946,7 @@ public class PlanneratorRenderer extends com.thizthizzydizzy.dizzyengine.graphic
         }
         return drawTextWithWrap(left, top, right, bottom, text);
     }
-    public static void drawModel(net.ncplanner.plannerator.graphics.legacyobj.model.Model model){
+    public static void drawModel(Model model){
         if(model==null){
             return;
         }

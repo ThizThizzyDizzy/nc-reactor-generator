@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.platform.Input;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
@@ -99,7 +100,7 @@ public class ToggleBox extends Component{
     @Override
     public void onCursorEntered(){
         super.onCursorEntered();
-        if(sliding!=null&&allowSliding&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
+        if(sliding!=null&&allowSliding&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS){
             isToggledOn = sliding;
             changeListeners.forEach(Runnable::run);
         }
