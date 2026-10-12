@@ -84,6 +84,7 @@ public class MenuMain extends Menu{
     }.setTooltip("Settings"));
     private Button buttonSidePanel = add(new Button("<", true));
     private Button delete = add(new Button("Delete Multiblock (Hold Shift)", true).setTextColor(Core.theme::getDeleteButtonTextColor).setTooltip("Delete the currently selected multiblock\nWARNING: This cannot be undone!"));
+    private Button duplicate = add(new Button("Duplicate", false).setTooltip("Duplicate the currently selected multiblock"));
     private Button credits = add(new Button(0, 0, 192, 48, "Credits", true, true));
     private Button convertOverhaulMSFR = add(new Button("Convert SFR <> MSR", true).setTextColor(Core.theme::getConvertButtonTextColor));
     private Component sidePanel = add(new Component(0, 0, 0, 0){
@@ -334,6 +335,16 @@ public class MenuMain extends Menu{
             sidePanelOpen = !sidePanelOpen;
             buttonSidePanel.text = sidePanelOpen?">":"<";
         });
+        duplicate.addAction(() -> {
+            Multiblock selected = getSelectedMultiblock();
+            if(selected==null)return;
+            Multiblock copy = selected.copy();
+            int index = Core.multiblocks.indexOf(selected)+1;
+            Core.multiblocks.add(index, copy);
+            Core.saved = false;
+            refresh();
+            multiblocks.setSelectedIndex(index);
+        });
         delete.addAction(() -> {
             Multiblock multiblock = Core.multiblocks.get(multiblocks.getSelectedIndex());
             for(Multiblock m : Core.multiblocks){
@@ -495,7 +506,13 @@ public class MenuMain extends Menu{
         multiblocks.height = gui.getHeight()-multiblocks.y-delete.height;
         delete.y = gui.getHeight()-delete.height;
         delete.height = addMultiblock.height;
-        delete.width = multiblocks.width = gui.getWidth()/3;
+        multiblocks.width = gui.getWidth()/3;
+        duplicate.x = 0;
+        duplicate.y = delete.y;
+        duplicate.width = multiblocks.width/3;
+        duplicate.height = delete.height;
+        delete.x = duplicate.width;
+        delete.width = multiblocks.width-duplicate.width;
         for(Component c : multiblocks.components){
             c.width = multiblocks.width-(multiblocks.hasVertScrollbar()?multiblocks.vertScrollbarWidth:0);
             ((MenuComponentMultiblock) c).edit.enabled = ((MenuComponentMultiblock) c).multiblock.exists()&&(!(adding||metadating));
@@ -533,6 +550,7 @@ public class MenuMain extends Menu{
         saveFile.enabled = !Core.multiblocks.isEmpty()&&!(adding||metadating);
         loadFile.enabled = !(adding||metadating);
         delete.enabled = (!(adding||metadating)&&multiblocks.getSelectedIndex()!=-1)&&Core.isShiftPressed();
+        duplicate.enabled = !(adding||metadating)&&getSelectedMultiblock()!=null;
         for(Button b : multiblockButtons){
             b.enabled = adding&&Core.multiblockTypes.get(multiblockButtons.indexOf(b)).exists();
         }
