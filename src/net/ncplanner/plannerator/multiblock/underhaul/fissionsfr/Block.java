@@ -95,6 +95,7 @@ public class Block extends AbstractBlock{
         }
         if(isCooler()){
             tip+="\nCooler "+(coolerValid?"Valid":"Invalid");
+            tip+="\nCooling: "+getCooling()+"H/t";
         }
         if(template.activeCooler!=null){
             tip+="\nActive Cooler "+(coolerValid?"Valid":"Invalid");

@@ -92,7 +92,7 @@ public abstract class AbstractBlock implements Pinnable{
             }
             if(module instanceof ElementStatsModule){
                 ElementStatsModule mod = (ElementStatsModule)module;
-                tip+="\n"+mod.getTooltip().trim();
+                tip+="\n"+mod.getTooltip(getTemplate()).trim();
             }
         }
         if(hasDirectRecipes()){
@@ -107,7 +107,7 @@ public abstract class AbstractBlock implements Pinnable{
                     }
                     if(module instanceof ElementStatsModule){
                         ElementStatsModule mod = (ElementStatsModule)module;
-                        tip+="\n"+mod.getTooltip().trim();
+                        tip+="\n"+mod.getTooltip(recipe).trim();
                     }
                 }
             }

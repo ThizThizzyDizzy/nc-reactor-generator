@@ -51,7 +51,7 @@ public class MenuComponentElement extends Component implements Pinnable{
         for(NCPFModule module : element.modules.modules.values()){
             if(module instanceof ElementStatsModule){
                 ElementStatsModule stats = (ElementStatsModule)module;
-                ttp+="\n"+stats.getTooltip();
+                ttp+="\n"+stats.getTooltip(element);
             }
         }
         return ttp.trim();

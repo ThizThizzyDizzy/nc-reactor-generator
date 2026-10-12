@@ -56,7 +56,7 @@ public class NCPFElementComponent extends LayoutPanel{
                     mainText.addText("\n"+((BlockFunctionModule)module).getFunctionName());
                 }
                 if(module instanceof ElementStatsModule){
-                    mainText.addText("\n"+((ElementStatsModule)module).getTooltip());
+                    mainText.addText("\n"+((ElementStatsModule)module).getTooltip(element));
                 }
             }
         }

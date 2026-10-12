@@ -23,9 +23,16 @@ public abstract class BlockRulesModule extends BlockFunctionModule implements El
     public String getStatsTooltip(){
         return "";
     }
+    public String getStatsTooltip(NCPFElement element){
+        return getStatsTooltip();
+    }
     @Override
     public String getTooltip(){
-        String tip = getStatsTooltip();
+        return getTooltip(null);
+    }
+    @Override
+    public String getTooltip(NCPFElement element){
+        String tip = getStatsTooltip(element);
         for(NCPFPlacementRule rule : rules){
             tip+="\nRequires "+rule.toTooltipString();
         }
