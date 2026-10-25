@@ -1848,6 +1848,10 @@ public class OverhaulSFR extends CuboidalMultiblock<Block>{
         return "multiblocks/overhaul_sfr";
     }
     @Override
+    public boolean supportsGeneration(){
+        return true;
+    }
+    @Override
     public LiteOverhaulSFR compile(){
         LiteOverhaulSFR sfr = new LiteOverhaulSFR(CompiledOverhaulSFRConfiguration.compile(getSpecificConfiguration()));
         sfr.importAndConvert(this);

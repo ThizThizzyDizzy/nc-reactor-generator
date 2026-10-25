@@ -15,9 +15,14 @@ public class ThemeButton extends Button{
     public void draw(double deltaTime){
         PlanneratorRenderer renderer = new PlanneratorRenderer();
         theme.drawThemeButtonBackground(x, y, width, height, darker, enabled, pressed, isMouseFocused);
+        renderer.setFont(theme.getDefaultFont());
         float textLength = renderer.getStringWidth(text, height);
         float scale = Math.min(1, (width-textInset*2)/textLength);
         float textHeight = (int)((height-textInset*2)*scale)-4;
-        theme.drawThemeButtonText(x, y, width, height, textHeight, text);
+        try{
+            theme.drawThemeButtonText(x, y, width, height, textHeight, text);
+        }finally{
+            renderer.resetFont();
+        }
     }
 }

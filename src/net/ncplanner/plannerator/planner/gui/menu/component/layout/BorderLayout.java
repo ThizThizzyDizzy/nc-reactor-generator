@@ -30,10 +30,10 @@ public class BorderLayout extends Layout{
             if(leftWidth!=null)left.width = leftWidth.floatValue();
         }
         if(right!=null){
-            right.x = 0;
             right.y = centerY;
             right.height = centerHeight;
             if(rightWidth!=null)right.width = rightWidth.floatValue();
+            right.x = width-right.width;
         }
         float centerX = left==null?0:left.width;
         float centerWidth = width-centerX-(right==null?0:right.width);

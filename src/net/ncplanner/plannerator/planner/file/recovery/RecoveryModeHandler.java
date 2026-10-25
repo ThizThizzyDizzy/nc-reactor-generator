@@ -196,7 +196,9 @@ public class RecoveryModeHandler implements RecoveryHandler{
     @Override
     public net.ncplanner.plannerator.planner.ncpf.configuration.overhaulSFR.BlockElement recoverOverhaulSFRBlock(String name){
         return recoverFallbackName("block", name, Core.project.getConfiguration(OverhaulSFRConfiguration::new).blocks, (nam) -> {
-            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "));
+            return StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "heatsink", "liquid", "moderator", "reflector", "neutronshield", "shield").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "))
+                    // LEU-235 exports source names without the "Neutron Source" suffix.
+                    ||StringUtil.superRemove(StringUtil.toLowerCase(nam), " ", "neutronsource").equalsIgnoreCase(StringUtil.superRemove(StringUtil.toLowerCase(name), " "));
         }, null, true);
     }
     @Override

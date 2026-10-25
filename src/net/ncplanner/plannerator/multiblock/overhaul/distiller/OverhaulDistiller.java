@@ -462,6 +462,10 @@ public class OverhaulDistiller extends CuboidalMultiblock<Block>{
         return "multiblocks/overhaul_distiller";
     }
     @Override
+    public boolean supportsGeneration(){
+        return true;
+    }
+    @Override
     public LiteOverhaulDistiller compile(){
         LiteOverhaulDistiller distiller = new LiteOverhaulDistiller(CompiledOverhaulDistillerConfiguration.compile(getSpecificConfiguration()));
         distiller.importAndConvert(this);

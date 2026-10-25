@@ -120,6 +120,7 @@ public abstract class Module<T>{
     private final ArrayList<Multiblock> registeredMultiblocks = new ArrayList<>();
     public static Supplier<List<Class<?>>> registrationClasses;
     public final void registerNCPF(){
+        registeredMultiblocks.clear();
         try{
             List<Class<?>> classes;
             if(registrationClasses != null){classes=registrationClasses.get();}

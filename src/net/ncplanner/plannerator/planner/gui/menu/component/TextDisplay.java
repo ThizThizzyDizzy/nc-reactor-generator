@@ -26,6 +26,7 @@ public class TextDisplay extends Component{
     public TextDisplay(String text, float textHeight, boolean centered){
         super(0, 0, 0, 0);
         this.textHeight = textHeight;
+        this.centered = centered;
         setText(text);
     }
     @Override
@@ -38,6 +39,11 @@ public class TextDisplay extends Component{
         if(fitText)textHeight = Math.min(textHeight, (height)/(strs.length+padding));
         for(int i = 0; i<strs.length; i++){
             String str = strs[i];
+            if(fitText&&renderer.getStringWidth(str, textHeight)>width-padding*textHeight){
+                while(!str.isEmpty()&&renderer.getStringWidth(str+"...", textHeight)>width-padding*textHeight)
+                    str = str.substring(0, str.length()-1);
+                str += "...";
+            }
             if(centered){
                 renderer.drawCenteredText(x, y+(padding/2+i)*textHeight, x+width, y+(padding/2+i+1)*textHeight, str);
             }else{
@@ -67,5 +73,9 @@ public class TextDisplay extends Component{
     public TextDisplay fitText(){
         fitText = true;
         return this;
+    }
+    @Override
+    public String getTooltip(){
+        return tooltip!=null?tooltip:(fitText?String.join("\n", strs):null);
     }
 }

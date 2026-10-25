@@ -15,7 +15,7 @@ public class FontStandardTheme extends StandardTheme{
         this.yOff = yOff;
     }
     private Font getFont(){
-        if(font==null)font = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource(fontName)), yOff);
+        if(font==null)font = Font.loadFont(ResourceManager.loadData(ResourceManager.getInternalResource("/assets/fonts/"+fontName+".ttf")), yOff);
         return font;
     }
     @Override

@@ -35,6 +35,18 @@ public class DropdownList extends Component{
             @Override
             public void onMouseButton(double x, double y, int button, int action, int mods){
                 super.onMouseButton(x, y, button, action, mods);
+                if(button==0&&action==GLFW_PRESS&&!Core.isShiftPressed()
+                        &&x>=0&&x<width-(hasVertScrollbar()?vertScrollbarWidth:0)
+                        &&y>=0&&y<height-(hasHorizScrollbar()?horizScrollbarHeight:0)){
+                    for(Component component : components){
+                        if(MathUtil.isPointWithinRect(x+getHorizScroll(), y+getVertScroll(), component.x, component.y, component.x+component.width, component.y+component.height)){
+                            isDown = false;
+                            DropdownList.this.components.remove(list);
+                            DropdownList.this.components.remove(searchBox);
+                            break;
+                        }
+                    }
+                }
                 if(button==0&&action==GLFW_PRESS&&Core.isShiftPressed()){
                     //doing it again, but this time not actually passing events, just checking for pinned stuff to toggle
                     if(x>width-(hasVertScrollbar()?vertScrollbarWidth:0)||y>height-(hasHorizScrollbar()?horizScrollbarHeight:0)){//Click events on the scrollbar

@@ -43,7 +43,7 @@ public class NCPFElement extends DefinedNCPFModularObject implements Pinnable, S
         for(NCPFModule module : modules.modules.values()){
             if(module instanceof ElementStatsModule){
                 ElementStatsModule stats = (ElementStatsModule)module;
-                names.addAll(Arrays.asList(stats.getTooltip().trim().split("\n")));
+                names.addAll(Arrays.asList(stats.getTooltip(this).trim().split("\n")));
             }
         }
         return names;

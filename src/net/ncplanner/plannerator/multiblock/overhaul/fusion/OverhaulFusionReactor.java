@@ -280,7 +280,9 @@ public class OverhaulFusionReactor extends Multiblock<Block>{
         sparsityMult = (float)(functionalBlocks/(float)volume[0]>=getSpecificConfiguration().settings.sparsityPenaltyThreshold?1:getSpecificConfiguration().settings.sparsityPenaltyMultiplier+(1-getSpecificConfiguration().settings.sparsityPenaltyMultiplier)*Math.sin(Math.PI*functionalBlocks/(2*volume[0]*getSpecificConfiguration().settings.sparsityPenaltyThreshold)));
         totalOutput *= sparsityMult;
         totalEfficiency *= sparsityMult;
-        totalOutput /= coolantRecipe.stats.heat/((NCPFLegacyRecipeElement)coolantRecipe.definition).getOutputRatio();
+        float outputRatio = coolantRecipe.definition instanceof NCPFLegacyRecipeElement
+                ? ((NCPFLegacyRecipeElement)coolantRecipe.definition).getOutputRatio() : coolantRecipe.stats.outputRatio;
+        totalOutput /= coolantRecipe.stats.heat/outputRatio;
         calcStats.finish();
         return false;
     }

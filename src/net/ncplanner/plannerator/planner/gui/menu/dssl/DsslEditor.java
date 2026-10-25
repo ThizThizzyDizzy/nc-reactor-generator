@@ -61,6 +61,7 @@ public class DsslEditor extends Component{
     };
     public ArrayList<Runnable> onScrollUpdate = new ArrayList<>();
     public int cursorX, cursorY;
+    private int preferredCursorX = -1;
     public FormattedText textDisplay = new FormattedText();
     public final int textHeight;
     public final float textWidth;
@@ -289,6 +290,7 @@ public class DsslEditor extends Component{
         if(button==0&&action==GLFW_PRESS){
             cursorY = Math.min(text.size()-1, (int)(y/textHeight));
             cursorX = Math.min(text.get(cursorY).length(), (int)Math.round(x/textWidth));
+            updateCursor();
             if(x<-border*2){
                 if(breakpoints.contains(cursorY))breakpoints.remove(cursorY);
                 else breakpoints.add(cursorY);
@@ -466,15 +468,17 @@ public class DsslEditor extends Component{
                 break;
             case GLFW_KEY_UP:
                 if(cursorY==0)return;
+                if(preferredCursorX<0)preferredCursorX = cursorX;
                 cursorY--;
-                cursorX = Math.min(cursorX, text.get(cursorY).length());
-                updateCursor();
+                cursorX = Math.min(preferredCursorX, text.get(cursorY).length());
+                updateCursor(true);
                 break;
             case GLFW_KEY_DOWN:
                 if(cursorY==text.size()-1)return;
+                if(preferredCursorX<0)preferredCursorX = cursorX;
                 cursorY++;
-                cursorX = Math.min(cursorX, text.get(cursorY).length());
-                updateCursor();
+                cursorX = Math.min(preferredCursorX, text.get(cursorY).length());
+                updateCursor(true);
                 break;
             case GLFW_KEY_HOME:
                 if(Core.isControlPressed()){
@@ -495,6 +499,7 @@ public class DsslEditor extends Component{
                 if(Core.isControlPressed())cursorY = text.size()-1;
                 cursorX = text.get(cursorY).length();
                 updateCursor();
+                preferredCursorX = Integer.MAX_VALUE;
                 break;
         }
     }
@@ -522,9 +527,14 @@ public class DsslEditor extends Component{
         for(Runnable r : onScrollUpdate)r.run();
     }
     private void updateDisplay(){
+        preferredCursorX = -1;
         pendingDisplayUpdate = true;
     }
     private void updateCursor(){
+        updateCursor(false);
+    }
+    private void updateCursor(boolean preserveColumn){
+        if(!preserveColumn)preferredCursorX = -1;
         cursorTimer = 0;
         cursorVisible = true;
         updateScroll();
