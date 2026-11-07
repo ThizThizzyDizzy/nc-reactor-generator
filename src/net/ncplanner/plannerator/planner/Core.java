@@ -82,6 +82,7 @@ public class Core{
         boolean openURL(String url);
         void close();
         default boolean loadOptionalConfigurations(){return true;}
+        default boolean canOpenFolder(){return true;}
     }
     public static Host host;
     private static File storageRoot;
@@ -531,7 +532,9 @@ public class Core{
             throw new RuntimeException("Failed to open webpage\n"+link, ex);
         }
     }
+    public static boolean canOpenFolder(){return host == null || host.canOpenFolder();}
     public static boolean openFolder(File dir){
+        if(!canOpenFolder())return false;
         Runtime rt = Runtime.getRuntime();
         try{
             switch(DizzyUpdater.identifyOperatingSystem()){

@@ -397,7 +397,9 @@ public class MenuMain extends Menu{
     }
     private void exprt(Project project, FormatWriter writer, File file, String filename){
         FileWriter.write(project, file, writer);
-        new MenuOKMessageDialog(gui, this, "Saved as "+filename).addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true).open();
+        MenuOKMessageDialog dialog = new MenuOKMessageDialog(gui, this, "Saved as "+filename);
+        if(Core.canOpenFolder())dialog.addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true);
+        dialog.open();
     }
     @Override
     public void drawBackground(double deltaTime){
