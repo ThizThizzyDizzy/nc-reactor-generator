@@ -90,7 +90,7 @@ public class Core{
     public static File storageFile(String path){return storageRoot == null ? new File(path) : new File(storageRoot, path);}
     /** Initializes menus and assets on the host's UI thread with its GL context current. */
     public static void initHosted(){
-        uiThread = Thread.currentThread();
+        bindHostedUIThread();
         PlanneratorRenderer.initCustomElements();
         initializeUI();
     }
@@ -151,6 +151,8 @@ public class Core{
     }
     private static Thread uiThread;
     private static final ConcurrentLinkedQueue<Runnable> uiTasks = new ConcurrentLinkedQueue<>();
+    /** Rebind a retained hosted session after its surface/render thread is replaced. */
+    public static void bindHostedUIThread(){uiThread = Thread.currentThread();}
     public static boolean isUIThread(){return Thread.currentThread()==uiThread;}
     public static void runOnUIThread(Runnable action){
         if(isUIThread())action.run();else uiTasks.add(action);
