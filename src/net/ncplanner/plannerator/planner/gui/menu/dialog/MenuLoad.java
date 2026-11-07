@@ -22,8 +22,10 @@ public class MenuLoad extends MenuLoadFile{
     }
     private void refresh(){
         LegacyGridLayout layout = new LegacyGridLayout(36, 1);
-        File root = new File("file").getAbsoluteFile().getParentFile();
-        for(File file : root.listFiles()){
+        File root = Core.storageFile("").getAbsoluteFile();
+        File[] files = root.listFiles();
+        if(files == null) files = new File[0];
+        for(File file : files){
             String filename = file.getName();
             if(filename.contains(".ncpf")||filename.endsWith(".json")){
                 Label mainLabel;
