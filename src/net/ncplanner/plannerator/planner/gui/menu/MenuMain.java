@@ -622,11 +622,11 @@ public class MenuMain extends Menu{
         if(name==null) name = ncpf.metadata.get("name");
         if(name==null||name.isEmpty()){
             name = "unnamed";
-            File file = new File(name+"."+extensions[0]);
+            File file = Core.storageFile(name+"."+extensions[0]);
             int i = 0;
             while(file.exists()){
                 name = "unnamed_"+i;
-                file = new File(name+"."+extensions[0]);
+                file = Core.storageFile(name+"."+extensions[0]);
                 i++;
             }
         }
@@ -651,7 +651,7 @@ public class MenuMain extends Menu{
                     Core.warning("Invalid filename: "+filename+"."+extensions[0], null);
                 }else{
                     Core.filename = filename;
-                    File file = new File(filename+"."+extensions[0]);
+                    File file = Core.storageFile(filename+"."+extensions[0]);
                     if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> exprt(ncpf, writer, file, filename+"."+extensions[0]), true).open();
                     else exprt(ncpf, writer, file, filename+"."+extensions[0]);
                 }

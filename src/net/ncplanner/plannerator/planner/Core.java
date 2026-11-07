@@ -54,6 +54,7 @@ import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUnsavedChanges;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuWarningMessage;
 import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Project;
+import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.design.MultiblockDesign;
 import net.ncplanner.plannerator.planner.theme.Theme;
 import net.ncplanner.plannerator.planner.tutorial.Tutorial;
@@ -491,7 +492,15 @@ public class Core{
         }
         return alphas.get(image);
     }
+    /** Captures current editor designs before saving the project. */
+    public static void synchronizeProjectDesigns(){
+        ArrayList<Design> designs = new ArrayList<>();
+        for(Multiblock multiblock : multiblocks)designs.add(multiblock.toDesign());
+        project.designs.clear();
+        project.designs.addAll(designs);
+    }
     public static int autosave() throws IOException{
+        synchronizeProjectDesigns();
         File file = storageFile("autosave.ncpf.json");
         int num = 1;
         while(file.exists()){

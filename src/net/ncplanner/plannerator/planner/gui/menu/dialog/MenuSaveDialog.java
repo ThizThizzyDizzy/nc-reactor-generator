@@ -2,7 +2,6 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFileWriter;
 import net.ncplanner.plannerator.planner.file.ncpf.NCPFFormatWriter;
@@ -10,7 +9,6 @@ import net.ncplanner.plannerator.planner.gui.Component;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ToggleBox;
-import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
 public class MenuSaveDialog extends MenuInputDialog{
     private final Component panel;
@@ -37,8 +35,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                 selectedFormat = format;
             });
         }
-        Core.project.designs.clear();
-        for(Multiblock m : Core.multiblocks)Core.project.designs.add((Design)m.toDesign());
+        Core.synchronizeProjectDesigns();
         addButton("Cancel", true);
         addButton("Save Dialog", (dialog, str) -> {
             try{
@@ -57,7 +54,7 @@ public class MenuSaveDialog extends MenuInputDialog{
                 Core.warning("Invalid filename: "+filename+getExtension(), null);
             }else{
                 Core.filename = filename;
-                File file = new File(filename+getExtension());
+                File file = Core.storageFile(filename+getExtension());
                 if(file.exists()){
                     new MenuMessageDialog(gui, dialog, "File "+filename+getExtension()+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", (d) -> {
                         save(ncpf, file, filename+getExtension());
@@ -80,11 +77,11 @@ public class MenuSaveDialog extends MenuInputDialog{
         if(name==null) name = ncpf.metadata.metadata.get("name");
         if(name==null||name.isEmpty()){
             name = "unnamed";
-            File file = new File(name+getExtension(NCPFFileWriter.formats.get(0)));
+            File file = Core.storageFile(name+getExtension(NCPFFileWriter.formats.get(0)));
             int i = 0;
             while(file.exists()){
                 name = "unnamed_"+i;
-                file = new File(name+getExtension(NCPFFileWriter.formats.get(0)));
+                file = Core.storageFile(name+getExtension(NCPFFileWriter.formats.get(0)));
                 i++;
             }
         }
