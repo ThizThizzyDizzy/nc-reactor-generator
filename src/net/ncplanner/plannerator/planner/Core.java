@@ -86,8 +86,16 @@ public class Core{
     private static File storageRoot;
     public static void setStorageRoot(File root){storageRoot=root;}
     public static File storageFile(String path){return storageRoot == null ? new File(path) : new File(storageRoot, path);}
-    /** Initializes the same menus and assets using an already initialized hosted engine. */
-    public static void initHosted(){uiThread=Thread.currentThread();initializeUI();}
+    /** Initializes menus and assets on the host's UI thread with its GL context current. */
+    public static void initHosted(){
+        uiThread = Thread.currentThread();
+        PlanneratorRenderer.initCustomElements();
+        initializeUI();
+    }
+    /** Saves recovery data and preferences. Hosts must call this before closing the planner. */
+    public static void shutdownHosted(){
+        savePersistentState();
+    }
 
     public static DizzyUpdater updater = new DizzyUpdater(Core.class);
     public static boolean debugMode = false;
@@ -207,61 +215,60 @@ public class Core{
             glfwSetWindowShouldClose(DizzyEngine.window, false);
             new MenuUnsavedChanges(gui, gui.menu).open();
         });
-        DizzyEngine.addShutdownHook(() -> {
-            try{
-                Core.autosave();
-                Logger.info("Autosave successful!");
-            }catch(Exception ex){
-                Logger.error("Autosave failed!", ex);
-            }
-        });
-        DizzyEngine.addShutdownHook(() -> {
-            File f = storageFile("settings.dat").getAbsoluteFile();
-            Config settings = Config.newConfig(f);
-            settings.set("theme", theme.name);
-            Config modules = Config.newConfig();
-            for(Module m : Core.modules){
-                modules.set(m.name, m.isActive());
-            }
-            settings.set("modules", modules);
-            Config overlays = Config.newConfig();
-            for(String key : Core.overlays.keySet()){
-                overlays.set(key, Core.overlays.get(key));
-            }
-            settings.set("overlays", overlays);
-            settings.set("tutorialShown", tutorialShown);
-            settings.set("invertUndoRedo", invertUndoRedo);
-            settings.set("autoBuildCasing", autoBuildCasing);
-            settings.set("vsync", vsync);
-            settings.set("editor3dView", editor3dView);
-            settings.set("imageExport3DView", imageExport3DView);
-            settings.set("imageExportCasing", imageExportCasing);
-            settings.set("imageExportCasing3D", imageExportCasing3D);
-            settings.set("imageExportCasingParts", imageExportCasingParts);
-            settings.set("dssl", dssl);
-            settings.set("rememberConfig", rememberConfig);
-            settings.set("mainMenu3dView", mainMenu3dView);
-            if(lastLoadedConfig!=null)
-                settings.set("lastLoadedConfig", lastLoadedConfig);
-            Config cursor = Config.newConfig();
-            cursor.set("xMult", MenuCalibrateCursor.xMult);
-            cursor.set("yMult", MenuCalibrateCursor.yMult);
-            cursor.set("xGUIScale", MenuCalibrateCursor.xGUIScale);
-            cursor.set("yGUIScale", MenuCalibrateCursor.yGUIScale);
-            cursor.set("xOff", MenuCalibrateCursor.xOff);
-            cursor.set("yOff", MenuCalibrateCursor.yOff);
-            settings.set("cursor", cursor);
-            ConfigList pins = new ConfigList();
-            for(String s : pinnedStrs)pins.add(s);
-            settings.set("pins", pins);
-            settings.save();
-        });
+        DizzyEngine.addShutdownHook(Core::savePersistentState);
         DizzyEngine.start();
         if(debugMode)glCallback.free();
         if(Main.isBot){
             Bot.stop();
             System.exit(0);//TODO Shouldn't have to do this! :(
         }
+    }
+    private static void savePersistentState(){
+        try{
+            Core.autosave();
+            Logger.info("Autosave successful!");
+        }catch(Exception ex){
+            Logger.error("Autosave failed!", ex);
+        }
+        File f = storageFile("settings.dat").getAbsoluteFile();
+        Config settings = Config.newConfig(f);
+        settings.set("theme", theme.name);
+        Config modules = Config.newConfig();
+        for(Module m : Core.modules){
+            modules.set(m.name, m.isActive());
+        }
+        settings.set("modules", modules);
+        Config overlays = Config.newConfig();
+        for(String key : Core.overlays.keySet()){
+            overlays.set(key, Core.overlays.get(key));
+        }
+        settings.set("overlays", overlays);
+        settings.set("tutorialShown", tutorialShown);
+        settings.set("invertUndoRedo", invertUndoRedo);
+        settings.set("autoBuildCasing", autoBuildCasing);
+        settings.set("vsync", vsync);
+        settings.set("editor3dView", editor3dView);
+        settings.set("imageExport3DView", imageExport3DView);
+        settings.set("imageExportCasing", imageExportCasing);
+        settings.set("imageExportCasing3D", imageExportCasing3D);
+        settings.set("imageExportCasingParts", imageExportCasingParts);
+        settings.set("dssl", dssl);
+        settings.set("rememberConfig", rememberConfig);
+        settings.set("mainMenu3dView", mainMenu3dView);
+        if(lastLoadedConfig!=null)
+            settings.set("lastLoadedConfig", lastLoadedConfig);
+        Config cursor = Config.newConfig();
+        cursor.set("xMult", MenuCalibrateCursor.xMult);
+        cursor.set("yMult", MenuCalibrateCursor.yMult);
+        cursor.set("xGUIScale", MenuCalibrateCursor.xGUIScale);
+        cursor.set("yGUIScale", MenuCalibrateCursor.yGUIScale);
+        cursor.set("xOff", MenuCalibrateCursor.xOff);
+        cursor.set("yOff", MenuCalibrateCursor.yOff);
+        settings.set("cursor", cursor);
+        ConfigList pins = new ConfigList();
+        for(String s : pinnedStrs)pins.add(s);
+        settings.set("pins", pins);
+        settings.save();
     }
     private static void initializeUI(){
         System.out.println("Loading fonts");

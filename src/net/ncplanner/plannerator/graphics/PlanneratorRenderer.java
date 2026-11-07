@@ -19,6 +19,13 @@ import net.ncplanner.plannerator.planner.FormattedText;
 import net.ncplanner.plannerator.planner.MathUtil;
 import net.ncplanner.plannerator.multiblock.Direction;
 public class PlanneratorRenderer extends Renderer{
+    /** Registers custom elements and initializes their resources in the current hosted GL context. */
+    public static void initCustomElements(){
+        addCustomElements();
+        for(String name : new String[]{"cube_pz", "cube_nz", "cube_py", "cube_ny", "cube_px", "cube_nx", "pencil", "delete"}){
+            elements.get(name).init();
+        }
+    }
     @Deprecated
     public static void addCustomElements(){
         elements.put("cube_pz", new Element(){
