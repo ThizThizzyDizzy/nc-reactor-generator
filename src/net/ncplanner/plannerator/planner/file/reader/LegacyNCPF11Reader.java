@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.file.reader;
 
+import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +14,6 @@ import java.util.function.Supplier;
 import net.ncplanner.plannerator.config2.Config;
 import net.ncplanner.plannerator.config2.ConfigList;
 import net.ncplanner.plannerator.config2.ConfigNumberList;
-import com.thizthizzydizzy.dizzyengine.graphics.image.Image;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.NCPFElement;
 import net.ncplanner.plannerator.ncpf.NCPFElementStack;

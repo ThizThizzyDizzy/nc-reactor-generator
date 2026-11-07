@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.file;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.platform.Input;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,7 +25,7 @@ public abstract class StringFormatWriter extends FormatWriter{
     @Override
     public void openExportSettings(Project ncpf, Runnable onExport){
         new MenuMessageDialog("Export String").addButton("Copy String", () -> {
-            GLFW.glfwSetClipboardString(DizzyEngine.window, write(ncpf));
+            Input.setClipboardString(DizzyEngine.window, write(ncpf));
         }, true).addButton("Export as file", onExport, true).addButton("Cancel", true).open();
     }
 }

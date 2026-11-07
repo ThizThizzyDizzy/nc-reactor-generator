@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.platform.Input;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -396,7 +397,9 @@ public class MenuMain extends Menu{
     }
     private void exprt(Project project, FormatWriter writer, File file, String filename){
         FileWriter.write(project, file, writer);
-        new MenuOKMessageDialog(gui, this, "Saved as "+filename).addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true).open();
+        MenuOKMessageDialog dialog = new MenuOKMessageDialog(gui, this, "Saved as "+filename);
+        if(Core.canOpenFolder())dialog.addButton("Open Folder", ()->Core.openFolder(file.getAbsoluteFile().getParentFile()), true);
+        dialog.open();
     }
     @Override
     public void drawBackground(double deltaTime){
@@ -411,10 +414,10 @@ public class MenuMain extends Menu{
     public void render3d(double deltaTime){
         super.render3d(deltaTime);
         if(!Core.mainMenu3dView)return;
-        if(glfwGetKey(DizzyEngine.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
-        if(glfwGetKey(DizzyEngine.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
-        if(glfwGetKey(DizzyEngine.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
-        if(glfwGetKey(DizzyEngine.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
+        if(Input.getKey(DizzyEngine.window, GLFW_KEY_LEFT)==GLFW_PRESS)xRot-=deltaTime*40;
+        if(Input.getKey(DizzyEngine.window, GLFW_KEY_RIGHT)==GLFW_PRESS)xRot+=deltaTime*40;
+        if(Input.getKey(DizzyEngine.window, GLFW_KEY_UP)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot-=deltaTime*40));
+        if(Input.getKey(DizzyEngine.window, GLFW_KEY_DOWN)==GLFW_PRESS)yRot = MathUtil.min(maxYRot, MathUtil.max(-maxYRot, yRot+=deltaTime*40));
         PlanneratorRenderer renderer = new PlanneratorRenderer();
         Multiblock mb = getSelectedMultiblock();
         if(mb!=null){
@@ -621,11 +624,11 @@ public class MenuMain extends Menu{
         if(name==null) name = ncpf.metadata.get("name");
         if(name==null||name.isEmpty()){
             name = "unnamed";
-            File file = new File(name+"."+extensions[0]);
+            File file = Core.storageFile(name+"."+extensions[0]);
             int i = 0;
             while(file.exists()){
                 name = "unnamed_"+i;
-                file = new File(name+"."+extensions[0]);
+                file = Core.storageFile(name+"."+extensions[0]);
                 i++;
             }
         }
@@ -650,7 +653,7 @@ public class MenuMain extends Menu{
                     Core.warning("Invalid filename: "+filename+"."+extensions[0], null);
                 }else{
                     Core.filename = filename;
-                    File file = new File(filename+"."+extensions[0]);
+                    File file = Core.storageFile(filename+"."+extensions[0]);
                     if(file.exists())new MenuMessageDialog(gui, dialog, "File "+filename+"."+extensions[0]+" already exists!\nOverwrite?").addButton("Cancel", true).addButton("Save", () -> exprt(ncpf, writer, file, filename+"."+extensions[0]), true).open();
                     else exprt(ncpf, writer, file, filename+"."+extensions[0]);
                 }

@@ -36,7 +36,7 @@ public class Block extends AbstractBlock{
         return new Block(getConfiguration(), pos, template);
     }
     @Override
-    public void copyProperties(net.ncplanner.plannerator.multiblock.AbstractBlock other){
+    public void copyProperties(AbstractBlock other){
         ((Block)other).breedingBlanketRecipe = breedingBlanketRecipe;
     }
     @Override
@@ -194,7 +194,7 @@ public class Block extends AbstractBlock{
         return isReflector()||isBreedingBlanket()||isHeatingBlanket();
     }
     @Override
-    public boolean canRequire(net.ncplanner.plannerator.multiblock.AbstractBlock oth){
+    public boolean canRequire(AbstractBlock oth){
         if(template.heatsink!=null)return requires(oth, null);
         Block other = (Block) oth;
         if(template.conductor!=null)return other.canCluster();
@@ -209,7 +209,7 @@ public class Block extends AbstractBlock{
         return template.heatsink!=null;
     }
     @Override
-    public net.ncplanner.plannerator.multiblock.AbstractBlock copy(){
+    public AbstractBlock copy(){
         Block copy = new Block(getConfiguration(), pos, template);
         copy.breedingBlanketRecipe = breedingBlanketRecipe;
         copy.breedingBlanketValid = breedingBlanketValid;
@@ -223,7 +223,7 @@ public class Block extends AbstractBlock{
         return copy;
     }
     @Override
-    public boolean isEqual(net.ncplanner.plannerator.multiblock.AbstractBlock other){
+    public boolean isEqual(AbstractBlock other){
         return other instanceof Block&&((Block)other).template==template;
     }
     public boolean canCluster(){

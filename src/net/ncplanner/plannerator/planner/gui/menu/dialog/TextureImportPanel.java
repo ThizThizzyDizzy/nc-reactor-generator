@@ -2,6 +2,8 @@ package net.ncplanner.plannerator.planner.gui.menu.dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +28,7 @@ class TextureImportPanel extends Component{
     private final NCPFElement target;
     private final Configuration configuration;
     private final List<Candidate> candidates = new ArrayList<>();
-    private final Set<String> textureKeys = new java.util.HashSet<>();
+    private final Set<String> textureKeys = new HashSet<>();
     private final SingleColumnList results;
     private final TextBox search;
     private final Label source;
@@ -119,7 +121,7 @@ class TextureImportPanel extends Component{
         results.components.clear();
         results.scrollY = 0;
         String query = search.text.trim().toLowerCase(Locale.ROOT);
-        candidates.sort(java.util.Comparator.comparing((Candidate c) -> !c.match)
+        candidates.sort(Comparator.comparing((Candidate c) -> !c.match)
                 .thenComparing(c -> c.element.getDisplayName(), String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(c -> c.type));
         for(Candidate candidate : candidates){

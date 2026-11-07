@@ -19,6 +19,7 @@ import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.GridLayout;
 import net.ncplanner.plannerator.planner.gui.menu.component.layout.SplitLayout;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuMessageDialog;
+import net.ncplanner.plannerator.planner.module.Module;
 import net.ncplanner.plannerator.planner.ncpf.Configuration;
 import net.ncplanner.plannerator.planner.ncpf.Design;
 import net.ncplanner.plannerator.planner.ncpf.Project;
@@ -70,7 +71,7 @@ public class MenuBenchmark extends LayoutMenu{
                                 multiblock.genCalcSubtasks();
                                 while(multiblock.doCalculationStep(blocks, true))multiblock.decals.clear();
                                 multiblock.calculationPaused = false;
-                                for(net.ncplanner.plannerator.planner.module.Module m : Core.modules){
+                                for(Module m : Core.modules){
                                     if(m.isActive()){
                                         Object result = m.calculateMultiblock(multiblock);
                                         if(result!=null)multiblock.moduleData.put(m, result);

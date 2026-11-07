@@ -2,7 +2,13 @@ package net.ncplanner.plannerator.planner.gui.menu;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -50,6 +56,7 @@ import net.ncplanner.plannerator.planner.file.reader.UnderhaulNCConfigReader;
 import net.ncplanner.plannerator.planner.gui.GUI;
 import net.ncplanner.plannerator.planner.gui.Menu;
 import net.ncplanner.plannerator.planner.gui.menu.component.ProgressBar;
+import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuDialog;
 import net.ncplanner.plannerator.planner.gui.menu.dialog.MenuUpdate;
 import net.ncplanner.plannerator.planner.module.CoreModule;
@@ -149,7 +156,7 @@ public class MenuInit extends Menu{
                 }
                 System.out.println("Loaded File Formats");
 
-                File f = new File("settings.dat").getAbsoluteFile();
+                File f = Core.storageFile("settings.dat").getAbsoluteFile();
                 if(f.exists()){
                     Config settings = Config.newConfig(f);
                     settings.load();
@@ -330,7 +337,7 @@ public class MenuInit extends Menu{
                 Core.criticalError("Initialization Failed!", t);
             }
             Core.runOnUIThread(() -> {
-                if(gui.menu instanceof net.ncplanner.plannerator.planner.gui.menu.dialog.MenuCriticalError)return;
+                if(gui.menu instanceof MenuCriticalError)return;
                 Menu next;
                 if(Main.benchmark)next=new MenuBenchmark(gui);
                 else if(Main.isBot)next=new MenuDiscord(gui);
@@ -344,17 +351,18 @@ public class MenuInit extends Menu{
                 gui.open(next);
                 if(Main.isMacOS)gui.open(new MenuCalibrateCursor(gui,gui.menu));
             });
+            if(Core.host != null)return;
             System.out.println("Downloading patrons list...");
             File file = new File("patrons-list.txt");
             file.delete();
             try{
-                java.net.URLConnection connection = new java.net.URL(MenuCredits.patronsLink).openConnection();
+                URLConnection connection = new URL(MenuCredits.patronsLink).openConnection();
                 connection.setConnectTimeout(10000);
                 connection.setReadTimeout(10000);
-                try(java.io.InputStream in = connection.getInputStream()){
-                    java.nio.file.Files.copy(in, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                try(InputStream in = connection.getInputStream()){
+                    Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
-            }catch(java.io.IOException ex){
+            }catch(IOException ex){
                 System.err.println("Failed to download patrons list: "+ex.getMessage());
             }
             ArrayList<String> patrons = new ArrayList<>();

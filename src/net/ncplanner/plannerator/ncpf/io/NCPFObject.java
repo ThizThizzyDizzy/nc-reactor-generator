@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.ncpf.io;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -58,10 +59,10 @@ public class NCPFObject extends HashMap<String, Object>{
     }
 
     public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSetOrEmpty(String key, Supplier<T> objectSupplier){
-        return (V)new java.util.LinkedHashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
+        return (V)new LinkedHashSet<T>(getDefinedNCPFListOrEmpty(key, objectSupplier));
     }
     public <T extends DefinedNCPFObject, V extends Set<T>> V getDefinedNCPFSet(String key, Supplier<T> objectSupplier){
-        return (V)new java.util.LinkedHashSet<T>(getDefinedNCPFList(key, objectSupplier));
+        return (V)new LinkedHashSet<T>(getDefinedNCPFList(key, objectSupplier));
     }
     public <T extends DefinedNCPFObject> void setDefinedNCPFSet(String key, Set<T> set){
         setDefinedNCPFList(key, new ArrayList<>(set));

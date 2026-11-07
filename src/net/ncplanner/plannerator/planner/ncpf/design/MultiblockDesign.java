@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.ncpf.design;
+import java.util.IdentityHashMap;
 import net.ncplanner.plannerator.multiblock.Multiblock;
 import net.ncplanner.plannerator.ncpf.NCPFFile;
 import net.ncplanner.plannerator.ncpf.design.NCPFDesignDefinition;
@@ -7,10 +8,10 @@ public abstract class MultiblockDesign<Definition extends NCPFDesignDefinition, 
     public MultiblockDesign(NCPFFile file){
         super(file);
     }
-    private static final ThreadLocal<java.util.IdentityHashMap<MultiblockDesign,Multiblock>> conversions = new ThreadLocal<>();
+    private static final ThreadLocal<IdentityHashMap<MultiblockDesign,Multiblock>> conversions = new ThreadLocal<>();
     public T toMultiblock(){
         boolean root = conversions.get()==null;
-        if(root)conversions.set(new java.util.IdentityHashMap<>());
+        if(root)conversions.set(new IdentityHashMap<>());
         try{
             Multiblock existing = conversions.get().get(this);
             if(existing!=null)return (T)existing;

@@ -3,6 +3,7 @@ import java.util.function.Consumer;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.Setting;
 import net.ncplanner.plannerator.multiblock.generator.lite.variable.setting.SettingBoolean;
+import net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry;
 import net.ncplanner.plannerator.ncpf.DefinedNCPFObject;
 import net.ncplanner.plannerator.ncpf.io.NCPFObject;
 public class Symmetry extends DefinedNCPFObject implements ThingWithSettings{
@@ -22,7 +23,7 @@ public class Symmetry extends DefinedNCPFObject implements ThingWithSettings{
     public Setting getSetting(int i){
         return settings[i];
     }
-    private final net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry symmetry = new net.ncplanner.plannerator.multiblock.symmetry.StandardSymmetry(false, false, false, false, false, false);
+    private final StandardSymmetry symmetry = new StandardSymmetry(false, false, false, false, false, false);
     public void apply(int x, int y, int z, int w, int h, int d, Consumer<BlockPos> consumer){
         symmetry.mx = mx.get();
         symmetry.my = my.get();

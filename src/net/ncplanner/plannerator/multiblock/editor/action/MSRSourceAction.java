@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.BlockPos;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionmsr.Block;
@@ -37,7 +38,7 @@ public class MSRSourceAction extends Action<OverhaulMSR>{
         if(pWas!=null)multiblock.setBlockExact(pWas, was);
     }
     @Override
-    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
+    public void getAffectedBlocks(OverhaulMSR multiblock, ArrayList<AbstractBlock> blocks){
         blocks.add(multiblock.getBlock(vessel.pos));
     }
 }

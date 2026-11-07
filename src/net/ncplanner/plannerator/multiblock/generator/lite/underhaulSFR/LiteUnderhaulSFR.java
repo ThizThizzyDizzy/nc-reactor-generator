@@ -13,6 +13,7 @@ import net.ncplanner.plannerator.ncpf.element.NCPFElementDefinition;
 import net.ncplanner.plannerator.planner.Core;
 import net.ncplanner.plannerator.planner.ncpf.configuration.UnderhaulSFRConfiguration;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.ActiveCoolerRecipe;
+import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement;
 import net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.Fuel;
 public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
     public final CompiledUnderhaulSFRConfiguration configuration;
@@ -370,7 +371,7 @@ public class LiteUnderhaulSFR extends LiteMultiblock<UnderhaulSFR>{
             if(blockValid[pos.x-1][pos.y-1][pos.z-1]+blockEfficiency[pos.x-1][pos.y-1][pos.z-1]<=0)block = -1;
             Block bl = null;
             if(block>=0){
-                for(net.ncplanner.plannerator.planner.ncpf.configuration.underhaulSFR.BlockElement b : config.blocks){
+                for(BlockElement b : config.blocks){
                     if(b.definition.matches(configuration.blockDefinition[block])){
                         bl = new Block(configg, pos, b);
                         NCPFElementDefinition active = configuration.blockActive[block];

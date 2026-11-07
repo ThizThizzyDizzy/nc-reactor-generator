@@ -5,6 +5,7 @@ import java.util.List;
 import net.ncplanner.plannerator.ncpf.NCPFConfigurationContainer;
 import net.ncplanner.plannerator.ncpf.configuration.NCPFConfiguration;
 import net.ncplanner.plannerator.planner.Core;
+import net.ncplanner.plannerator.planner.configuration.ConfigurationManager;
 import net.ncplanner.plannerator.planner.file.FileReader;
 import net.ncplanner.plannerator.planner.ncpf.module.configuration.ConfigurationMetadataModule;
 @Deprecated
@@ -29,7 +30,7 @@ public class Configuration{
         internalAddonAuthors.put(addon, author);
     }
     public static void initNuclearcraftConfiguration(){
-        net.ncplanner.plannerator.planner.configuration.ConfigurationManager.initNuclearcraftConfiguration();
+        ConfigurationManager.initNuclearcraftConfiguration();
     }
     public static void clearConfigurations(){
         configurations.clear();

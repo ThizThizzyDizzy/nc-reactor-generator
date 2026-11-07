@@ -1,9 +1,13 @@
 package net.ncplanner.plannerator.planner.configuration;
 import com.thizthizzydizzy.dizzyengine.ResourceManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.ncplanner.ncpf.io.NcpfJsonConverter;
 import net.ncplanner.ncpf.structure.NcpfAddon;
+import net.ncplanner.plannerator.planner.ncpf.Configuration;
 public class ConfigurationManager{
     public static final ArrayList<CannedConfiguration> configurations = new ArrayList<>();
     public static final ArrayList<CannedConfiguration> internalConfigurations = new ArrayList<>();
@@ -26,12 +30,12 @@ public class ConfigurationManager{
     }
     public static void initNuclearcraftConfiguration(){
         if(NUCLEARCRAFT!=null)return;//already done m8
-        try(java.io.InputStream stream = ResourceManager.getInternalResource("configurations/nuclearcraft.ncpf.json")){
+        try(InputStream stream = ResourceManager.getInternalResource("configurations/nuclearcraft.ncpf.json")){
             NUCLEARCRAFT = new CannedConfiguration(NcpfJsonConverter.parseJson(stream), "default").addAlias("").addAlias("SF4");
-        }catch(java.io.IOException ex){throw new java.io.UncheckedIOException("Failed to load default NuclearCraft configuration", ex);}
+        }catch(IOException ex){throw new UncheckedIOException("Failed to load default NuclearCraft configuration", ex);}
         configurations.add(0, NUCLEARCRAFT);
-        net.ncplanner.plannerator.planner.ncpf.Configuration.NUCLEARCRAFT=NUCLEARCRAFT;
-        net.ncplanner.plannerator.planner.ncpf.Configuration.configurations.add(0,NUCLEARCRAFT);
+        Configuration.NUCLEARCRAFT=NUCLEARCRAFT;
+        Configuration.configurations.add(0,NUCLEARCRAFT);
     }
     public static void clearConfigurations(){
         configurations.clear();

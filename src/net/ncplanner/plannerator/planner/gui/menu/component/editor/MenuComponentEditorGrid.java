@@ -1,5 +1,6 @@
 package net.ncplanner.plannerator.planner.gui.menu.component.editor;
 import com.thizthizzydizzy.dizzyengine.DizzyEngine;
+import com.thizthizzydizzy.dizzyengine.platform.Input;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import net.ncplanner.plannerator.graphics.PlanneratorRenderer;
@@ -69,10 +70,10 @@ public class MenuComponentEditorGrid extends Component{
     }
     @Override
     public void render2d(double deltaTime){
-        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
+        if(usePhysicalMouseState&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_RELEASE){
             editor.getSelectedTool(0).mouseReset(editorSpace, 0);
         }
-        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
+        if(usePhysicalMouseState&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_RELEASE){
             editor.getSelectedTool(0).mouseReset(editorSpace, 1);
         }
         resonatingTick+=deltaTime*20;
@@ -331,9 +332,9 @@ public class MenuComponentEditorGrid extends Component{
         synchronized(synchronizer){
             mouseover = new int[]{(int)x/blockSize,(int)y/blockSize};
         }
-        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
-        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
-        if(usePhysicalMouseState&&glfwGetMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
+        if(usePhysicalMouseState&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS)mouseDragged(x, y, 0);
+        if(usePhysicalMouseState&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_RIGHT)==GLFW_PRESS)mouseDragged(x, y, 1);
+        if(usePhysicalMouseState&&Input.getMouseButton(DizzyEngine.window, GLFW_MOUSE_BUTTON_MIDDLE)==GLFW_PRESS)mouseDragged(x, y, 2);
         if(Double.isNaN(x)||Double.isNaN(y)){
             return;
         }

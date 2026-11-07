@@ -1,6 +1,7 @@
 package net.ncplanner.plannerator.multiblock.editor.action;
 import java.util.ArrayList;
 import java.util.HashMap;
+import net.ncplanner.plannerator.multiblock.AbstractBlock;
 import net.ncplanner.plannerator.multiblock.editor.Action;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.Block;
 import net.ncplanner.plannerator.multiblock.overhaul.fissionsfr.OverhaulSFR;
@@ -26,7 +27,7 @@ public class SFRAllShieldsAction extends Action<OverhaulSFR>{
         }
     }
     @Override
-    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<net.ncplanner.plannerator.multiblock.AbstractBlock> blocks){
+    public void getAffectedBlocks(OverhaulSFR multiblock, ArrayList<AbstractBlock> blocks){
         for(Block block : multiblock.getBlocks()){
             if(block.template.neutronShield!=null)blocks.add(block);
         }

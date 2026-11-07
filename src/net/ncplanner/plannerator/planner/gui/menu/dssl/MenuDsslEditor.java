@@ -1,4 +1,5 @@
 package net.ncplanner.plannerator.planner.gui.menu.dssl;
+import com.thizthizzydizzy.dizzyengine.DizzyEngine;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -273,7 +274,7 @@ public class MenuDsslEditor extends Menu{
         MenuMain.enables = true;
         focusedComponent = editor;
         editor.isFocused = true;
-        com.thizthizzydizzy.dizzyengine.DizzyEngine.setTitle("DSSL Editor");
+        DizzyEngine.setTitle("DSSL Editor");
     }
     @Override
     public void onClosed() {

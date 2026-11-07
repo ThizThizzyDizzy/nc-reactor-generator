@@ -5,7 +5,9 @@ import com.thizthizzydizzy.dizzyengine.io.ImageIO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +49,8 @@ public class NCPFFileReader{
                 if(stream==null)throw new IllegalArgumentException("Could not open NCPF document");
                 root = reader.read(stream);
                 break;
-            }catch(java.io.IOException ex){
-                throw new java.io.UncheckedIOException("Failed to read NCPF document", ex);
+            }catch(IOException ex){
+                throw new UncheckedIOException("Failed to read NCPF document", ex);
             }
         }
         if(root==null)throw new IllegalArgumentException("Empty NCPF document");
